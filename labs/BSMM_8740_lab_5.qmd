@@ -16,7 +16,7 @@ By the end of the lab you will...
 
 ## Getting started
 
--   Go to the course organization at [BSMM-8740-Fall-2023](https://github.com/BSMM-8740-Fall-2023/ "Course GitHub organization") on GitHub. Click on the repository named **BSMM-lab-5**. It contains the starter documents you need to complete the lab.
+-   Go to the course organization at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2024/ "Course GitHub organization") on GitHub. Click on the repository named **BSMM-lab-5**. It contains the starter documents you need to complete the lab.
 
 -   Create a copy of the repository in your own github account and start a new project in RStudio from the repository copy you just created. See the [Lab 1 instructions](labs/BSMM_8740_lab_1.html) for details on creating a repository, starting a new R project and configuring git.
 
