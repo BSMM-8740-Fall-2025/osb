@@ -1,0 +1,174 @@
+---
+title: "Lab 2 - EDA and Feature Engineering"
+editor: visual
+reference-location: margin
+---
+
+## Introduction
+
+In today's lab, you'll explore several data sets as part of the EDA process, and then practice some feature engineering.
+
+### Learning goals
+
+By the end of the lab you will...
+
+-   Be able to generate summary statistics for EDA
+-   Be able to use the `DataExplorer` package to perform EDA
+-   Be able to perform basic feature engineering.
+
+## Getting started
+
+-   Go to the course organization at [BSMM-8740-Fall-2023](https://github.com/BSMM-8740-Fall-2023/ "Course GitHub organization") on GitHub. Click on the repository named **BSMM-lab-2**. It contains the starter documents you need to complete the lab.
+
+-   Create a new repository and start a new project in RStudio. See the [Lab 1 instructions](labs/BSMM_8740_lab_1.html) for details on creating a repository, starting a new R project and configuring git.
+
+::: callout-important
+To access Github from the lab, you will need to make sure you are logged in as follows:
+
+-   username: **.\\daladmin**
+-   password: **Business507!**
+
+Follow the the instructions from BSMM-lab-1 to initial your machine (create a PAT and set your git credentials).
+:::
+
+## Packages
+
+Here are some of the packages we'll use in this lab.
+
+```{r}
+#| message: false
+#| echo: true
+library(magrittr)     # the pipe
+library(tidyverse)    # for data wrangling + visualization
+library(tidymodels)   # for modeling
+library(gt)           # for making display tables
+library(gtExtras)     # helper functions for beautiful tables
+library(DataExplorer) #
+```
+
+## Data: The Tate Collection
+
+Tate is an institution that houses the United Kingdom's national collection of British art, and international modern and contemporary art. It is a network of four art museums: Tate Britain, London (until 2000 known as the Tate Gallery, founded 1897), Tate Liverpool (founded 1988), Tate St Ives, Cornwall (founded 1993) and Tate Modern, London (founded 2000), with a complementary website, Tate Online (created 1998). Tate is not a government institution, but its main sponsor is the UK Department for Culture, Media and Sport.
+
+This dataset used here contains the metadata for around 70,000 artworks that Tate owns or jointly owns with the National Galleries of Scotland as part of ARTIST ROOMS. Metadata for around 3,500 associated artists is also included.
+
+The metadata here is released under the Creative Commons Public Domain CC0 licence. Images are not included and are not part of the dataset.
+
+This dataset contains the following information for each artwork:
+
+|                  |                    |
+|------------------|--------------------|
+| Id               | acquisitionYear    |
+| accession_number | dimensions         |
+| artist           | width              |
+| artistRole       | height             |
+| artistId         | depth              |
+| title            | units              |
+| dateText         | inscription        |
+| medium           | thumbnailCopyright |
+| creditLine       | thumbnailUr        |
+| year             | url                |
+
+Use the code below to load the Tate Collection data sets, and note the names of the variable referencing each dataset.
+
+```{r}
+#| message: false
+the_tate <- readr::read_delim("data/the-tate-collection.csv", ";", escape_double = FALSE, trim_ws = TRUE)
+the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
+```
+
+## Exercises
+
+### Exercise 1
+
+First of all, let's analyze the entire dataset as it is. We have 69201 observations, each one corresponding to an artwork in Tate collection. For each observation/artwork, we have 20 attributes, including artist, title, date, medium, dimensions and Tate's acquisition year. Generate some general observations about the dataset using `dplyr::summarize`, including the number of *unique artists* represented in the collection, the *period* represented in the collection and the *acquisition period* over which the collection was created.
+
+Next use `DataExplorer::introduce` and `DataExplorer::plot_missing()` to examine the scope of missing data.
+
+### Exercise 2
+
+Roughly 7.8% of the works in the collection have missing dates, How many works have missing dates (i.e. the number)
+
+Use the `table()` function to count the number of works missing for each artist. Convert the table in to a tibble using `tibble::as_tibble()`, and then sort the count in descending order.
+
+How many artists have works with missing dates?
+
+Mutate the resulting table, adding columns for the percent of the total missing data for each artist, and another for the cumulative percent (just apply `cumsum()` to the percentage for each artist.
+
+If we could identify all the missing dates for each artists, what is the smallest number of arists needed to resolve at least 50% of the missing year data?
+
+Is this missing data MCAR, MAR, or MNAR?
+
+### Exercise 3
+
+Prepare a table showing the number of works for each unique artist, ordered from the largest number of works to the smallest. Show the top 10 artists by number of works in the collection.
+
+### Exercise 4
+
+Modify the table from the last exercise to show the percentage of the total collection that each artist represents. Format the table using `gt::gt` with the percentage column formatted for display as a percentage, to two decimals. Apply a theme from the `gtExtras` package to the formatted table.
+
+::: render-commit-push
+This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
+
+### Exercise 5
+
+Using the tibble `the_tate`, select the columns for artist and title and count the number of rows.
+
+Next take the tibble `the_tate`, select the columns for artist and title, and then apply `dplyr::distinct`. Count the distinct artist-title pairs.
+
+How many are duplicated?
+
+### Exercise 6
+
+Similar to exercises 2 and 3, in this exercise take the raw data (`the_tate`) and add a column with the area of each artwork in $\text{cm}^2$. Next select the artist, title and the area and remove NA values using `tidyr::drop_na`, then order the works by area. Use `dplyr::slice_head` and `dplyr::slice_tail` to find the largest and smallest artworks in the collection.
+
+### Exercise 7
+
+Join the tables `the_tate` and `the_tate_artists` using `dplyr::left_join`, assigning the result to the variable `the_tate` . Drop rows with `NA` gender values and then group by gender. Show the resulting table.
+
+### Exercise 8
+
+In the next two exercises we switch to a different dataset, the historical price data for the S&P 500 Index.
+
+Read the historical price data in the file `SPX_HistoricalData_1692322132002.csv` using `readr:: read_csv` and add a column for the year of the transaction and the daily return $r_i$, using the formula
+
+$$
+r_i\equiv \log \frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}
+$$You will likely need `dplyr::lead` or `dplyr::lead` functions. Add an additional column for the daily return variance $\text{var}_i = \text{r}_i^2$.
+
+Finally, group by year and use `dplyr::summary` to compute the annual returns and standard deviations. Add the argument `.groups = "drop"` to the `dplyr::summarize` function to drop the grouping after the summary is created.
+
+### Exercise 9
+
+Take the table from the last exercise and use the `gt::` package to format it. Add summary rows for the period return and period volatility (note that variances can be added; volatilities cannot- so you will need to do some calculations).
+
+::: render-commit-push
+This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
+
+## Submission
+
+::: callout-warning
+Before you wrap up the assignment, make sure all documents are updated on your GitHub repo. We will be checking these to make sure you have been practicing how to commit and push changes.
+
+Remember -- you must turn in an HTML file to the Brightspace page before the submission deadline for full credit.
+:::
+
+To submit your assignment:
+
+-   Log in to [Brightspace](https://brightspace.uwindsor.ca/d2l/home/144921) and select course [BSMM8740-2-R-2023F\|Data Analytic Meth.](https://brightspace.uwindsor.ca/d2l/home/144921 "BSMM8740-2-R-2023F|Data Analytic Meth. & Algorith")
+-   Click on the BSMM-Lab-2 assignment, and submit it.
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 9  | 30     |
+
+## Resources for additional practice (optional)
+
+-   Work/read through the **TTC subway** dataset example in *Telling Stories with Data, Chapter 11.4*: [TTC Subway Delays](https://tellingstorieswithdata.com/11-eda.html#ttc-subway-delays)
+    -   You will need to install the package [`opendatatoronto`](https://CRAN.R-project.org/package=opendatatoronto) ([Gelfand 2022](https://tellingstorieswithdata.com/99-references.html#ref-citeSharla)) to access the data. The details on the package can be found [here](https://sharlagelfand.github.io/opendatatoronto/).

@@ -1,0 +1,173 @@
+---
+title: "Lab 3 - The Recipes package"
+editor: visual
+reference-location: margin
+---
+
+## Introduction
+
+In today's lab, you'll explore several data sets and practice pre-processing and feature engineering with `recipes`.
+
+### Learning goals
+
+By the end of the lab you will...
+
+-   Be able to use the `recipes` package to prepare and train & test datasets for analysis/modeling.
+
+## Getting started
+
+-   Log in to **your** github account and then go to the [GitHub organization](https://github.com/bsmm-8740-fall-2023) for the course and find the **BSMM-lab-3-\[your github username\]** repository to complete the lab.
+
+    Create an R project using your **BSMM-lab-3-\[your github username\]** repository (remember to create a PAT, etc., as in lab-1) and add your answers by editing the `BSMM-lab-3.qmd` file in your repository.
+
+-   When you are done, be sure to save your document, stage, commit and push your work.
+
+::: callout-important
+To access Github from the lab, you will need to make sure you are logged in as follows:
+
+-   username: **.\\daladmin**
+-   password: **Business507!**
+
+Remember to (create a PAT and set your git credentials)
+
+-   create your PAT using `usethis::create_github_token()` ,
+-   store your PAT with `gitcreds::gitcreds_set()` ,
+-   set your username and email with
+    -   `usethis::use_git_config( user.name = ___, user.email = ___)`
+:::
+
+## Packages
+
+We will use the following package in today's lab.
+
+```{r}
+#| message: false
+library(magrittr)   # the pipe
+library(tidyverse)  # for data wrangling + visualization
+library(tidymodels) # for modeling
+library(gt)         # for pretty tables
+```
+
+## Data: The Boston Cocktail Recipes
+
+The Boston Cocktail Recipes dataset appeared in a TidyTuesday posting. TidyTuesday is a weekly data project in R.
+
+The dataset is derived from the [Mr. Boston Bartender's Guide](http://swizzle.ru/uploads/article_file/17/mr_boston.pdf), together with a dataset that was web-scraped as part of a hackathon.
+
+This dataset contains the following information for each cocktail:
+
+| variable          | class     | description                      |
+|-------------------|-----------|----------------------------------|
+| name              | character | Name of cocktail                 |
+| category          | character | Category of cocktail             |
+| row_id            | integer   | Drink identifier                 |
+| ingredient_number | integer   | Ingredient number                |
+| ingredient        | character | Ingredient                       |
+| measure           | character | Measurement/volume of ingredient |
+| measure_number    | real      | measure as a number              |
+
+Use the code below to load the Boston Cocktail Recipes data set.
+
+```{r}
+#| message: false
+boston_cocktails <- readr::read_csv('data/boston_cocktails.csv')
+```
+
+## Exercises
+
+### Exercise 1
+
+First use `skimr::skim` and `DataExplorer::introduce` to assess the quality of the data set.
+
+Next prepare a `summary`. What is the median measure number across cocktail recipes?
+
+### Exercise 2
+
+From the boston_cocktails dataset select the *name*, *category*, *ingredient*, and *measure_number* columns and then pivot the table to create a column for each ingredient. Fill any missing values with the number zero.
+
+Since the names of the new columns may contain spaces, clean then using the `janitor::clean_names()`. Finally drop any rows with NA values and save this new dataset in a variable.
+
+How much gin is in the cocktail called **Leap Frog Highball**?
+
+### Exercise 3
+
+Prepare a recipes::recipe object without a target but give name and category as 'id' roles. Add steps to normalize the predictors and perform PCA. Finally `prep` the data and save it in a variable.
+
+How many predictor variables are prepped by the recipe?
+
+::: render-commit-push
+This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
+
+### Exercise 4
+
+Apply the `recipes::tidy` verb to the prepped recipe in the last exercise. The result is a table identifying the information generated and stored by each step in the recipe from the input data.
+
+To see the values calculated for normalization, apply the `recipes::tidy` verb as before, but with second argument = 1.
+
+What ingredient is the most used, on average?
+
+### Exercise 5
+
+Now look at the result of the PCA, applying the `recipes::tidy` verb as before, but with second argument = 2. Save the result in a variable and filter for the components PC1 to PC5. Mutate the resulting `component` column so that the values are factors, ordering them in the order they appear using the `forcats::fct_inorder` verb.
+
+Plot this data using `ggplot2` and the code below
+
+```{r}
+#| echo: true
+#| eval: false
+ggplot(aes(value, terms, fill = terms)) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~component, nrow = 1) +
+labs(y = NULL) +
+theme(axis.text=element_text(size=7),
+      axis.title=element_text(size=14,face="bold"))
+```
+
+How would you describe the drinks represented by PC1?
+
+### Exercise 6
+
+As in the last exercise, use the variable with the tidied PCA data and use only PCA components PC1 to PC4. Take/slice the top 8 ingedients by component, ordered by their absolute value using the verb `dplyr::slice_max`. Next, generate a grouped table using gt::gt, colouring the cell backgrounds (i.e. fill) with green for values $\ge0$ and red for values $<0$.
+
+What is the characteristic alcoholic beverage of each of the first 4 principle components.
+
+### Exercise 7
+
+For this exercise, bake the prepped PCA recipe using `recipes::bake` on the original data and plot each cocktail by its PC1, PC2 component, using
+
+```{r}
+#| echo: true
+#| eval: false
+ggplot(aes(PC1, PC2, label = name)) +
+  geom_point(aes(color = category), alpha = 0.7, size = 2) +
+  geom_text(check_overlap = TRUE, hjust = "inward") + 
+  labs(color = NULL)
+```
+
+Can you create an interpretation of the PCA analysis?
+
+::: render-commit-push
+This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
+
+## Submission
+
+::: callout-warning
+Before you wrap up the assignment, make sure all documents are updated on your GitHub repo. We will be checking these to make sure you have been practicing how to commit and push changes.
+
+Remember -- you must turn in a HTML file to the Brightspace page before the submission deadline for full credit.
+:::
+
+To submit your assignment:
+
+-   Log in to [Brightspace](https://brightspace.uwindsor.ca/d2l/home/144921) and select course [BSMM8740-2-R-2023F\|Data Analytic Meth.](https://brightspace.uwindsor.ca/d2l/home/144921 "BSMM8740-2-R-2023F|Data Analytic Meth. & Algorith")
+-   Click on the Lab 3 assignment, and submit it.
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 7  | 30     |

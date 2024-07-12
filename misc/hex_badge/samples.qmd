@@ -1,0 +1,285 @@
+---
+title: "BIDA302 hexsticker"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup}
+
+# 
+
+library(hexSticker)
+library(tidyverse)
+
+```
+
+https://github.com/GuangchuangYu/hexSticker
+
+UVic logo https://www.uvic.ca/brand/look-feel/logo/index.php
+
+UVic colour https://www.uvic.ca/brand/look-feel/colour/palette/index.php
+
+## fonts & colours
+
+```{r}
+
+library(showtext)
+## Loading Google fonts (http://www.google.com/fonts)
+font_add_google("Poiret One", "poiret")
+font_add_google("Raleway", "raleway")
+font_add_google("Roboto Slab", "roboto_slab")
+
+## loading local font 
+font_add(family = "broadway", regular = "BROADW.TTF")
+
+font_add("trebuchet",
+         regular="C:\\Windows\\Fonts\\trebuc.ttf")
+
+font_add("gill",
+         regular="C:\\Windows\\Fonts\\GILSANUB.TTF")
+
+
+
+## Automatically use showtext to render text for future devices
+showtext_auto()
+
+
+```
+
+### colours
+
+```{r}
+
+uvic_blue <- "#005493"    #RGB: 0-84-147
+uvic_yellow <- "#F5AA1C"    #RGB: 245-170-28  
+uvic_red <- "#C63527"    #RGB: 198-53-39
+uvic_blue_dark <- "#002754"  #RGB: 0-39-84
+
+```
+
+## trials
+
+```{r eval=FALSE}
+
+p <- ggplot(aes(x = mpg, y = wt), data = mtcars) + 
+  geom_point(colour = uvic_blue_dark, size = 2)
+
+p <- p +
+  theme_classic() +
+  theme(
+#    panel.border = element_rect(colour="white"),
+#    plot.title = element_text(face="bold"),
+#    legend.position=c(1,0), 
+#    legend.justification=c(1,0),
+#    legend.title = element_text(size=12),
+#    legend.text = element_text(size=11),
+#    panel.border = element_rect(colour="white"),
+    axis.line = element_line(colour="white"),
+    axis.title = element_text(size=12, colour = "white"),
+    axis.text = element_text(size=12, colour = "white")
+  ) +
+  scale_y_continuous(minor_breaks = NULL) +
+  scale_x_continuous(minor_breaks = NULL)
+
+p <- p + 
+  theme_transparent()
+
+p
+
+p <- ggplot(mtcars, aes(mpg, wt)) + geom_point()
+p + expand_limits(x = 0)
+p + expand_limits(y = c(1, 9))
+p + expand_limits(x = 0, y = 0)
+
+
+```
+
+```{r}
+
+BIDA302_hex <- 
+  sticker(p, package="BIDA302", 
+          p_size=20, s_x=1, s_y=.75, s_width=1.3, s_height=1,
+        h_fill=uvic_blue, h_color=uvic_yellow, p_color = uvic_yellow,
+        p_family = "trebuchet")
+
+BIDA302_hex
+
+```
+
+Random table
+
+```{r}
+df_length <- 20
+
+rand_pm3 <- function(id_num, df_length, seed = 42){
+  set.seed(seed)
+  runif(df_length, id_num - 1, id_num + 2)
+}
+
+
+
+df_xy <- tibble(
+  id_name = letters[1:df_length], 
+  id_num = 1:df_length
+  )
+
+
+df_xy <- df_xy %>% 
+  mutate(data.analytics = rand_pm3(id_num, df_length, 4)) %>% 
+  mutate(coding.fundamentals = rand_pm3(id_num, df_length)) %>% 
+  mutate(data.analytics = 
+           case_when(
+             id_num > 10 ~ data.analytics - 10,
+             TRUE ~ data.analytics
+             )
+         ) %>% 
+  mutate(coding.fundamentals = 
+           case_when(
+             id_num > 10 ~ coding.fundamentals - 10,
+             TRUE ~ coding.fundamentals
+             )
+  )
+
+df_xy
+```
+
+```{r eval=FALSE}
+
+p <- ggplot(df_xy, aes(y = data.analytics, x = coding.fundamentals)) + 
+  geom_point(colour = uvic_yellow, size = 1)
+#  geom_point(colour = uvic_blue_dark, size = 2)
+
+p1 <- p
+
+p <- p +
+  theme_classic() +
+  theme(
+#    panel.border = element_rect(colour="white"),
+#    plot.title = element_text(face="bold"),
+#    legend.position=c(1,0), 
+#    legend.justification=c(1,0),
+#    legend.title = element_text(size=12),
+#    legend.text = element_text(size=11),
+#    panel.border = element_rect(colour="white"),
+    axis.line = element_line(colour="white"),
+    axis.ticks = element_line(colour = "white"),
+    axis.title = element_text(size=16, colour = "white"),
+    axis.text = element_text(size=16, colour = "white")
+  ) +
+  coord_equal() +
+  expand_limits(x = c(0, 10), y = c(0, 10))
+
+p
+
+#  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10), minor_breaks = NULL) +
+#  scale_y_continuous(breaks = c(0, 2, 4, 6, 8, 10), minor_breaks = NULL)
+
+p <- p + 
+  theme_transparent()
+
+p
+
+```
+
+```{r}
+
+BIDA302_hex <- 
+  sticker(p, package="BIDA302", 
+          p_size=20, s_x=1, s_y=.75, s_width=1.3, s_height=1,
+        h_fill=uvic_blue, h_color=uvic_yellow, p_color = uvic_yellow,
+        p_family = "trebuchet")
+
+BIDA302_hex
+
+```
+
+```{r}
+
+BIDA302_hex <- 
+  sticker(p, package="BIDA302", 
+          p_size=20, s_x=1, s_y=.75, s_width=1.3, s_height=1,
+        h_fill=uvic_blue_dark, h_color=uvic_yellow, p_color = uvic_yellow,
+        p_family = "trebuchet")
+
+BIDA302_hex
+
+```
+
+```{r}
+
+BIDA302_hex <- 
+  sticker(p, package="BIDA302", 
+          p_size=20, s_x=1, s_y=.75, s_width=1.3, s_height=1,
+        h_fill=uvic_blue_dark, h_color=uvic_yellow, p_color = uvic_yellow,
+        p_family = "roboto_slab")
+
+BIDA302_hex
+
+ggplot2::ggsave("BIDA302_hex_screen.png", width = 2, height = 2)
+
+
+```
+
+```{r}
+
+BIDA302_hex <- 
+  sticker(p, package="BIDA302", 
+          s_x=1, s_y=.75, s_width=1.4, s_height=1.1,
+        h_fill=uvic_blue_dark, h_color=uvic_yellow, h_size = 1.5,
+        p_color = uvic_yellow,
+        p_size=24, 
+        p_family = "roboto_slab")
+
+BIDA302_hex
+
+ggplot2::ggsave("BIDA302_hex.png", width = 2, height = 2)
+
+```
+
+## just the plot
+
+```{r}
+
+# Pantone 19-4052 Classic Blue
+
+p1 +
+  geom_point(size = 3, colour = "#34558b") +
+#  geom_smooth() +
+  geom_smooth(method = lm) +
+  coord_equal() +
+  xlim(0, 12.5) +
+  ylim(0, 12.5)
+
+
+```
+
+```{r}
+dacf_1 <- p1 +
+  geom_point(size = 3, colour = uvic_blue_dark) +
+#  geom_smooth() +
+#  geom_smooth(method = lm) +
+  coord_equal() +
+  xlim(0, 12.5) +
+  ylim(0, 12.5)
+
+dacf_1
+
+# use `dev.size()` to determine dimensions of display
+ggplot2::ggsave("BIDA302_dacf_1.png", width = 4.666667, height = 3.520833)
+
+ggplot2::ggsave("BIDA302_dacf.png", width = 3.5, height = 3.5)
+
+
+# add an arrow
+
+dacf_1 +
+  geom_segment(aes(x = 1, y = 1, xend = 10, yend = 10),
+                  arrow = arrow(length = unit(0.5, "cm")),
+               colour = "red")
+
+
+
+
+
+```

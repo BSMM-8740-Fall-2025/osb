@@ -1,0 +1,31 @@
+---
+title: "Teaching team"
+---
+
+## Instructor
+
+![](images/team/llo.png){fig-alt="Headshot of Dr. Lou Odette" style="float:right;padding: 0 0 0 10px;" width="200"}
+
+Dr. Louis (Lou) L. Odette was most recently Head of Advanced Analytics at Greenery Retail Canada. Prior to joining Greenery, Lou was Vice President of Quantitative Modeling & Research at AIG in Boston with responsibilities for review and validation of existing risk models and risk metrics, in addition to modeling and assessment of alternative asset-class risks. He holds a PhD in Electrical Engineering from MIT and an MSc in Mathematics from Oxford University. **Spoiler alert**: the picture to the right was taken many years ago.
+
++-----------------------------+------------------------------------------+
+| Office hours                | Location                                 |
++=============================+==========================================+
+| Thursdays 2:00 pm - 4:00 pm | Meeting ID: 230 892 400 109              |
+|                             |                                          |
+| (**on Teams**)              | Passcode: eXFjwj                         |
++-----------------------------+------------------------------------------+
+| Or **call in** (audio only) | +1 226-782-3511,,488681491# Windsor      |
+|                             |                                          |
+|                             | \(866\) 603-5721,,488681491# (Toll-free) |
+|                             |                                          |
+|                             | Phone Conference ID: 488 681 491#        |
++-----------------------------+------------------------------------------+
+
+If this time doesn't work for you or you'd like to schedule a one-on-one meeting, you can email me at [lodette\@uwindsor.ca](mailto://lodette@uwindsor.ca).
+
+## Teaching assistants
+
+|                                         | Name            | Office hours                | Location |
+|:---------------------------------------:|:----------------|-----------------------------|----------|
+| ![](images/team/An_Vo.png){width="40%"} | Tran Ngoc An Vo | TBD: starting Sept 18, 2023 | TBD      |

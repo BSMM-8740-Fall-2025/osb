@@ -1,0 +1,33 @@
+---
+title: "Week 10"
+subtitle: "MonteCarlo methods"
+editor: visual
+---
+
+::: callout-important
+Due date: Project proposal due Fri, Mar 18 at 5:00 pm.
+:::
+
+## Prepare
+
+📖 Read Introduction to Modern Statistics, Chp 9: [Logistic regression](https://openintro-ims.netlify.app/model-logistic.html)
+
+## Participate
+
+🖥️ [Lecture 10 - MonteCarlo methods](/slides/BSM_8740_lec_10.html)
+
+## Practice
+
+📋 [Application Exercise 9 - Odds](/ae/ae-9-odds.html)
+
+## Perform
+
+⌨️ [Lab 10 - MonteCarlo methods](labs/BSMM_8740_lab_10.html)
+
+✍️ [HW 3 - Logistic regression and log transformation](/hw/hw-3.html)
+
+<br><br>
+
+::: {style="font-size: 0.875em;"}
+Back to [course schedule](/ "Course schedule") ⏎
+:::

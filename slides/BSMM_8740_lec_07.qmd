@@ -1,0 +1,1010 @@
+---
+title: "Time series methods"
+subtitle: "BSMM8740-2-R-2023F [WEEK - 7]"
+author: "L.L. Odette"
+footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
+logo: "images/logo.png"
+title-slide-attributes:
+  data-background-image: images/my-DRAFT.png
+  data-background-size: contain
+  data-background-opacity: "0.40"
+format: 
+  revealjs: 
+    theme: slides.scss
+    multiplex: true
+    transition: fade
+    slide-number: true
+    margin: 0.05
+editor: visual
+menu:
+  numbers: true
+execute:
+  freeze: auto
+---
+
+```{r opts, include = FALSE}
+options(width = 95)
+library(knitr)
+opts_chunk$set(comment="", 
+               digits = 3, 
+               tidy = FALSE, 
+               prompt = TRUE,
+               fig.align = 'center')
+require(magrittr)
+require(ggplot2)
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Recap of last week
+
+-   Last week we introduced the Tidymodels framework in R
+
+-   We showed how we can use the Tidymodels framework to create a workflow for data prep, feature engineering, model fitting and model evaluation.
+
+-   Today we look at the using the Tidymodels package to build classification and clustering models.
+
+# Time Series Methods
+
+## Time series
+
+-   Today we will explore time series - data where each observation has a time value.
+
+-   We'll look at how to manipulate our time values, create time-based features, plot our time series, and decompose time series into components.
+
+-   Finally we will use our time series for forecasting, using regression, exponential smoothing and ARIMA[^1] models
+
+[^1]: Auto Regressive Integrated Moving Average
+
+## Time series - plotting
+
+```{r}
+#| echo: true
+timetk::bike_sharing_daily %>% dplyr::slice_head() %>% dplyr::glimpse()
+```
+
+## Time series - plotting
+
+The `timetk::plot_time_series()` function is a good way to to get a quick timeseries plot. From a tidy table we
+
+-   select the time value and the column we want to play
+-   pivot (longer) the columns we want to plot
+-   plot
+
+The `timetk::plot_time_series()` function has any options that can be changed.
+
+## Time series - plotting
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2|3|4-8"
+timetk::bike_sharing_daily %>% 
+  dplyr::select(dteday, casual, registered) %>% 
+  tidyr::pivot_longer(-dteday) %>% 
+  timetk::plot_time_series(
+    .date_var = dteday
+    , .value = value
+    , .color_var = name
+  )
+```
+
+## Time series - `timetk::`
+
+### time downscaling
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2|3-4|5|6-8"
+timetk::bike_sharing_daily %>% 
+  timetk::summarise_by_time(
+    .date_var = dteday
+    , .by = "week"
+    , .week_start = 7
+    , causal = sum(casual)
+    , registered = mean(registered)
+    , max_cnt = max(cnt)
+  )
+  
+```
+
+## Time series - `timetk::`
+
+### time upscalling
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2|3|4-8"
+timetk::bike_sharing_daily %>% 
+  dplyr::select(dteday, casual) %>% 
+  timetk::pad_by_time(.date_var = dteday, .by = "hour") %>% 
+  timetk::mutate_by_time(
+    .date_var = dteday
+    , .by = "day"
+    , casual = sum(casual,na.rm=T)/24
+  )
+```
+
+## Time series - `timetk::`
+
+### time filtering
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2-6"
+timetk::bike_sharing_daily %>%
+  timetk::filter_by_time(
+    .date_var = dteday
+    , .start_date="2012-01-15"
+    , .end_date = "2012-07-01"
+  ) %>% 
+  timetk::plot_time_series(.date_var = dteday, casual)
+```
+
+## Time series - `timetk::`
+
+### time offsets
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2|3-7"
+require(timetk, quietly = FALSE)
+timetk::bike_sharing_daily %>%
+  timetk::filter_by_time(
+    .date_var = dteday
+    , .start_date="2012-01-15"
+    , .end_date = "2012-01-15" %+time% "12 weeks"
+  ) %>% 
+  timetk::plot_time_series(.date_var = dteday, casual)
+```
+
+## Time series - `timetk::`
+
+### mutate by period
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2|3-10"
+timetk::bike_sharing_daily %>%
+  dplyr::select(dteday, casual) %>% 
+  timetk::mutate_by_time(
+    .date_var = dteday
+    , .by = "7 days"
+    , casual_mean = mean(casual)
+    , casual_median = median(casual)
+    , casual_max = max(casual)
+    , casual_min = min(casual)
+  )
+```
+
+## Time series - `timetk::`
+
+### summarize by period
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2-8"
+timetk::bike_sharing_daily %>%
+  timetk::summarize_by_time(
+    .date_var = dteday
+    , .by = "7 days"
+    , casual_mean = mean(casual)
+    , registered_mean = mean(registered)
+    , windspeed_max = max(windspeed)
+  )
+```
+
+## Time series - `timetk::`
+
+### create a timeseries
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2-7|8"
+tibble::tibble(
+  date = 
+    timetk::tk_make_timeseries(
+      start_date = "2023"
+      , length_out = 100
+      , by = "month"
+    )
+  , values=1:100
+)
+```
+
+## Time series - `timetk::`
+
+### create a timeseries
+
+```{r}
+#| echo: true
+#| code-fold: true
+timetk::tk_make_holiday_sequence(
+  start_date = "2024"
+  , end_date = "2026"
+  , calendar = "TSX"
+) %>% 
+  timetk::tk_get_holiday_signature(holiday_pattern = "Thanksgiving",locale_set = "CA", exchange = "TSX") %>% 
+  dplyr::slice_head(n = 6) %>% 
+  dplyr::glimpse()
+```
+
+## Time series - `timetk::`
+
+### timeseries transformations
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1|2-7|8"
+#| layout-ncol: 2
+# plot wind speed
+timetk::bike_sharing_daily %>% 
+  timetk::plot_time_series(dteday, windspeed, .title = "Time Series - Raw")
+
+# plot transformed speed
+timetk::bike_sharing_daily %>% 
+  timetk::plot_time_series(
+    dteday
+    , timetk::box_cox_vec(windspeed, lambda="auto",  silent = T)
+    , .title = "Time Series - Box Cox Tranformed")
+```
+
+## Time series - `timetk::`
+
+### timeseries transformations
+
+::: {style="font-size: 30px"}
+### See Also
+
+-   Lag Transformation: `lag_vec()`
+
+-   Differencing Transformation: `diff_vec()`
+
+-   Rolling Window Transformation: `slidify_vec()`
+
+-   Loess Smoothing Transformation: `smooth_vec()`
+
+-   Fourier Series: `fourier_vec()`
+
+-   Missing Value Imputation for Time Series: `ts_impute_vec()`, `ts_clean_vec()`
+
+Other common transformations to reduce variance: `log()`, `log1p()` and `sqrt()`
+:::
+
+## Classification
+
+**Lazy learners or instance-based learners**, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they search for the nearest neighbor from the whole training data. Examples are:
+
+-   K-Nearest Neighbor.
+-   Case-based reasoning.
+
+## Types of classification
+
+-   Binary classification
+-   Multi-Class Classification (mutually exclusive)
+-   Multi-Label Classification (not mutually exclusive)
+-   Imbalanced Classification
+
+## Binary Logistic Regression
+
+Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in ${0,1}$. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
+
+Logistic regression is an example of supervised learning.
+
+## Binary Logistic Regression
+
+For the logistic GLM:
+
+-   the distribution of the observations is Binomial with parameter $\pi$
+-   the explanatory variables are linear in the parameters: $\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n$
+-   the link function is the logit: $\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})$
+
+It follows that $\pi = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}}$, which is a sigmoid function in the explanatory variables. The equation $\eta=0$ defines a linear decision boundary or classification threshold.
+
+## Binary Logistic Regression
+
+The term $\frac{\pi}{1-\pi}$ is called the the odds-ratio. By its definition $\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}$
+
+So if $x_1$ changes by one unit ($x_1\rightarrow x_1+1$), then the odds ratio changes by $e^{\beta_1}$.
+
+## Classifier metrics
+
+### Confusion matrix
+
+The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model:
+
+|          | predict 1                | predict 0                |
+|----------|--------------------------|--------------------------|
+| data =1  | true positives (TP)      | false negatives (FN)[^2] |
+| data = 0 | false positives (FP)[^3] | true negatives (TN)      |
+
+[^2]: Type II error
+
+[^3]: Type I error
+
+## Classifier metrics
+
+### Accuracy
+
+Accuracy measure the percent of correct predictions:
+
+$$
+\frac{\text{TP}+\text{TN}}{\text{total # observations}}
+$$
+
+### Precision
+
+Accuracy measure the percent of positive predictions that are correct:
+
+$$
+\frac{\text{TP}}{\text{TP}+\text{FP}}
+$$
+
+## Classifier metrics
+
+### Recall / Sensitivity
+
+Measures the success at predicting the first class
+
+$$
+\frac{\text{TP}}{\text{TP}+\text{FN}}\qquad\text{(True Positive Rate - TPR)}
+$$
+
+### Recall / Specificity
+
+Measures the success at predicting the second class
+
+$$
+\frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
+$$
+
+## Classifier metrics
+
+### ROC Curves
+
+Consider plotting the TPR against the FPR (1-TNR) at different classification thresholds. This is the ROC.
+
+-   the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e. no predictive power)
+-   our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.
+
+So, how to compute?
+
+## Classifier metrics
+
+### The AUC: the area under the ROC.
+
+It turns out the AUC is very easy to compute and gives us the ROC at the same time.
+
+-   rank order your data by decreasing positive predicted probability
+-   against the cumulative percent of negative observations plot the cumulative percent of positive observations
+
+## Example: create the workflow
+
+#### Workflow to model credit card default
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| eval: false
+data <- ISLR::Default %>% tibble::as_tibble()
+set.seed(8740)
+
+# split data
+data_split <- rsample::initial_split(data)
+default_train <- rsample::training(data_split)
+
+# create a recipe
+default_recipe <- default_train %>% 
+  recipes::recipe(formula = default ~ student + balance + income) %>% 
+  recipes::step_dummy(recipes::all_nominal_predictors())
+
+# create a linear regression model
+default_model <- parsnip::logistic_reg() %>% 
+  parsnip::set_engine("glm") %>% 
+  parsnip::set_mode("classification")
+
+# create a workflow
+default_workflow <- workflows::workflow() %>%
+  workflows::add_recipe(default_recipe) %>%
+  workflows::add_model(default_model)
+```
+
+## Example: fit the model using the data
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| eval: false
+# fit the model
+lm_fit <- 
+  default_workflow %>% 
+  parsnip::fit(default_train)
+
+# augment the data with the predictions using the model fit
+training_results <- 
+  broom::augment(lm_fit , default_train) 
+```
+
+## Example: compute the AUC
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| eval: false
+auc_roc_tbl <- training_results %>% 
+  # order prediction probability from high to low
+  dplyr::arrange( desc(.pred_Yes) ) %>% 
+  # make new variable for cumulative % of 'Yes' category
+  dplyr::mutate( 
+    # scale to percent (# of all 'Yes' categories)
+    y = ifelse(default == "Yes", 1/sum(default == "Yes"),0)
+    # accumulate the values
+    , y = cumsum(y)
+  ) %>% 
+  # keep the 'No' category values
+  dplyr::filter(default == "No") %>% 
+  # number rows & scale to % of total; compute incremental areas
+  tibble::rowid_to_column("ID") %>% 
+  dplyr::mutate(
+    auc_inc = y / max(ID) # multiply the height by the width
+    , ID = ID / max(ID)   # scale to percent (# of all 'No' categories)
+  ) 
+```
+
+## Example: plot the ROC
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| eval: false
+auc_roc_tbl %>% 
+  ggplot(aes(x=ID, y = y)) +
+  geom_line() +
+  # xlim(c(0,1)) +
+  geom_abline(slope=1) + 
+    coord_fixed() +
+    labs(
+      title = "ROC curve for load default prediction",
+      subtitle = 
+        stringr::str_glue("Logistic Regression AUC = {scales::label_number(accuracy = 10^-7)(sum(auc_roc_tbl$auc_inc) )}")
+    )
+```
+
+## Example: yardstick
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| eval: false
+training_results %>% 
+  yardstick::roc_auc(.pred_No, truth = default)
+```
+
+## Example: yardstick
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| eval: false
+training_results %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
+```
+
+## Other Classification Methods
+
+## Naive Bayes Classification
+
+This method starts with Bayes rule: for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
+
+$$
+\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
+$$
+
+## Naive Bayes Classification
+
+If we assume that the features are all independent we can write Bayes rule as
+
+$$
+\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[C_{k}\right]\times\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}
+$$
+
+and our classifier is
+
+$$
+C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]
+$$
+
+## Naive Bayes Classification
+
+So it remains to calculate the class probability $\mathbb{P}\left[C_{k}\right]$ and the conditional probabilities $\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]$
+
+The different naive Bayes classifiers differ mainly by the assumptions they make regarding the conditional probabilities.
+
+## Naive Bayes Classification
+
+If our features are all ordinal, then
+
+-   The class probabilities are simply the frequency of instances that belong to each class divided by the total number of instances.
+
+-   The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of instances with that class value.
+
+## Naive Bayes Classification
+
+If any features are numeric, we can estimate conditional probabilities by assuming that the numeric features have a Gaussian distribution for each class
+
+## Naive Bayes Classification
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| message: false
+#| warning: false
+#| eval: false
+library(discrim)
+# create a naive bayes classifier
+default_model_nb <- parsnip::naive_Bayes() %>% 
+  parsnip::set_engine("klaR") %>% 
+  parsnip::set_mode("classification")
+
+# create a workflow
+default_workflow_nb <- workflows::workflow() %>%
+  workflows::add_recipe(default_recipe) %>%
+  workflows::add_model(default_model_nb)
+
+# fit the model
+lm_fit_nb <- 
+  default_workflow_nb %>% 
+  parsnip::fit(
+    default_train
+  , control = 
+    workflows::control_workflow(parsnip::control_parsnip(verbosity = 1L))
+  )
+
+# augment the data with the predictions using the model fit
+training_results_nb <- 
+  broom::augment(lm_fit_nb , default_train) 
+```
+
+## Naive Bayes Classification
+
+::: panel-tabset
+## AUC
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| eval: false
+training_results_nb %>% 
+  yardstick::roc_auc(.pred_No, truth = default)
+```
+
+## ROC
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| eval: false
+training_results_nb %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
+```
+:::
+
+## Nearest Neighbour Classification
+
+The k-nearest neighbors algorithm, also known as KNN or k-NN, is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point.
+
+It is typically used as a classification algorithm, working off the assumption that similar points can be found near one another.
+
+## Nearest Neighbour Classification
+
+For classification problems, a class label is assigned on the basis of a majority vote---i.e. the label that is most frequently represented around a given data point is used.
+
+Before a classification can be made, the distance between points must be defined. Euclidean distance is most commonly used.
+
+## Nearest Neighbour Classification
+
+Note that the KNN algorithm is also part of a family of "lazy learning" models, meaning that it only stores a training dataset versus undergoing a training stage. This also means that all the computation occurs when a classification or prediction is being made.
+
+The k value in the k-NN algorithm determines how many neighbors will be checked to determine the classification of a specific query point.
+
+## KNN Classification: distance measures
+
+-   Euclidean: $\text{d}(x,y)=\sqrt{\sum_i(y_i- x_i)^2}$
+-   Manhattan: $\text{d}(x,y)=\sum_{i}\left|y_{i}-x_{i}\right|$
+-   Minkowski: $\text{d}(x,y)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}$
+
+## KNN Classification: algorithm
+
+1.  Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.
+2.  Calculate the distance between that point and all the points in the training set.
+3.  Select the K nearest neighbors based on the distances calculated.
+4.  Assign the label of the majority class to the new data point.
+5.  Repeat steps 2 to 4 for all the data points in the test set.
+
+## KNN Classification: model
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+default_model_knn <- parsnip::nearest_neighbor(neighbors = 4) %>% 
+  parsnip::set_engine("kknn") %>% 
+  parsnip::set_mode("classification")
+```
+
+## Support Vector Machine Classification
+
+The SVM assumes a training set of the form $(x_1,y_1),\ldots,(x_n,y_n)$ where the $y_i$ are either $-1$ or $1$, indicating the class to which each $x_i$ belongs.
+
+The SVM algorithm looks to find the **maaximum-margin hyperplane** that divides the group of points $x_i$ for which $y_1=-1$ from the group for which $Y_1=1$, such that the distance between the hyperplane and the nearest point $x_i$ from either group is maximized
+
+## SVM Classification: large margin
+
+Illustration of SVM large-margin principle
+
+[![](images/lec-6/Murphy_Figure_17.12.png){fig-alt="from Murphy figure 17.12" fig-align="center"}](https://github.com/probml/pml-book/blob/main/book1-figures/Figure_17.12.png)
+
+## SVM Classification:
+
+::: columns
+::: {.column width="50%" style="font-size: smaller"}
+-   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}$, for a vector $w$ perpendicular to the boundary.
+
+-   We can express any point as $x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }$
+
+-   Note that $f\left(x\right)=\left(w^{\top}x_{\bot}+w_{0}\right)+r\left\Vert w\right\Vert$
+:::
+
+::: {.column width="50%"}
+![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
+:::
+:::
+
+## SVM Classification:
+
+::: columns
+::: {.column width="50%" style="font-size: smaller"}
+-   Since $f\left(x_{\bot}\right)=w^{\top}x_{\bot}+w_{0}=0$, we have $f\left(x\right)=r\left\Vert w\right\Vert$.
+
+-   We also require $f\left(x_{n}\right)\tilde{y}_{n}>0$
+
+-   To maximize the distance to the closest point, the objective is $\max_{w,w_{0}}\min_{n}\left[\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\right]$
+:::
+
+::: {.column width="50%"}
+![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
+:::
+:::
+
+## SVM Classification:
+
+It is common to scale the vector $w$ and the offset $w_0$ such that $f_n\hat{y}_n=1$ for the point nearest the decision boundary, such that $f_n\hat{y}_n\ge1$ for all $n$.
+
+In addition, since minimizing $1/ \left\Vert w\right\Vert$ is equivalent to minimizing $\left\Vert w\right\Vert^2$, we can state the objective as
+
+$$
+\min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
+$$
+
+## SVM Classification:
+
+::: columns
+::: {.column width="50%" style="font-size: smaller"}
+If there is no solution to the objective we can add slack variables $\xi_n\ge0$ to replace the hard constraints that $f_n\hat{y}_n\ge1$ with the soft margin constraints that $f_n\hat{y}_n\ge1-\xi_n$.
+
+The new objective is
+
+$$
+\min_{w,w_{0},\xi}\frac{{1}}{2}\left\Vert w\right\Vert ^{2} + C\sum_n \xi_n \\
+\text{s.t.}\xi_n\ge0, \quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
+$$
+:::
+
+::: {.column width="50%"}
+![](images/lec-6/Murphy_Figure_17.13_B.png){fig-alt="Murphy fig 17.13(b)" fig-align="center" width="299"}
+:::
+:::
+
+## SVM: data not separable
+
+::: columns
+::: {.column width="50%" style="font-size: smaller"}
+If the data is not separable:
+
+-   a transformation of data may make them separable
+
+-   an embedding in a higher dimensional space might make them separable
+:::
+
+::: {.column width="50%"}
+![](images/lec-6/Sebastian_Raschka.png){fig-align="center" width="600"}
+:::
+:::
+
+## SVM Classification: Support Vectors
+
+-   Support vectors are the data points that lie closest to the decision surface (or hyperplane)
+
+-   They are the data points most difficult to classify
+
+-   They have direct bearing on the optimum location of the decision surface
+
+-   Support vectors are the elements of the training set that would change the position of the dividing hyperplane if
+
+    removed
+
+## SVM Classification: example
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+# show_engines("svm_linear")
+default_model_svm <- parsnip::svm_linear() %>% 
+  parsnip::set_engine("svm_linear") %>% 
+  parsnip::set_mode("classification")
+```
+
+# Clustering Methods
+
+## Clustering
+
+***Cluster analysis*** refers to algorithms that group similar objects into groups called *clusters*. The endpoint of cluster analysis is a set of clusters*,* where each cluster is distinct from each other cluster, and the objects within each cluster are broadly similar to each other.
+
+The purpose of cluster analysis is to help reveal patterns and structures within a dataset that may provide insights into underlying relationships and associations.
+
+## Clustering Applications
+
+1.  **Market Segmentation:** Cluster analysis is often used in marketing to segment customers into groups based on their buying behavior, demographics, or other characteristics.
+2.  **Image Processing:** In image processing, cluster analysis is used to group pixels with similar properties together, allowing for the identification of objects and patterns in images.
+3.  **Biology and Medicine:** Cluster analysis is used in biology and medicine to identify genes associated with specific diseases or to group patients with similar clinical characteristics together.
+4.  **Social Network Analysis:** In social network analysis, cluster analysis is used to group individuals with similar social connections and characteristics together, allowing for the identification of subgroups within a larger network.
+5.  **Anomaly Detection:** Cluster analysis can be used to detect anomalies in data, such as fraudulent financial transactions, unusual patterns in network traffic, or outliers in medical data.
+
+## K-means Clustering
+
+*k-means* is a method of *unsupervised* learning that produces a partitioning of observations into *k* unique clusters.
+
+The goal of *k-means* is to minimize the sum of squared Euclidian distances between observations in a cluster and the **centroid**, or geometric mean, of that cluster.
+
+## K-means Clustering
+
+In *k-means* clustering, observed variables (columns) are considered to be locations on axes in multidimensional space.
+
+The basic k-means algorithm has the following steps.
+
+1.  pick the number of clusters k
+2.  Choose *k* random observations in the dataset. These locations in space are declared to be the **initial centroids**.
+3.  Assign each observation to the nearest **centroid**.
+4.  Compute the new **centroids** of each cluster.
+5.  Repeat steps 3 and 4 until the **centroids** do not change.
+
+## K-means Clustering
+
+There are three common methods for selecting initial centers:
+
+1.  **Random observations:** Chosing random observations to act as our initial centers is the most commonly used approach, implemented in the `Forgy`, `Lloyd`, and `MacQueen` methods.
+2.  **Random partition:** The observations are assigned to a cluster uniformly at random. The centroid of each cluster is computed, and these are used as the initial centers. This approach is implemented in the `Hartigan-Wong` method.
+3.  **k-means++:** Beginning with one random set of the observations, further observations are sampled via probability-weighted sampling until $k$ clusters are formed. The centroids of these clusters are used as the initial centers.
+
+## K-means Clustering
+
+Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic. That is, running the clustering twice on the same data may not result in the same cluster assignments.
+
+## K-means Example
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+set.seed(8740)
+
+centers <- tibble::tibble(
+  cluster = factor(1:4), 
+  num_points = c(100, 150, 50, 90),  # number points in each cluster
+  x1 = c(5, 0, -3, -4),              # x1 coordinate of cluster center
+  x2 = c(-1, 1, -2, 1.5)               # x2 coordinate of cluster center
+)
+
+labelled_points <- 
+  centers %>%
+  dplyr::mutate(
+    x1 = purrr::map2(num_points, x1, rnorm),
+    x2 = purrr::map2(num_points, x2, rnorm)
+  ) %>% 
+  dplyr::select(-num_points) %>% 
+  tidyr::unnest(cols = c(x1, x2))
+
+ggplot(labelled_points, aes(x1, x2, color = cluster)) +
+  geom_point(alpha = 0.3)
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+# penguins <- modeldata::penguins
+# 
+# labelled_points <- penguins %>%
+#   dplyr::select(bill_length_mm, bill_depth_mm) %>%
+#   tidyr::drop_na() %>%
+#   # shuffle rows
+#   dplyr::slice_sample( n = nrow(penguins) )
+
+# create recipe
+labelled_points_recipe <- labelled_points %>% 
+  recipes::recipe(~ x1 + x2, data = .)
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+labelled_points
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+kmeans_spec <- tidyclust::k_means( num_clusters = 3 )
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+wflow <- workflows::workflow() %>%
+  workflows::add_model(kmeans_spec) %>%
+  workflows::add_recipe(labelled_points_recipe)
+
+set.seed(8740)
+labelled_points_resamples <- labelled_points %>% rsample::bootstraps(apparent = TRUE)
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| eval: false
+wflow %>%
+  parsnip::fit(labelled_points) %>% 
+  broom::tidy()
+```
+
+```{r}
+#| echo: true
+#| eval: false
+wflow %>%
+  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids()
+```
+
+```{r}
+#| eval: false
+# all_workflows <- all_workflows %>% 
+#   workflowsets::workflow_map(
+#     resamples = train_resamples, grid = 5, verbose = TRUE
+#   )
+```
+
+```{r}
+#| eval: false
+# all_workflows <- 
+#   workflowsets::workflow_set(
+#     preproc = list(base = labelled_points_recipe),
+#     models = 
+#       3:20 %>% purrr::map( ~tidyclust::k_means( num_clusters = .x ) )
+#   )
+```
+
+```{r}
+#| echo: true
+#| eval: false
+# all_workflows <- all_workflows %>% 
+#   workflowsets::workflow_map(
+#     verbose = TRUE                # enable logging
+#     , fn = "tune_cluster"
+#     , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()
+#   )
+```
+
+```{r}
+#| echo: true
+#| eval: false
+# all_workflows %>% 
+#   dplyr::select(wflow_id,result) %>% 
+#   tidyr::unnest(result) %>% 
+#   tidyr::unnest(.metrics) %>% 
+#   dplyr::filter(.metric == 'sse_total') %>% 
+#   dplyr::group_by(wflow_id) %>% 
+#   dplyr::arrange(desc(.estimate) ) %>% 
+#   dplyr::slice(1)
+```
+
+```{r}
+#| eval: false
+all_workflows <- 
+  workflowsets::workflow_set(
+    preproc = list(base = labelled_points_recipe),
+    models = list(tidyclust::k_means( num_clusters = parsnip::tune() ) )
+  )
+```
+
+```{r}
+#| echo: true
+#| eval: false
+all_workflows <- all_workflows %>% 
+  workflowsets::workflow_map(
+    verbose = TRUE                # enable logging
+    , fn = "tune_cluster"
+    , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()
+  )
+```
+
+```{r}
+#| echo: true
+#| eval: false
+all_workflows %>% workflowsets::rank_results(select_best = TRUE)
+```
+
+```{r}
+#| echo: true
+#| eval: false
+all_workflows %>% 
+  dplyr::select(wflow_id,result) %>% 
+  tidyr::unnest(result) %>% 
+  tidyr::unnest(.metrics) %>% 
+  dplyr::filter(.metric == 'sse_within_total') %>% 
+  dplyr::group_by(wflow_id) %>% 
+  dplyr::arrange(desc(.estimate) ) %>% 
+  dplyr::slice(1)
+```
+
+```{r}
+#| echo: true
+#| eval: false
+tune_results <-
+   all_workflows %>% 
+   workflow_map(
+      fn = "tune_cluster"
+      , resamples = labelled_points_resamples
+      , grid = dials::grid_regular(dials::num_clusters(), levels = 10)
+      , metrics = tidyclust::cluster_metric_set(sse_within_total, sse_total, sse_ratio)
+      , control = tune::control_grid(save_pred = TRUE, extract = identity)
+   )
+```
+
+## Hierarchical Clustering
+
+*Hierarchical Clustering*, sometimes called *Agglomerative Clustering*, is a method of *unsupervised* learning that produces a *dendrogram*, which can be used to partition observations into clusters.
+
+## Tidymodels
+
+### Key Components of Tidymodels
+
+-   Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
+-   Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.
+
+```{r}
+
+
+```
+
+## More
+
+-   Read [An Idiot's Guide to Support Vector Machines](https://web.mit.edu/6.034/wwwbob/svm.pdf)
+
+## Recap
+
+-   In this section we have worked with the `tidymodels` package to build a workflow that facilitates building and evaluating multiple models.
+
+-   Combined with the recipes package we now have a complete data modeling framework.

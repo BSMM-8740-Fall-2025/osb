@@ -1,0 +1,7 @@
+---
+title: "BSMM-8740: Data Analytic Methods & Algorithms"
+---
+
+This course is the exploration of an analytical framework for method selection and model building to help students develop professional capability in data-based techniques of data analytics. A focus will be placed on comparing and selecting appropriate methodology to conduct advanced statistical analysis and on building predictive modeling in order to create a competitive advantage in business operations with efficient analytical methods and data modeling. 
+
+![](images/background-bikeshare.png){fig-alt="A series of six, generic data visualizations: a scatterplot, a density plot, a contour plot, a line plot, a box plot, and another scatterplot." width="700"}

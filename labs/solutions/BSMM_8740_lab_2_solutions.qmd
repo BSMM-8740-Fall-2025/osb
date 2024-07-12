@@ -1,0 +1,428 @@
+---
+title: "Lab 2 - EDA and Feature Engineering"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+reference-location: margin
+---
+
+## Packages
+
+Here are some of the packages we'll use in this lab.
+
+```{r}
+#| message: false
+#| echo: true
+library(magrittr)     # the pipe
+library(tidyverse)    # for data wrangling + visualization
+library(tidymodels)   # for modeling
+library(gt)           # for making display tables
+library(gtExtras)     # helper functions for beautiful tables
+library(DataExplorer) #
+```
+
+## Data: The Tate Collection
+
+Tate is an institution that houses the United Kingdom's national collection of British art, and international modern and contemporary art. It is a network of four art museums: Tate Britain, London (until 2000 known as the Tate Gallery, founded 1897), Tate Liverpool (founded 1988), Tate St Ives, Cornwall (founded 1993) and Tate Modern, London (founded 2000), with a complementary website, Tate Online (created 1998). Tate is not a government institution, but its main sponsor is the UK Department for Culture, Media and Sport.
+
+This dataset used here contains the metadata for around 70,000 artworks that Tate owns or jointly owns with the National Galleries of Scotland as part of ARTIST ROOMS. Metadata for around 3,500 associated artists is also included.
+
+The metadata here is released under the Creative Commons Public Domain CC0 licence. Images are not included and are not part of the dataset.
+
+This dataset contains the following information for each artwork:
+
+|                  |                    |
+|------------------|--------------------|
+| Id               | acquisitionYear    |
+| accession_number | dimensions         |
+| artist           | width              |
+| artistRole       | height             |
+| artistId         | depth              |
+| title            | units              |
+| dateText         | inscription        |
+| medium           | thumbnailCopyright |
+| creditLine       | thumbnailUr        |
+| year             | url                |
+
+Use the code below to load the Tate Collection data sets, and note the names of the variable referencing each dataset.
+
+```{r}
+#| message: false
+the_tate <- 
+  readr::read_delim(
+    "../data/the-tate-collection.csv"
+    , ";"
+    , escape_double = FALSE
+    , trim_ws = TRUE
+  )
+the_tate_artists <- readr::read_csv("../data/the-tate-artists.csv")
+```
+
+## Exercises
+
+### Exercise 1
+
+First of all, let's analyze the entire dataset as it is. We have 69201 observations, each one corresponding to an artwork in Tate collection. For each observation/artwork, we have 20 attributes, including artist, title, date, medium, dimensions and Tate's acquisition year. Generate some general observations about the dataset using `dplyr::summarize`, including the number of *unique artists* represented in the collection, the *period* represented in the collection and the *acquisition period* over which the collection was created.
+
+Next use `DataExplorer::introduce` and `DataExplorer::plot_missing()` to examine the scope of missing data.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+the_tate %>% dim()
+```
+
+```{r}
+tts <- the_tate %>% 
+  dplyr::summarize(
+    num_artists = length(unique(artist))
+    , period_start = min(year, na.rm = T)
+    , period_end = max(year, na.rm = T)
+    , acquisition_start = min(acquisitionYear, na.rm = T)
+    , acquisition_end = max(acquisitionYear, na.rm = T)
+  ) %T>%
+  (\(x) print(x))
+```
+
+```{r}
+stringr::str_glue(
+  "The works of {tts$num_artists} artists, created between {tts$period_start}-{tts$period_end}, were acquired by the Tate from {tts$acquisition_start} to {tts$acquisition_end}")
+```
+
+```{r}
+#| layout-nrow: 2
+the_tate %>% DataExplorer::introduce() %>% dplyr::glimpse()
+the_tate %>% DataExplorer::plot_missing()
+```
+:::
+
+### Exercise 2
+
+Roughly 7.8% of the works in the collection have missing dates, How many works have missing dates (i.e. the number)
+
+Use the `table()` function to count the number of works missing for each artist. Convert the table in to a tibble using `tibble::as_tibble()`, and then sort the count in descending order.
+
+How many artists have works with missing dates?
+
+Mutate the resulting table, adding columns for the percent of the total missing data for each artist, and another for the cumulative percent (just apply `cumsum()` to the percentage for each artist.
+
+If we could identify all the missing dates for each artists, what is the smallest number of arists needed to resolve at least 50% of the missing year data?
+
+Is this missing data MCAR, MAR, or MNAR?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+missing_year <- the_tate %>% 
+  dplyr::filter(is.na(year))  # select the rows where the year value is missing
+missing_year %>% dim()
+```
+
+```{r}
+missing_artist_tbl <- 
+  missing_year$artist %>%         # take the artist column from the table of missing years
+  table() %>%                     # make a table of counts for each artist 
+  tibble::as_tibble() %>%         # convert it to a tibble / data.frame
+  dplyr::rename(artist = 1) %>%   # rename the first column
+  arrange(desc(n)) %>%            # arrange in descending order by count
+  mutate(                         # add or update columns
+    total = sum(n)                # create a temporary column: sum of all counts
+    , pct_of_missing = n/total    # calculate the % missing for each artist
+    , cum_pct = 
+      cumsum(pct_of_missing)      # calculate the cumulative % missing
+  ) %T>% 
+  (\(x) print(dim(x))) %>% 
+  dplyr::select(-total)           # drop the temporary column
+```
+
+```{r}
+missing_artist_tbl %>% 
+  dplyr::filter(cum_pct <= 0.51) %>% 
+  print(n=100)
+```
+
+There are 5397 works with missing dates, 461 artists with whose works have missing dates, and the works of 11 artists account for almost 50% of the missing dates.
+
+Since most of the missing year data is associated with a handful of artists, the missing data would be classified as MAR.
+:::
+
+### Exercise 3
+
+Prepare a table showing the number of works for each unique artist, ordered from the largest number of works to the smallest. Show the top 10 artists by number of works in the collection.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+tate_artists_tbl <- 
+  the_tate$artist %>%             # take the artist column from the complete dataset
+  table() %>%                     # make a table of counts for each artist 
+  tibble::as_tibble() %>%         # convert it to a tibble / data.frame
+  dplyr::rename(artist = 1) %>%   # rename the first column
+  arrange(desc(n))                # arrange in descending order by count
+
+tate_artists_tbl
+```
+:::
+
+### Exercise 4
+
+Modify the table from the last exercise to show the percentage of the total collection that each artist represents. Format the table using `gt::gt` with the percentage column formatted for display as a percentage, to two decimals. Apply a theme from the `gtExtras` package to the formatted table.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+tate_artists_tbl %>% 
+  dplyr::mutate(
+    pct_of_collection = n/sum(n, na.rm = T)
+  ) %>% 
+  dplyr::slice_head(n=10) %>% 
+  gt::gt('artist') %>% 
+  gt::fmt_percent(column = pct_of_collection) %>% 
+  gtExtras::gt_theme_538()
+```
+:::
+
+### Exercise 5
+
+Using the tibble `the_tate`, select the columns for artist and title and count the number of rows.
+
+Next take the tibble `the_tate`, select the columns for artist and title, and then apply `dplyr::distinct`. Count the distinct artist-title pairs.
+
+How many are duplicated?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+all_data_dim <- 
+the_tate %>% 
+  dplyr::select(artist, title) %T>% 
+  (\(x) print(dim(x))) %>% 
+  dim()
+  
+```
+
+```{r}
+no_dups_data_dim <- 
+  the_tate %>% 
+  dplyr::select(artist, title) %>% 
+  dplyr::distinct(artist, title) %T>% 
+  (\(x) print(dim(x))) %>% 
+  dim()
+```
+
+```{r}
+stringr::str_glue(
+  "The full dataset has {all_data_dim[1]} rows and after removing duplicates we have {no_dups_data_dim[1]} rows, so there are {all_data_dim[1] - no_dups_data_dim[1]} duplicate rows."
+)
+```
+:::
+
+### Exercise 6
+
+Similar to exercises 2 and 3, in this exercise take the raw data (`the_tate`) and add a column with the area of each artwork in $\text{cm}^2$. Next select the artist, title and the area and remove NA values using `tidyr::drop_na`, then order the works by area. Use `dplyr::slice_head` and `dplyr::slice_tail` to find the largest and smallest artworks in the collection.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| layout-nrow: 2
+artwork_area_tbl <- 
+  the_tate %>% 
+  dplyr::mutate(                         # from the units column we know
+    area = width * height / 100          # that the width and height are in mm
+  ) %>%                                  # so we divided each by 10 to get cm
+  dplyr::select(artist, title, area) %>% 
+  tidyr::drop_na() %>%                   # drop all rows with any missing values
+  dplyr::arrange(desc(area))             # sort from largest to smallest
+
+artwork_area_tbl %>% 
+  dplyr::slice_head(n=1)                 # select the first row from the top
+
+artwork_area_tbl %>% 
+  dplyr::slice_tail(n=1)                 # select the first row from the bottom
+```
+:::
+
+### Exercise 7
+
+Join the tables `the_tate` and `the_tate_artists` using `dplyr::left_join`, assigning the result to the variable `the_tate` . Drop rows with `NA` gender values and then group by gender. Show the resulting table.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# the_tate_artists <- readr::read_csv("labs/data/the-tate-artists.csv")
+the_tate %<>% 
+  dplyr::left_join(
+    the_tate_artists
+    , by = c("artistId" = "id")
+  )
+summary(the_tate)
+```
+
+```{r}
+tate_gender_tbl <- the_tate %>% 
+  tidyr::drop_na(gender) %>%
+  dplyr::group_by(gender) %T>% 
+  (\(x) print(x)) 
+  
+
+```
+
+```{r}
+# NOT PART OF THE LAB
+# For this problem assume I don't know how many gender labels 
+# are in the dataset. To proceed, I make a tibble of the labels
+# then I add a column for the counts. Finally, I calculate the
+# counts by mapping a function against the labels in the tibble.
+
+# I use map_int because I know I want an integer result; otherwise
+# purrr::map() will retuurn a nested column
+tibble::tibble( 
+  labels = unique(tate_gender_tbl$gender)            
+) %>% 
+  dplyr::mutate(
+    count =
+      purrr::map_int(
+        labels
+        , (\(x) sum( tate_gender_tbl$gender == x ))
+      )
+  )
+
+
+
+```
+:::
+
+### Exercise 8
+
+In the next two exercises we switch to a different dataset, the historical price data for the S&P 500 Index.
+
+Read the historical price data in the file `SPX_HistoricalData_1692322132002.csv` using `readr:: read_csv` and add a column for the year of the transaction and the daily return $r_d$, using the formula
+
+$$
+r_d\equiv \log \frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}
+$$You will likely need `dplyr::lead` or `dplyr::lag` functions. Add an additional column for the daily return variance $\text{var}_d = \text{r}_d^2$.
+
+Finally, group by year and use `dplyr::summary` to compute the annual returns and standard deviations. Add the argument `.groups = "drop"` to the `dplyr::summarize` function to drop the grouping after the summary is created.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# read the dataset 
+spx_data <- 
+  readr::read_csv(
+    "../data/SPX_HistoricalData_1692322132002.csv"
+    , show_col_types = FALSE
+  )
+```
+
+```{r}
+# NOT PART OF THE LAB
+# The package gt:: has a nice funcion for EDA.
+# Give it a try!
+spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
+```
+
+```{r}
+spx_data %<>% 
+  dplyr::mutate(
+    Date = lubridate::mdy(Date)                   # Date is a character string in the data
+                                                  # so it need to be converted to a date
+    , year = lubridate::year(Date)                # extract the year from the date
+    , return = 
+      log(`Close/Last`/dplyr::lead(`Close/Last`)) # calculate the return
+                                                  # verify whether to use lead or lag by hand
+    , var = return^2                              # calculate the variance
+  ) %T>% 
+  (\(x) print(x))
+  
+```
+
+```{r}
+spx_return_tbl <- 
+  spx_data %>% 
+  dplyr::group_by(year) %>% 
+  dplyr::summarize(
+    return = exp( sum(return, na.rm = TRUE) ) - 1    # the annual return is the 
+                                                     # exponential of the sum of the 
+                                                     # log daily returns, less 1
+    , volatility = sum(var, na.rm = TRUE) %>% sqrt() # the variance of a sum of random returns
+                                                     # is the sum of the variances,
+                                                     # and the volatility is the sqrt()
+                                                     # of the variance  
+    , .groups = "drop"
+  ) %T>% 
+  (\(x) print(x))
+
+```
+
+Note that
+
+$$
+\begin{align*}
+\sum_{i=1}^{n}r_{i} & =\sum_{i=1}^{n}\log\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
+ & =\log\prod_{i=1}^{n}\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
+ & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=n-1}}\times\cdots\times\frac{\text{Close/Last}_{t=2}}{\text{Close/Last}_{t=1}}\times\frac{\text{Close/Last}_{t=1}}{\text{Close/Last}_{t=0}}\\
+ & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}
+\end{align*}
+$$ and $\exp\left(\sum_{i=1}^{n}r_{i}\right)=\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}$, so $\exp\left(\sum_{i=1}^{n}r_{i}\right)-1$ is the annual return. The value of 1 plus the annual return is sometimes called the total return.
+:::
+
+### Exercise 9
+
+Take the table from the last exercise and use the `gt::` package to format it. Add summary rows for the period return and period volatility (note that variances can be added; volatilities cannot- so you will need to do some calculations).
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+spx_return_tbl %>% 
+  gt::gt('year') %>% 
+  # form the columns as percents
+  gt::fmt_percent(
+    columns = c(return,	volatility)
+    , decimals=1                      # format to one decimal place
+    , force_sign=TRUE                 # force the sign to be printed
+  ) %>% 
+  # add summary rows
+  gt:: grand_summary_rows(
+    columns = return                  # summarize just the returns
+    , fns = 
+      list(
+        id = "ret"
+        , label="period return"       # the return over multiple years is the product
+                                      # of the annual total returns (1 + returns) - 1
+      ) ~ sum(prod(1+.),-1) 
+    , fmt = ~ gt::fmt_percent(., decimals = 1, force_sign=TRUE)
+  ) %>% 
+  gt:: grand_summary_rows(
+    columns = volatility
+    , fns = list(`period volatility` = ~sqrt(sum(.*.)) )
+    , fmt = ~ gt::fmt_percent(., decimals = 1, force_sign=TRUE)
+  ) %>% 
+  gtExtras::gt_theme_espn()
+```
+
+This matches up with the data from [macrotrends](https://www.macrotrends.net/2526/sp-500-historical-annual-returns). What we've is just calculated based on the stock price only and does not include dividends (so it is not the total return). Note that the data for 2023 and 2018 is incomplete in the dataset.
+
+![](images/Screen%20Shot%202023-09-27%20at%203.22.23%20PM.png){fig-align="center" width="650"}
+
+The return calculation here follows from the equations in the last exercise: we add one to get back to a ratio, then we multiply all the ratios for the individual period, subtraction one to get back to a return.
+:::
+
+::: callout-note
+Financial return math is not intuitive, so I will give full grades for the right structure of the code, even if the calculation is not quite right.
+:::
+
+## Resources for additional practice (optional)
+
+-   Work/read through the **TTC subway** dataset example in *Telling Stories with Data, Chapter 11.4*: [TTC Subway Delays](https://tellingstorieswithdata.com/11-eda.html#ttc-subway-delays)
+    -   You will need to install the package [`opendatatoronto`](https://CRAN.R-project.org/package=opendatatoronto) ([Gelfand 2022](https://tellingstorieswithdata.com/99-references.html#ref-citeSharla)) to access the data. The details on the package can be found [here](https://sharlagelfand.github.io/opendatatoronto/).

@@ -1,0 +1,475 @@
+---
+title: "lab 5 scratch"
+---
+
+We will use the following packages in today's lab.
+
+```{r}
+#| message: false
+library(magrittr)
+library(tidyverse)  # for data wrangling + visualization
+library(tidymodels) # for modeling
+library(ggplot2)
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+```{r}
+#| eval: false
+?moderndive::evals
+dat <- moderndive::evals %>% 
+  select(ID, score, bty_avg, age)
+dat
+```
+
+```{r}
+#| eval: false
+dat %>% summary()
+```
+
+```{r}
+#| eval: false
+dat %>% skimr::skim()
+```
+
+```{r}
+#| eval: false
+my_cor_df <- dplyr::starwars %>% 
+  filter(mass < 500) %>% 
+  summarise(my_cor = cor(height, mass))
+my_cor_df
+```
+
+see [tidymodels](https://www.tidymodels.org/start/models/)
+
+```{r}
+#| eval: false
+urchins_dat <- 
+  readr::read_csv(
+    "https://tidymodels.org/start/models/urchins.csv"
+    , show_col_types = FALSE
+  ) %>% 
+  stats::setNames(c("food_regime", "initial_volume", "width")) %>%
+  dplyr::mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
+```
+
+```{r}
+#| eval: false
+urchins_dat %>% 
+  ggplot(aes(x = initial_volume, 
+           y = width, 
+           group = food_regime, 
+           col = food_regime)) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE) +
+  scale_color_viridis_d(option = "plasma", end = .7)
+```
+
+```{r}
+#| eval: false
+parsnip::linear_reg() %>% 
+  parsnip::set_engine("glmnet")
+```
+
+```{r}
+#| eval: false
+parsnip::show_engines("linear_reg")
+```
+
+```{r}
+#| eval: false
+lm_mod <- linear_reg()
+```
+
+```{r}
+#| eval: false
+lm_fit <- 
+  lm_mod %>% 
+  fit(width ~ initial_volume * food_regime, data = urchins_dat)
+lm_fit
+```
+
+```{r}
+#| eval: false
+broom::tidy(lm_fit)
+```
+
+```{r}
+#| eval: false
+broom::tidy(lm_fit) %>% 
+  dotwhisker::dwplot(
+    dot_args = list(size = 2, color = "black"),
+    whisker_args = list(color = "black"),
+    vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2)
+  )
+```
+
+```{r}
+#| eval: false
+new_points <- expand.grid(initial_volume = 20, 
+                          food_regime = c("Initial", "Low", "High"))
+new_points
+```
+
+```{r}
+#| eval: false
+mean_pred <- predict(lm_fit, new_data = new_points)
+mean_pred
+```
+
+```{r}
+#| eval: false
+conf_int_pred <- predict(lm_fit, 
+                         new_data = new_points, 
+                         type = "conf_int")
+conf_int_pred
+```
+
+```{r}
+#| eval: false
+new_points %>% 
+  bind_cols(mean_pred) %>% 
+  bind_cols(conf_int_pred) %>% 
+  ggplot(aes(x = food_regime)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, 
+                    ymax = .pred_upper),
+                width = .2) + 
+  labs(y = "urchin size")
+```
+
+```{r}
+#| eval: false
+# recipe
+urchins_rec <- urchins_dat %>% 
+  recipes::recipe(formula = width ~ initial_volume + food_regime ) %>% 
+  recipes::step_interact(terms = ~ initial_volume:food_regime) %>% 
+  recipes::step_dummy(recipes::all_nominal_predictors()) 
+  
+  
+```
+
+```{r}
+#| eval: false
+# prep and bake
+baked_urchins <- urchins_rec %>% 
+  recipes::prep() %>% 
+  recipes::bake(urchins_dat)
+```
+
+```{r}
+#| eval: false
+model_lm <- parsnip::linear_reg() %>%
+  parsnip::set_engine("lm")
+
+base_wf <- workflows::workflow() %>%
+  add_model(model_lm)
+
+recipe_wf <- base_wf %>%
+  add_recipe(urchins_rec)
+
+fit(recipe_wf, urchins_dat) %>% broom::tidy()
+
+```
+
+```{r}
+#| eval: false
+lm_mod_glmnet <- 
+  parsnip::linear_reg(penalty = 0.01, mixture=0.75) %>% 
+  parsnip::set_engine("glmnet")
+
+recipe_wf %>% workflows::update_model(lm_mod_glmnet) %>% 
+  fit(urchins_dat) %>% 
+  broom::tidy()
+```
+
+Now, new engine
+
+```{r}
+#| eval: false
+lm_mod_glmnet <- 
+  parsnip::linear_reg(penalty = 0.1) %>% 
+  parsnip::set_engine("glmnet")
+
+```
+
+```{r}
+#| eval: false
+lm_fit_glmnet <- 
+  lm_mod_glmnet %>% 
+  fit(width ~ initial_volume * food_regime, data = urchins_dat)
+lm_fit_glmnet
+```
+
+```{r}
+#| eval: false
+predict(lm_fit_glmnet, 
+                         new_data = new_points, 
+                         type = "conf_int")
+```
+
+## splits
+
+```{r}
+#| eval: false
+urchin_split <- rsample::initial_split(urchins_dat, strata = food_regime)
+
+urchin_train <- rsample::training(urchin_split)
+urchin_test  <- rsample::testing(urchin_split)
+```
+
+## preprocessing
+
+```{r}
+#| eval: false
+# recipe
+urchins_rec <- urchin_train %>% 
+  recipes::recipe(formula = width ~ initial_volume + food_regime ) %>% 
+  recipes::step_interact(terms = ~ initial_volume:food_regime) %>% 
+  recipes::step_dummy(recipes::all_nominal_predictors()) 
+```
+
+## models
+
+```{r}
+#| eval: false
+lm_mod_base <- parsnip::linear_reg() %>%
+  parsnip::set_engine("lm")
+
+lm_mod_glmnet <- 
+  parsnip::linear_reg( penalty = parsnip::tune(), mixture = parsnip::tune() ) %>% 
+  parsnip::set_engine("glmnet")
+```
+
+## workflow
+
+```{r}
+#| eval: false
+base_wf <- workflows::workflow() %>%
+  add_model(model_lm) %>%
+  add_recipe(urchins_rec)
+```
+
+#### tuning grid
+
+```{r}
+#| eval: false
+urchin_grid <- dials::grid_regular(dials::penalty(), dials::mixture(), levels=5)
+```
+
+## cross validation
+
+```{r}
+#| eval: false
+set.seed(8740)
+urchin_folds <- rsample::vfold_cv(urchin_train)
+```
+
+## run tune
+
+```{r}
+#| eval: false
+urchin_results <- base_wf %>% 
+  workflows::update_model(lm_mod_glmnet) %>% 
+  tune::tune_grid(
+    resamples = urchin_folds
+    , grid = urchin_grid
+  )
+```
+
+```{r}
+#| eval: false
+urchin_results %>% 
+  tune::collect_metrics()
+```
+
+```{r}
+#| eval: false
+best_tree <- urchin_results %>%
+  tune::select_best(metric = "rsq")
+```
+
+# Ames data
+
+[from here](https://workflowsets.tidymodels.org/articles/tuning-and-comparing-models.html)
+
+see [tidymodels](https://www.tidymodels.org/start/models/)
+
+## Load data
+
+```{r}
+#| eval: false
+dat <- modeldata::ames
+```
+
+## EDA
+
+```{r}
+#| eval: false
+skimr::skim(dat)
+```
+
+## Train / test split
+
+```{r}
+#| eval: false
+set.seed(8740)
+data_split <- rsample::initial_split(dat, strata = "Sale_Price", prop = 0.75)
+
+ames_train <- rsample::training(data_split)
+ames_test  <- rsample::testing(data_split)
+```
+
+## preprocessing
+
+```{r}
+#| eval: false
+norm_recipe <- 
+  recipes::recipe(
+    Sale_Price ~ Longitude + Latitude + Lot_Area + Neighborhood + Year_Sold, 
+    data = ames_train
+  ) %>%
+  recipes::step_other(Neighborhood) %>% 
+  recipes::step_dummy(all_nominal()) %>%
+  recipes::step_center(all_predictors()) %>%
+  recipes::step_scale(all_predictors()) %>%
+  recipes::step_log(Sale_Price, base = 10) %>% 
+  # estimate the means and standard deviations
+  recipes::prep(training = ames_train, retain = TRUE)
+```
+
+## models
+
+```{r}
+#| eval: false
+lm_mod_base <- parsnip::linear_reg() %>%
+  parsnip::set_engine("lm")  %>% 
+  parsnip::set_mode("regression")
+
+lm_mod_glmnet <- 
+  parsnip::linear_reg( penalty = parsnip::tune(), mixture = parsnip::tune() ) %>% 
+  parsnip::set_engine("glmnet") %>% 
+  parsnip::set_mode("regression")
+
+lm_mod_rforest <- 
+  parsnip::rand_forest( min_n = parsnip::tune(), trees = parsnip::tune() ) %>% 
+  parsnip::set_engine("ranger") %>% 
+  parsnip::set_mode("regression")
+```
+
+## bootstrap
+
+```{r}
+#| eval: false
+set.seed(8740)
+train_resamples <- rsample::bootstraps(ames_train)
+```
+
+## translate
+
+```{r}
+#| eval: false
+lm_mod_base %>% parsnip::translate()
+
+lm_mod_glmnet %>% parsnip::translate()
+
+lm_mod_rforest %>% parsnip::translate()
+```
+
+## workflow
+
+```{r}
+#| eval: false
+base_wf <- workflows::workflow() %>%
+  add_model(lm_mod_base) %>%
+  add_recipe(norm_recipe)
+```
+
+## workflowset
+
+```{r}
+#| eval: false
+all_workflows <- 
+  workflowsets::workflow_set(
+    preproc = list(base = norm_recipe),
+    models = list(base = lm_mod_base, glmnet = lm_mod_glmnet, forest = lm_mod_rforest)
+  )
+```
+
+## options
+
+```{r}
+#| eval: false
+all_workflows <- all_workflows %>% 
+  workflowsets::workflow_map(
+    resamples = train_resamples, grid = 5, verbose = TRUE
+  )
+  
+```
+
+```{r}
+#| eval: false
+all_workflows
+```
+
+```{r}
+#| eval: false
+workflowsets::rank_results(all_workflows, rank_metric = "rmse")
+```
+
+```{r}
+#| eval: false
+all_workflows %>% 
+  dplyr::select(wflow_id,result) %>% 
+  tidyr::unnest(result) %>% 
+  tidyr::unnest(.metrics) %>% 
+  dplyr::filter(.metric == 'rsq') %>% 
+  dplyr::group_by(wflow_id) %>% 
+  dplyr::arrange(desc(.estimate) ) %>% 
+  dplyr::slice(1)
+```
+
+```{r}
+#| eval: false
+autoplot(all_workflows, metric = "rsq", id = "workflow_set", select_best=TRUE)
+```
+
+## extract workflow
+
+```{r}
+#| eval: false
+tree_workflow <- 
+  all_workflows %>% 
+  workflowsets::extract_workflow("base_forest")
+```
+
+```{r}
+#| eval: false
+tree_workflow_best <- 
+  tree_workflow %>% 
+  tune::finalize_workflow(
+    tibble::tibble(trees = 1971, min_n = 2)
+  ) 
+
+tree_workflow_best %>% 
+  fit(data = ames_train)
+```
+
+```{r}
+#| eval: false
+tree_workflow_best %>% 
+  fit(data = ames_test)
+```
+
+## fit linear
+
+```{r}
+#| eval: false
+base_fit <- 
+  lm_mod_base %>%
+  fit(Sale_Price ~ ., data = bake(norm_recipe, new_data = NULL))
+```
+
+```{r}
+#| eval: false
+base_fit %>% broom::tidy()
+```

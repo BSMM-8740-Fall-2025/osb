@@ -1,0 +1,29 @@
+---
+title: "Feature Engineering"
+subtitle: "Simple linear regression"
+editor: visual
+---
+
+## Prepare
+
+📖 Read Hands-On Machine Learning with R, Chapter 3: [Feature & Target Engineering](https://bradleyboehmke.github.io/HOML/engineering.html)
+
+📖 Read Telling Stories with Data, Chapter 11: [Exploratory data analysis](https://tellingstorieswithdata.com/11-eda.html)
+
+📖 Read R for Data Science (2e), Chapter 11: [Exploratory data analysis](https://r4ds.hadley.nz/eda)
+
+📖 Feature Engineering and Selection: A Practical Approach for Predictive Models: Chapters 5 & 6: [Encoding Categorical & Numeric Predictors](http://www.feat.engineering/encoding-categorical-predictors)
+
+## Participate
+
+🖥️ [Lecture 2 -Feature engineering](/slides/BSMM_8740_lec_02.html)
+
+## Perform
+
+⌨️ [Lab 2 - Feature Engineering](/labs/BSMM_8740_lab_2.html "Lab instructions")
+
+<br><br>
+
+::: {style="font-size: 0.875em;"}
+Back to [course schedule](/ "Course schedule") ⏎
+:::

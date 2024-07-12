@@ -1,0 +1,29 @@
+---
+title: "Week 11"
+subtitle: "Bayesian methods"
+editor: visual
+---
+
+## Prepare
+
+No additional readings this week. Catch up with previously assigned readings if you've fallen behind.
+
+## Participate
+
+🖥️ [Lecture 11 - Bayesian methods](/slides/BSMM_8740_lec_11.html)
+
+## Practice
+
+📋 [Application Exercise 10 - Flight delays](/ae/ae-10-flight-delays.html)
+
+## Perform
+
+✍️ [HW 3 - Logistic regression and log transformation](/hw/hw-3.html)
+
+⌨️ [Lab 11 - Bayesian methods](labs/BSMM_8740_lab_11.html)
+
+<br><br>
+
+::: {style="font-size: 0.875em;"}
+Back to [course schedule](/ "Course schedule") ⏎
+:::
