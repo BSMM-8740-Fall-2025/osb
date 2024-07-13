@@ -1,8 +1,8 @@
 ---
 title: "Time series methods"
-subtitle: "BSMM8740-2-R-2023F [WEEK - 7]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
 title-slide-attributes:
   data-background-image: images/my-DRAFT.png
@@ -210,7 +210,7 @@ timetk::bike_sharing_daily %>%
 tibble::tibble(
   date = 
     timetk::tk_make_timeseries(
-      start_date = "2023"
+      start_date = "2024"
       , length_out = 100
       , by = "month"
     )
@@ -226,8 +226,8 @@ tibble::tibble(
 #| echo: true
 #| code-fold: true
 timetk::tk_make_holiday_sequence(
-  start_date = "2024"
-  , end_date = "2026"
+  start_date = "2025"
+  , end_date = "2027"
   , calendar = "TSX"
 ) %>% 
   timetk::tk_get_holiday_signature(holiday_pattern = "Thanksgiving",locale_set = "CA", exchange = "TSX") %>% 

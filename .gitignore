@@ -3,6 +3,7 @@ local/
 cellar/
 lock/
 python/
+_freeze/
 staging/
 .Rproj.user
 .Rhistory
