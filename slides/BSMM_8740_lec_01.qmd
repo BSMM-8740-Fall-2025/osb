@@ -1,8 +1,8 @@
 ---
 title: "The tidyverse & git"
-subtitle: "BSMM8740-2-R-2023F [WEEK - 1]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 1]"
 author: "Dr. L.L. Odette"
-footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
 format: 
   revealjs: 
@@ -147,9 +147,9 @@ From Wickham et al. ("Welcome to the Tidyverse." *Journal of Open Source Softwar
 2.  Reuse existing data structures
 3.  Design for the pipe and functional programming
 
-## Tidyverse
+## Tidyverse packages
 
-Packages in the tidyverse.
+Some packages in the tidyverse.
 
 ![](images/Tidyverse_packages.png){fig-align="center"}
 
@@ -165,9 +165,9 @@ The `dplyr` package gives a grammar for data wrangling, including these 5 verbs 
 -   `summarize()`: aggregate the data across rows (e.g., group it according to some criteria)
 :::
 
-## A grammar for data Wrangling
+## A grammar for data wrangling
 
-Each of these functions takes a data frame as its first argument, and returns a data frame.
+Each of these functions takes a `data frame` as its first argument, and returns a `data frame`.
 
 Being able to combine these verbs with nouns (i.e., data frames) and adverbs (i.e., arguments) creates a flexible and powerful way to wrangle data.
 
@@ -245,7 +245,7 @@ presidential %>%
 
 We might want to create, re-define, or rename some of our variables. A graphical illustration of the `mutate()` operation is shown below
 
-![The mutate() function. At right, the resulting data frame after adding a new column.](/images/mutate-1.png)
+![The mutate() function creating a column. At right, the resulting data frame after adding a new column.](/images/mutate-1.png)
 
 ## Example: mutate, new column
 
@@ -298,7 +298,7 @@ my_presidents %>% dplyr::slice_head(n=6)
 
 ## `rename()`
 
-It is considered bad practice to use period in names (function, variables, columns) - we should change the name of the `term.length` column that we created earlier. 
+It is considered bad practice to use a period in names (functions, variables, columns) - we should change the name of the `term.length` column that we created earlier. 
 
 ```{r}
 #| echo: true
@@ -319,7 +319,7 @@ The function `sort()` will sort a vector but not a data frame. The `arrange()
 
 ![The arrange() function. At left, a data frame with an ordinal variable. At right, the resulting data frame after sorting the rows in descending order of that variable.](/images/arrange-1.png)
 
-## Example: arrange, since column
+## Example: arrange - sort column
 
 To use `arrange` you have to specify the data frame, and the column by which you want it to be sorted. You also have to specify the direction in which you want it to be sorted.
 
@@ -338,7 +338,7 @@ my_presidents %>%
   dplyr::slice_head(n=9)
 ```
 
-## Example, arrange, multiple columns
+## Example, arrange - multiple columns
 
 To break ties, we can further sort by other variables
 
@@ -356,7 +356,7 @@ The `summarize` verb is often used with `group_by`
 
 ![The summarize() function. At left, a data frame. At right, the resulting data frame after aggregating four of the columns.](/images/summarize-1.png)
 
-## Example: summarize
+## Example: summarize - no groups
 
 When used without grouping, `summarize()` collapses a data frame into a single row.
 
@@ -375,7 +375,7 @@ my_presidents %>%
   )
 ```
 
-## Example: pipe, stacked
+## Example: pipe - groups
 
 To make comparisons, we can first group then summarize, giving us one summary row for each group.
 
