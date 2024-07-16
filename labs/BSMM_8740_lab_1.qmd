@@ -6,13 +6,9 @@ reference-location: margin
 
 ## Introduction
 
-This lab will go through many of the same operations we've demonstrated in class. The main goal is to reinforce our understanding of tidy data, the tidyverse and the pipe, which we will be using throughout the course. An additional goal is to reinforce your use of git and GitHub, the collaboration and version control system that we will be using throughout the course.
+This lab will go through many of the same operations we've demonstrated in class. The main goal is to reinforce our understanding of tidy data, the tidyverse and the pipe, which we will be using throughout the course.
 
-::: callout-note
-Git is a version control system (like "Track Changes" features from Microsoft Word but more powerful) and GitHub is the home for your Git-based projects on the internet (like DropBox but much better).
-:::
-
-As the labs progress, you are encouraged to explore beyond what the labs require; a willingness to experiment will make you a much better programmer. Before we get to that stage, however, you need to build some basic fluency in R and the tidyverse. Today we begin with an introductions to GIT followed by exercises in the fundamental building blocks of R and RStudio: the interface, reading in data, and basic commands.
+As the labs progress, you are encouraged to explore beyond what the labs require; a willingness to experiment will make you a much better programmer. Before we get to that stage, however, you need to build some basic fluency in R and the tidyverse. Today we begin with exercises in the fundamental building blocks of R and RStudio: the interface, reading in data, and basic commands.
 
 ### Learning goals
 
@@ -28,203 +24,23 @@ To access Github from the lab, you will need to make sure you are logged in as f
 -   password: **Business507!**
 :::
 
-## Let's Git Started
-
-### 1. Register a Github account
-
-Register an account with GitHub. It's free!
-
--   <https://github.com>
-
-#### Username advice
-
--   Incorporate your actual name! People like to know who they're dealing with. Also it makes your username easier for people to guess or remember.
--   Shorter is better than longer.
--   Make it timeless. Don't highlight your current university, employer, or place of residence, e.g. JennyFromTheBlock.
-
-You can change your username later, but better to get this right the first time.
-
--   <https://help.github.com/articles/changing-your-github-username/>
-
--   <https://help.github.com/articles/what-happens-when-i-change-my-username/>
-
-::: callout-note
-We will be switching between the console and the terminal, in this lab and others. The **Console** is where you can execute R code, while the **Terminal** is where you can execute system functions like git.
-
-![](images/Screen%20Shot%202023-09-12%20at%2012.25.57%20PM.png){fig-align="center" width="300"}
-:::
-
-### 2. Git already installed?
-
-Go to the **Terminal** tab in RStudio and enter `git --version` to see its version:
-
-```{r}
-#| echo: true
-#| eval: false
-git --version
-```
-
-If this instruction gives an error, it's possible that git is not installed on your machine. If so, let your instructor know.
-
-### 3. Introduce yourself to Git
-
-::: callout-important
-make sure that the package `usethis` has been installed. You can check under the packages tab in the file & plots viewer (e.g., do a search).
-:::
-
-You can set your Git user name and email from within R (i.e. go back to the **Console** tab):
-
-```{r}
-#| echo: true
-#| eval: false
-usethis::use_git_config(
-  # user.name does not have to be your GitHub user name
-  user.name = "Jane Doe"
-  # user.email MUST be the email associated with your GitHub account.
-  , user.email = "jane@example.org"
-)
-```
-
-::: callout-note
-Your commits will be labelled with this user name, so make it informative to potential collaborators and future you.
-:::
-
-### 4. Set up personal access tokens for HTTPS
-
-The password that you use to login to GitHub's website is NOT an acceptable credential when talking to GitHub as a Git server. You can learn more in their blog post [Token authentication requirements for Git operations](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/).
-
-The recommendation to use a personal access token (PAT) is exactly what we cover here. First you need to create your PAT, and you can do this from R (in the **Console**):
-
-```{r}
-#| echo: true
-#| eval: false
-usethis::create_github_token()
-```
-
-The `usethis` approach takes you to a pre-filled form with pre-selected some recommended scopes, which you can look over and adjust before clicking "Generate token".
-
-It is a very good idea to describe the token's purpose in the *Note* field, because one day you might have multiple PATs. We recommend naming each token after its use case, such as the computer or project you are using it for, e.g. "personal-macbook-air" or "lab1-course-8740". In the future, you will find yourself staring at this list of tokens, because inevitably you'll need to re-generate or delete one of them. Make it easy to figure out which token you've come here to fiddle with.
-
-::: callout-tip
-If this is your first time generating a PAT, just accept the defaults and scroll to the bottom of the page and click the green **Generate token** button.
-:::
-
-##### **4.1 Click "Generate token"**.
-
-You won't be able to see this token again, so don't close or navigate away from this browser window until you store the PAT. Copy the PAT to the clipboard or a text file in RStudio.
-
-Treat this PAT like a password! Do not ever hard-wire your PAT into your code! A PAT should always be retrieved implicitly, for example, from the Git credential store, a safe place, where command line Git, RStudio, and R packages can discover it.
-
-##### 4.2 Save your PAT
-
--   Copy the generated PAT to a secure, long-term system for storing secrets, like 1Password or LastPass.
--   email it to yourself.
--   copy it onto a piece of scrap paper.
-
-##### 4.3 Store your PAT in the Git credential store
-
-Finally, we store the PAT in a safe place where command line Git, RStudio, and R packages can discover it. To do this call `gitcreds::gitcreds_set()`. If you don't have a PAT stored already, it will prompt you to enter your PAT. Paste!
-
-```{r}
-#| echo: true
-#| eval: false
-gitcreds::gitcreds_set()
-```
-
-Instead of saving your PAT you could just [re-generate the PAT each lab session and re-store it](https://happygitwithr.com/https-pat#regenerate-pat). If you accept the default 30-day expiration period, this is a workflow you'll be using often anyway.
-
-On github.com, assuming you're signed in, you can manage your personal access tokens from <https://github.com/settings/tokens>, also reachable via *Settings \> Developer settings \> Personal access tokens*.
-
-::: callout-important
-Given that the machines start from the same initial state each lab session, you will follow the above steps to initial your machine at the start of each lab session.
-:::
-
-### 5. How Git works
-
-Git has three storages locally: a Working directory, Staging Area, and a Local repository.
-
-𝟭. 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 𝗗𝗶𝗿𝗲𝗰𝘁𝗼𝗿𝘆 - is where you work, and your files live ("untracked"). GIT is not aware of these files.
-
-𝟮. 𝗦𝘁𝗮𝗴𝗶𝗻𝗴 𝗔𝗿𝗲𝗮 - When you stage your changes, GIT will start tracking and saving your changes with files. These changes are stored in the .git directory.
-
-𝟯. 𝗟𝗼𝗰𝗮𝗹 𝗥𝗲𝗽𝗼𝘀𝗶𝘁𝗼𝗿𝘆 - is the area where everything is saved (commits) in the .git directory. So, when you want to move your files from Staging Area to Local Repository, you can use the git commit command. After this, your Staging area will be empty. If you want to see what is in the Local repository, try git log.
-
-The workflow looks like this:
-
-![Git workflow](/images/git_workflow.jpeg){width="374"}
-
-You are now ready interact with GitHub via RStudio!
-
-### Clone the repo & start new RStudio project
-
-1.  First make sure you are logged into your own Github account on a web browser.
-
-2.  Next, in a new browser tab, go to the course organization site at [BSMM-8740-Fall-2023](https://github.com/BSMM-8740-Fall-2023/ "Course GitHub organization") on GitHub. Click on the repo **BSMM-lab-1**. It contains the starter documents you need to complete the lab.
-
-3.  Click on the green **Use this template** button and select *Create a new repository*. This will make a copy of **BSMM-lab-1** in your own github account.
-
-4.  Next, go back to your Github acount and select your copy of **BSMM-lab-1**. Click on the green **CODE** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS**). Click on the clipboard icon to copy the repo URL.
-
-5.  In RStudio, go to *File* ➛ *New Project* ➛*Version Control* ➛ *Git*.
-
-6.  Copy and paste the URL of your assignment repo (the clipboard copy you made in step 4) into the dialog box *Repository URL*. The project directory name should be automatically populated, but **make sure you select a directory** in *Create project as a subdirectory of*.
-
-7.  Finally, click *Create Project*, and the files from your GitHub repo will be displayed in the *Files* pane in RStudio.
-
-8.  Click *bsmm-lab-1.qmd* to open the template R Markdown file. This is where you will write up your code and narrative for the lab.
-
-### R and R Studio
-
-Below are the components of the RStudio IDE.
-
-![](images/lab-1/rstudio.png){fig-alt="RStudio IDE"}
-
-Below are the components of a Quarto (.qmd) file.
-
-![](images/lab-1/quarto.png){fig-alt="Quarto document"}
-
-### YAML
-
-The top portion of your R Markdown file (between the three dashed lines) is called **YAML**. It stands for "YAML Ain't Markup Language". It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.
-
-::: callout-important
-Open the Quarto (\``` .qmd` ``) file in your project, change the author name to your name, and render the document. Examine the rendered HTML document in the *Files* pane.
-:::
-
-### Committing changes
-
-Now, go to the Git pane in your RStudio instance. This will be in the top right hand corner in a separate tab.
-
-If you have made changes to your \*.qmd file, you should see it listed here. Click on it to select it in this list and then click on **Diff**. This shows you the *diff*erence between the last committed state of the document and its current state including changes. You should see deletions in red and additions in green.
-
-If you're happy with these changes, we'll prepare the changes to be pushed to your remote repository. First, **stage** your changes by checking the appropriate box on the files you want to prepare. Next, write a meaningful commit message (for instance, "updated author name") in the **Commit message** box. Finally, click **Commit**. Note that every commit needs to have a commit message associated with it.
-
-You don't have to commit after every change, as this would get quite tedious. You should commit states that are *meaningful to you* for inspection, comparison, or restoration.
-
-In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.
-
-### Push changes
-
-Now that you have made an update and committed this change, it's time to push these changes to your repo on GitHub.
-
-In order to push your changes to GitHub, you must have **staged** your **commit** to be pushed. click on **Push**.
-
-Now let's make sure all the changes went to GitHub. Go to your GitHub repo and refresh the page. You should see your commit message next to the updated files. If you see this, all your changes are on GitHub and you're good to go!
-
-More on the basic use of git [here](https://happygitwithr.com/git-intro).
-
 # Now, today's lab
-
-## Packages
 
 We will use the following package in today's lab.
 
 ::: callout-note
-For this lab, you will need to install the package `Lahman`
+The code below will install (if necessary) and load the packages needed in today's exercises
 :::
 
 ```{r}
-library(tidyverse)
+#| message: false
+#| error: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+  
+# load packages if not already loaded
+librarian::shelf(tidyverse, Lahman, magrittr, gt, gtExtras)}
 ```
 
 The tidyverse is a meta-package. When you load it you get eight packages loaded for you:
@@ -251,7 +67,7 @@ Today's data is all baseball statistics. The data is in the `Lahman` package.
 Before doing any analysis, you may want to get quick view of the data. This is useful when you've imported data to see if your data imported correctly. We can use the `view()` function to see the entire data set in RStudio. Type the code below in the **Console** to view the entire dataset.
 
 ```{r}
-library(Lahman)
+#| eval: false
 dim(Teams)
 ```
 
@@ -260,6 +76,7 @@ dim(Teams)
 The variable definitions are found in the help for Teams
 
 ```{r}
+#| eval: false
 ?Teams
 ```
 
@@ -278,6 +95,8 @@ The `view()` function helped us get a quick view of the dataset, but let's get m
 How many observations are in the `ikea` dataset? How many variables?
 
 ```{r}
+#| eval: false
+#| label: glimpse-data
 #| results: false
 dplyr::glimpse(Teams)
 ```
@@ -459,27 +278,119 @@ mets_ben <- mets_ben |>
 ```
 
 ::: render-commit-push
-You're done and ready to submit your work! Render, commit, and push all remaining changes. You can use the commit message "Done with Lab 1!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub. The HTML document you submit to Brightspace should be identical to the one in your GitHub repo.
+You're done and ready to submit your work! Render, commit, and push all remaining changes. You can use the commit message "Done with Lab 1!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub.
 :::
 
 ### Exercise 11
 
-Use the `gm` variable to define the manager groups with the `group_by()` operator, and run the summaries again, this time across the manager groups.
+#### The Business Problem
 
+The story begins in a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI). Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than $1\$$ as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:
+
+-   Select a sample of existing customers from the same cohort.
+-   Set a test window of 1 month.
+-   Look into the historical data of web visits from the last month. The hypothesis is that web visits are a good proxy for the customer's interest in the product.
+-   For customers with a high number of web visits, send them a discount. There will be a hold out group which will not receive the discount within the potential valuable customers based on the number of web visits. For customers with a low number of web visits, do not send them a discount (the marketing team wants to report a positive ROI, so they do not want to waste money on customers which are not valuable). Still, they want to use them to measure the effect of the discount.
+-   We also want to use the results of the test to tag *loyal* customers. These are customers which got a discount (since they showed potential interest in the product) and customers with exceptional sales numbers even if they did not get a discount. The idea is to use this information to target them in the future if the discount strategy is positive.
+
+#### The Data
+
+The team collected data from the experiment above and asked the data science team to analyze it and provide insights. In particular they want to know if they should keep the discount strategy. The data consists of the following fields: - `visits`: Number of visits to the website during the test window. - `discount`: Whether the customer received a discount or not. - `is_loyal`: Whether the customer is loyal or not according to the definition above. - `sales`: Sales in $\$$ during the test window.
+
+##### Prepare Notebook
+
+Data scientist A was the one in charge of preparing the environment and collecting the data. As an important best practice, they fixed a global seed which initializes the random number generator in order to make sure every part of the analysis was reproducible. This ensures that the calculations are not affected by pure randomness. In addition all the required packages were listed from the start (reproducible R environment).
+
+```{r}
+set.seed(8740)
+```
+
+##### Read Data
+
+They pulled the data from a csv file and displayed the first 5 measurements.
+
+```{r}
+data <- readr::read_csv(here::here(data_dir, "sales_dag.csv"), show_col_types = FALSE)
+
+data |> dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "sample marketing data") |> 
+  gtExtras::gt_theme_espn()
+```
+
+They then checked for missing values and whether the measurements were in the correct format.
+
+```{r}
+# run a data exploration here
+
+```
+
+##### Exploratory Data Analysis
+
+As part of the project scope, the data science team in charge of the analysis was asked to provide a summary of the data. The team was also asked to provide a visualization of the data to help the marketing team understand the data better. Data scientist A took over this task.
+
+They started by looking at the share of customers which received a discount:
+
+```{r}
+# show the % share of customers receiving a discount vs the % ot receiving a discount
+```
+
+Similarly for the share of customers which are loyal:
+
+```{r}
+# show the % share of customers that are 'loyal' vs not 'loyal'
+```
+
+To understand these features better, they also looked at a cross-tab table:
+
+```{r}
+# build a cross-tab table of 'loyal' custmers vs customers getting a discount
+
+```
+
+Note that all customers with discount are loyal (as required) and that there are loyal users which did not receive a discount. This is because they had exceptional sales numbers. Verify this:
+
+```{r}
+data |> dplyr::mutate(id = dplyr::row_number(), .before = 1) |> 
+  dplyr::filter(discount == 0) |> 
+  dplyr::arrange( desc(sales) ) |> 
+  dplyr::slice_head(n=10) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Sales: loyal customers vs others") |> 
+  gtExtras::gt_theme_espn()
+
+```
+
+The loyal customers are the top ones in terms of sales. This is good news. It means that the definition of loyal customers is consistent with the data.
+
+In order to have orders of magnitude for the sales, the data scientist provided some summary statistics table:
+
+```{r}
+#| warning: false
+#| message: false
+# data["sales"].describe()
+gtExtras::gt_plt_summary(data)
+```
+
+To have a better glimpse of the data, the data scientist also provided a histogram of the sales:
+
+```{r}
+#| warning: false
+#| message: false
+
+data |> 
+  ggplot(aes(x=sales)) +
+  geom_histogram(aes(y = ..density..), bins = 30, colour = 1, fill = "white") +
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25) +
+  labs(title = "Sales Distribution") +
+  theme_minimal()
+```
+
+::: render-commit-push
 ## Submission
 
-Render your document to create an HTML file. In this class, we'll be submitting the HTML documents to Brightspace.
-
-::: callout-warning
-Before you wrap up the assignment, make sure all documents are updated on your GitHub repo. We will be checking these to make sure you have been practicing how to commit and push changes.
-
-Remember -- you must turn in an HTML file to the Brightspace page before the submission deadline for full credit.
+I will pull (copy) everyone's submissions at 5:00pm on the Friday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (**don't forget to commit and then push your work!**)
 :::
-
-To submit your assignment:
-
--   Log in to [Brightspace](https://brightspace.uwindsor.ca/d2l/home/144921) and select course [BSMM8740-2-R-2023F\|Data Analytic Meth.](https://brightspace.uwindsor.ca/d2l/home/144921 "BSMM8740-2-R-2023F|Data Analytic Meth. & Algorith")
--   Click on the Lab-1 assignment, and submit your HTML file.
 
 ## Grading
 

@@ -1021,26 +1021,65 @@ skim_dat[["factor"]]
 :::
 :::
 
-## EDA: factor variables & `forcats`
+## EDA: factor variable counts
 
-Most of the columns here are `factors` (categories). Use `forcats::fct_count()` to count the factor entries.
+Most of the columns here are `factor`s(categories). Use these to count the number of observations per category.
 
-::: {style="font-size: 32px"}
+::: panel-tabset
+## forecats::fct_count
+
 ```{r}
 #| echo: true
 #| warning: false
 #| message: false
 forcats::fct_count(dat$relig) %>% dplyr::arrange(desc(n))
 ```
+
+## dplyr::count
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+dat |> dplyr::count(relig) |> dplyr::arrange(desc(n))
+```
+
+## table()
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+dat$relig |> table() |> as.data.frame() %>% dplyr::arrange(desc(Freq))
+```
 :::
 
-## EDA: binary variables
+## EDA: binary factors 
 
--   table()
+::: panel-tabset
+## table()
 
--   xtabs()
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+dat_bin <- dat |> 
+  dplyr::mutate(
+    is_protestant = dplyr::case_when(relig == 'Protestant' ~ 1, TRUE ~ 0)
+  )
 
--   tidyverse equivalents
+dat_bin$is_protestant |> table() / length(dat_bin$is_protestant)
+```
+
+## xtabs()
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+dat_bin |> xtabs(~ partyid + is_protestant, data = _)
+```
+:::
 
 ## EDA: classifying missing data
 

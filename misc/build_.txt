@@ -1,0 +1,4 @@
+git status
+git checkout main
+git merge test_new
+quarto publish gh-pages
