@@ -15,10 +15,20 @@ In today's lab, you'll practice building `workflowsets` with `recipes`, `parsnip
 
 ```{r}
 #| message: false
-library(magrittr)   # the pipe
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(ggplot2)    # for plotting
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, ggplot2)
+
+# library(magrittr)   # the pipe
+# library(tidyverse)  # for data wrangling + visualization
+# library(tidymodels) # for modeling
+# library(ggplot2)    # for plotting
+
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
@@ -32,7 +42,7 @@ In the customer management lifecycle, customer churn refers to a decision made b
 ```{r}
 #| eval: true
 data <- 
-  readr::read_csv("../data/Telco-Customer-Churn.csv", show_col_types = FALSE) %>%
+  readr::read_csv("data/Telco-Customer-Churn.csv", show_col_types = FALSE) %>%
   dplyr::mutate(churn = as.factor(churn))
 ```
 
@@ -337,10 +347,10 @@ Use `tune::show_best` and `tune::select_best` with argument **"roc_auc"** to fin
 ```{r}
 #| layout-nrow: 3
 tune_results %>%
-  tune::show_best("roc_auc")
+  tune::show_best(metric = "roc_auc")
 
 best_nn <- tune_results %>%
-  tune::select_best("roc_auc")
+  tune::select_best(metric = "roc_auc")
 
 final_wf <- default_workflow_knn %>%
   tune::finalize_workflow(best_nn)
@@ -366,7 +376,7 @@ Load the data for this exercise as below and plot it, and then create an analysi
 ```{r}
 #
 # read the data
-labelled_points <- readr::read_csv("../data/lab_6_clusters.csv", show_col_types = FALSE)
+labelled_points <- readr::read_csv("data/lab_6_clusters.csv", show_col_types = FALSE)
 
 # plot the clusters
 labelled_points %>% ggplot(aes(x1, x2, color = cluster)) +
