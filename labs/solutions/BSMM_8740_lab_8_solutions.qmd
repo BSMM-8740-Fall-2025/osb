@@ -21,14 +21,17 @@ By the end of the lab you will...
 ## Packages
 
 ```{r}
+#| message: false
+
 # check if 'librarian' is installed and if not, install it
 if (! "librarian" %in% rownames(installed.packages()) ){
   install.packages("librarian")
+}
   
 # load packages if not already loaded
 librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, ggplot2, r-causal / propensity)
 
-#| message: false
+
 # library(tidyverse)
 # library(broom)
 # library(rsample)
@@ -38,7 +41,7 @@ librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtE
 # library(propensity)
 # library(ggokabeito)
 # library(magrittr)   # the pipe
-library(ggplot2)    # for plotting
+# library(ggplot2)    # for plotting
 
 # set the efault theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
