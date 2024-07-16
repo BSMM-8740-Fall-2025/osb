@@ -1,4 +1,4 @@
 git status
 git checkout main
-git merge test_new
+git merge mods
 quarto publish gh-pages
