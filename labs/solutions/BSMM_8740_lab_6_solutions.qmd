@@ -1,0 +1,462 @@
+---
+title: "Lab 6 - Classification & clustering methods"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+reference-location: margin
+---
+
+## Introduction
+
+In today's lab, you'll practice building `workflowsets` with `recipes`, `parsnip` models, `rsample` cross validations, model tuning and model comparison in the context of classification and clustering.
+
+## Packages
+
+```{r}
+#| message: false
+library(magrittr)   # the pipe
+library(tidyverse)  # for data wrangling + visualization
+library(tidymodels) # for modeling
+library(ggplot2)    # for plotting
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## The Data
+
+Today we will be using customer churn data.
+
+In the customer management lifecycle, customer churn refers to a decision made by the customer about ending the business relationship. It is also referred as loss of clients or customers. This dataset contains 20 features related to churn in a telecom context and we will look at how to predict churn and estimate the effect of predictors on the customer churn odds ratio.
+
+```{r}
+#| eval: true
+data <- 
+  readr::read_csv("../data/Telco-Customer-Churn.csv", show_col_types = FALSE) %>%
+  dplyr::mutate(churn = as.factor(churn))
+```
+
+## Exercise 1: EDA
+
+Write and execute the code to perform summary EDA on the data using the package `skimr`. Plot histograms for monthly charges and tenure. Tenure measures the strength of the customer relationship by measuring the length of time that a person has been a customer.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+#| message: false
+#| layout-nrow: 6 
+skimr::skim(data)
+
+data %>%
+  ggplot(aes(x=monthly_charges)) + geom_histogram()
+
+data %>%
+  ggplot(aes(x=tenure)) + geom_histogram()
+
+```
+:::
+
+## Exercise 2: train / test splits & recipe
+
+Write and execute code to create training and test datasets. Have the training dataset represent 70% of the total data.
+
+Next create a recipe where churn is related to all the other variables, and
+
+-   normalize the numeric variables
+-   create dummy variables for the ordinal predictors
+
+Make sure the steps are in a sequence that preserves the (0,1) dummy variables.
+
+Prep the data on the training data and show the result.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| eval: true
+set.seed(8740)
+
+# split data
+data_split    <- rsample::initial_split(data, prop = 0.7)
+default_train <- rsample::training(data_split)
+default_test  <- rsample::testing(data_split)
+
+# create a recipe
+default_recipe <- default_train %>%
+  recipes::recipe(formula = churn ~ .) %>%
+  recipes::step_normalize(recipes::all_numeric_predictors()) %>%
+  recipes::step_dummy(recipes::all_nominal_predictors())
+
+default_recipe %>% recipes::prep(default_train) %>% 
+  summary()
+```
+:::
+
+## Exercise 3: logistic modeling
+
+1.  Create a linear model using logistic regression to predict churn. for the *set engine* stage use "glm," and set the mode to "classification."
+2.  Create a workflow using the recipe of the last exercise and the model if the last step.
+3.  With the workflow, fit the training data
+4.  Combine the training data and the predictions from step 3 using `broom::augment` , and assign the result to a variable
+5.  Create a combined metric function as show in the code below:
+6.  Use the variable from step 4 as the first argument to the function from step 5. The other arguments are `truth = churn` (from the data) and `estimate=.pred_class` (from step 4). Make a note of the numerical metrics.
+7.  Use the variable from step 4 as the first argument to the functions below, with arguments `truth = churn` and `estimate =.pred_No`.
+    -   `yardstick::roc_auc`
+    -   `yardstick::roc_curve` followed by `ggplot2::autoplot()`.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+# create a linear regression model
+default_model <- parsnip::logistic_reg() %>%
+  parsnip::set_engine("glm") %>%
+  parsnip::set_mode("classification")
+
+# create a workflow
+default_workflow <- workflows::workflow() %>%
+  workflows::add_recipe(default_recipe) %>%
+  workflows::add_model(default_model)
+
+lm_fit <-
+  default_workflow %>%
+  parsnip::fit(default_train)
+
+# training dataset
+training_results <-
+  broom::augment(lm_fit , default_train)
+```
+
+```{r}
+# create the metrics function
+m_set_fn <- 
+  yardstick::metric_set(
+    yardstick::accuracy
+    , yardstick::precision
+    , yardstick::recall
+    , yardstick::f_meas
+    , yardstick::spec
+    , yardstick::sens
+    , yardstick::ppv
+    , yardstick::npv
+)
+training_results %>% m_set_fn(truth = churn, estimate = .pred_class)
+
+```
+
+```{r}
+#| layout-nrow: 2 
+training_results %>%
+  yardstick::roc_auc(.pred_No, truth = churn)
+
+training_results %>%
+  yardstick::roc_curve(.pred_No, truth = churn) %>% autoplot()
+```
+:::
+
+## Exercise 4: effects
+
+Use broom::tidy() on the fit object from exercise 4 to get the predictor coefficients. Sort them in decreasing order by absolute value.
+
+What is the effect of one additional year of tenure on the churn odds ratio?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| eval: true
+fit0_tbl <- lm_fit %>% broom::tidy() %>%
+  dplyr::arrange(desc(abs(estimate)))
+
+fit0_tbl
+```
+
+```{r}
+# pull the tenure coefficient and exponentiate it
+fit0_tbl %>% dplyr::filter(term == 'tenure') %>% 
+  dplyr::pull(estimate) %>% 
+  exp()
+```
+:::
+
+## Exercise 5 knn modeling
+
+Now we will create a K-nearest neighbours model to estimate churn. To do this, write the code for the following steps:
+
+1.  Create a K-nearest neighbours model to predict churn using `parsnip::nearest_neighbor` with argument `neighbors = 3` which will use the three most similar data points from the training set to predict churn. For the *set engine* stage use "kknn," and set the mode to "classification."
+2.  Take the workflow from exercise 3 and create a new workflow by updating the original workflow. Use `workflows::update_model` to swap out the original logistic model for the nearest neighbour model.
+3.  Use the new workflow to fit the **training data**. Take the fit and use `broom::augment` to augment the fit with the **training data**.
+4.  Use the augmented data from step 3 to plot the roc curve, using `yardstick::roc_curve(.pred_No, truth = churn)` as in exercise 3. How do you interpret his curve?
+5.  Take the fit from step 3 and use `broom::augment` to augment the fit with the **test data**.
+6.  Repeat step 4 using the augmented data from step 5.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+default_model_knn <- parsnip::nearest_neighbor(neighbors = 3) %>%
+  parsnip::set_engine("kknn") %>%
+  parsnip::set_mode("classification")
+
+# create a workflow
+default_workflow_knn <- default_workflow %>%
+  workflows::update_model(default_model_knn)
+
+lm_fit_knn <-
+  default_workflow_knn %>%
+  parsnip::fit(default_train)
+
+# train
+training_results_knn <-
+  broom::augment(lm_fit_knn , default_train)
+```
+
+```{r}
+training_results_knn %>% m_set_fn(truth = churn, estimate = .pred_class)
+```
+
+```{r}
+#| layout-nrow: 2 
+training_results_knn %>%
+  yardstick::roc_auc(.pred_No, truth = churn)
+
+training_results_knn %>%
+  yardstick::roc_curve(.pred_No, truth = churn) %>% autoplot()
+```
+:::
+
+## Exercise 6 cross validation
+
+Following the last exercise, we should have some concerns about over-fitting by the nearest-neighbour model.
+
+To address this we will use cross validation to tune the model and evaluate the fits.
+
+1.  Create a cross-validation dataset based on **5 folds** using `rsample::vfold_cv`.
+2.  Using the **knn** workflow from exercise 5, apply `tune::fit_resamples` with arguments `resamples` and `control` where the resamples are the dataset created in step 1 and control is `tune::control_resamples(save_pred = TRUE)`, which will ensure that the predictions are saved.
+3.  Use `tune::collect_metrics()` on the results from step 2
+4.  Use tune::collect_predictions() on the results from step 2 to plot the roc_auc curve as in exercise 5. Has it changed much from exercise 5?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# v-fold cross validation data
+data_vfold_cv <- data %>% rsample::vfold_cv(v=5)
+
+rf_fit_rs <-
+  default_workflow_knn %>%
+  tune::fit_resamples(data_vfold_cv, control = tune::control_resamples(save_pred = TRUE))
+
+rf_fit_rs %>% tune::collect_metrics()
+
+rf_fit_rs %>% tune::collect_predictions() %>%
+  yardstick::roc_curve(.pred_No, truth = churn) %>% autoplot()
+```
+:::
+
+::: render-commit-push
+This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
+
+## Exercise 7: tuning for k
+
+In this exercise we'll tune the number of nearest neighbours in our model to see if we can improve performance.
+
+1.  Redo exercise 5 steps 1 and 2, setting `neighbors = tune::tune()` for the model, and then updating the workflow with `workflows::update_model`.
+2.  Use `dials::grid_regular(dials::neighbors(), levels = 10)` to create a grid for tuning **k**.
+3.  Use `tune::tune_grid` with `tune::control_grid(save_pred = TRUE)` and `yardstick::metric_set(yardstick::accuracy, yardstick::roc_auc)` to generate tuning results
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| layout-nrow: 2
+default_model_knn_tuned <- parsnip::nearest_neighbor(neighbors = tune::tune()) %>%
+  parsnip::set_engine("kknn") %>%
+  parsnip::set_mode("classification")
+
+# create a workflow
+default_workflow_knn <- default_workflow %>%
+  workflows::update_model(default_model_knn_tuned)
+
+# a grid for tuning
+clust_num_grid <-
+  dials::grid_regular(dials::neighbors(), levels = 10)
+
+tune_results <- tune::tune_grid(
+  default_workflow_knn,
+  resamples = data_vfold_cv,
+  grid = clust_num_grid,
+  control = tune::control_grid(save_pred = TRUE)
+  , metrics =
+    yardstick::metric_set(yardstick::accuracy, yardstick::roc_auc)
+)
+
+tune_results
+```
+:::
+
+## Exercise 8
+
+Use `tune::collect_metrics()` to collect the metrics from the tuning results in exercise 7 and then plot the metrics as a function of **k** using the code below.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| layout-nrow: 2
+tune_results %>%
+  tune::collect_metrics()
+
+tune_results %>%
+  tune::collect_metrics() %>%
+  ggplot(aes(neighbors,mean)) +
+  geom_line(linewidth = 1.5, alpha = 0.6) +
+  geom_point(size = 2) +
+  facet_wrap(~ .metric, scales = "free", nrow = 2)
+```
+:::
+
+## Exercise 9
+
+Use `tune::show_best` and `tune::select_best` with argument **"roc_auc"** to find the best **k** for the knn classification model. Then
+
+1.  update the workflow using `tune::finalize_workflow` to set the best k value.
+2.  use `tune::last_fit` with the updated workflow from step 1, evaluated on the split data from exercise 2 to finalize the fit.
+3.  use `tune::collect_metrics()` to get the metrics for the best fit
+4.  use `tune::collect_predictions()` to get the predictions and plot the **roc_auc** as in the prior exercises
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| layout-nrow: 3
+tune_results %>%
+  tune::show_best("roc_auc")
+
+best_nn <- tune_results %>%
+  tune::select_best("roc_auc")
+
+final_wf <- default_workflow_knn %>%
+  tune::finalize_workflow(best_nn)
+
+final_fit <-
+  final_wf %>%
+  tune::last_fit(data_split)
+
+final_fit %>%
+  tune::collect_metrics()
+
+final_fit %>%
+  tune::collect_predictions() %>%
+  yardstick::roc_curve(.pred_No, truth = churn) %>%
+  autoplot()
+```
+:::
+
+## Exercise 10: clustering
+
+Load the data for this exercise as below and plot it, and then create an analysis dataset with the cluster labels removed
+
+```{r}
+#
+# read the data
+labelled_points <- readr::read_csv("../data/lab_6_clusters.csv", show_col_types = FALSE)
+
+# plot the clusters
+labelled_points %>% ggplot(aes(x1, x2, color = cluster)) +
+  geom_point(alpha = 0.3) + 
+  theme(legend.position="none")
+
+# analysis dataset
+points <-
+  labelled_points %>%
+  select(-cluster)
+```
+
+You have frequently used `broom::augment` to combine a model with the data set, and `broom::tidy` to summarize model components; `broom::glance` is used to similarly to summarize goodness-of-fit metrics.
+
+Now perform k-means clustering on the points data for different values of k as follows:
+
+```{r}
+kclusts <-
+  # number of clusters from 1-9
+  tibble(k = 1:9) %>%
+  # mutate to add columns
+  mutate(
+    # a list-column with the results of the kmeans function (clustering)
+    kclust = purrr::map(k, ~stats::kmeans(points, .x)),
+    # a list-column with the results broom::tidy applied to the clustering results
+    tidied = purrr::map(kclust, broom::tidy),
+    # a list-column with the results broom::glance applied to the clustering results
+    glanced = purrr::map(kclust, broom::glance),
+    # a list-column with the results broom::augment applied to the clustering results
+    augmented = purrr::map(kclust, broom::augment, points)
+  )
+```
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+**(i)** Create 3 variables by `tidyr::unnest`ing to appropriate columns of **kclusts**
+
+```{r}
+clusters <-
+  kclusts %>%
+  tidyr::unnest(cols = c(tidied))
+
+assignments <-
+  kclusts %>%
+  tidyr::unnest(cols = c(augmented))
+
+clusterings <-
+  kclusts %>%
+  tidyr::unnest(cols = c(glanced))
+```
+
+**(ii)** Use the **assignment** variable to plot the cluster assigments generated by `stats::kmeans`
+
+```{r}
+p <- assignments %>% ggplot(aes(x = x1, y = x2)) +
+  geom_point(aes(color = .cluster), alpha = 0.8) +
+  facet_wrap(~ k) + theme(legend.position="none")
+p
+```
+
+**(iii)** Use the **clusters** variable to add the cluster centers to the plot
+
+```{r}
+p + geom_point(data = clusters, size = 10, shape = "x")
+```
+
+**(iv)** Use the **clusterings** variable to plot the total within sum of squares value by number of clusters.
+
+```{r}
+clusterings %>% ggplot(aes(k, tot.withinss)) +
+  geom_line() +
+  geom_point()
+```
+
+**(v)** Visually and by the "elbow" heursistic, we should use k=3.
+:::
+
+## Submission
+
+::: callout-warning
+Before you wrap up the assignment, make sure all documents are saved, staged, committed, and pushed to your repository on the course github site.
+
+Remember -- you do **not** have to turn in an \*.html file. I will be pulling your work directly from your repository on the course website.
+:::
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 10 | 30     |

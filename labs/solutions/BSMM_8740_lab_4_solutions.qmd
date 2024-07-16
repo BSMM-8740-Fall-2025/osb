@@ -1,0 +1,642 @@
+---
+title: "Lab 4 - Regression"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+reference-location: margin
+---
+
+## Introduction
+
+In today's lab, you'll explore several data sets and practice building and evaluating regression models.
+
+### Learning goals
+
+By the end of the lab you will...
+
+-   Be able to use different regression models to predict a response/target/outcome as a function of a set of variates.
+
+## Packages
+
+We will use the following package in today's lab.
+
+```{r}
+#| message: false
+require(magrittr)
+library(tidyverse)  # for data wrangling + visualization
+library(tidymodels) # for modeling
+library(knitr)      # for pretty printing of tables
+theme_set(theme_bw(base_size = 12))
+```
+
+## Data: Boston House Values
+
+The Boston House Values dataset (usually referred to as the Boston dataset) appears in several R packages in different versions and is based on economic studies published in the late 1970's.
+
+This dataset contains the following information for each cocktail:
+
+| variable | description                                                            |
+|--------------|----------------------------------------------------------|
+| crim     | per capita crime rate by town.                                         |
+| zn       | proportion of residential land zoned for lots over 25,000 sq.ft.       |
+| indus    | proportion of non-retail business acres per town.                      |
+| chas     | Charles River dummy variable (= 1 if tract bounds river; 0 otherwise). |
+| nox      | nitrogen oxides concentration (parts per 10 million).                  |
+| rm       | average number of rooms per dwelling.                                  |
+| age      | proportion of owner-occupied units built prior to 1940.                |
+| dis      | weighted mean of distances to five Boston employment centres.          |
+| rad      | index of accessibility to radial highways.                             |
+| tax      | full-value property-tax rate per \$10,000.                             |
+| ptratio  | pupil-teacher ratio by town.                                           |
+| lstat    | lower status of the population (percent).                              |
+| medv     | median value of owner-occupied homes in \$1000s.                       |
+
+Use the code below to load the Boston Cocktail Recipes data set.
+
+```{r}
+#| message: false
+boston <- ISLR2::Boston
+```
+
+## Exercises
+
+### Exercise 1
+
+Plot the median value of owner-occupied homes (`medv`) vs the percentage of houses with lower socioeconomic status (`lstat`) then use `lm` to model `medv ~ lstat` and save the result in a variable for use later.
+
+Next prepare a summary of the model. What is the intercept and the coefficient of `lstat` in this model?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+boston %>% 
+  ggplot(aes(x=lstat, y = medv)) + geom_point()
+```
+
+```{r}
+#| layout-nrow: 2
+lm_medv_lstat <- lm(medv ~ lstat, data = boston)
+summary(lm_medv_lstat)
+
+# alternatively:
+lm_medv_lstat %>% 
+  broom::tidy() %>% 
+  dplyr::select(1:2)
+```
+:::
+
+### Exercise 2
+
+Using the result from Exercise 1, and the data below, use the predict function (`stats::predict.lm` or just `predict`) with the argument interval = "confidence" to prepare a summary table with columns lstat, fit, lwr, upr.
+
+```{r}
+#| echo: true
+#| eval: false
+tibble(lstat = c(5, 10, 15, 20))
+```
+
+Finally, use your model to plot some performance checks using the `performance::check_model` function with arguments `check=c("linearity","qq","homogeneity", "outliers")`.
+
+Are there any overly influential observations in this dataset?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+tibble::tibble(lstat = c(5, 10, 15, 20)) %>% 
+  # create a nested column
+  dplyr::mutate(
+    results =
+      purrr::map(
+        lstat                         # the data is in column lstat
+        , ~stats::predict.lm(         # the function is based on predict,
+          lm_medv_lstat               # with first argument from the fit 
+          , tibble::tibble(lstat = .) # and newdata argument from lstat column 
+          , interval = "confidence"   # and setting interval argument
+          ) %>% 
+          # predict returns a vector; make it a tibble,
+          # with columns fit, lwr, upr
+          # where the last two set lower and upper confidence intervals 
+          tibble::as_tibble()
+      )
+  ) %>% 
+  tidyr::unnest(results)
+```
+
+```{r}
+# Alternatively, and more directly
+tibble::tibble(lstat = c(5, 10, 15, 20)) %>% 
+  dplyr::bind_cols(
+    stats::predict.lm(         
+          lm_medv_lstat                
+          , tibble::tibble(lstat = c(5, 10, 15, 20))
+          , interval = "confidence"   
+          )
+  )
+```
+
+```{r}
+# Or most directly
+tibble::tibble(lstat = c(5, 10, 15, 20)) %>% 
+  broom::augment(
+    lm_medv_lstat, newdata = ., interval = "confidence"
+  )
+```
+
+Check the help for `stats::predict.lm`, `dplyr::bind_cols`, and `broom::augment` to more detail on each method.
+
+Finally
+
+```{r}
+#| message: false
+lm_medv_lstat %>% 
+  performance::check_model(
+    check = 
+      c(
+        "linearity"      # linear fit
+        , "qq"           # Normal residuals
+        , "homogeneity"  # constant variance 
+        , "outliers"     # any influential observations?
+      ) 
+  )
+```
+
+Since no points lie outside the dashed lines of the *Influential Observations* chart, there are no influential observations.
+:::
+
+### Exercise 3
+
+Fit `medv` to all predictors in the dataset and use the `performance::check_collinearity` function on the resulting model to check if any predictors are redundant.
+
+The variance inflation factor is a measure to analyze the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
+
+Which predictors in this dataset might be redundant for predicting `medv`?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# fit the model
+lm_medv_all <- lm(medv ~ ., data = boston)
+# check for collinearity
+performance::check_collinearity(lm_medv_all)
+```
+
+The variance inflation factor (VIF) is *moderate* (between 5-10) for `rad` and `tax`, suggesting these may be redundant fo predicting the outcome (`medv`).
+:::
+
+### Exercise 4
+
+In this exercise you will compare and interpret the results of linear regression on two similar datasets.
+
+The first dataset (`dat0` - generated below) has `demand0` and `price0` variables along with an unobserved variable (`unobserved0` - so not in our dataset) that doesn't change the values of `demand0` and `price0`. Use lm to build a model to predict `demand0` from `price0` . Plot the data, including intercept and slope. What is the slope of the demand curve in dataset `dat0`?
+
+```{r}
+#| echo: true
+N <- 500
+set.seed(1966)
+
+dat0 <- tibble::tibble(
+  price0 = 10+rnorm(500)
+  , demand0 = 30-(price0 + rnorm(500))
+  , unobserved0 = 0.45*price0 + 0.77*demand0 + rnorm(500)
+)
+```
+
+The second dataset (`dat1` - generated below) has `demand1` and `price1` variables, along with a variable `unobserved1` that is completely random and is not observed, so it isn't in our dataset. Use lm to build a model to predict `demand1` from `price1` . Plot the data, including intercept and slope. What is the slope of the demand curve in dataset `dat1`?
+
+```{r}
+#| echo: true
+set.seed(1966)
+
+dat1 <- tibble::tibble(
+  unobserved1 = rnorm(500)
+  , price1 = 10 + unobserved1 + rnorm(500)
+  , demand1 = 23 -(0.5*price1 + unobserved1 + rnorm(500))
+)
+```
+
+Which linear model returns the (approximately) correct dependence of demand on price, as given in the data generation process?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# DAT0
+# fit the model
+fit0 <- lm(demand0 ~ price0, data = dat0)
+# get the estimated coefficients for dataset 0
+est0  <- fit0 %>% broom::tidy()
+# plot the data
+dat0 %>% ggplot(aes(x=price0,y=demand0)) +
+  geom_point() + 
+  geom_abline(
+    data = est0 %>% 
+      dplyr::select(1:2) %>% 
+      tidyr::pivot_wider(names_from = term, values_from =estimate)
+    , aes(intercept = `(Intercept)`, slope = price0)
+    , colour = "red"
+  )
+```
+
+```{r}
+#DAT1
+# fit the model
+fit1 <- lm(demand1 ~ price1, data = dat1)
+# get the estimated coefficients for dataset 0
+est1  <- fit1 %>% broom::tidy()
+# plot the data
+dat1 %>% ggplot(aes(x=price1,y=demand1)) +
+  geom_point() + 
+  geom_abline(
+    data = est1 %>% dplyr::select(1:2) %>% tidyr::pivot_wider(names_from = term, values_from =estimate)
+    , aes(intercept = `(Intercept)`, slope = price1)
+    , colour = "red"
+  )
+```
+
+The linear fit to the two datasets (without the unobserved variables, because they are, well, unobserved) gives very similar intercepts and slopes (dependence on price).
+
+If you look at the plots the fits look good, and this is consistent with the estimates.
+
+```{r}
+#| layout-ncol: 2
+### dataset 0
+est0 %>% dplyr::select(1:2) %>% tibble::add_column(data = 'dat0')
+### dataset 1
+est1 %>% dplyr::select(1:2) %>% tibble::add_column(data = 'dat1')
+```
+
+However, now go back and **look at the way the datasets were generated**.
+
+In `dat0`, the coefficient of price in the equation for demand is -1, **consistent with the linear fit**.
+
+But in `dat1`, the coefficient of price in the equation for demand is -0.5, yet the linear fit estimates the value as close to 1.
+
+So here the model doesn't give the answers that the knowledge of the data generation process would lead us to expect. What if we can observe the unobservables?
+:::
+
+### Exercise 5
+
+Now repeat the modeling of exercise, but assuming that the formerly unobservable variables are now observable, and so can be included in the linear regression models.
+
+Which model returns the (approximately) correct dependence of demand on price, as given in the data generation process?
+
+What can you conclude from these two exercises?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# fit the model with dat0
+lm(demand0 ~ price0 + unobserved0, data = dat0) %>% 
+  # pull out the coefficient estimates as a tibble
+  broom::tidy() %>% 
+  # combine with another table
+  dplyr::bind_rows(
+    # fit the model with dat1
+    lm(demand1 ~ price1 + unobserved1, data = dat1) %>% 
+      broom::tidy()
+  )
+```
+
+When we include the formerly unobserved variables we find that
+
+-   again the coefficients of price are similar between the models, but
+-   now the coefficient of `price1` is correct (should be -0.5) while the coefficient of `price0` is not (should be -1.0)
+
+The conclusion is that whether a covariate is included or not requires thinking about the data generation process. We generally only have the observations, but not the exact process that produced them, but we can hypothesize the process and test the conclusions.
+
+Could adding more data improve our estimates? It depends.
+
+In dataset `dat1`, the unobserved variable **affects** the values of both `price1` and `demand1`, which adds a correlation to the relationship between `price1` and `demand1` that is in addition to their direct relationship (with `price1` coefficient -0.5). Because of this, the unobserved variable needs to be included in the regression, to control for it and remove the bias due the extra correlation.
+
+By contrast, in dataset `dat0`, the unobserved variable **depends** on the values of both `price0` and `demand0`, and there is no correlation when this variable is not included in the regression, which estimates the `price0` coefficient correctly as -1.0. But if the unobserved variable is included in the regression, because a regression estimate is 'with all other variables held constant,' this induces a new correlation between `price0` and `demand0`, exactly because they both affect the unobserved variable - with a fixed value for the unobserved variable, `price0` and `demand0` are no longer independent. This additional correlation creates the bias in our estimate of the coefficient of `price0`.
+:::
+
+### Exercise 6
+
+For the next several exercises, we'll work with a new dataset. This dataset is taken from an [EPA](https://www.fueleconomy.gov/feg/download.shtml) site on fuel economy, in particular the fuel economy dataset for 2023.
+
+Use the code below to load the FE Guide data set.
+
+```{r}
+#| echo: true
+#| message: false
+dat <- 
+  readxl::read_xlsx("../data/2023 FE Guide for DOE-release dates before 7-28-2023.xlsx")
+```
+
+From the raw data in `dat`, we'll make a smaller dataset, and we'll need to do some cleaning to make it useable.
+
+First select the columns "Comb FE (Guide) - Conventional Fuel", "Eng Displ",'\# Cyl', Transmission , "\# Gears", "Air Aspiration Method Desc", "Regen Braking Type Desc", "Batt Energy Capacity (Amp-hrs)" , "Drive Desc", "Fuel Usage Desc - Conventional Fuel", "Cyl Deact?", and "Var Valve Lift?" and then clean the column names using janitor::janitor::clean_names(). Assign the revised data to the variable `cars_23`.
+
+Perform a quick check of the data using `DataExplorer::introduce()` and `DataExplorer::plot_missing()` and modify the data as follows
+
+-   mutate the columns `comb_fe_guide_conventional_fuel`, `number_cyl`, and `number_gears` to ensure that they contain integers values, not doubles.
+-   use `tidyr::replace_na` to replace any missing values in `batt_energy_capacity_amp_hrs` column with zeros, and replace and missing values in `regen_braking_type_desc` with empty strings ("").
+-   finally, mutate the columns 'transmission','air_aspiration_method_desc','regen_braking_type_desc','drive_desc' ,'fuel_usage_desc_conventional_fuel','cyl_deact','var_valve_lift' so their values are factors.
+
+Prepare a recipe to process `cars_23` ahead of modelling, using `comb_fe_guide_conventional_fuel` as the outcome, with the following steps.
+
+-   Centering for: recipes::all_numeric()
+-   Scaling for: recipes::all_numeric()
+-   Dummy variables from: recipes::all_factor()
+
+How many predictor variables are there in `cars_23` ?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# CLEANING
+# select the columns
+cars_23 <- dat %>% dplyr::select(
+    "Comb FE (Guide) - Conventional Fuel",
+    "Eng Displ",'# Cyl',Transmission
+    ,"# Gears","Air Aspiration Method Desc"
+    ,"Regen Braking Type Desc","Batt Energy Capacity (Amp-hrs)"
+    ,"Drive Desc","Fuel Usage Desc - Conventional Fuel"
+    ,"Cyl Deact?", "Var Valve Lift?"
+  ) %>% 
+  # clean the names
+  janitor::clean_names()
+```
+
+```{r}
+#| layout-nrow: 2
+# Explore the data
+cars_23 %>% DataExplorer::introduce()
+cars_23 %>% DataExplorer::plot_missing()
+```
+
+```{r}
+# convert integer values
+cars_23 %<>% 
+  dplyr::mutate( 
+    dplyr::across(
+      .cols = all_of(
+        c('comb_fe_guide_conventional_fuel',"number_cyl","number_gears"))
+      , .fns = as.integer
+    ) 
+  ) 
+# replace na values
+cars_23 %<>% 
+  tidyr::replace_na(
+    list(
+      batt_energy_capacity_amp_hrs = 0
+      , regen_braking_type_desc = ""
+    )
+  ) 
+```
+
+```{r}
+# convert to factors
+cars_23 %<>% 
+  dplyr::mutate( 
+    dplyr::across(
+      .cols = all_of(
+        c( 'transmission','air_aspiration_method_desc'
+           ,'regen_braking_type_desc','drive_desc'
+           ,'fuel_usage_desc_conventional_fuel'
+           ,'cyl_deact','var_valve_lift' )
+      )
+      , .fns = as.factor
+    ) 
+  ) 
+```
+
+```{r}
+# create a recipe for this data
+cars_23_rec <- cars_23 %>% 
+  recipes::recipe(comb_fe_guide_conventional_fuel~.) %>% 
+  recipes::step_center(recipes::all_numeric()) %>%
+  recipes::step_scale(recipes::all_numeric()) %>% 
+  recipes::step_dummy(recipes::all_factor())
+
+summary(cars_23_rec)
+```
+
+There are 11 predictors at this stage in cars_23.
+:::
+
+### Exercise 7
+
+For this exercise, set a sample size equal to 75% of the observations of `cars_23` and split the data as follows:
+
+```{r}
+#| echo: true
+#| eval: true
+set.seed(1966)
+
+# sample 75% of the rows of the cars_23 dataset to make the training set
+train <- cars_23 %>% 
+  # make an ID column for use as a key
+  tibble::rowid_to_column("ID") %>% 
+  # sample the rows
+  dplyr::sample_frac(0.75)
+
+# remove the training dataset from the original dataset to make the training set
+test  <- 
+  dplyr::anti_join(
+    cars_23 %>% tibble::rowid_to_column("ID") # add a key column to the original data
+    , train
+    , by = 'ID'
+  )
+
+# drop the ID column from training and test datasets
+train %<>% dplyr::select(-ID); test %<>% dplyr::select(-ID)
+```
+
+Next prep the recipe created in the last exercise using `recipes::prep` on the training data, and then use the result of the prep step to `recipes::bake` with the training and test data. Save the baked data in separate variables for use later.
+
+After these two steps how many columns are in the data? Why does this differ from the last step?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# prep the recipe with the training data
+cars_23_prep <- cars_23_rec %>% 
+  recipes::prep(
+    training = train    # NOTE: training data
+    , verbose = FALSE
+    , retain = TRUE
+  )
+
+cars_23_train <- cars_23_prep %>% 
+  # create a training dataset by baking the training data
+  recipes::bake(new_data=NULL)
+  
+cars_23_test  <- cars_23_prep %>% 
+  # create a test dataset by baking the test data
+  recipes::bake(new_data=test)
+```
+
+```{r}
+#| layout-ncol: 2
+# columns in the data
+cars_23_train %>% dim()
+# predictors in the recipe
+summary(cars_23_prep)
+```
+
+There are now **45 columns** in the data and 45 predictors in the recipe. This is because the recipe converted the factors to dummy variables.
+:::
+
+### Exercise 8
+
+In this exercise we will run xgboost::xgboost to evaluate the regression.
+
+First run fit the model with default meta-parameters for `max_depth` and `eta`, using the training data per the code below:
+
+```{r}
+#| echo: true
+untuned_xgb <-
+  xgboost::xgboost(
+    data = cars_23_train %>% dplyr::select(-comb_fe_guide_conventional_fuel) %>% as.matrix(), 
+    label = cars_23_train %>% dplyr::select(comb_fe_guide_conventional_fuel) %>% as.matrix(),
+    nrounds = 1000,
+    objective = "reg:squarederror",
+    early_stopping_rounds = 3,
+    max_depth = 6,
+    eta = .25
+    , verbose = FALSE
+  )
+```
+
+Next use the fitted model to predict the outcome using the test data:
+
+```{r}
+#| echo: true
+# create predictions using the test data and the fitted model
+yhat <- predict(
+  untuned_xgb
+  , cars_23_test %>% 
+    dplyr::select(-comb_fe_guide_conventional_fuel) %>% 
+    as.matrix() 
+)
+```
+
+Finally, pull out the `comb_fe_guide_conventional_fuel` column from the test data, assign it to the variable `y` and then use `caret::postResample` with arguments `yhat` and `y` to evaluate how well the model fits.
+
+What is the RMSE for the un-tuned model?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+The RMSE is approximately 0.245.
+
+```{r}
+# select the observations in the test data
+y <- cars_23_test %>% 
+    dplyr::pull(comb_fe_guide_conventional_fuel) 
+
+# compare observations and predictions
+caret::postResample(yhat, y)
+```
+:::
+
+### Exercise 9
+
+In this exercise we are going to tune the model using cross validation. First we create a tuning grid for the parameters and then fit the model for all the values in the grid, saving the results.
+
+Finally, we select the best parameters by least RMSE.
+
+```{r}
+#| echo: true
+#create hyperparameter grid
+hyper_grid <- expand.grid(max_depth = seq(3, 6, 1), eta = seq(.2, .35, .01))  
+
+# initialize our metric variables
+xgb_train_rmse <- NULL
+xgb_test_rmse  <- NULL
+
+for (j in 1:nrow(hyper_grid)) {
+  set.seed(123)
+  m_xgb_untuned <- xgboost::xgb.cv(
+    data = cars_23_train %>% dplyr::select(-comb_fe_guide_conventional_fuel) %>% as.matrix(), 
+    label = cars_23_train %>% dplyr::select(comb_fe_guide_conventional_fuel) %>% as.matrix(),
+    nrounds = 1000,
+    objective = "reg:squarederror",
+    early_stopping_rounds = 3,
+    nfold = 5,
+    max_depth = hyper_grid$max_depth[j],
+    eta = hyper_grid$eta[j],
+    verbose = FALSE
+  )
+  
+  xgb_train_rmse[j] <- m_xgb_untuned$evaluation_log$train_rmse_mean[m_xgb_untuned$best_iteration]
+  xgb_test_rmse[j] <- m_xgb_untuned$evaluation_log$test_rmse_mean[m_xgb_untuned$best_iteration]
+}    
+
+best <- hyper_grid[which(xgb_test_rmse == min(xgb_test_rmse)),]; best # there may be ties
+```
+
+re-run the code from the last exercise and evaluate the fit using the best tuning parameters.
+
+Is the tuned model better than the un-tuned model? If better, how much has the RMSE improved (in %).
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+tuned_xgb <-
+  xgboost::xgboost(
+    data = cars_23_train %>% dplyr::select(-comb_fe_guide_conventional_fuel) %>% as.matrix(), 
+    label = cars_23_train %>% dplyr::select(comb_fe_guide_conventional_fuel) %>% as.matrix(),
+    nrounds = 1000,
+    objective = "reg:squarederror",
+    early_stopping_rounds = 3,
+    max_depth = best[1,1],        # this is the best-fit max_depth
+    eta = best[1,2],              # this is the best-fit eta
+    verbose = FALSE
+  ) 
+```
+
+Now the RMSE is 0.2425948/0.2446266 - about 1% better than the untuned model
+
+```{r}
+yhat <- predict(
+  tuned_xgb
+  , cars_23_test %>% 
+    dplyr::select(-comb_fe_guide_conventional_fuel) %>% 
+    as.matrix() 
+)
+
+y <- cars_23_test %>% 
+    dplyr::select(comb_fe_guide_conventional_fuel) %>% 
+    as.matrix() 
+caret::postResample(yhat, y)
+```
+:::
+
+### Exercise 10
+
+Using `xgboost::xgb.importance` rank the importance of each predictor in the model. Finally, take the top 10 predictors by importance and plot them using `xgboost::xgb.plot.importance`.
+
+Per this model, what is the most important feature for predicting fuel efficiency?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# create the importance matrix
+importance_matrix <- xgboost::xgb.importance(model = tuned_xgb)
+
+# plot the importance measures
+xgboost::xgb.plot.importance(importance_matrix[1:10,], xlab = "Feature Importance")
+```
+
+Per the model, engine displacement is the most important feature for predicting fuel efficiency.
+:::
+
+## Grading
+
+Total points available: 50 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 10 | 30     |

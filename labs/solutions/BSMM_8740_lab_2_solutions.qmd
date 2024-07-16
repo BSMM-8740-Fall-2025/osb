@@ -328,7 +328,7 @@ spx_data <-
 # NOT PART OF THE LAB
 # The package gt:: has a nice funcion for EDA.
 # Give it a try!
-# spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
+spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
 ```
 
 ```{r}
