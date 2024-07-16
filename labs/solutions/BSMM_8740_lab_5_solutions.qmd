@@ -19,11 +19,21 @@ By the end of the lab you will...
 
 ```{r}
 #| message: false
-library(magrittr)   # the pipe
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(ggplot2)    # for plotting
-# set the efault theme for plotting
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, ggplot2)
+
+# library(magrittr)   # the pipe
+# library(tidyverse)  # for data wrangling + visualization
+# library(tidymodels) # for modeling
+# library(ggplot2)    # for plotting
+
+# set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
 
@@ -111,13 +121,13 @@ norm_recipe <-
   # pool categories with few members into a new category - 'other'
   recipes::step_other(Neighborhood) %>% 
   # create dummy variables for all categories
-  recipes::step_dummy(all_nominal_predictors()) %>%
-  # estimate the means and standard deviations by prepping the data
-  recipes::prep(training = ames_train, retain = TRUE)
+  recipes::step_dummy(all_nominal_predictors()) 
 ```
 
 ```{r}
-norm_recipe %>% broom::tidy()
+norm_recipe %>% 
+  # estimate the means and standard deviations by prepping the data
+  recipes::prep(training = ames_train, retain = TRUE) |> broom::tidy()
 ```
 :::
 

@@ -43,7 +43,7 @@ librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtE
 # library(magrittr)   # the pipe
 # library(ggplot2)    # for plotting
 
-# set the efault theme for plotting
+# set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
 
