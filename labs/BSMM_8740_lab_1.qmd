@@ -40,7 +40,7 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   install.packages("librarian")
   
 # load packages if not already loaded
-librarian::shelf(tidyverse, Lahman, magrittr, gt, gtExtras)}
+librarian::shelf(tidyverse, Lahman, magrittr, gt, gtExtras, ggplot2)}
 ```
 
 The tidyverse is a meta-package. When you load it you get eight packages loaded for you:
