@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="derived from Max Kuhn (RStudio)">
-  <title>BSMM-8740 - Fall 2024 - The recipes package</title>
+  <title>BSMM-8740 - Fall 2024 – The recipes package</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -385,11 +385,11 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - The recipes package">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 3]">
+<meta property="og:title" content="The recipes package – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 3]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - The recipes package">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 3]">
+<meta name="twitter:title" content="The recipes package – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 3]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -400,7 +400,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">The recipes package</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 3]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 3]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -462,11 +462,10 @@ derived from Max Kuhn (RStudio)
 <span id="cb2-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div>
-<div id="erglnwhwmm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="uyvxnfokbm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
 <th id="skim_variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">skim_variable</th>
@@ -497,7 +496,6 @@ derived from Max Kuhn (RStudio)
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -765,11 +763,10 @@ derived from Max Kuhn (RStudio)
 <span id="cb17-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">%&gt;%</span> </span>
 <span id="cb17-8"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<div id="pmbfxqslda" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="hwamoymsbm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
 <th id="skim_variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">skim_variable</th>
@@ -825,7 +822,6 @@ derived from Max Kuhn (RStudio)
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -1123,7 +1119,7 @@ derived from Max Kuhn (RStudio)
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/image_pca_plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-html/image_pca_plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="kernel-principal-component-analysis" class="slide level2">
 <h2>Kernel Principal Component Analysis</h2>
 <div class="cell" data-layout-align="center">
@@ -1156,7 +1152,7 @@ derived from Max Kuhn (RStudio)
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/image_kpca_fig-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-html/image_kpca_fig-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="distance-to-each-class-centroid" class="slide level2">
 <h2>Distance to Each Class Centroid</h2>
 <div class="cell" data-layout-align="center">
@@ -1207,7 +1203,7 @@ derived from Max Kuhn (RStudio)
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/image_dists_fig-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-html/image_dists_fig-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
 <ul>
@@ -1223,7 +1219,7 @@ derived from Max Kuhn (RStudio)
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1441,44 +1437,6 @@ derived from Max Kuhn (RStudio)
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
@@ -1511,18 +1469,7 @@ derived from Max Kuhn (RStudio)
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1554,7 +1501,29 @@ derived from Max Kuhn (RStudio)
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1562,7 +1531,7 @@ derived from Max Kuhn (RStudio)
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

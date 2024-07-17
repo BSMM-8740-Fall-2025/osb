@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="L.L. Odette">
-  <title>BSMM-8740 - Fall 2024 - Regression methods</title>
+  <title>BSMM-8740 - Fall 2024 – Regression methods</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -385,11 +385,11 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - Regression methods">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
+<meta property="og:title" content="Regression methods – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - Regression methods">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
+<meta name="twitter:title" content="Regression methods – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -400,7 +400,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Regression methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 4]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 4]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -616,7 +616,7 @@ Q'QR\beta &amp; = Q'y\\
 <span id="cb8-6"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector y</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb8-7"><a></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> A <span class="sc">%*%</span> x ; y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-nrow="3">
+<div class="cell quarto-layout-panel" data-layout-nrow="3" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code>matrix A</code></pre>
@@ -794,7 +794,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="ridge-regression-example-3" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -818,7 +818,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="lasso-regression" class="slide level2">
 <h2>Lasso Regression</h2>
 <p>Lasso regression is another example of a penalized regression model; in this case both the magnitude of the weights and the number of parameters are penalized by using the <span class="math inline">\(\ell_1\)</span> norm of the weights to the loss function of the lasso regression. In particular, the lasso regression weights are:</p>
@@ -888,7 +888,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="lasso-regression-example-2" class="slide level2">
 <h2>Lasso Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -912,7 +912,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="elastic-net-regression" class="slide level2">
 <h2>Elastic Net Regression</h2>
 <p>Elastic Net regression is a hybrid of ridge and lasso regression.</p>
@@ -1038,7 +1038,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generalized-linear-models" class="slide level2">
 <h2>Generalized Linear Models</h2>
 <p>A <strong>generalized linear model</strong> (<strong>GLM</strong>) is a flexible generalization of ordinary linear regression.</p>
@@ -1119,8 +1119,7 @@ qsec        -18.944318</code></pre>
 <li>Single regression trees have high variance, resulting in unstable predictions (an alternative subsample of training data can significantly change the terminal nodes).</li>
 <li>Due to the high variance single regression trees have poor predictive accuracy.</li>
 </ul>
-</div>
-</div>
+</div></div>
 </section>
 <section id="regression-with-trees-bagging" class="slide level2">
 <h2>Regression with trees (Bagging)</h2>
@@ -1183,8 +1182,7 @@ qsec        -18.944318</code></pre>
 <li>Although accurate, often cannot compete with advanced boosting algorithms</li>
 <li>Less interpretable</li>
 </ul>
-</div>
-</div>
+</div></div>
 </section>
 <section id="regression-with-gradient-boosting" class="slide level2">
 <h2>Regression with gradient boosting</h2>
@@ -1242,11 +1240,11 @@ qsec        -18.944318</code></pre>
 <h2>Regression with neural nets</h2>
 <p>Architecture of a Neural Net (NN)</p>
 
-<img data-src="../images/single_layer_nn.png" class="r-stretch quarto-figure-center"><p class="caption">Single layer NN architecture</p></section>
+<img data-src="../images/single_layer_nn.png" alt="credit deep learning.a" class="r-stretch quarto-figure-center"><p class="caption">Single layer NN architecture</p></section>
 <section id="regression-with-neural-nets-1" class="slide level2">
 <h2>Regression with neural nets</h2>
 
-<img data-src="../images/activation_functions.png" class="r-stretch quarto-figure-center"><p class="caption">Common Activation Functions</p></section>
+<img data-src="../images/activation_functions.png" alt="credits - analyticsindiamag" class="r-stretch quarto-figure-center"><p class="caption">Common Activation Functions</p></section>
 <section id="regression-with-neural-nets-2" class="slide level2">
 <h2>Regression with neural nets</h2>
 <div class="cell" data-layout-align="center">
@@ -1308,10 +1306,21 @@ qsec        -18.944318</code></pre>
 </div>
 <div id="tabset-2-2">
 <div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="sc">&gt;</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">test =</span> data_test<span class="sc">$</span>medv, <span class="at">predicted =</span> pr.nn<span class="sc">$</span>net.result) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-2"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>test, <span class="at">y=</span>predicted)) <span class="sc">+</span></span>
+<span id="cb39-3"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">color=</span><span class="st">'red'</span>) <span class="sc">+</span></span>
+<span id="cb39-4"><a></a><span class="sc">+</span>   <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">color=</span><span class="st">"blue"</span>, </span>
+<span id="cb39-5"><a></a><span class="sc">+</span>                  <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb39-6"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Neural Net Regression'</span></span>
+<span id="cb39-7"><a></a><span class="sc">+</span>      , <span class="at">subtitle =</span> </span>
+<span id="cb39-8"><a></a><span class="sc">+</span>        stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
+<span id="cb39-9"><a></a><span class="sc">+</span>          <span class="st">"Mean squared prediction error is {scales::number(MSE.nn, accuracy=0.01)}"</span></span>
+<span id="cb39-10"><a></a><span class="sc">+</span>        )</span>
+<span id="cb39-11"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1333,7 +1342,7 @@ qsec        -18.944318</code></pre>
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1551,44 +1560,6 @@ qsec        -18.944318</code></pre>
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
@@ -1621,18 +1592,7 @@ qsec        -18.944318</code></pre>
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1664,7 +1624,29 @@ qsec        -18.944318</code></pre>
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1672,7 +1654,7 @@ qsec        -18.944318</code></pre>
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

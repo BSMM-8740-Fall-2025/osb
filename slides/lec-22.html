@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Dr.&nbsp;Mine Çetinkaya-Rundel">
-  <title>BSMM-8740 - Fall 2024 - LR: Inference + conditions</title>
+  <title>BSMM-8740 - Fall 2024 – LR: Inference + conditions</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -389,10 +389,10 @@
   </style>
   <script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - LR: Inference + conditions">
+<meta property="og:title" content="LR: Inference + conditions – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="STA 210 - Spring 2022">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - LR: Inference + conditions">
+<meta name="twitter:title" content="LR: Inference + conditions – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="STA 210 - Spring 2022">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -516,7 +516,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">tidy</span>(risk_fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"markdown"</span>, <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <colgroup>
 <col style="width: 17%">
 <col style="width: 13%">
@@ -626,8 +626,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <h2>Coefficient for <code>age</code></h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -689,7 +688,6 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 </table>
 
 
-</div>
 </div>
 </div>
 <div class="fragment">
@@ -703,8 +701,7 @@ H_0: \beta_{1} = 0 \hspace{2mm} \text{ vs } \hspace{2mm} H_a: \beta_{1} \neq 0
 <h2>Coefficient for <code>age</code></h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -766,7 +763,6 @@ H_0: \beta_{1} = 0 \hspace{2mm} \text{ vs } \hspace{2mm} H_a: \beta_{1} \neq 0
 </table>
 
 
-</div>
 </div>
 </div>
 <p><strong>Test statistic:</strong></p>
@@ -778,8 +774,7 @@ z = \frac{0.0733 - 0}{0.00547} = 13.4
 <h2>Coefficient for <code>age</code></h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -841,7 +836,6 @@ z = \frac{0.0733 - 0}{0.00547} = 13.4
 </table>
 
 
-</div>
 </div>
 </div>
 <p><strong>P-value:</strong></p>
@@ -861,8 +855,7 @@ P(|Z| &gt; |13.4|) \approx 0
 <h2>Coefficient for <code>age</code></h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -924,7 +917,6 @@ P(|Z| &gt; |13.4|) \approx 0
 </table>
 
 
-</div>
 </div>
 </div>
 <p><strong>Conclusion:</strong></p>
@@ -994,8 +986,7 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -1057,7 +1048,6 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
 </table>
 
 
-</div>
 </div>
 </div>
 </section>
@@ -1215,8 +1205,7 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
 <span id="cb32-6"><a></a><span class="fu">tidy</span>(risk_fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb32-7"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -1269,7 +1258,6 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
 </table>
 
 
-</div>
 </div>
 </div>
 </section>
@@ -1366,8 +1354,7 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
 </div>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 <div class="fragment">
 <p>✅ The linearity condition is satisfied. There is a linear relationship between the empirical logit and the predictor variables.</p>
 </div>
@@ -1686,18 +1673,7 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1729,7 +1705,29 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1737,7 +1735,7 @@ H_A&amp;: \text{ at least 1 }\beta_j \text{ is not } 0
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

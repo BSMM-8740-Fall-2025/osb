@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Dr.&nbsp;Mine Çetinkaya-Rundel">
-  <title>BSMM-8740 - Fall 2024 - Probabilities, odds, odds ratios</title>
+  <title>BSMM-8740 - Fall 2024 – Probabilities, odds, odds ratios</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -387,10 +387,10 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - Probabilities, odds, odds ratios">
+<meta property="og:title" content="Probabilities, odds, odds ratios – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="STA 210 - Spring 2022">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - Probabilities, odds, odds ratios">
+<meta name="twitter:title" content="Probabilities, odds, odds ratios – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="STA 210 - Spring 2022">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -473,7 +473,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <h2>High risk vs.&nbsp;education</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -511,7 +511,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <h2>Compare the odds for two groups</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -556,7 +556,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <h2>Compare the odds for two groups</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -599,7 +599,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <h2>Odds ratio (OR)</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -641,7 +641,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <h2>OR: College vs.&nbsp;High school or GED</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -683,7 +683,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <h2>OR: College vs.&nbsp;Some high school</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -800,7 +800,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <span id="cb8-3"><a></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> high_risk_names, <span class="at">values_from =</span> n) <span class="sc">%&gt;%</span></span>
 <span id="cb8-4"><a></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">education_names</th>
@@ -842,7 +842,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <span id="cb9-3"><a></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> high_risk_names, <span class="at">values_from =</span> n) <span class="sc">%&gt;%</span></span>
 <span id="cb9-4"><a></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Education"</span>, <span class="st">"High risk"</span>, <span class="st">"Not high risk"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Education</th>
@@ -893,7 +893,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">tidy</span>(heart_edu_fit) <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -942,7 +942,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -993,7 +993,7 @@ OR = \frac{\text{odds}_1}{\text{odds}_2} = \frac{\omega_1}{\omega_2}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1067,7 +1067,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">tidy</span>(heart_age_fit) <span class="sc">%&gt;%</span></span>
 <span id="cb13-2"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1102,7 +1102,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1139,7 +1139,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1190,7 +1190,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">tidy</span>(heart_edu_age_fit) <span class="sc">%&gt;%</span></span>
 <span id="cb15-2"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1246,7 +1246,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1304,7 +1304,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1362,7 +1362,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1420,7 +1420,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -1778,18 +1778,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1821,7 +1810,29 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1829,7 +1840,7 @@ OR  = e^{\hat{\beta}_j} = \exp\{\hat{\beta}_j\}
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

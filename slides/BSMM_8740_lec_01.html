@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Dr.&nbsp;L.L. Odette">
-  <title>BSMM-8740 - Fall 2024 - The tidyverse &amp; git</title>
+  <title>BSMM-8740 - Fall 2024 – Tidyverse, EDA &amp; git</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -385,11 +385,11 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - The tidyverse &amp; git">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 1]">
+<meta property="og:title" content="Tidyverse, EDA &amp; git – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 1]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - The tidyverse &amp; git">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 1]">
+<meta name="twitter:title" content="Tidyverse, EDA &amp; git – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 1]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -399,8 +399,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">The tidyverse &amp; git</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 1]</p>
+  <h1 class="title">Tidyverse, EDA &amp; git</h1>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 1]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -420,27 +420,25 @@ Dr.&nbsp;L.L. Odette
 <h2>Announcements</h2>
 <div style="font-size: smaller">
 <ul>
-<li>Please go to the <a href="https://bsmm-8740-fall-2023.github.io/osb/">course website</a> to review the weekly slide, access the labs, read the syllabus, etc.</li>
-<li>I will also post a printed version of the weekly slides on <a href="https://brightspace.uwindsor.ca/d2l/home/144921">Brightspace</a>.</li>
-<li>My intent is to have assigned lab exercises each week, which should be able to be completed during class.
+<li>Please go to the <a href="https://bsmm-8740-fall-2024.github.io/osb/">course website</a> to review the weekly slide, access the labs, read the syllabus, etc.</li>
+<li>My intent is to have assigned lab exercises each week, which will be started during class.
 <ul>
-<li>If we run over or if you’d like more time, the lab assignment will remain on the course Github site, and your work will remain on your own Github account. The lab can be submitted by the deadline.</li>
+<li>Lab assignments will be due at 5:00pm sharp on the Friday following the lecture.</li>
 </ul></li>
-<li>Lab 1 is due Friday September 15 at 5pm; the assignment can be submitted on <a href="https://brightspace.uwindsor.ca/d2l/home/144921">Brightspace</a>.</li>
-<li>My regular office hour will be on Thursdays from 2:00pm - 3:00pm via MS Teams.</li>
+<li>Lab 1 is due Friday September 15 at 5pm.</li>
+<li>My regular office hour will be on Thursdays from 2:00pm - 3:00pm via MS Teams. Please email ahead of time.</li>
 </ul>
 </div>
 </section>
-<section id="course-topics" class="slide level2">
-<h2>Course Topics</h2>
+<section id="expected-course-topics" class="slide level2">
+<h2>Expected Course Topics</h2>
 <div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<div id="fazmticjlp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="rzsbkzduuo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 28px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 28px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
 <th id="week" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col" style="text-align: center; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">week</th>
@@ -450,52 +448,47 @@ Dr.&nbsp;L.L. Odette
 <tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
 <tr class="odd" style="border-style: none;">
 <td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">1</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">The tidyverse &amp; git</td>
+<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Tidyverse, EDA &amp; git</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td class="gt_row gt_center gt_striped" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">2</td>
-<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">EDA and feature engineering</td>
+<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">The recipes package</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">3</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">The recipes package</td>
+<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Regression methods</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td class="gt_row gt_center gt_striped" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">4</td>
-<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Regression methods</td>
+<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">More tidymodels packages</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">5</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">More tidymodels packages</td>
+<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Classification &amp; clustering methods</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td class="gt_row gt_center gt_striped" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">6</td>
-<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Classification &amp; clustering methods</td>
+<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Time series methods</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">7</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Time series methods</td>
+<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Causality: DAGs</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td class="gt_row gt_center gt_striped" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">8</td>
-<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Causality: DAGs</td>
+<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Causality: Effects</td>
 </tr>
 <tr class="odd" style="border-style: none;">
 <td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">9</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Causality: Effects</td>
+<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Monte-Carlo methods</td>
 </tr>
 <tr class="even" style="border-style: none;">
 <td class="gt_row gt_center gt_striped" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">10</td>
-<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Monte-Carlo methods</td>
-</tr>
-<tr class="odd" style="border-style: none;">
-<td class="gt_row gt_center" headers="week" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">11</td>
-<td class="gt_row gt_left" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Bayesian methods</td>
+<td class="gt_row gt_left gt_striped" headers="topic" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Bayesian methods</td>
 </tr>
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -505,6 +498,7 @@ Dr.&nbsp;L.L. Odette
 <h2>Today’s Outline</h2>
 <ul>
 <li>Introduction to Tidy data &amp; Tidyverse syntax in R.</li>
+<li>Introduction to EDA and feature egineering.</li>
 <li>Introduction to Git workflows and version control.</li>
 </ul>
 </section></section>
@@ -591,24 +585,15 @@ Dr.&nbsp;L.L. Odette
 </section>
 <section id="tidyverse-principles" class="slide level2">
 <h2>Tidyverse principles</h2>
-<p>From Wickham et al.&nbsp;(“Welcome to the Tidyverse.” <em>Journal of Open Source Software</em> 4 (43)):</p>
-<div style="font-size: smaller">
-<blockquote>
-<p>“At a high level, the tidyverse is a language for solving data science challenges with R code. Its primary goal is to facilitate a conversation between a human and a computer about data. Less abstractly, the tidyverse is a collection of R packages that share a high-level design philosophy and low-level grammar and data structures, so that learning one package makes it easier to learn the next.”</p>
-</blockquote>
-</div>
-</section>
-<section id="tidyverse-principles-1" class="slide level2">
-<h2>Tidyverse principles</h2>
 <ol type="1">
 <li>Design for humans</li>
 <li>Reuse existing data structures</li>
 <li>Design for the pipe and functional programming</li>
 </ol>
 </section>
-<section id="tidyverse" class="slide level2">
-<h2>Tidyverse</h2>
-<p>Packages in the tidyverse.</p>
+<section id="tidyverse-packages" class="slide level2">
+<h2>Tidyverse packages</h2>
+<p>Some packages in the tidyverse.</p>
 
 <img data-src="images/Tidyverse_packages.png" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="a-grammar-for-data-wrangling" class="slide level2">
@@ -625,8 +610,8 @@ Dr.&nbsp;L.L. Odette
 </div>
 </section>
 <section id="a-grammar-for-data-wrangling-1" class="slide level2">
-<h2>A grammar for data Wrangling</h2>
-<p>Each of these functions takes a data frame as its first argument, and returns a data frame.</p>
+<h2>A grammar for data wrangling</h2>
+<p>Each of these functions takes a <code>data frame</code> as its first argument, and returns a <code>data frame</code>.</p>
 <p>Being able to combine these verbs with nouns (i.e., data frames) and adverbs (i.e., arguments) creates a flexible and powerful way to wrangle data.</p>
 </section>
 <section id="filter" class="slide level2">
@@ -747,7 +732,7 @@ Dr.&nbsp;L.L. Odette
 <h2><code>mutate()</code></h2>
 <p>We might want to create, re-define, or rename some of our variables. A graphical illustration of the <code>mutate()</code> operation is shown below</p>
 
-<img data-src="../images/mutate-1.png" class="r-stretch quarto-figure-center"><p class="caption">The mutate() function. At right, the resulting data frame after adding a new column.</p></section>
+<img data-src="../images/mutate-1.png" class="r-stretch quarto-figure-center"><p class="caption">The mutate() function creating a column. At right, the resulting data frame after adding a new column.</p></section>
 <section id="example-mutate-new-column" class="slide level2">
 <h2>Example: mutate, new column</h2>
 <div class="cell" data-layout-align="center">
@@ -823,7 +808,7 @@ Dr.&nbsp;L.L. Odette
 </section>
 <section id="rename" class="slide level2">
 <h2><code>rename()</code></h2>
-<p>It is considered bad practice to use period in names (function, variables, columns) - we should change the name of the&nbsp;<code>term.length</code>&nbsp;column that we created earlier.&nbsp;</p>
+<p>It is considered bad practice to use a period in names (functions, variables, columns) - we should change the name of the&nbsp;<code>term.length</code>&nbsp;column that we created earlier.&nbsp;</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20" data-code-line-numbers="1|2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>my_presidents <span class="sc">%&lt;&gt;%</span> </span>
 <span id="cb20-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">term_length =</span> term.length)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -850,8 +835,8 @@ Dr.&nbsp;L.L. Odette
 <p>The function&nbsp;<code>sort()</code>&nbsp;will sort a vector but not a data frame. The&nbsp;<code>arrange()</code>function sorts a data frame:&nbsp;</p>
 
 <img data-src="../images/arrange-1.png" class="r-stretch quarto-figure-center"><p class="caption">The arrange() function. At left, a data frame with an ordinal variable. At right, the resulting data frame after sorting the rows in descending order of that variable.</p></section>
-<section id="example-arrange-since-column" class="slide level2">
-<h2>Example: arrange, since column</h2>
+<section id="example-arrange---sort-column" class="slide level2">
+<h2>Example: arrange - sort column</h2>
 <p>To use <code>arrange</code> you have to specify the data frame, and the column by which you want it to be sorted. You also have to specify the direction in which you want it to be sorted.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22" data-code-line-numbers="1|2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>my_presidents <span class="sc">%&gt;%</span> </span>
@@ -874,8 +859,8 @@ Dr.&nbsp;L.L. Odette
 </div>
 </div>
 </section>
-<section id="example-arrange-multiple-columns" class="slide level2">
-<h2>Example, arrange, multiple columns</h2>
+<section id="example-arrange---multiple-columns" class="slide level2">
+<h2>Example, arrange - multiple columns</h2>
 <p>To break ties, we can further sort by other variables</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb24" data-code-line-numbers="2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>my_presidents <span class="sc">%&gt;%</span> </span>
@@ -904,8 +889,8 @@ Dr.&nbsp;L.L. Odette
 <p>The <code>summarize</code> verb is often used with <code>group_by</code></p>
 
 <img data-src="../images/summarize-1.png" class="r-stretch quarto-figure-center"><p class="caption">The summarize() function. At left, a data frame. At right, the resulting data frame after aggregating four of the columns.</p></section>
-<section id="example-summarize" class="slide level2">
-<h2>Example: summarize</h2>
+<section id="example-summarize---no-groups" class="slide level2">
+<h2>Example: summarize - no groups</h2>
 <p>When used without grouping, <code>summarize()</code> collapses a data frame into a single row.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb26" data-code-line-numbers="2|3|4|5|6|7|8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>my_presidents <span class="sc">%&gt;%</span> </span>
@@ -925,8 +910,8 @@ Dr.&nbsp;L.L. Odette
 </div>
 </div>
 </section>
-<section id="example-pipe-stacked" class="slide level2">
-<h2>Example: pipe, stacked</h2>
+<section id="example-pipe---groups" class="slide level2">
+<h2>Example: pipe - groups</h2>
 <p>To make comparisons, we can first group then summarize, giving us one summary row for each group.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb28" data-code-line-numbers="2|3|4|5|6|7|8|9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>my_presidents <span class="sc">%&gt;%</span> </span>
@@ -973,7 +958,7 @@ Dr.&nbsp;L.L. Odette
 <section id="magrittr-vs-native-pipe" class="slide level2">
 <h2>Magrittr vs native pipe</h2>
 <div style="font-size: 80%">
-<table>
+<table class="caption-top">
 <colgroup>
 <col style="width: 20%">
 <col style="width: 30%">
@@ -1015,7 +1000,9 @@ Dr.&nbsp;L.L. Odette
 </tbody>
 </table>
 </div>
-<p><sub>based&nbsp;post&nbsp;on&nbsp;a&nbsp;<a href="#/0">stackoverflow</a>&nbsp;post&nbsp;comparing&nbsp;magrittr&nbsp;pipe&nbsp;to&nbsp;base&nbsp;R&nbsp;pipe.</sub></p>
+<div style="font-size: 60%">
+<p>based on a <a href="https://stackoverflow.com/questions/67633022/what-are-the-differences-between-rs-native-pipe-and-the-magrittr-pipe">stackoverflow</a> post comparing magrittr pipe to base R pipe.</p>
+</div>
 </section>
 <section id="use-cases-for-the-magrittr-pipe" class="slide level2">
 <h2>Use cases for the Magrittr pipe</h2>
@@ -1056,16 +1043,12 @@ Dr.&nbsp;L.L. Odette
 <span id="cb32-13"><a></a><span class="co"># a function from a formula in the tidyverse</span></span>
 <span id="cb32-14"><a></a><span class="fu">c</span>(<span class="st">'Bob'</span>,<span class="st">'Ted'</span>) <span class="sc">%&gt;%</span> purrr<span class="sc">::</span><span class="fu">map_chr</span>(<span class="sc">~</span><span class="fu">paste</span>(.x, <span class="st">'is awesome!'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="tidy-data-wrangling" class="title-slide slide level1 center">
-<h1>Tidy Data Wrangling</h1>
-
 </section>
 <section id="data-wrangling" class="slide level2">
 <h2>Data Wrangling</h2>
 <p>The Tidyverse offers a consistent and efficient framework for manipulating, transforming, and cleaning datasets.</p>
-<p>Functions like <code>filter()</code>, <code>select()</code>, <code>mutate()</code>, and <code>group_by()</code> allow users to easily subset, reorganize, add, and aggregate data, and the pipe (<code>%&gt;%</code>) enables a sequential and readable flow of operations.</p>
+<p>Functions like <code>filter()</code>, <code>select()</code>, <code>mutate()</code>, and <code>group_by()</code> allow users to easily subset, reorganize, add, and aggregate data, and the pipe (<code>%&gt;%</code> or <code>|&gt;</code>) enables a sequential and readable flow of operations.</p>
+<p>The following examples show a few more of the many useful data wrangling functions in the tidyverse.</p>
 </section>
 <section id="example-1-mutate" class="slide level2">
 <h2>Example 1: mutate</h2>
@@ -1410,8 +1393,7 @@ GROUP BY `x_bin`</code></pre>
 6 China       2000  213766</code></pre>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 </div>
 <div id="tabset-7-2">
 <p>When an observation is scattered across multiple rows.</p>
@@ -1457,8 +1439,7 @@ GROUP BY `x_bin`</code></pre>
 6 China        2000 213766 1280428583</code></pre>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 </div>
 </div>
 </div>
@@ -1578,6 +1559,861 @@ GROUP BY `x_bin`</code></pre>
 6 China        2000 213766 1280428583</code></pre>
 </div>
 </div>
+</section></section>
+<section>
+<section id="exploratory-data-analysis-eda" class="title-slide slide level1 center">
+<h1>Exploratory Data Analysis (EDA)</h1>
+
+</section>
+<section id="exploratory-data-analysis-eda-1" class="slide level2">
+<h2>Exploratory Data Analysis (EDA)</h2>
+<p>Exploratory data analysis is the process of understanding a new dataset by looking at the data, constructing graphs, tables, and models. We want to understand three aspects:</p>
+<ol type="1">
+<li><p>each individual variable by itself;</p></li>
+<li><p>each individual variable in the context of other, relevant, variables; and</p></li>
+<li><p>the data that are not there.</p></li>
+</ol>
+</section>
+<section id="exploratory-data-analysis-eda-2" class="slide level2">
+<h2>Exploratory Data Analysis (EDA)</h2>
+<p>We will perform two broad categories of EDA:</p>
+<ul>
+<li>Descriptive Statistics, which includes mean, median, mode, inter-quartile range, and so on.</li>
+<li>Graphical Methods, which includes histogram, density estimation, box plots, and so on.</li>
+</ul>
+</section>
+<section id="eda-view-all-data" class="slide level2">
+<h2>EDA: view all data</h2>
+<p>Our first dataset is a sample of categorical variables from the <a href="https://gss.norc.org/Documents/other/2021%20XSEC%20R1%20Methodological%20Primer.pdf">General Social Survey</a>, a long-running US survey conducted by the independent research organization NORC at the University of Chicago.</p>
+
+<div style="font-size: 32px">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69" data-code-line-numbers="1|2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>dat <span class="ot">&lt;-</span> forcats<span class="sc">::</span>gss_cat</span>
+<span id="cb69-2"><a></a>dat <span class="sc">%&gt;%</span> utils<span class="sc">::</span><span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+   year marital         age race  rincome        partyid     relig denom tvhours
+  &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;       &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;
+1  2000 Never married    26 White $8000 to 9999  Ind,near r… Prot… Sout…      12
+2  2000 Divorced         48 White $8000 to 9999  Not str re… Prot… Bapt…      NA
+3  2000 Widowed          67 White Not applicable Independent Prot… No d…       2
+4  2000 Never married    39 White Not applicable Ind,near r… Orth… Not …       4
+5  2000 Divorced         25 White Not applicable Not str de… None  Not …       1
+6  2000 Married          25 White $20000 - 24999 Strong dem… Prot… Sout…      NA</code></pre>
+</div>
+</div>
+</div>
+<aside><div>
+<p>execute ?forcats::gss_cat to see the data dictionary</p>
+</div></aside></section>
+<section id="eda-view-all-columns" class="slide level2">
+<h2>EDA: view all columns</h2>
+<p>Use <code>dplyr::glimpse()</code> to see every column in a data.frame</p>
+<div style="font-size: 32px">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">10</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 10
+Columns: 9
+$ year    &lt;int&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000
+$ marital &lt;fct&gt; Never married, Divorced, Widowed, Never married, Divorced, Mar…
+$ age     &lt;int&gt; 26, 48, 67, 39, 25, 25, 36, 44, 44, 47
+$ race    &lt;fct&gt; White, White, White, White, White, White, White, White, White,…
+$ rincome &lt;fct&gt; $8000 to 9999, $8000 to 9999, Not applicable, Not applicable, …
+$ partyid &lt;fct&gt; "Ind,near rep", "Not str republican", "Independent", "Ind,near…
+$ relig   &lt;fct&gt; Protestant, Protestant, Protestant, Orthodox-christian, None, …
+$ denom   &lt;fct&gt; "Southern baptist", "Baptist-dk which", "No denomination", "No…
+$ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-view-some-rows" class="slide level2">
+<h2>EDA: view some rows</h2>
+<p>Use <code>dplyr::slice_sample()</code> to see a random selection of rows in a data.frame</p>
+<div style="font-size: 32px">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a>dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_sample</span>(<span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 9
+    year marital         age race  rincome        partyid    relig denom tvhours
+   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;
+ 1  2006 Married          64 White $25000 or more Strong re… Cath… Not …      NA
+ 2  2014 Married          67 White Not applicable Ind,near … None  Not …      NA
+ 3  2014 Married          79 White Not applicable Not str r… Prot… Sout…       6
+ 4  2004 Never married    22 White $15000 - 19999 Ind,near … None  Not …      NA
+ 5  2012 Never married    48 White $25000 or more Ind,near … None  Not …       2
+ 6  2000 Never married    50 White $25000 or more Not str d… Jewi… Not …      NA
+ 7  2000 Married          31 White $25000 or more Not str r… Chri… Not …      NA
+ 8  2014 Married          37 White Not applicable Ind,near … Prot… Sout…       3
+ 9  2012 Never married    39 White $25000 or more Not str d… Chri… Not …       5
+10  2006 Divorced         54 White $25000 or more Not str d… Prot… Pres…      NA</code></pre>
+</div>
+</div>
+<p>There are many dplyr::slice_{X} variants, along with dplyr::filter</p>
+</div>
+</section>
+<section id="bad-data-rightarrow-bad-results" class="slide level2">
+<h2>bad data <span class="math inline">\(\rightarrow\)</span> bad results</h2>
+
+<img data-src="../images/category_fail.png" class="r-stretch"></section>
+<section id="eda-descriptive-statistics" class="slide level2">
+<h2>EDA: descriptive statistics</h2>
+<p>The base R function <code>summary()</code> can be used for key summary statistics of the data.</p>
+<div style="font-size: 32px">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>dat <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      year               marital           age                    race      
+ Min.   :2000   No answer    :   17   Min.   :18.00   Other         : 1959  
+ 1st Qu.:2002   Never married: 5416   1st Qu.:33.00   Black         : 3129  
+ Median :2006   Separated    :  743   Median :46.00   White         :16395  
+ Mean   :2007   Divorced     : 3383   Mean   :47.18   Not applicable:    0  
+ 3rd Qu.:2010   Widowed      : 1807   3rd Qu.:59.00                         
+ Max.   :2014   Married      :10117   Max.   :89.00                         
+                                      NA's   :76                            
+           rincome                   partyid            relig      
+ $25000 or more:7363   Independent       :4119   Protestant:10846  
+ Not applicable:7043   Not str democrat  :3690   Catholic  : 5124  
+ $20000 - 24999:1283   Strong democrat   :3490   None      : 3523  
+ $10000 - 14999:1168   Not str republican:3032   Christian :  689  
+ $15000 - 19999:1048   Ind,near dem      :2499   Jewish    :  388  
+ Refused       : 975   Strong republican :2314   Other     :  224  
+ (Other)       :2603   (Other)           :2339   (Other)   :  689  
+              denom          tvhours      
+ Not applicable  :10072   Min.   : 0.000  
+ Other           : 2534   1st Qu.: 1.000  
+ No denomination : 1683   Median : 2.000  
+ Southern baptist: 1536   Mean   : 2.981  
+ Baptist-dk which: 1457   3rd Qu.: 4.000  
+ United methodist: 1067   Max.   :24.000  
+ (Other)         : 3134   NA's   :10146   </code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-packages-for-eda" class="slide level2">
+<h2>EDA: packages for EDA</h2>
+<ul>
+<li><p>The function <code>skimr::skim()</code> gives an enhanced version of base R’s <code>summary()</code> .</p></li>
+<li><p>Other packages, such as <code>DataExplorer::</code> rely more on graphing.</p>
+<ul>
+<li>We’ll look at a few of the <code>DataExplorer::</code> functions next.</li>
+</ul></li>
+</ul>
+</section>
+<section id="skimrskim" class="slide level2">
+<h2><code>skimr::skim()</code></h2>
+<div class="panel-tabset">
+<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">numeric variables</a></li><li><a href="#tabset-9-2">factor variables</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1">
+<div style="font-size: medium">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<p><strong>Variable type: numeric</strong></p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">2006.50</td>
+<td style="text-align: right;">4.45</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">2002</td>
+<td style="text-align: right;">2006</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">2014</td>
+<td style="text-align: left;">▇▃▇▂▆</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">47.18</td>
+<td style="text-align: right;">17.29</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: left;">▇▇▇▅▂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tvhours</td>
+<td style="text-align: right;">10146</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">2.98</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: left;">▇▂▁▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-9-2">
+<div style="font-size: medium">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<p><strong>Variable type: factor</strong></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 10%">
+<col style="width: 14%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: left;">ordered</th>
+<th style="text-align: right;">n_unique</th>
+<th style="text-align: left;">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">marital</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">Mar: 10117, Nev: 5416, Div: 3383, Wid: 1807</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">race</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">Whi: 16395, Bla: 3129, Oth: 1959, Not: 0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rincome</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: left;">$25: 7363, Not: 7043, $20: 1283, $10: 1168</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">partyid</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Ind: 4119, Not: 3690, Str: 3490, Not: 3032</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">relig</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">Pro: 10846, Cat: 5124, Non: 3523, Chr: 689</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">denom</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: left;">Not: 10072, Oth: 2534, No : 1683, Sou: 1536</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-factor-variable-counts" class="slide level2">
+<h2>EDA: factor variable counts</h2>
+<p>Most of the columns here are <code>factor</code>s(categories). Use these to count the number of observations per category.</p>
+<div class="panel-tabset">
+<ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">forecats::fct_count</a></li><li><a href="#tabset-10-2">dplyr::count</a></li><li><a href="#tabset-10-3">table()</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a>forcats<span class="sc">::</span><span class="fu">fct_count</span>(dat<span class="sc">$</span>relig) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 2
+   f                           n
+   &lt;fct&gt;                   &lt;int&gt;
+ 1 Protestant              10846
+ 2 Catholic                 5124
+ 3 None                     3523
+ 4 Christian                 689
+ 5 Jewish                    388
+ 6 Other                     224
+ 7 Buddhism                  147
+ 8 Inter-nondenominational   109
+ 9 Moslem/islam              104
+10 Orthodox-christian         95
+11 No answer                  93
+12 Hinduism                   71
+13 Other eastern              32
+14 Native american            23
+15 Don't know                 15
+16 Not applicable              0</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-2">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a>dat <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">count</span>(relig) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15 × 2
+   relig                       n
+   &lt;fct&gt;                   &lt;int&gt;
+ 1 Protestant              10846
+ 2 Catholic                 5124
+ 3 None                     3523
+ 4 Christian                 689
+ 5 Jewish                    388
+ 6 Other                     224
+ 7 Buddhism                  147
+ 8 Inter-nondenominational   109
+ 9 Moslem/islam              104
+10 Orthodox-christian         95
+11 No answer                  93
+12 Hinduism                   71
+13 Other eastern              32
+14 Native american            23
+15 Don't know                 15</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-10-3">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a>dat<span class="sc">$</span>relig <span class="sc">|&gt;</span> <span class="fu">table</span>() <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(Freq))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      Var1  Freq
+1               Protestant 10846
+2                 Catholic  5124
+3                     None  3523
+4                Christian   689
+5                   Jewish   388
+6                    Other   224
+7                 Buddhism   147
+8  Inter-nondenominational   109
+9             Moslem/islam   104
+10      Orthodox-christian    95
+11               No answer    93
+12                Hinduism    71
+13           Other eastern    32
+14         Native american    23
+15              Don't know    15
+16          Not applicable     0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-binary-factors" class="slide level2">
+<h2>EDA: binary factors</h2>
+<div class="panel-tabset">
+<ul id="tabset-11" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-11-1">table()</a></li><li><a href="#tabset-11-2">xtabs()</a></li></ul>
+<div class="tab-content">
+<div id="tabset-11-1">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a>dat_bin <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> </span>
+<span id="cb83-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb83-3"><a></a>    <span class="at">is_protestant =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(relig <span class="sc">==</span> <span class="st">'Protestant'</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>)</span>
+<span id="cb83-4"><a></a>  )</span>
+<span id="cb83-5"><a></a></span>
+<span id="cb83-6"><a></a>dat_bin<span class="sc">$</span>is_protestant <span class="sc">|&gt;</span> <span class="fu">table</span>() <span class="sc">/</span> <span class="fu">length</span>(dat_bin<span class="sc">$</span>is_protestant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+        0         1 
+0.4951357 0.5048643 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-11-2">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>dat_bin <span class="sc">|&gt;</span> <span class="fu">xtabs</span>(<span class="sc">~</span> partyid <span class="sc">+</span> is_protestant, <span class="at">data =</span> _)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    is_protestant
+partyid                 0    1
+  No answer           102   52
+  Don't know            1    0
+  Other party         233  160
+  Strong republican   720 1594
+  Not str republican 1198 1834
+  Ind,near rep        878  913
+  Independent        2436 1683
+  Ind,near dem       1473 1026
+  Not str democrat   1972 1718
+  Strong democrat    1624 1866</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-classifying-missing-data" class="slide level2">
+<h2>EDA: classifying missing data</h2>
+<p>There are three main categories of missing data</p>
+<ol type="1">
+<li>Missing Completely At Random (MCAR);
+<ul>
+<li>missing and independent of other measurements</li>
+</ul></li>
+<li>Missing at Random (MAR);
+<ul>
+<li>missing in a way related to other measurements</li>
+</ul></li>
+<li>Missing Not At Random (MNAR).
+<ul>
+<li>missing as a property of the variable or some other unmeasured variable</li>
+</ul></li>
+</ol>
+</section>
+<section id="eda-handling-missing-data" class="slide level2">
+<h2>EDA: handling missing data</h2>
+<p>We can think of a few options for dealing with missing data</p>
+<ol type="1">
+<li><p>Drop observations with missing data.</p></li>
+<li><p>Impute the mean of observations without missing data.</p></li>
+<li><p>Use multiple imputation.</p></li>
+</ol>
+<div style="font-size: smaller">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Multiple imputation involves generating several estimates for the missing values and then averaging the outcomes.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-mcar-or-mar" class="slide level2">
+<h2>Example: MCAR or MAR?</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb87" data-code-line-numbers="1|2|3-4|5|7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a>dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(partyid) <span class="sc">%&gt;%</span> <span class="fu">table</span>() <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb87-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb87-3"><a></a>    dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.na</span>(age)) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-4"><a></a>      dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">na_partyid =</span> partyid) <span class="sc">%&gt;%</span> <span class="fu">table</span>() <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb87-5"><a></a>    , <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"partyid"</span> <span class="ot">=</span> <span class="st">"na_partyid"</span>)</span>
+<span id="cb87-6"><a></a>    , <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">"_partyid"</span>, <span class="st">"_na_partyid"</span>)</span>
+<span id="cb87-7"><a></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-8"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct_na =</span> n_na_partyid <span class="sc">/</span> n_partyid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 4
+   partyid            n_partyid n_na_partyid   pct_na
+   &lt;chr&gt;                  &lt;int&gt;        &lt;int&gt;    &lt;dbl&gt;
+ 1 No answer                154            9 0.0584  
+ 2 Don't know                 1            0 0       
+ 3 Other party              393            3 0.00763 
+ 4 Strong republican       2314            8 0.00346 
+ 5 Not str republican      3032            8 0.00264 
+ 6 Ind,near rep            1791            2 0.00112 
+ 7 Independent             4119           18 0.00437 
+ 8 Ind,near dem            2499            2 0.000800
+ 9 Not str democrat        3690           11 0.00298 
+10 Strong democrat         3490           15 0.00430 </code></pre>
+</div>
+</div>
+</section>
+<section id="example-mcar-mar-or-mnar" class="slide level2">
+<h2>Example: MCAR, MAR or MNAR?</h2>
+<div style="font-size: smaller">
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 7%">
+<col style="width: 14%">
+<col style="width: 28%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Customer ID</th>
+<th>Age</th>
+<th>Income</th>
+<th>Purchase Frequency</th>
+<th>Satisfaction Rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>35</td>
+<td>$60,000</td>
+<td>High</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>28</td>
+<td>$45,000</td>
+<td>Low</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>42</td>
+<td>$70,000</td>
+<td>Medium</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>30</td>
+<td>$50,000</td>
+<td>Low</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>55</td>
+<td>$80,000</td>
+<td>High</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>26</td>
+<td>$40,000</td>
+<td>Low</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>50</td>
+<td>$75,000</td>
+<td>Medium</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>29</td>
+<td>$48,000</td>
+<td>Low</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="example-mcar-mar-or-mnar-1" class="slide level2">
+<h2>Example: MCAR, MAR or MNAR?</h2>
+<div style="font-size: smaller">
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 7%">
+<col style="width: 17%">
+<col style="width: 28%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Employee ID</th>
+<th>Age</th>
+<th>Job Tenure</th>
+<th>Performance Score</th>
+<th>Promotion Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>30</td>
+<td>5 years</td>
+<td>85</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>45</td>
+<td>10 years</td>
+<td>-</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>28</td>
+<td>3 years</td>
+<td>90</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>50</td>
+<td>12 years</td>
+<td>70</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>35</td>
+<td>6 years</td>
+<td>-</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>32</td>
+<td>4 years</td>
+<td>95</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>40</td>
+<td>8 years</td>
+<td>-</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>29</td>
+<td>2 years</td>
+<td>88</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="eda-missing-data" class="slide level2">
+<h2>EDA: missing data</h2>
+<p>Finally, be aware that how missing data is encoded depends on the dataset</p>
+<ul>
+<li>R defaults to NA when reading data, in joins, etc.</li>
+<li>The creator(s) of the dataset may use a different encoding.</li>
+<li>Missing data can have multiple representations according to semantics of the measurement.</li>
+<li>Remember that entire measurements can be missing (i.e.&nbsp;from all observations, not just some).</li>
+</ul>
+</section>
+<section id="eda-summary" class="slide level2">
+<h2>EDA: summary</h2>
+<ul>
+<li>Understand what the measurements represent and confirm constraints (if any) and suitability of encoding.</li>
+<li>Make a decision on how to deal with missing data.</li>
+<li>Understand shape of measurements (may identify an issue or suggest a data transformation)</li>
+</ul>
+</section></section>
+<section>
+<section id="feature-engineering" class="title-slide slide level1 center">
+<h1>Feature engineering</h1>
+<p>Feature engineering is the act of converting raw observations into desired features using statistical, mathematical, or machine learning approaches.</p>
+</section>
+<section id="feature-engineering-transformation" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>for continuous variables (usually the independent variables or covariates):</p>
+<ul>
+<li><strong>normalization</strong> (scale values to <span class="math inline">\([0,1]\)</span>)
+<ul>
+<li><span class="math inline">\(X_\text{norm} = \frac{X-X_\text{min}}{X_\text{max}-X_\text{min}}\)</span></li>
+</ul></li>
+<li><strong>standardization</strong> (subtract mean and scale by stdev)
+<ul>
+<li><span class="math inline">\(X_\text{std} = \frac{X-\mu_X}{\sigma_X}\)</span></li>
+</ul></li>
+<li><strong>scaling</strong> (multiply / divide by a constant)
+<ul>
+<li><span class="math inline">\(X_\text{scaled} = K\times X\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="feature-engineering-transformation-1" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>Other common transformations:</p>
+<ul>
+<li>Box-cox: with <span class="math inline">\(\tilde{x}\)</span> the geometric mean of the (<strong>positive</strong>) predictor data (<span class="math inline">\(\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}\)</span>)</li>
+</ul>
+<p><span class="math display">\[
+x_i(\lambda) = \left\{
+\begin{array}{cc}
+\frac{x_i^{\lambda}-1}{\lambda\tilde{x}^{\lambda-1}} &amp; \lambda\ne 0\\
+\tilde{x}\log x_i &amp; \lambda=0
+\end{array}
+\right .  
+\]</span></p>
+<div style="font-size: smaller">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Box-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="feature-engineering-transformation-2" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>One last common transformation:</p>
+<ul>
+<li>logit transformation for bounded target variables (scaled to lie in <span class="math inline">\([0,1]\)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\text{logit}\left(p\right)=\log\frac{p}{1-p},\;p\in [0,1]
+\]</span></p>
+<div style="font-size: small">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>The Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range <span class="math inline">\(\left(-\infty,\infty\right)\)</span>, where p is the proportion of each sample that is 1 (or 0)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="feature-engineering-transformation-3" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>Why normalize or standardize?</p>
+<ul>
+<li>variation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.
+<ul>
+<li>e.g.&nbsp;income and age</li>
+</ul></li>
+<li>reduce the impact of outliers</li>
+<li>make results more explainable</li>
+</ul>
+</section>
+<section id="feature-engineering-transformation-4" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>for continuous variables (usually the target variables):</p>
+<ul>
+<li><strong>transformation</strong> (arithmetic, basis functions, polynomials, splines, differencing)
+<ul>
+<li><span class="math inline">\(y = \log(y),\sqrt{y},\frac{1}{y}\)</span>, etc.</li>
+<li><span class="math inline">\(y = \sum_i \beta_i\text{f}_i(x)\;\text{s.t.}\;0=\int\text{f}_i(x)\text{f}_j(x)\; \forall i\ne j\)</span></li>
+<li><span class="math inline">\(y = \beta_0+\beta_1 x+\beta_2 x^2+\beta_3 x^3+\ldots\)</span></li>
+<li><span class="math inline">\(y = \beta_0+\beta_1 x_1+\beta_2 x_2+\beta_3 x_1 x_2+\ldots\)</span></li>
+<li><span class="math inline">\(y'_i = y_i-y_{i-1}\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="feature-engineering-transformation-5" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>for categorical variables (either target or explanatory variables):</p>
+<ul>
+<li>binning / bucketing
+<ul>
+<li>represent a numerical value as a categorical value</li>
+</ul></li>
+<li>categorical<span class="math inline">\(\rightarrow\)</span>ordinal and ordinal<span class="math inline">\(\rightarrow\)</span>categorical</li>
+</ul>
+<p>for date variables:</p>
+<ul>
+<li>timestamp<span class="math inline">\(\rightarrow\)</span>date or date part</li>
+</ul>
+</section>
+<section id="feature-engineering-transformation-6" class="slide level2">
+<h2>Feature engineering: transformation</h2>
+<p>Why transform?</p>
+<ul>
+<li><p>it can make your model perform better</p>
+<ul>
+<li>e.g.&nbsp;<span class="math inline">\(\log\)</span> transform makes exponential data linear, and log-Normal data Gaussian</li>
+<li><span class="math inline">\(\log\)</span> transforms also make multiplicative models additive</li>
+<li>e.g.&nbsp;polynomials, basis functions and splines help model non-linearities in data</li>
+</ul></li>
+</ul>
+</section>
+<section id="feature-engineering-creation" class="slide level2">
+<h2>Feature engineering: creation</h2>
+<ul>
+<li>outliers (due to data entry, measurement/experiment, intentional errors)
+<ul>
+<li>outliers can be identified by quantile methods (Gaussian data)</li>
+<li>outliers can be removed, treated as missing, or capped</li>
+</ul></li>
+<li>lag variables (either target or explanatory variables)
+<ul>
+<li>useful in time series models, e.g.&nbsp;<span class="math inline">\(y_t,y_{t-1},\ldots y_{t-n}\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="feature-engineering-creation-1" class="slide level2">
+<h2>Feature engineering: creation</h2>
+<ul>
+<li>binning / bucketing
+<ul>
+<li>represent numerical as categorical and vice versa</li>
+</ul></li>
+<li>interval and ratio levels</li>
+</ul>
+</section>
+<section id="feature-engineering-summary" class="slide level2">
+<h2>Feature engineering: summary</h2>
+<ul>
+<li><p>requires an advanced technical skill set</p></li>
+<li><p>requires domain expertise</p></li>
+<li><p>is time-consuming and resource intensive</p></li>
+<li><p>different analytics algorithms require different feature engineering</p></li>
+</ul>
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
@@ -1591,7 +2427,7 @@ GROUP BY `x_bin`</code></pre>
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1879,18 +2715,7 @@ GROUP BY `x_bin`</code></pre>
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1922,7 +2747,29 @@ GROUP BY `x_bin`</code></pre>
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1930,7 +2777,7 @@ GROUP BY `x_bin`</code></pre>
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

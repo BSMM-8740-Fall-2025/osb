@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="L.L. Odette">
-  <title>BSMM-8740 - Fall 2024 - Classification &amp; clustering methods</title>
+  <title>BSMM-8740 - Fall 2024 – Classification &amp; clustering methods</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -385,11 +385,11 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - Classification &amp; clustering methods">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
+<meta property="og:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - Classification &amp; clustering methods">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
+<meta name="twitter:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -400,7 +400,7 @@
 
 <section id="title-slide" data-background-image="images/my-DRAFT.png" data-background-opacity="0.40" data-background-size="contain" class="quarto-title-block center">
   <h1 class="title">Classification &amp; clustering methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 6]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 6]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -483,7 +483,7 @@ L.L. Odette
 <h2>Classifier metrics</h2>
 <h3 id="confusion-matrix">Confusion matrix</h3>
 <p>The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model:</p>
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th></th>
@@ -815,8 +815,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p><img data-src="images/lec-6/Murphy_Figure_17.13_A.png" class="quarto-figure quarto-figure-center"></p>
 </figure>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="svm-classification-1" class="slide level2">
 <h2>SVM Classification:</h2>
@@ -833,8 +832,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p><img data-src="images/lec-6/Murphy_Figure_17.13_A.png" class="quarto-figure quarto-figure-center"></p>
 </figure>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="svm-classification-2" class="slide level2">
 <h2>SVM Classification:</h2>
@@ -860,8 +858,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p><img data-src="images/lec-6/Murphy_Figure_17.13_B.png" class="quarto-figure quarto-figure-center" alt="Murphy fig 17.13(b)" width="299"></p>
 </figure>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="svm-data-not-separable" class="slide level2">
 <h2>SVM: data not separable</h2>
@@ -878,8 +875,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p><img data-src="images/lec-6/Sebastian_Raschka.png" class="quarto-figure quarto-figure-center" width="600"></p>
 </figure>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="svm-classification-support-vectors" class="slide level2">
 <h2>SVM Classification: Support Vectors</h2>
@@ -1034,52 +1030,73 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- all_workflows %&gt;% </span></span>
 <span id="cb19-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_map(</span></span>
-<span id="cb19-3"><a></a><span class="er">&gt;</span> <span class="co">#     verbose = TRUE                # enable logging</span></span>
-<span id="cb19-4"><a></a><span class="er">&gt;</span> <span class="co">#     , fn = "tune_cluster"</span></span>
-<span id="cb19-5"><a></a><span class="er">&gt;</span> <span class="co">#     , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()</span></span>
-<span id="cb19-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-3"><a></a><span class="er">&gt;</span> <span class="co">#     resamples = train_resamples, grid = 5, verbose = TRUE</span></span>
+<span id="cb19-4"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows %&gt;% </span></span>
-<span id="cb20-2"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::select(wflow_id,result) %&gt;% </span></span>
-<span id="cb20-3"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(result) %&gt;% </span></span>
-<span id="cb20-4"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(.metrics) %&gt;% </span></span>
-<span id="cb20-5"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::filter(.metric == 'sse_total') %&gt;% </span></span>
-<span id="cb20-6"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::group_by(wflow_id) %&gt;% </span></span>
-<span id="cb20-7"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::arrange(desc(.estimate) ) %&gt;% </span></span>
-<span id="cb20-8"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::slice(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- </span></span>
+<span id="cb20-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_set(</span></span>
+<span id="cb20-3"><a></a><span class="er">&gt;</span> <span class="co">#     preproc = list(base = labelled_points_recipe),</span></span>
+<span id="cb20-4"><a></a><span class="er">&gt;</span> <span class="co">#     models = </span></span>
+<span id="cb20-5"><a></a><span class="er">&gt;</span> <span class="co">#       3:20 %&gt;% purrr::map( ~tidyclust::k_means( num_clusters = .x ) )</span></span>
+<span id="cb20-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb21-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_map</span>(</span>
-<span id="cb21-3"><a></a><span class="sc">+</span>     <span class="at">verbose =</span> <span class="cn">TRUE</span>                <span class="co"># enable logging</span></span>
-<span id="cb21-4"><a></a><span class="sc">+</span>     , <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
-<span id="cb21-5"><a></a><span class="sc">+</span>     , <span class="at">resamples =</span> labelled_points_resamples <span class="co"># a parameter passed to tune::tune_grid()</span></span>
-<span id="cb21-6"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- all_workflows %&gt;% </span></span>
+<span id="cb21-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_map(</span></span>
+<span id="cb21-3"><a></a><span class="er">&gt;</span> <span class="co">#     verbose = TRUE                # enable logging</span></span>
+<span id="cb21-4"><a></a><span class="er">&gt;</span> <span class="co">#     , fn = "tune_cluster"</span></span>
+<span id="cb21-5"><a></a><span class="er">&gt;</span> <span class="co">#     , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()</span></span>
+<span id="cb21-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> workflowsets<span class="sc">::</span><span class="fu">rank_results</span>(<span class="at">select_best =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows %&gt;% </span></span>
+<span id="cb22-2"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::select(wflow_id,result) %&gt;% </span></span>
+<span id="cb22-3"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(result) %&gt;% </span></span>
+<span id="cb22-4"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(.metrics) %&gt;% </span></span>
+<span id="cb22-5"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::filter(.metric == 'sse_total') %&gt;% </span></span>
+<span id="cb22-6"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::group_by(wflow_id) %&gt;% </span></span>
+<span id="cb22-7"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::arrange(desc(.estimate) ) %&gt;% </span></span>
+<span id="cb22-8"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::slice(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(wflow_id,result) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(result) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-4"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(.metrics) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">'sse_within_total'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-6"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(wflow_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-7"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(.estimate) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-8"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
+<span id="cb23-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
+<span id="cb23-3"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> labelled_points_recipe),</span>
+<span id="cb23-4"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
+<span id="cb23-5"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> tune_results <span class="ot">&lt;-</span></span>
-<span id="cb24-2"><a></a><span class="sc">+</span>    all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb24-3"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
-<span id="cb24-4"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
-<span id="cb24-5"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> labelled_points_resamples</span>
-<span id="cb24-6"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
-<span id="cb24-7"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
-<span id="cb24-8"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
-<span id="cb24-9"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> all_workflows <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_map</span>(</span>
+<span id="cb24-3"><a></a><span class="sc">+</span>     <span class="at">verbose =</span> <span class="cn">TRUE</span>                <span class="co"># enable logging</span></span>
+<span id="cb24-4"><a></a><span class="sc">+</span>     , <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
+<span id="cb24-5"><a></a><span class="sc">+</span>     , <span class="at">resamples =</span> labelled_points_resamples <span class="co"># a parameter passed to tune::tune_grid()</span></span>
+<span id="cb24-6"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> workflowsets<span class="sc">::</span><span class="fu">rank_results</span>(<span class="at">select_best =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> </span>
+<span id="cb26-2"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(wflow_id,result) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(result) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-4"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(.metrics) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">'sse_within_total'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-6"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(wflow_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-7"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(.estimate) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-8"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="sc">&gt;</span> tune_results <span class="ot">&lt;-</span></span>
+<span id="cb27-2"><a></a><span class="sc">+</span>    all_workflows <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
+<span id="cb27-4"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
+<span id="cb27-5"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> labelled_points_resamples</span>
+<span id="cb27-6"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
+<span id="cb27-7"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
+<span id="cb27-8"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
+<span id="cb27-9"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="hierarchical-clustering" class="slide level2">
@@ -1110,7 +1127,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1328,44 +1345,6 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
@@ -1398,18 +1377,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1441,7 +1409,29 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1449,7 +1439,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

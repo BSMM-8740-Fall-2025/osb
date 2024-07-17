@@ -8,10 +8,10 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.551">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Dr.&nbsp;Mine Çetinkaya-Rundel">
-  <title>BSMM-8740 - Fall 2024 - SLR: Model diagnostics</title>
+  <title>BSMM-8740 - Fall 2024 – SLR: Model diagnostics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -42,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -70,7 +70,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -84,7 +84,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; } /* Keyword */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -391,10 +391,10 @@
   <link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
   <link href="../site_libs/countdown-0.3.5/countdown.css" rel="stylesheet">
   <script src="../site_libs/countdown-0.3.5/countdown.js"></script>
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - SLR: Model diagnostics">
+<meta property="og:title" content="SLR: Model diagnostics – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="STA 210 - Spring 2022">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - SLR: Model diagnostics">
+<meta name="twitter:title" content="SLR: Model diagnostics – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="STA 210 - Spring 2022">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -453,8 +453,7 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 <span id="cb2-5"><a></a><span class="fu">tidy</span>(df_fit) <span class="sc">%&gt;%</span></span>
 <span id="cb2-6"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -485,7 +484,6 @@ Dr.&nbsp;Mine Çetinkaya-Rundel
 
 </div>
 </div>
-</div>
 </section>
 <section id="ht-for-the-slope" class="slide level2 smaller">
 <h2>HT for the slope</h2>
@@ -508,8 +506,7 @@ p-value = P(|t| &gt; |\text{test statistic}),
 <h2>HT: Test statistic</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -538,7 +535,6 @@ p-value = P(|t| &gt; |\text{test statistic}),
 </table>
 
 
-</div>
 </div>
 </div>
 <p><span class="math display">\[
@@ -549,8 +545,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 <h2>HT: p-value</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -581,12 +576,11 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 
 </div>
 </div>
-</div>
 
 <img data-src="lec-7_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
 <section id="understanding-the-p-value" class="slide level2 smaller">
 <h2>Understanding the p-value</h2>
-<table>
+<table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Magnitude of p-value</th>
@@ -630,8 +624,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 <h2>HT: Conclusion, in context</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -660,7 +653,6 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 </table>
 
 
-</div>
 </div>
 </div>
 <ul>
@@ -711,15 +703,13 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 </div>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="ci-for-the-slope-calculation" class="slide level2">
 <h2>95% CI for the slope: Calculation</h2>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -750,7 +740,6 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 
 </div>
 </div>
-</div>
 <p><span class="math display">\[\hat{\beta}_1 = 159.48 \hspace{15mm} t^* = 1.98 \hspace{15mm} SE_{\hat{\beta}_1} = 18.17\]</span></p>
 <div class="fragment">
 <p><span class="math display">\[
@@ -764,8 +753,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">tidy</span>(df_fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb9-2"><a></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<table data-quarto-postprocess="true">
+<table class="caption-top" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -800,7 +788,6 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 </table>
 
 
-</div>
 </div>
 </div>
 </section>
@@ -895,8 +882,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 <p><img data-src="images/lec-7/tiny-house.jpeg" class="quarto-figure quarto-figure-center" alt="Black tiny house on wheels" width="750"></p>
 </figure>
 </div>
-</div>
-</div>
+</div></div>
 <div class="fragment">
 <p><em>No, thanks!</em></p>
 </div>
@@ -971,8 +957,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 </div>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="constant-variance" class="slide level2">
 <h2>Constant variance</h2>
@@ -1002,8 +987,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 </div>
 </div>
 </div>
-</div>
-</div>
+</div></div>
 </section>
 <section id="normality" class="slide level2">
 <h2>Normality</h2>
@@ -1037,8 +1021,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
 <li>Independence</li>
 </ul>
 </div>
-</div>
-</div>
+</div></div>
 <div class="fragment">
 <div class="question">
 <p>Which of these conditions are required for fitting a SLR? Which for simulation-based inference for the slope for an SLR? Which for inference with mathematical models?</p>
@@ -1348,18 +1331,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
         }
         return false;
       }
-      const clipboard = new window.ClipboardJS('.code-copy-button', {
-        text: function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-        }
-      });
-      clipboard.on('success', function(e) {
+      const onCopySuccess = function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -1391,7 +1363,29 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
         }, 1000);
         // clear code selection
         e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
       });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1399,7 +1393,7 @@ t = \frac{\hat{\beta}_1 - 0}{SE_{\hat{\beta}_1}} = \frac{159.48 - 0}{18.17} = 8.
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.551">
+<meta name="generator" content="quarto-1.5.54">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>BSMM-8740 - Fall 2024 - Lab 1 - Tidy Data Wrangling</title>
+<title>Lab 1 - Tidy Data Wrangling – BSMM-8740 - Fall 2024</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -102,7 +102,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
@@ -132,10 +132,10 @@ window.Quarto = {
 };
 </script>
 
-<meta property="og:title" content="BSMM-8740 - Fall 2024 - Lab 1 - Tidy Data Wrangling">
+<meta property="og:title" content="Lab 1 - Tidy Data Wrangling – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="BSMM-8740 - Fall 2024 - Lab 1 - Tidy Data Wrangling">
+<meta name="twitter:title" content="Lab 1 - Tidy Data Wrangling – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/labs/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -148,13 +148,13 @@ window.Quarto = {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Lab 1 - Tidy Data Wrangling</li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -171,7 +171,7 @@ window.Quarto = {
       <div class="sidebar-tools-main tools-wide">
     <a href="https://github.com/bsmm-8740-fall-2024" title="GitHub organization" class="quarto-navigation-tool px-1" aria-label="GitHub organization"><i class="bi bi-github"></i></a>
     <div class="dropdown">
-      <a href="" title="Brightspace" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Brightspace"><i class="bi bi-person-fill"></i></a>
+      <a href="" title="Brightspace" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Brightspace"><i class="bi bi-person-fill"></i></a>
       <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
           <li>
             <a class="dropdown-item sidebar-tools-main-item" href="https://brightspace.uwindsor.ca/d2l/le/144921/discussions/List">
@@ -202,9 +202,9 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">Course information</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -249,9 +249,9 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">Weekly materials</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -326,9 +326,9 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
  <span class="menu-text">Supplemental notes</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -391,22 +391,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link" data-scroll-target="#learning-goals">Learning goals</a></li>
   </ul></li>
-  <li><a href="#lets-git-started" id="toc-lets-git-started" class="nav-link" data-scroll-target="#lets-git-started">Let’s Git Started</a>
-  <ul class="collapse">
-  <li><a href="#register-a-github-account" id="toc-register-a-github-account" class="nav-link" data-scroll-target="#register-a-github-account">1. Register a Github account</a></li>
-  <li><a href="#git-already-installed" id="toc-git-already-installed" class="nav-link" data-scroll-target="#git-already-installed">2. Git already installed?</a></li>
-  <li><a href="#introduce-yourself-to-git" id="toc-introduce-yourself-to-git" class="nav-link" data-scroll-target="#introduce-yourself-to-git">3. Introduce yourself to Git</a></li>
-  <li><a href="#set-up-personal-access-tokens-for-https" id="toc-set-up-personal-access-tokens-for-https" class="nav-link" data-scroll-target="#set-up-personal-access-tokens-for-https">4. Set up personal access tokens for HTTPS</a></li>
-  <li><a href="#how-git-works" id="toc-how-git-works" class="nav-link" data-scroll-target="#how-git-works">5. How Git works</a></li>
-  <li><a href="#clone-the-repo-start-new-rstudio-project" id="toc-clone-the-repo-start-new-rstudio-project" class="nav-link" data-scroll-target="#clone-the-repo-start-new-rstudio-project">Clone the repo &amp; start new RStudio project</a></li>
-  <li><a href="#r-and-r-studio" id="toc-r-and-r-studio" class="nav-link" data-scroll-target="#r-and-r-studio">R and R Studio</a></li>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link" data-scroll-target="#yaml">YAML</a></li>
-  <li><a href="#committing-changes" id="toc-committing-changes" class="nav-link" data-scroll-target="#committing-changes">Committing changes</a></li>
-  <li><a href="#push-changes" id="toc-push-changes" class="nav-link" data-scroll-target="#push-changes">Push changes</a></li>
-  </ul></li>
   <li><a href="#now-todays-lab" id="toc-now-todays-lab" class="nav-link" data-scroll-target="#now-todays-lab">Now, today’s lab</a>
   <ul class="collapse">
-  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   <li><a href="#data-yearly-statistics-and-standings-for-baseball-teams" id="toc-data-yearly-statistics-and-standings-for-baseball-teams" class="nav-link" data-scroll-target="#data-yearly-statistics-and-standings-for-baseball-teams">Data: Yearly statistics and standings for baseball teams</a>
   <ul class="collapse">
   <li><a href="#view-the-data" id="toc-view-the-data" class="nav-link" data-scroll-target="#view-the-data">View the data</a></li>
@@ -457,21 +443,8 @@ window.Quarto = {
 
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This lab will go through many of the same operations we’ve demonstrated in class. The main goal is to reinforce our understanding of tidy data, the tidyverse and the pipe, which we will be using throughout the course. An additional goal is to reinforce your use of git and GitHub, the collaboration and version control system that we will be using throughout the course.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Git is a version control system (like “Track Changes” features from Microsoft Word but more powerful) and GitHub is the home for your Git-based projects on the internet (like DropBox but much better).</p>
-</div>
-</div>
-<p>As the labs progress, you are encouraged to explore beyond what the labs require; a willingness to experiment will make you a much better programmer. Before we get to that stage, however, you need to build some basic fluency in R and the tidyverse. Today we begin with an introductions to GIT followed by exercises in the fundamental building blocks of R and RStudio: the interface, reading in data, and basic commands.</p>
+<p>This lab will go through many of the same operations we’ve demonstrated in class. The main goal is to reinforce our understanding of tidy data, the tidyverse and the pipe, which we will be using throughout the course.</p>
+<p>As the labs progress, you are encouraged to explore beyond what the labs require; a willingness to experiment will make you a much better programmer. Before we get to that stage, however, you need to build some basic fluency in R and the tidyverse. Today we begin with exercises in the fundamental building blocks of R and RStudio: the interface, reading in data, and basic commands.</p>
 <section id="learning-goals" class="level3">
 <h3 class="anchored" data-anchor-id="learning-goals">Learning goals</h3>
 <p>By the end of the lab, you will…</p>
@@ -498,222 +471,8 @@ Important
 </div>
 </section>
 </section>
-<section id="lets-git-started" class="level2">
-<h2 class="anchored" data-anchor-id="lets-git-started">Let’s Git Started</h2>
-<section id="register-a-github-account" class="level3">
-<h3 class="anchored" data-anchor-id="register-a-github-account">1. Register a Github account</h3>
-<p>Register an account with GitHub. It’s free!</p>
-<ul>
-<li><a href="https://github.com" class="uri">https://github.com</a></li>
-</ul>
-<section id="username-advice" class="level4">
-<h4 class="anchored" data-anchor-id="username-advice">Username advice</h4>
-<ul>
-<li>Incorporate your actual name! People like to know who they’re dealing with. Also it makes your username easier for people to guess or remember.</li>
-<li>Shorter is better than longer.</li>
-<li>Make it timeless. Don’t highlight your current university, employer, or place of residence, e.g.&nbsp;JennyFromTheBlock.</li>
-</ul>
-<p>You can change your username later, but better to get this right the first time.</p>
-<ul>
-<li><p><a href="https://help.github.com/articles/changing-your-github-username/" class="uri">https://help.github.com/articles/changing-your-github-username/</a></p></li>
-<li><p><a href="https://help.github.com/articles/what-happens-when-i-change-my-username/" class="uri">https://help.github.com/articles/what-happens-when-i-change-my-username/</a></p></li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>We will be switching between the console and the terminal, in this lab and others. The <strong>Console</strong> is where you can execute R code, while the <strong>Terminal</strong> is where you can execute system functions like git.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Screen Shot 2023-09-12 at 12.25.57 PM.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="300"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="git-already-installed" class="level3">
-<h3 class="anchored" data-anchor-id="git-already-installed">2. Git already installed?</h3>
-<p>Go to the <strong>Terminal</strong> tab in RStudio and enter <code>git --version</code> to see its version:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>git <span class="sc">--</span>version</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>If this instruction gives an error, it’s possible that git is not installed on your machine. If so, let your instructor know.</p>
-</section>
-<section id="introduce-yourself-to-git" class="level3">
-<h3 class="anchored" data-anchor-id="introduce-yourself-to-git">3. Introduce yourself to Git</h3>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>make sure that the package <code>usethis</code> has been installed. You can check under the packages tab in the file &amp; plots viewer (e.g., do a search).</p>
-</div>
-</div>
-<p>You can set your Git user name and email from within R (i.e.&nbsp;go back to the <strong>Console</strong> tab):</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">use_git_config</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># user.name does not have to be your GitHub user name</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">user.name =</span> <span class="st">"Jane Doe"</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># user.email MUST be the email associated with your GitHub account.</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  , <span class="at">user.email =</span> <span class="st">"jane@example.org"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Your commits will be labelled with this user name, so make it informative to potential collaborators and future you.</p>
-</div>
-</div>
-</section>
-<section id="set-up-personal-access-tokens-for-https" class="level3">
-<h3 class="anchored" data-anchor-id="set-up-personal-access-tokens-for-https">4. Set up personal access tokens for HTTPS</h3>
-<p>The password that you use to login to GitHub’s website is NOT an acceptable credential when talking to GitHub as a Git server. You can learn more in their blog post <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">Token authentication requirements for Git operations</a>.</p>
-<p>The recommendation to use a personal access token (PAT) is exactly what we cover here. First you need to create your PAT, and you can do this from R (in the <strong>Console</strong>):</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_github_token</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The <code>usethis</code> approach takes you to a pre-filled form with pre-selected some recommended scopes, which you can look over and adjust before clicking “Generate token”.</p>
-<p>It is a very good idea to describe the token’s purpose in the <em>Note</em> field, because one day you might have multiple PATs. We recommend naming each token after its use case, such as the computer or project you are using it for, e.g.&nbsp;“personal-macbook-air” or “lab1-course-8740”. In the future, you will find yourself staring at this list of tokens, because inevitably you’ll need to re-generate or delete one of them. Make it easy to figure out which token you’ve come here to fiddle with.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If this is your first time generating a PAT, just accept the defaults and scroll to the bottom of the page and click the green <strong>Generate token</strong> button.</p>
-</div>
-</div>
-<section id="click-generate-token." class="level5">
-<h5 class="anchored" data-anchor-id="click-generate-token."><strong>4.1 Click “Generate token”</strong>.</h5>
-<p>You won’t be able to see this token again, so don’t close or navigate away from this browser window until you store the PAT. Copy the PAT to the clipboard or a text file in RStudio.</p>
-<p>Treat this PAT like a password! Do not ever hard-wire your PAT into your code! A PAT should always be retrieved implicitly, for example, from the Git credential store, a safe place, where command line Git, RStudio, and R packages can discover it.</p>
-</section>
-<section id="save-your-pat" class="level5">
-<h5 class="anchored" data-anchor-id="save-your-pat">4.2 Save your PAT</h5>
-<ul>
-<li>Copy the generated PAT to a secure, long-term system for storing secrets, like 1Password or LastPass.</li>
-<li>email it to yourself.</li>
-<li>copy it onto a piece of scrap paper.</li>
-</ul>
-</section>
-<section id="store-your-pat-in-the-git-credential-store" class="level5">
-<h5 class="anchored" data-anchor-id="store-your-pat-in-the-git-credential-store">4.3 Store your PAT in the Git credential store</h5>
-<p>Finally, we store the PAT in a safe place where command line Git, RStudio, and R packages can discover it. To do this call <code>gitcreds::gitcreds_set()</code>. If you don’t have a PAT stored already, it will prompt you to enter your PAT. Paste!</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gitcreds<span class="sc">::</span><span class="fu">gitcreds_set</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Instead of saving your PAT you could just <a href="https://happygitwithr.com/https-pat#regenerate-pat">re-generate the PAT each lab session and re-store it</a>. If you accept the default 30-day expiration period, this is a workflow you’ll be using often anyway.</p>
-<p>On github.com, assuming you’re signed in, you can manage your personal access tokens from <a href="https://github.com/settings/tokens" class="uri">https://github.com/settings/tokens</a>, also reachable via <em>Settings &gt; Developer settings &gt; Personal access tokens</em>.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Given that the machines start from the same initial state each lab session, you will follow the above steps to initial your machine at the start of each lab session.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="how-git-works" class="level3">
-<h3 class="anchored" data-anchor-id="how-git-works">5. How Git works</h3>
-<p>Git has three storages locally: a Working directory, Staging Area, and a Local repository.</p>
-<p>𝟭. 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 𝗗𝗶𝗿𝗲𝗰𝘁𝗼𝗿𝘆 - is where you work, and your files live (“untracked”). GIT is not aware of these files.</p>
-<p>𝟮. 𝗦𝘁𝗮𝗴𝗶𝗻𝗴 𝗔𝗿𝗲𝗮 - When you stage your changes, GIT will start tracking and saving your changes with files. These changes are stored in the .git directory.</p>
-<p>𝟯. 𝗟𝗼𝗰𝗮𝗹 𝗥𝗲𝗽𝗼𝘀𝗶𝘁𝗼𝗿𝘆 - is the area where everything is saved (commits) in the .git directory. So, when you want to move your files from Staging Area to Local Repository, you can use the git commit command. After this, your Staging area will be empty. If you want to see what is in the Local repository, try git log.</p>
-<p>The workflow looks like this:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../images/git_workflow.jpeg" class="img-fluid figure-img" width="374"></p>
-<figcaption>Git workflow</figcaption>
-</figure>
-</div>
-<p>You are now ready interact with GitHub via RStudio!</p>
-</section>
-<section id="clone-the-repo-start-new-rstudio-project" class="level3">
-<h3 class="anchored" data-anchor-id="clone-the-repo-start-new-rstudio-project">Clone the repo &amp; start new RStudio project</h3>
-<ol type="1">
-<li><p>First make sure you are logged into your own Github account on a web browser.</p></li>
-<li><p>Next, in a new browser tab, go to the course organization site at <a href="https://github.com/BSMM-8740-Fall-2023/" title="Course GitHub organization">BSMM-8740-Fall-2023</a> on GitHub. Click on the repo <strong>BSMM-lab-1</strong>. It contains the starter documents you need to complete the lab.</p></li>
-<li><p>Click on the green <strong>Use this template</strong> button and select <em>Create a new repository</em>. This will make a copy of <strong>BSMM-lab-1</strong> in your own github account.</p></li>
-<li><p>Next, go back to your Github acount and select your copy of <strong>BSMM-lab-1</strong>. Click on the green <strong>CODE</strong> button, select <strong>Use HTTPS</strong> (this might already be selected by default, and if it is, you’ll see the text <strong>Clone with HTTPS</strong>). Click on the clipboard icon to copy the repo URL.</p></li>
-<li><p>In RStudio, go to <em>File</em> ➛ <em>New Project</em> ➛<em>Version Control</em> ➛ <em>Git</em>.</p></li>
-<li><p>Copy and paste the URL of your assignment repo (the clipboard copy you made in step 4) into the dialog box <em>Repository URL</em>. The project directory name should be automatically populated, but <strong>make sure you select a directory</strong> in <em>Create project as a subdirectory of</em>.</p></li>
-<li><p>Finally, click <em>Create Project</em>, and the files from your GitHub repo will be displayed in the <em>Files</em> pane in RStudio.</p></li>
-<li><p>Click <em>bsmm-lab-1.qmd</em> to open the template R Markdown file. This is where you will write up your code and narrative for the lab.</p></li>
-</ol>
-</section>
-<section id="r-and-r-studio" class="level3">
-<h3 class="anchored" data-anchor-id="r-and-r-studio">R and R Studio</h3>
-<p>Below are the components of the RStudio IDE.</p>
-<p><img src="images/lab-1/rstudio.png" class="img-fluid" alt="RStudio IDE"></p>
-<p>Below are the components of a Quarto (.qmd) file.</p>
-<p><img src="images/lab-1/quarto.png" class="img-fluid" alt="Quarto document"></p>
-</section>
-<section id="yaml" class="level3">
-<h3 class="anchored" data-anchor-id="yaml">YAML</h3>
-<p>The top portion of your R Markdown file (between the three dashed lines) is called <strong>YAML</strong>. It stands for “YAML Ain’t Markup Language”. It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Open the Quarto (`<code>.qmd`</code>) file in your project, change the author name to your name, and render the document. Examine the rendered HTML document in the <em>Files</em> pane.</p>
-</div>
-</div>
-</section>
-<section id="committing-changes" class="level3">
-<h3 class="anchored" data-anchor-id="committing-changes">Committing changes</h3>
-<p>Now, go to the Git pane in your RStudio instance. This will be in the top right hand corner in a separate tab.</p>
-<p>If you have made changes to your *.qmd file, you should see it listed here. Click on it to select it in this list and then click on <strong>Diff</strong>. This shows you the <em>diff</em>erence between the last committed state of the document and its current state including changes. You should see deletions in red and additions in green.</p>
-<p>If you’re happy with these changes, we’ll prepare the changes to be pushed to your remote repository. First, <strong>stage</strong> your changes by checking the appropriate box on the files you want to prepare. Next, write a meaningful commit message (for instance, “updated author name”) in the <strong>Commit message</strong> box. Finally, click <strong>Commit</strong>. Note that every commit needs to have a commit message associated with it.</p>
-<p>You don’t have to commit after every change, as this would get quite tedious. You should commit states that are <em>meaningful to you</em> for inspection, comparison, or restoration.</p>
-<p>In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.</p>
-</section>
-<section id="push-changes" class="level3">
-<h3 class="anchored" data-anchor-id="push-changes">Push changes</h3>
-<p>Now that you have made an update and committed this change, it’s time to push these changes to your repo on GitHub.</p>
-<p>In order to push your changes to GitHub, you must have <strong>staged</strong> your <strong>commit</strong> to be pushed. click on <strong>Push</strong>.</p>
-<p>Now let’s make sure all the changes went to GitHub. Go to your GitHub repo and refresh the page. You should see your commit message next to the updated files. If you see this, all your changes are on GitHub and you’re good to go!</p>
-<p>More on the basic use of git <a href="https://happygitwithr.com/git-intro">here</a>.</p>
-</section>
-</section>
 <section id="now-todays-lab" class="level1">
 <h1>Now, today’s lab</h1>
-<section id="packages" class="level2">
-<h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <p>We will use the following package in today’s lab.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -725,23 +484,16 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>For this lab, you will need to install the package <code>Lahman</code></p>
+<p>The code below will install (if necessary) and load the packages needed in today’s exercises</p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check if 'librarian' is installed and if not, install it</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span> <span class="st">"librarian"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()) ){</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"librarian"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages if not already loaded</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>librarian<span class="sc">::</span><span class="fu">shelf</span>(tidyverse, Lahman, magrittr, gt, gtExtras, ggplot2)}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The tidyverse is a meta-package. When you load it you get eight packages loaded for you:</p>
 <ul>
@@ -756,7 +508,6 @@ Note
 </ul>
 <p>The message that’s printed when you load the package tells you which versions of these packages are loaded as well as any conflicts they may have introduced, e.g., the <code>filter()</code> function from dplyr has now masked (overwritten) the <code>filter()</code> function available in base R (and that’s ok, we’ll use <code>dplyr::filter()</code> anyway).</p>
 <p>We’ll be using functionality from all of these packages throughout the semester, though we’ll always load them all at once with <code>library(tidyverse)</code>. You can find out more about the tidyverse and each of the packages that make it up <a href="https://www.tidyverse.org/">here</a>.</p>
-</section>
 <section id="data-yearly-statistics-and-standings-for-baseball-teams" class="level2">
 <h2 class="anchored" data-anchor-id="data-yearly-statistics-and-standings-for-baseball-teams">Data: Yearly statistics and standings for baseball teams</h2>
 <p>Today’s data is all baseball statistics. The data is in the <code>Lahman</code> package.</p>
@@ -764,11 +515,7 @@ Note
 <h3 class="anchored" data-anchor-id="view-the-data">View the data</h3>
 <p>Before doing any analysis, you may want to get quick view of the data. This is useful when you’ve imported data to see if your data imported correctly. We can use the <code>view()</code> function to see the entire data set in RStudio. Type the code below in the <strong>Console</strong> to view the entire dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Lahman)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(Teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3015   48</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(Teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -776,7 +523,7 @@ Note
 <h2 class="anchored" data-anchor-id="data-dictionary">Data dictionary</h2>
 <p>The variable definitions are found in the help for Teams</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>?Teams</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?Teams</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="exercises" class="level3">
 <h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
@@ -800,7 +547,7 @@ Tip
 <p>The <code>view()</code> function helped us get a quick view of the dataset, but let’s get more detail about its structure. Viewing a summary of the data is a useful starting point for data analysis, especially if the dataset has a large number of observations (rows) or variables (columns). Run the code below to use the <code>dplyr::glimpse()</code> function to see a summary of the <code>ikea</code> dataset.</p>
 <p>How many observations are in the <code>ikea</code> dataset? How many variables?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(Teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(Teams)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -821,12 +568,12 @@ Note
 <h3 class="anchored" data-anchor-id="exercise-2">Exercise 2</h3>
 <p><a href="#0">Ben Baumer</a>&nbsp;worked for the&nbsp;<a href="#0">New York Mets</a>&nbsp;from 2004 to 2012. What was the team W/L record during those years? Use <code>filter()</code> and <code>select()</code> to quickly identify only those pieces of information that we care about.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mets <span class="ot">&lt;-</span> Teams  <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(teamID <span class="sc">==</span> <span class="st">"NYN"</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>my_mets <span class="ot">&lt;-</span> mets <span class="sc">%&gt;%</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(_)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>my_mets <span class="sc">%&gt;%</span> </span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(_,_,_,_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mets <span class="ot">&lt;-</span> Teams  <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(teamID <span class="sc">==</span> <span class="st">"NYN"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>my_mets <span class="ot">&lt;-</span> mets <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(_)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>my_mets <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(_,_,_,_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise-3" class="level3">
@@ -838,16 +585,16 @@ Note
 \]</span></p>
 <p>where <span class="math inline">\(\text{RA}\)</span> is the number of runs the team allows to be scored, <span class="math inline">\(\text{RS}\)</span> is the number of runs that the team scores, and <span class="math inline">\(\hat{\text{W}}_{\text{pct}}\)</span> is the team’s expected winning percentage. Luckily for us, the runs scored and allowed are present in the <code>Teams</code> table, so let’s grab them and save them in a new data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> Teams <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(_, _, _, _, _, _) <span class="sc">|&gt;</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(_ <span class="sc">==</span> <span class="st">"NYN"</span> <span class="sc">&amp;</span> _ <span class="sc">%in%</span> <span class="dv">2004</span><span class="sc">:</span><span class="dv">2012</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> Teams <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(_, _, _, _, _, _) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(_ <span class="sc">==</span> <span class="st">"NYN"</span> <span class="sc">&amp;</span> _ <span class="sc">%in%</span> <span class="dv">2004</span><span class="sc">:</span><span class="dv">2012</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>First, note that the runs-scored variable is called&nbsp;<code>R</code> in the <code>Teams</code> table, but to stick with our notation we want to rename it <code>RS</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">_ =</span> _)    <span class="co"># new name = old name</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">_ =</span> _)    <span class="co"># new name = old name</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="render-commit-push">
 <p>This is a good place to fender, commit, and push changes to your remote bsmm-lab-1 repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you’ve made, write an informative commit message (e.g.,&nbsp;“Completed exercises 1 - 3”), and push. After you push the changes, the Git pane in RStudio should be empty.</p>
@@ -857,15 +604,15 @@ Note
 <h3 class="anchored" data-anchor-id="exercise-4">Exercise 4</h3>
 <p>Next, we need to compute the team’s actual winning percentage in each of these seasons. Thus, we need to add a new column to our data frame, and we do this with the&nbsp;<code>mutate()</code>&nbsp;command.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">WPct =</span> _)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">WPct =</span> _)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The expected number of wins is then equal to the product of the expected winning percentage times the number of games.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">W_hat =</span> _)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">W_hat =</span> _)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>mets_ben</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise-5" class="level3">
@@ -880,30 +627,30 @@ Note
 <h3 class="anchored" data-anchor-id="exercise-6">Exercise 6</h3>
 <p>Naturally, the Mets experienced ups and downs during Ben’s time with the team. Which seasons were best? To figure this out, we can simply sort the rows of the data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">arrange</span>(mets_ben, _)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">arrange</span>(mets_ben, _)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise-7" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-7">Exercise 7</h3>
 <p>In 2006, the Mets had the best record in baseball during the regular season and nearly made the&nbsp;<a href="https://en.wikipedia.org/w/index.php?search=World%20Series"><em>World Series</em></a>. How do these seasons rank in terms of the team’s performance relative to our model?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="sc">%&gt;%</span> </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Diff =</span> _) <span class="sc">|&gt;</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Diff =</span> _) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise-8" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-8">Exercise 8</h3>
 <p>Summarize the Mets performance</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="sc">|&gt;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_years =</span> _, </span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_W =</span> _, </span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_L =</span> _, </span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_WPct =</span> _, </span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_resid =</span> _</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">num_years =</span> _, </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_W =</span> _, </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_L =</span> _, </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_WPct =</span> _, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_resid =</span> _</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>In these nine years, the Mets had a combined record of _ wins and _ losses, for an overall winning percentage of _.</p>
 <div class="render-commit-push">
@@ -915,78 +662,643 @@ Note
 <p>Next, let’s look at the relationship between the price and width of Ikea furniture. Fill in the code below to visualize the relationship between the two variables using a scatterplot.</p>
 <p>Then, use your visualization to describe the relationship between the width and price of Ikea furniture.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> _____, <span class="fu">aes</span>(<span class="at">x =</span> width, <span class="at">y =</span> _____)) <span class="sc">+</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"_____"</span>, </span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"_____"</span>, </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"_____"</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> _____, <span class="fu">aes</span>(<span class="at">x =</span> width, <span class="at">y =</span> _____)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"_____"</span>, </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"_____"</span>, </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"_____"</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise-10" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-10">Exercise 10</h3>
 <p>Discretize the years into three chunks: one for each of the three general managers under whom Ben worked.&nbsp;<a href="https://en.wikipedia.org/w/index.php?search=Jim%20Duquette">Jim Duquette</a>&nbsp;was the Mets’&nbsp;<a href="https://en.wikipedia.org/w/index.php?search=general%20manager"><em>general manager</em></a>&nbsp;in 2004,&nbsp;<a href="https://en.wikipedia.org/w/index.php?search=Omar%20Minaya">Omar Minaya</a>&nbsp;from 2005 to 2010, and&nbsp;<a href="https://en.wikipedia.org/w/index.php?search=Sandy%20Alderson">Sandy Alderson</a>&nbsp;from 2011 to 2012.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">%&gt;%</span> </span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">gm =</span> <span class="fu">ifelse</span>(</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">==</span> _, </span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      _, </span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        yearID <span class="sc">&gt;=</span> _, </span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        _, </span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        _)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">gm =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">==</span> _, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      _, </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        yearID <span class="sc">&gt;=</span> _, </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        _, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        _)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Alternatively, we use the <code>case_when</code> function</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">gm =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">==</span> _ <span class="sc">~</span> _, </span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">&gt;=</span> _ <span class="sc">~</span> _, </span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> _</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mets_ben <span class="ot">&lt;-</span> mets_ben <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">gm =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">==</span> _ <span class="sc">~</span> _, </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      yearID <span class="sc">&gt;=</span> _ <span class="sc">~</span> _, </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> _</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="render-commit-push">
-<p>You’re done and ready to submit your work! Render, commit, and push all remaining changes. You can use the commit message “Done with Lab 1!” , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that <strong>all</strong> documents are updated in your repo on GitHub. The HTML document you submit to Brightspace should be identical to the one in your GitHub repo.</p>
+<p>You’re done and ready to submit your work! Render, commit, and push all remaining changes. You can use the commit message “Done with Lab 1!” , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that <strong>all</strong> documents are updated in your repo on GitHub.</p>
 </div>
 </section>
 <section id="exercise-11" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-11">Exercise 11</h3>
-<p>Use the <code>gm</code> variable to define the manager groups with the <code>group_by()</code> operator, and run the summaries again, this time across the manager groups.</p>
-</section>
-</section>
-<section id="submission" class="level2">
-<h2 class="anchored" data-anchor-id="submission">Submission</h2>
-<p>Render your document to create an HTML file. In this class, we’ll be submitting the HTML documents to Brightspace.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Before you wrap up the assignment, make sure all documents are updated on your GitHub repo. We will be checking these to make sure you have been practicing how to commit and push changes.</p>
-<p>Remember – you must turn in an HTML file to the Brightspace page before the submission deadline for full credit.</p>
-</div>
-</div>
-<p>To submit your assignment:</p>
+<section id="the-business-problem" class="level4">
+<h4 class="anchored" data-anchor-id="the-business-problem">The Business Problem</h4>
+<p>The story begins in a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer’s behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI). Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than <span class="math inline">\(1\$\)</span> as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:</p>
 <ul>
-<li>Log in to <a href="https://brightspace.uwindsor.ca/d2l/home/144921">Brightspace</a> and select course <a href="https://brightspace.uwindsor.ca/d2l/home/144921" title="BSMM8740-2-R-2023F|Data Analytic Meth. &amp; Algorith">BSMM8740-2-R-2023F|Data Analytic Meth.</a></li>
-<li>Click on the Lab-1 assignment, and submit your HTML file.</li>
+<li>Select a sample of existing customers from the same cohort.</li>
+<li>Set a test window of 1 month.</li>
+<li>Look into the historical data of web visits from the last month. The hypothesis is that web visits are a good proxy for the customer’s interest in the product.</li>
+<li>For customers with a high number of web visits, send them a discount. There will be a hold out group which will not receive the discount within the potential valuable customers based on the number of web visits. For customers with a low number of web visits, do not send them a discount (the marketing team wants to report a positive ROI, so they do not want to waste money on customers which are not valuable). Still, they want to use them to measure the effect of the discount.</li>
+<li>We also want to use the results of the test to tag <em>loyal</em> customers. These are customers which got a discount (since they showed potential interest in the product) and customers with exceptional sales numbers even if they did not get a discount. The idea is to use this information to target them in the future if the discount strategy is positive.</li>
 </ul>
+</section>
+<section id="the-data" class="level4">
+<h4 class="anchored" data-anchor-id="the-data">The Data</h4>
+<p>The team collected data from the experiment above and asked the data science team to analyze it and provide insights. In particular they want to know if they should keep the discount strategy. The data consists of the following fields: - <code>visits</code>: Number of visits to the website during the test window. - <code>discount</code>: Whether the customer received a discount or not. - <code>is_loyal</code>: Whether the customer is loyal or not according to the definition above. - <code>sales</code>: Sales in <span class="math inline">\(\$\)</span> during the test window.</p>
+<section id="prepare-notebook" class="level5">
+<h5 class="anchored" data-anchor-id="prepare-notebook">Prepare Notebook</h5>
+<p>Data scientist A was the one in charge of preparing the environment and collecting the data. As an important best practice, they fixed a global seed which initializes the random number generator in order to make sure every part of the analysis was reproducible. This ensures that the calculations are not affected by pure randomness. In addition all the required packages were listed from the start (reproducible R environment).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8740</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="read-data" class="level5">
+<h5 class="anchored" data-anchor-id="read-data">Read Data</h5>
+<p>They pulled the data from a csv file and displayed the first 5 measurements.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"labs/data"</span>, <span class="st">"sales_dag.csv"</span>), <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">5</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"sample marketing data"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="bgkazxxqxv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+#bgkazxxqxv table {
+  font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#bgkazxxqxv thead, #bgkazxxqxv tbody, #bgkazxxqxv tfoot, #bgkazxxqxv tr, #bgkazxxqxv td, #bgkazxxqxv th {
+  border-style: none;
+}
+
+#bgkazxxqxv p {
+  margin: 0;
+  padding: 0;
+}
+
+#bgkazxxqxv .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#bgkazxxqxv .gt_title {
+  color: #333333;
+  font-size: 24px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#bgkazxxqxv .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#bgkazxxqxv .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#bgkazxxqxv .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bgkazxxqxv .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#bgkazxxqxv .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#bgkazxxqxv .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#bgkazxxqxv .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#bgkazxxqxv .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#bgkazxxqxv .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bgkazxxqxv .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#bgkazxxqxv .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#bgkazxxqxv .gt_row {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #F6F7F7;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#bgkazxxqxv .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgkazxxqxv .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#bgkazxxqxv .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#bgkazxxqxv .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#bgkazxxqxv .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgkazxxqxv .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#bgkazxxqxv .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgkazxxqxv .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_striped {
+  background-color: #FAFAFA;
+}
+
+#bgkazxxqxv .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgkazxxqxv .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bgkazxxqxv .gt_sourcenote {
+  font-size: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgkazxxqxv .gt_left {
+  text-align: left;
+}
+
+#bgkazxxqxv .gt_center {
+  text-align: center;
+}
+
+#bgkazxxqxv .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bgkazxxqxv .gt_font_normal {
+  font-weight: normal;
+}
+
+#bgkazxxqxv .gt_font_bold {
+  font-weight: bold;
+}
+
+#bgkazxxqxv .gt_font_italic {
+  font-style: italic;
+}
+
+#bgkazxxqxv .gt_super {
+  font-size: 65%;
+}
+
+#bgkazxxqxv .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#bgkazxxqxv .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#bgkazxxqxv .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#bgkazxxqxv .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#bgkazxxqxv .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#bgkazxxqxv .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#bgkazxxqxv .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#bgkazxxqxv .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#bgkazxxqxv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="5" class="gt_heading gt_title gt_font_normal gt_bottom_border">sample marketing data</th>
+</tr>
+<tr class="odd gt_col_headings">
+<th id="visits" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">visits</th>
+<th id="discount" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">discount</th>
+<th id="is_loyal" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">is_loyal</th>
+<th id="sales" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">sales</th>
+<th id="sales_per_visit" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">sales_per_visit</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="visits">12</td>
+<td class="gt_row gt_right" headers="discount">0</td>
+<td class="gt_row gt_right" headers="is_loyal">0</td>
+<td class="gt_row gt_right" headers="sales">13.34830</td>
+<td class="gt_row gt_right" headers="sales_per_visit">1.1123585</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right gt_striped" headers="visits">26</td>
+<td class="gt_row gt_right gt_striped" headers="discount">1</td>
+<td class="gt_row gt_right gt_striped" headers="is_loyal">1</td>
+<td class="gt_row gt_right gt_striped" headers="sales">21.70125</td>
+<td class="gt_row gt_right gt_striped" headers="sales_per_visit">0.8346635</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="visits">13</td>
+<td class="gt_row gt_right" headers="discount">0</td>
+<td class="gt_row gt_right" headers="is_loyal">0</td>
+<td class="gt_row gt_right" headers="sales">14.70040</td>
+<td class="gt_row gt_right" headers="sales_per_visit">1.1308004</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right gt_striped" headers="visits">24</td>
+<td class="gt_row gt_right gt_striped" headers="discount">0</td>
+<td class="gt_row gt_right gt_striped" headers="is_loyal">0</td>
+<td class="gt_row gt_right gt_striped" headers="sales">20.37734</td>
+<td class="gt_row gt_right gt_striped" headers="sales_per_visit">0.8490557</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="visits">14</td>
+<td class="gt_row gt_right" headers="discount">0</td>
+<td class="gt_row gt_right" headers="is_loyal">0</td>
+<td class="gt_row gt_right" headers="sales">12.63372</td>
+<td class="gt_row gt_right" headers="sales_per_visit">0.9024089</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>They then checked for missing values and whether the measurements were in the correct format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run a data exploration here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exploratory-data-analysis" class="level5">
+<h5 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h5>
+<p>As part of the project scope, the data science team in charge of the analysis was asked to provide a summary of the data. The team was also asked to provide a visualization of the data to help the marketing team understand the data better. Data scientist A took over this task.</p>
+<p>They started by looking at the share of customers which received a discount:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show the % share of customers receiving a discount vs the % ot receiving a discount</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Similarly for the share of customers which are loyal:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show the % share of customers that are 'loyal' vs not 'loyal'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To understand these features better, they also looked at a cross-tab table:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># build a cross-tab table of 'loyal' custmers vs customers getting a discount</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that all customers with discount are loyal (as required) and that there are loyal users which did not receive a discount. This is because they had exceptional sales numbers. Verify this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>(), <span class="at">.before =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(discount <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>( <span class="fu">desc</span>(sales) ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Sales: loyal customers vs others"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The loyal customers are the top ones in terms of sales. This is good news. It means that the definition of loyal customers is consistent with the data.</p>
+<p>In order to have orders of magnitude for the sales, the data scientist provided some summary statistics table:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data["sales"].describe()</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>gtExtras<span class="sc">::</span><span class="fu">gt_plt_summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To have a better glimpse of the data, the data scientist also provided a histogram of the sales:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>sales)) <span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">bins =</span> <span class="dv">30</span>, <span class="at">colour =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">colour =</span> <span class="dv">4</span>, <span class="at">fill =</span> <span class="dv">4</span>, <span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Sales Distribution"</span>) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="submission" class="level2 render-commit-push">
+<h2 class="anchored" data-anchor-id="submission">Submission</h2>
+<p>I will pull (copy) everyone’s submissions at 5:00pm on the Friday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (<strong>don’t forget to commit and then push your work!</strong>)</p>
 </section>
 <section id="grading" class="level2">
 <h2 class="anchored" data-anchor-id="grading">Grading</h2>
 <p>Total points available: 30 points.</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Component</th>
@@ -1198,18 +1510,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1241,7 +1542,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2024\.github\.io\/osb\/");
@@ -1249,7 +1572,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
