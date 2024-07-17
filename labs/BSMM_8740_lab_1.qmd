@@ -351,6 +351,7 @@ To understand these features better, they also looked at a cross-tab table:
 Note that all customers with discount are loyal (as required) and that there are loyal users which did not receive a discount. This is because they had exceptional sales numbers. Verify this:
 
 ```{r}
+#| eval: false
 data |> dplyr::mutate(id = dplyr::row_number(), .before = 1) |> 
   dplyr::filter(discount == 0) |> 
   dplyr::arrange( desc(sales) ) |> 
@@ -366,6 +367,7 @@ The loyal customers are the top ones in terms of sales. This is good news. It me
 In order to have orders of magnitude for the sales, the data scientist provided some summary statistics table:
 
 ```{r}
+#| eval: false
 #| warning: false
 #| message: false
 # data["sales"].describe()
@@ -375,6 +377,7 @@ gtExtras::gt_plt_summary(data)
 To have a better glimpse of the data, the data scientist also provided a histogram of the sales:
 
 ```{r}
+#| eval: false
 #| warning: false
 #| message: false
 
