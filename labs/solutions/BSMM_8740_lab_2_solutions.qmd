@@ -14,12 +14,21 @@ Here are some of the packages we'll use in this lab.
 ```{r}
 #| message: false
 #| echo: true
-library(magrittr)     # the pipe
-library(tidyverse)    # for data wrangling + visualization
-library(tidymodels)   # for modeling
-library(gt)           # for making display tables
-library(gtExtras)     # helper functions for beautiful tables
-library(DataExplorer) #
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer)
+
+# library(magrittr)     # the pipe
+# library(tidyverse)    # for data wrangling + visualization
+# library(tidymodels)   # for modeling
+# library(gt)           # for making display tables
+# library(gtExtras)     # helper functions for beautiful tables
+# library(DataExplorer) #
 ```
 
 ## Data: The Tate Collection
@@ -328,7 +337,7 @@ spx_data <-
 # NOT PART OF THE LAB
 # The package gt:: has a nice funcion for EDA.
 # Give it a try!
-spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
+# spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
 ```
 
 ```{r}
