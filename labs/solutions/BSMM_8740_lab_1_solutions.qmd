@@ -17,8 +17,17 @@ Today's data is all baseball statistics. The data is in the `Lahman` package.
 Before doing any analysis, you will want to get quick view of the data. This is useful as part of the EDA process.
 
 ```{r}
-library(magrittr)
-library(Lahman)
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(Lahman, magrittr, tidyverse, gt, gtExtras, tidymodels)
+# 
+# library(magrittr)
+# library(Lahman)
 dim(Teams)
 ```
 
