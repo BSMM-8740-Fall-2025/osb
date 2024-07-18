@@ -42,10 +42,20 @@ We will use the following package in today's lab.
 
 ```{r}
 #| message: false
-library(magrittr)   # the pipe
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(gt)         # for pretty tables
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2, forcats
+)
+
+# library(magrittr)   # the pipe
+# library(tidyverse)  # for data wrangling + visualization
+# library(tidymodels) # for modeling
+# library(gt)         # for pretty tables
 ```
 
 ## Data: The Boston Cocktail Recipes
@@ -151,18 +161,54 @@ Can you create an interpretation of the PCA analysis?
 This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
 :::
 
+### Exercise 8
+
+In the following exercise, we'll use the recipes package to prepare time series data. The starting dataset contains monthly house price data for each of the four countries/regions in the UK
+
+```{r}
+uk_prices <- readr::read_csv('data/UK_house_prices.csv', show_col_types = FALSE)
+```
+
+Write code to clean the names in the `uk_prices` dataset using `janitor::clean_names()`, and then using `skimr::skim` confirm that the region names are correct and that there are no missing values. Call the resulting analytic data set `df`.
+
+### Exercise 9
+
+We want to use the monthly house price data to predict house prices one month ahead for each region. The basic model will be:
+
+``` r
+SalesVolume ~ .
+```
+
+where the date and region-name are id variables, not predictor variables. Instead we will use the prior-month lagged prices as the only predictor.
+
+The recipe uses the following 5 steps from the `recipes` package: `update_role`(date, region_name, new_role = "id") \| `recipe`(sales_volume \~ ., data = df \|\> janitor::clean_names()) \| `step_naomit`(lag_1_sales_volume, skip=FALSE) \| `step_lag`(sales_volume, lag=1) \| `step_arrange`(region_name, date)
+
+Use these 5 step in the proper order to create a recipe to pre-process the time series data for each region. Prep and then bake your recipe using `df`.
+
+The result of the bake step, after filtering for dates $\le$ 2005-03-01, should look like this:
+
+```{r}
+#| echo: false
+rec <- 
+  recipe(sales_volume ~ ., data = uk_prices |> janitor::clean_names()) |> 
+  step_arrange(region_name, date) |> 
+  step_lag(sales_volume, lag=1) |>  
+  step_naomit(lag_1_sales_volume, skip=FALSE) |>  # This line is new
+  update_role(date, region_name, new_role = "id") |> 
+  prep()
+
+rec |> bake(uk_prices |> janitor::clean_names()) %>%
+  filter(date <= lubridate::ymd(20050301)) |> 
+  gt::gt() |> 
+  gt::fmt_currency(columns = -c(date,region_name), decimals = 0) |> 
+  gtExtras::gt_theme_espn()
+```
+
 ## Submission
 
 ::: callout-warning
 Before you wrap up the assignment, make sure all documents are updated on your GitHub repo. We will be checking these to make sure you have been practicing how to commit and push changes.
-
-Remember -- you must turn in a HTML file to the Brightspace page before the submission deadline for full credit.
 :::
-
-To submit your assignment:
-
--   Log in to [Brightspace](https://brightspace.uwindsor.ca/d2l/home/144921) and select course [BSMM8740-2-R-2023F\|Data Analytic Meth.](https://brightspace.uwindsor.ca/d2l/home/144921 "BSMM8740-2-R-2023F|Data Analytic Meth. & Algorith")
--   Click on the Lab 3 assignment, and submit it.
 
 ## Grading
 

@@ -42,10 +42,20 @@ We will use the following package in today's lab.
 
 ```{r}
 #| message: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2, knitr,
+  ISLR2, stats, xgboost
+)
 
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(knitr)      # for pretty printing of tables
+# library(tidyverse)  # for data wrangling + visualization
+# library(tidymodels) # for modeling
+# library(knitr)      # for pretty printing of tables
 ```
 
 ## Data: Boston House Values
@@ -126,7 +136,7 @@ The first dataset (`dat0` - generated below) has `demand0` and `price0` variable
 ::: callout-tip
 plot with something like:
 
-``` R
+``` r
 dat0 %>% ggplot(aes(x=price0,y=demand0)) + 
          # plot the points
          geom_point() +
