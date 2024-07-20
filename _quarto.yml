@@ -109,8 +109,7 @@ format:
     code-overflow: wrap
     toc: true
     html-math-method:
-      method: mathjax
-      url: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML"
+      method: mathml
 
 freeze: auto
 
