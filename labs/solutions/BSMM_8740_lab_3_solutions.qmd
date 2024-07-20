@@ -13,10 +13,22 @@ We will use the following package in this lab.
 
 ```{r}
 #| message: false
-library(magrittr)   # the pipe
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(gt)         # for pretty tables
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2
+)
+
+
+# library(magrittr)   # the pipe
+# library(tidyverse)  # for data wrangling + visualization
+# library(tidymodels) # for modeling
+# library(gt)         # for pretty tables
+
 theme_set(theme_bw(base_size = 12))
 boston_cocktails <- readr::read_csv('../data/boston_cocktails.csv', show_col_types = FALSE)
 ```

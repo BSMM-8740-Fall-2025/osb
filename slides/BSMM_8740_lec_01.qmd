@@ -1054,7 +1054,7 @@ dat$relig |> table() |> as.data.frame() %>% dplyr::arrange(desc(Freq))
 ```
 :::
 
-## EDA: binary factors 
+## EDA: binary factors
 
 ::: panel-tabset
 ## table()
