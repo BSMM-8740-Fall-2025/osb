@@ -49,12 +49,12 @@ In the simple linear regression (SLR) model, we have $N$ observations of a singl
 [^1]: In SLR models we assume a Normal (Gaussian) probability model for the data generation process. For non-Normal data generation processes we use generalized linear models, which we'll discuss later.
 
 $$
-\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
+\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
 $$
 
 ## Linear regression models
 
-In the SLR model, $\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ with a vector of parameters $\beta$.
+In the SLR model, $\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ with a vector of parameters $\beta$.
 
 The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e. a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g. polynomial functions (like straight lines, parabolas, and more).
 
