@@ -2,3 +2,6 @@ git status
 git checkout main
 git merge mods
 quarto publish gh-pages
+
+      method: mathjax
+      url: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML"
