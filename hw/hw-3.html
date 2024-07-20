@@ -102,22 +102,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -535,11 +521,11 @@ window.Quarto = {
 </div>
 </div></li>
 <li><p>Calculate the odds ratio of a penguin being from the Adelie species for those recorded on Dream compared to those recorded on Biscoe.</p></li>
-<li><p>You want to fit a model using <code>island</code> to predict the odds of being from the Adelie species. Let <span class="math inline">\pi</span> be the probability a penguin is from the Adelie species. The model has the following form. What do you expect the value of <span class="math inline">\hat{\beta}_1</span>, the estimated coefficient for <em>Dream</em>, to be? Explain your reasoning.</p></li>
+<li><p>You want to fit a model using <code>island</code> to predict the odds of being from the Adelie species. Let <span class="math inline">\(\pi\)</span> be the probability a penguin is from the Adelie species. The model has the following form. What do you expect the value of <span class="math inline">\(\hat{\beta}_1\)</span>, the estimated coefficient for <em>Dream</em>, to be? Explain your reasoning.</p></li>
 </ol>
-<p><span class="math display">
+<p><span class="math display">\[
 \log\Big(\frac{\pi}{1-\pi}\Big) = \beta_0 + \beta_1 ~ Dream + \beta_2 ~ Torgersen
-</span></p>
+\]</span></p>
 <ol start="4" type="1">
 <li>Fit a model predicting <code>adelie</code> from <code>island</code> and display the model output. For the following exercise, use this model.</li>
 <li>Based on this model, what are the <strong>odds</strong> of a penguin being from the Adelie species if it was recorded on Biscoe island? on Dream island?</li>
@@ -598,24 +584,24 @@ window.Quarto = {
 </div>
 </div>
 <p>The linear model for predicting log of GDP can be expressed as follows:</p>
-<p><span class="math display">
+<p><span class="math display">\[
 \widehat{\log(GDP)} = 6.11 + 0.042 \times urban
-</span></p>
+\]</span></p>
 <p>Therefore, the coefficient of <code>urban</code> (0.042) can be interpreted as the change in logged GDP associated with 1 percentage point increase in urban population. The problem is, logged GDP is not a very informative value to talk about. So we need to undo the transformation we’ve done.</p>
 <p>To do so, let’s do a quick review of some properties of logs.</p>
 <ul>
-<li>Subtraction and logs: <span class="math inline">log(a) − log(b) = log(\frac{a}{b})</span></li>
-<li>Natural logarithm: <span class="math inline">e^{log(x)} = x</span></li>
+<li>Subtraction and logs: <span class="math inline">\(log(a) − log(b) = log(\frac{a}{b})\)</span></li>
+<li>Natural logarithm: <span class="math inline">\(e^{log(x)} = x\)</span></li>
 </ul>
 <p>Based on the interpretation of the slope above, the difference between the predicted values of logged GDP for a given value of <code>urban</code> and a value that is 1 percentage point higher is 0.0425. Let’s write this out mathematically, and then use the properties we’ve listed above to work through the equation.</p>
-<p><span class="math display">
+<p><span class="math display">\[
 \begin{aligned}
 log(\text{GDP for urban } x + 1) - log(\text{GDP for urban } x) &amp;= 0.042 \\
 log\Big( \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} \Big) &amp;= 0.042 \\
 e^{log\Big( \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} \Big)} &amp;= e^{0.042}\\
 \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} &amp;= e^{0.042}
 \end{aligned}
-</span></p>
+\]</span></p>
 <ol start="16" type="1">
 <li><p>Based on the derivation above, fill in the blanks in the following sentence for an alternative (and more useful interpretation) of the slope of <code>urban</code>.</p>
 <blockquote class="blockquote">

@@ -102,22 +102,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -526,8 +512,8 @@ Important
 <section id="logistic-regression-model" class="level3">
 <h3 class="anchored" data-anchor-id="logistic-regression-model">Logistic regression model</h3>
 <p>Fit a logistic regression model to understand the relationship between total cholesterol and risk for heart disease.</p>
-<p>Let <span class="math inline">pi</span> be the probability an adult is high risk. The statistical model is</p>
-<p><span class="math display">\log\Big(\frac{\pi_i}{1-\pi_i}\Big) = \beta_0 + \beta_1 TotChol_i</span></p>
+<p>Let <span class="math inline">\(pi\)</span> be the probability an adult is high risk. The statistical model is</p>
+<p><span class="math display">\[\log\Big(\frac{\pi_i}{1-\pi_i}\Big) = \beta_0 + \beta_1 TotChol_i\]</span></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>heart_disease_fit <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glm"</span>) <span class="sc">%&gt;%</span></span>

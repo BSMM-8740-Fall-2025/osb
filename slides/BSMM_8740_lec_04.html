@@ -427,12 +427,12 @@ L.L. Odette
 <h2>Linear regression models</h2>
 <p>In the simple linear regression (SLR) model, we have <span class="math inline">\(N\)</span> observations of a single outcome variable <span class="math inline">\(Y\)</span> along with <span class="math inline">\(D\)</span> predictor (aka co-variate) variables <span class="math inline">\(\mathbf{x}\)</span> where the likelihood<sup>1</sup> of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta,\sigma^2\}\)</span>:</p>
 <p><span class="math display">\[
-\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
+\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
 \]</span></p>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>In SLR models we assume a Normal (Gaussian) probability model for the data generation process. For non-Normal data generation processes we use generalized linear models, which we’ll discuss later.</p></li></ol></aside></section>
 <section id="linear-regression-models-1" class="slide level2">
 <h2>Linear regression models</h2>
-<p>In the SLR model, <span class="math inline">\(\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)\)</span> is a Normal probability density with mean <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, where <span class="math inline">\(\sigma^2\)</span> is a constant and the mean is a function of the predictors <span class="math inline">\(\mathbf{x}\)</span> with a vector of parameters <span class="math inline">\(\beta\)</span>.</p>
+<p>In the SLR model, <span class="math inline">\(\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)\)</span> is a Normal probability density with mean <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, where <span class="math inline">\(\sigma^2\)</span> is a constant and the mean is a function of the predictors <span class="math inline">\(\mathbf{x}\)</span> with a vector of parameters <span class="math inline">\(\beta\)</span>.</p>
 <p>The mean function <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> is often assumed to be continuous, i.e.&nbsp;a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g.&nbsp;polynomial functions (like straight lines, parabolas, and more).</p>
 </section>
 <section id="linear-regression-models-2" class="slide level2">

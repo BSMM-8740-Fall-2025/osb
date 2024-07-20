@@ -102,22 +102,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", function () {
- var mathElements = document.getElementsByClassName("math");
- var macros = [];
- for (var i = 0; i < mathElements.length; i++) {
-  var texText = mathElements[i].firstChild;
-  if (mathElements[i].tagName == "SPAN") {
-   katex.render(texText.data, mathElements[i], {
-    displayMode: mathElements[i].classList.contains('display'),
-    throwOnError: false,
-    macros: macros,
-    fleqn: false
-   });
-}}});
-  </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -447,48 +433,48 @@ Note
 <p>The following supplemental notes are based on <a href="https://www.datacamp.com/tutorial/tutorial-ridge-lasso-elastic-net">this page</a>. They are provided for students who want to dive deeper into the mathematics behind regularized regression. Additional supplemental notes will be added throughout the semester.</p>
 </div>
 </div>
-<p>In the simple linear regression model, you have <span class="math inline">n</span> observations of the response variable <span class="math inline">Y</span> with a linear combination of <span class="math inline">m</span> predictor variables <span class="math inline">\mathbf{x}</span> where</p>
-<p><span id="eq-linear"><span class="math display">
+<p>In the simple linear regression model, you have <span class="math inline">\(n\)</span> observations of the response variable <span class="math inline">\(Y\)</span> with a linear combination of <span class="math inline">\(m\)</span> predictor variables <span class="math inline">\(\mathbf{x}\)</span> where</p>
+<p><span id="eq-linear"><span class="math display">\[
 \pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)
-\qquad(1)</span></span></p>
-<p>where <span class="math inline">\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)</span> are all the parameters of the model. The vector of parameters <span class="math inline">\beta_{1:D}</span> are the weights or regression coefficients. Each coefficient <span class="math inline">\beta_i</span> specifies the change in the output that we expect if the corresponding input feature <span class="math inline">x_i</span> changes by one unit. The term <span class="math inline">\beta_0</span> is the offset or bias term, and specifies the output if all the inputs are zero. This captures the unconditional response, and acts as a baseline. We sometimes write the input as <span class="math inline">\left(1,x_{1},\ldots,x_{D}\right)</span> so the offset can be absorbed into the weight vector.</p>
-<p>We can always apply a transformation <span class="math inline">\phi</span> (linear or non-linear) to the input vector, replacing <span class="math inline">\beta</span> with <span class="math inline">\phi(\beta)</span>. As long as the parameters of the feature extractor are fixed, the model remain linear in the parameters even if not linear in the inputs.</p>
+\qquad(1)\]</span></span></p>
+<p>where <span class="math inline">\(\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)\)</span> are all the parameters of the model. The vector of parameters <span class="math inline">\(\beta_{1:D}\)</span> are the weights or regression coefficients. Each coefficient <span class="math inline">\(\beta_i\)</span> specifies the change in the output that we expect if the corresponding input feature <span class="math inline">\(x_i\)</span> changes by one unit. The term <span class="math inline">\(\beta_0\)</span> is the offset or bias term, and specifies the output if all the inputs are zero. This captures the unconditional response, and acts as a baseline. We sometimes write the input as <span class="math inline">\(\left(1,x_{1},\ldots,x_{D}\right)\)</span> so the offset can be absorbed into the weight vector.</p>
+<p>We can always apply a transformation <span class="math inline">\(\phi\)</span> (linear or non-linear) to the input vector, replacing <span class="math inline">\(\beta\)</span> with <span class="math inline">\(\phi(\beta)\)</span>. As long as the parameters of the feature extractor are fixed, the model remain linear in the parameters even if not linear in the inputs.</p>
 <p>Least squares estimation</p>
 <p>To fit the linear regression model to data, we minimize the negative log-likelihood on the training set.</p>
-<p><span class="math display">
+<p><span class="math display">\[
 \begin{align*}
 \text{NLL}\left(\beta,\sigma^{2}\right) &amp; =\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
 &amp; =-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-N\log\left(2\pi\sigma^{2}\right)
 \end{align*}
-</span></p>
-<p>where the predicted response is <span class="math inline">\hat{y}\equiv\beta'x_{n}</span>. Focusing on just the weights, the NLL is (up to a constant):</p>
-<p><span class="math display">
+\]</span></p>
+<p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>. Focusing on just the weights, the NLL is (up to a constant):</p>
+<p><span class="math display">\[
 \begin{align*}
 \text{RSS}\left(\beta\right) &amp; =\frac{1}{2}\sum_{n=1}^{N}\left(y_{n}-\beta'x_{n}\right)^{2}=\frac{1}{2}\left\Vert y_{n}-\beta'x_{n}\right\Vert ^{2}=\frac{1}{2}\left(y_{n}-\beta'x_{n}\right)'\left(y_{n}-\beta'x_{n}\right)\\
 \end{align*}
-</span></p>
-<p>We must estimate the parameter values <span class="math inline">\mathbf{\hat{\beta}}</span> from the data, and using the OLS method, the loss function is</p>
-<p><span id="eq-OLS-loss"><span class="math display">
+\]</span></p>
+<p>We must estimate the parameter values <span class="math inline">\(\mathbf{\hat{\beta}}\)</span> from the data, and using the OLS method, the loss function is</p>
+<p><span id="eq-OLS-loss"><span class="math display">\[
 \text{L}_{OLS}\left(\hat{\beta}\right)=\sum_{i=1}^{n}\left(y_{i}-x_{i}^{'}\hat{\beta}\right)^{2}=\left\Vert y-X\hat{\beta}\right\Vert ^{2}
-\qquad(2)</span></span></p>
+\qquad(2)\]</span></span></p>
 <p>which is minimized with the estimate</p>
-<p><span id="eq-OLS-soln"><span class="math display">
+<p><span id="eq-OLS-soln"><span class="math display">\[
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right)
-\qquad(3)</span></span></p>
+\qquad(3)\]</span></span></p>
 <section id="bias-and-variance" class="level3">
 <h3 class="anchored" data-anchor-id="bias-and-variance">Bias and variance</h3>
 <p>The bias is the difference between the true population parameter and the expected estimator:</p>
-<p><span id="eq-OLS-bias"><span class="math display">
+<p><span id="eq-OLS-bias"><span class="math display">\[
 \text{Bias}\left(\hat{\mathbf{\beta}}_{OLS}\right)=\mathbb{E\left[\hat{\mathbf{\beta}}_{OLS}\right]-\mathbf{\beta}}
-\qquad(4)</span></span></p>
+\qquad(4)\]</span></span></p>
 <p>The variance uncertainty, in these estimates:</p>
-<p><span id="eq-OLS-variance"><span class="math display">
+<p><span id="eq-OLS-variance"><span class="math display">\[
 \text{Var}\left(\hat{\mathbf{\beta}}_{OLS}\right)=\sigma^{2}\left(X'X\right)^{-1}
-\qquad(5)</span></span></p>
-<p>where <span class="math inline">\sigma^2</span> is estimated form the residuals <span class="math inline">e</span></p>
-<p><span id="eq-OLS-residuals"><span class="math display">
+\qquad(5)\]</span></span></p>
+<p>where <span class="math inline">\(\sigma^2\)</span> is estimated form the residuals <span class="math inline">\(e\)</span></p>
+<p><span id="eq-OLS-residuals"><span class="math display">\[
 \begin{align*}e &amp; =y-x\hat{\mathbf{\beta}}\\\hat{\sigma}^{2} &amp; =\frac{e'e}{n-m}\end{align*}
-\qquad(6)</span></span></p>
+\qquad(6)\]</span></span></p>
 <p>This picture illustrates what bias and variance are.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -497,9 +483,9 @@ Note
 </figure>
 </div>
 <p>Both the bias and the variance are desired to be low, and the model’s error can be decomposed into three parts: error resulting from a large variance, error resulting from significant bias, and the remainder - the unexplainable part.</p>
-<p><span id="eq-OLS-expected-error"><span class="math display">
+<p><span id="eq-OLS-expected-error"><span class="math display">\[
 \begin{align*}\mathbb{E}\left[e\right] &amp; =\left(\mathbb{E}\left[X\hat{\beta}\right]-X\hat{\beta}\right)^{2}+\mathbb{E}\left[\left(X\hat{\beta}-X\hat{\beta}\right)^{2}\right]+\sigma^{2}\\ &amp; =\text{Bias}^{2}+\text{Variance}+\sigma^{2}\end{align*}
-\qquad(7)</span></span></p>
+\qquad(7)\]</span></span></p>
 <p>The OLS estimator has the desired property of being unbiased. However, it can have a huge variance. Specifically, this happens when:</p>
 <ul>
 <li>The predictor variables are highly correlated with each other;</li>
@@ -520,39 +506,39 @@ Note
 <section id="model-specification" class="level3">
 <h3 class="anchored" data-anchor-id="model-specification">Model Specification</h3>
 <p>In Ridge Regression, the OLS loss function is augmented in such a way that we not only minimize the sum of squared residuals but also penalize the size of parameter estimates, in order to shrink them towards zero:</p>
-<p><span class="math display">
+<p><span class="math display">\[
 \text{L}_{ridge}\left(\hat{\beta}\right)=\sum_{i=1}^{n}\left(y_{i}-x_{i}^{'}\hat{\beta}\right)^{2} + \lambda\sum_{j=1}^{m}\hat{\beta}^2_j=\left\Vert y-X\hat{\beta}\right\Vert ^{2} + \lambda\left\Vert \hat{\beta}\right\Vert ^{2}
-</span></p>
-<p>Solving this for <span class="math inline">\hat\beta</span> gives the the ridge regression estimates <span class="math inline">\hat\beta_{ridge} = (X'X+\lambda I)^{-1}(X'Y)</span>, where I denotes the identity matrix.</p>
-<p>The <span class="math inline">\lambda</span> parameter is the regularization penalty. We will talk about how to choose it in the next sections of this tutorial, but for now notice that:</p>
+\]</span></p>
+<p>Solving this for <span class="math inline">\(\hat\beta\)</span> gives the the ridge regression estimates <span class="math inline">\(\hat\beta_{ridge} = (X'X+\lambda I)^{-1}(X'Y)\)</span>, where I denotes the identity matrix.</p>
+<p>The <span class="math inline">\(\lambda\)</span> parameter is the regularization penalty. We will talk about how to choose it in the next sections of this tutorial, but for now notice that:</p>
 <ul>
-<li>As <span class="math inline">\lambda \rightarrow 0, \quad \hat\beta_{ridge} \rightarrow \hat\beta_{OLS}</span>;</li>
-<li>As <span class="math inline">\lambda \rightarrow \infty, \quad \hat\beta_{ridge} \rightarrow 0</span>.</li>
+<li>As <span class="math inline">\(\lambda \rightarrow 0, \quad \hat\beta_{ridge} \rightarrow \hat\beta_{OLS}\)</span>;</li>
+<li>As <span class="math inline">\(\lambda \rightarrow \infty, \quad \hat\beta_{ridge} \rightarrow 0\)</span>.</li>
 </ul>
-<p>So, setting <span class="math inline">\lambda</span> to 0 is the same as using the OLS, while the larger its value, the stronger is the coefficients’ size penalized.</p>
+<p>So, setting <span class="math inline">\(\lambda\)</span> to 0 is the same as using the OLS, while the larger its value, the stronger is the coefficients’ size penalized.</p>
 </section>
 <section id="bias-variance-trade-off-in-ridge-regression" class="level3">
 <h3 class="anchored" data-anchor-id="bias-variance-trade-off-in-ridge-regression">Bias-Variance Trade-Off in Ridge Regression</h3>
-<p><span class="math display">
+<p><span class="math display">\[
 \begin{align*}
 \text{Bias}\left(\hat{\mathbf{\beta}}_{ridge}\right) &amp; =\lambda(X'X+\lambda I)^{-1}\beta\\
 \text{Var}\left(\hat{\mathbf{\beta}}_{ridge}\right) &amp; =\sigma^{2}(X'X+\lambda I)^{-1}X'X(X'X+\lambda I)^{-1}
 \end{align*}
-</span></p>
-<p>From there you can see that as <span class="math inline">\lambda</span> becomes larger, the variance decreases, and the bias increases. This poses the question: how much bias are we willing to accept in order to decrease the variance? Or: what is the optimal value for <span class="math inline">\lambda</span>?</p>
+\]</span></p>
+<p>From there you can see that as <span class="math inline">\(\lambda\)</span> becomes larger, the variance decreases, and the bias increases. This poses the question: how much bias are we willing to accept in order to decrease the variance? Or: what is the optimal value for <span class="math inline">\(\lambda\)</span>?</p>
 <p>There are two ways we could tackle this issue. A more traditional approach would be to choose λ such that some information criterion, e.g., AIC or BIC, is the smallest. A more machine learning-like approach is to perform cross-validation and select the value of λ that minimizes the cross-validated sum of squared residuals (or some other measure). The former approach emphasizes the model’s fit to the data, while the latter is more focused on its predictive performance. Let’s discuss both.</p>
 </section>
 <section id="minimizing-information-criteria" class="level3">
 <h3 class="anchored" data-anchor-id="minimizing-information-criteria">Minimizing Information Criteria</h3>
-<p>This approach boils down to estimating the model with many different values for <span class="math inline">\lambda</span> and choosing the one that minimizes the Akaike or Bayesian Information Criterion:</p>
-<p><span class="math display">
+<p>This approach boils down to estimating the model with many different values for <span class="math inline">\(\lambda\)</span> and choosing the one that minimizes the Akaike or Bayesian Information Criterion:</p>
+<p><span class="math display">\[
 \begin{align*}
 \text{AIC}_{\text{ridge}} &amp; =\log(e'e)+2\text{df}_{\text{ridge}}\\
 \text{BIC}_{\text{ridge}} &amp; =\log(e'e)+2\text{df}_{\text{ridge}}\log n
 \end{align*}
-</span></p>
-<p>where <span class="math inline">\text{df}_{\text{ridge}}</span> is the number of degrees of freedom. Watch out here! The number of degrees of freedom in ridge regression is different than in the regular OLS! This is often overlooked which leads to incorrect inference. In both OLS and ridge regression, degrees of freedom are equal to the trace of the so-called hat matrix, which is a matrix that maps the vector of response values to the vector of fitted values as follows: <span class="math inline">\hat y = H y</span>.</p>
-<p>In OLS, we find that <span class="math inline">\text{H}_{\text{OLS}}=X(X′X)^{−1}X</span>, which gives <span class="math inline">\text{df}_{\text{OLS}}=\text{tr}\text{H}_{\text{OLS}}=m</span>, where <span class="math inline">m</span> is the number of predictor variables. In ridge regression, however, the formula for the hat matrix should include the regularization penalty: <span class="math inline">\text{H}_{\text{ridge}}=X(X′X+\lambda I)^{−1}X</span>, which gives <span class="math inline">\text{df}_{\text{ridge}}=\text{tr}\text{H}_{\text{ridge}}</span>, which is no longer equal to <span class="math inline">m</span>. Some ridge regression software produce information criteria based on the OLS formula. To be sure you are doing things right, it is safer to compute them manually, which is what we will do later in this tutorial.</p>
+\]</span></p>
+<p>where <span class="math inline">\(\text{df}_{\text{ridge}}\)</span> is the number of degrees of freedom. Watch out here! The number of degrees of freedom in ridge regression is different than in the regular OLS! This is often overlooked which leads to incorrect inference. In both OLS and ridge regression, degrees of freedom are equal to the trace of the so-called hat matrix, which is a matrix that maps the vector of response values to the vector of fitted values as follows: <span class="math inline">\(\hat y = H y\)</span>.</p>
+<p>In OLS, we find that <span class="math inline">\(\text{H}_{\text{OLS}}=X(X′X)^{−1}X\)</span>, which gives <span class="math inline">\(\text{df}_{\text{OLS}}=\text{tr}\text{H}_{\text{OLS}}=m\)</span>, where <span class="math inline">\(m\)</span> is the number of predictor variables. In ridge regression, however, the formula for the hat matrix should include the regularization penalty: <span class="math inline">\(\text{H}_{\text{ridge}}=X(X′X+\lambda I)^{−1}X\)</span>, which gives <span class="math inline">\(\text{df}_{\text{ridge}}=\text{tr}\text{H}_{\text{ridge}}\)</span>, which is no longer equal to <span class="math inline">\(m\)</span>. Some ridge regression software produce information criteria based on the OLS formula. To be sure you are doing things right, it is safer to compute them manually, which is what we will do later in this tutorial.</p>
 </section>
 <section id="ridge-regression-r-example" class="level3">
 <h3 class="anchored" data-anchor-id="ridge-regression-r-example">Ridge Regression: R example</h3>
