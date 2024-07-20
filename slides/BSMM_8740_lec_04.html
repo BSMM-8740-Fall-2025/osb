@@ -415,7 +415,7 @@ L.L. Odette
 <h2>Recap of last lecture</h2>
 <ul>
 <li><p>Last time we worked with the <code>recipes</code> package to develop workflows for pre-processing our data.</p></li>
-<li><p>Today we look at regression methods we might apply to our data.</p></li>
+<li><p>Today we look at regression methods we might apply to understand relationships between measurements in our data.</p></li>
 </ul>
 </section>
 <section>
@@ -425,23 +425,65 @@ L.L. Odette
 </section>
 <section id="linear-regression-models" class="slide level2">
 <h2>Linear regression models</h2>
-<p>In the simple linear regression model, you have <span class="math inline">\(N\)</span> observations of the response variable <span class="math inline">\(Y\)</span> with a linear combination of <span class="math inline">\(D\)</span> predictor variables <span class="math inline">\(\mathbf{x}\)</span> where</p>
+<p>In the simple linear regression (SLR) model, we have <span class="math inline">\(N\)</span> observations of a single outcome variable <span class="math inline">\(Y\)</span> along with <span class="math inline">\(D\)</span> predictor (aka co-variate) variables <span class="math inline">\(\mathbf{x}\)</span> where the likelihood<sup>1</sup> of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta,\sigma^2\}\)</span>:</p>
 <p><span class="math display">\[
-\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)
+\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
 \]</span></p>
-</section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>In SLR models we assume a Normal (Gaussian) probability model for the data generation process. For non-Normal data generation processes we use generalized linear models, which we’ll discuss later.</p></li></ol></aside></section>
 <section id="linear-regression-models-1" class="slide level2">
 <h2>Linear regression models</h2>
-<p>where <span class="math inline">\(\mathcal{N}\left(\left.y\right|\mu,\sigma^{2}\right)\)</span> is a Normal distribution with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)\)</span> are the <em>parameters</em> of the model and the vector of parameters <span class="math inline">\(\beta_{1:D}\)</span> are the <em>weights</em> or <em>regression</em> coefficients.</p>
+<p>In the SLR model, <span class="math inline">\(\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)\)</span> is a Normal probability density with mean <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, where <span class="math inline">\(\sigma^2\)</span> is a constant and the mean is a function of the predictors <span class="math inline">\(\mathbf{x}\)</span> with a vector of parameters <span class="math inline">\(\beta\)</span>.</p>
+<p>The mean function <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> is often assumed to be continuous, i.e.&nbsp;a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g.&nbsp;polynomial functions (like straight lines, parabolas, and more).</p>
 </section>
 <section id="linear-regression-models-2" class="slide level2">
 <h2>Linear regression models</h2>
+<p>The Taylor formula gives us an equation for the polynomial expansion for <em>every</em> smooth function f, as follows</p>
+<ol type="1">
+<li><p><strong>Start with a Point</strong>: Choose a point on the function where you want to approximate it. Let’s call this point (<span class="math inline">\(x_0\)</span>).</p></li>
+<li><p><strong>Use Derivatives</strong>: Derivatives measure how a function changes. The first derivative tells us the slope (rate of change) of the function at a point, the second derivative tells us how the slope itself changes, and so on.</p></li>
+<li><p><strong>Build the Series</strong>: We use these derivatives to build a polynomial that approximates the function. The more derivatives we use, the better our approximation will be.</p></li>
+</ol>
+<p>Imagine you have a function (<span class="math inline">\(f(x)\)</span>), and you want to approximate it around the reference point (<span class="math inline">\(x = x_0\)</span>).</p>
+<ol type="1">
+<li><p><strong>Function Value</strong>: Start with the value of the function at (<span class="math inline">\(x_0\)</span>), which is (<span class="math inline">\(f(x_0)\)</span>).</p></li>
+<li><p><strong>First Derivative</strong>: Add the slope of the function at (<span class="math inline">\(x_0\)</span>), which is (<span class="math inline">\(f'(x_0)\)</span>), multiplied by (<span class="math inline">\((x - x_0)\)</span>). This gives us a straight line approximation.</p></li>
+<li><p><strong>Second Derivative</strong>: Add a term involving the second derivative, (<span class="math inline">\(f''(x_0)\)</span>), to account for how the slope changes. This term is (<span class="math inline">\(\frac{f''(x_0)}{2!}(x - x_0)^2\)</span>). Now we have a parabola that fits better.</p></li>
+<li><p><strong>Higher Derivatives</strong>: Keep adding terms for higher derivatives to get a more accurate approximation. The general term for the (n)-th derivative is (<span class="math inline">\(\frac{f^{(n)}(x_0)}{n!}(x - x_0)^n\)</span>).</p></li>
+</ol>
+</section>
+<section id="taylor-series" class="slide level2">
+<h2>Taylor Series</h2>
+<p>The decomposition the mean function into a sum of simpler polynomial functions is defined as follows:</p>
+<p><span class="math display">\[
+f(x;x_0)=\sum_na_n(x-x_0)^n=a_0+a_1(x-x_0)+a_2(x-x_0)^2+a_3(x-x_0)^3+\ldots
+\]</span></p>
+<p>where <span class="math inline">\(\frac{d^nx}{dx^n}|_{x=x_0}\equiv f^{(n)}(x_0) = n!a_n\rightarrow a_n=\frac{1}{n!}f^{(n)}(x_0)\)</span></p>
+</section>
+<section id="taylor-series-1" class="slide level2">
+<h2>Taylor Series</h2>
+<p>We can use the following constructive proof to find the coefficients in the series:</p>
+<ol type="1">
+<li><span class="math inline">\(0^{th}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f(x_0) = a_0\)</span></li>
+<li><span class="math inline">\(1^{st}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f'(x_0) = a_1\)</span></li>
+<li><span class="math inline">\(2^{nd}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f''(x_0) = 2a_2\)</span></li>
+<li><span class="math inline">\(3^{rd}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f'''(x_0) = 6a_3\)</span></li>
+<li><span class="math inline">\(n^{th}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f^{(n)}(x_0) = n!a_n\)</span></li>
+</ol>
+</section>
+<section id="linear-regression-models-3" class="slide level2">
+<h2>Linear regression models</h2>
+<p>where the likelihood of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta_0,\beta_1,\sigma^2\}\)</span>:</p>
+<p><span class="math inline">\(\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}\)</span> are the <em>parameters</em> of the model and the vector of parameters <span class="math inline">\(\beta_{1:D}\)</span> are the <em>weights</em> or <em>regression</em> coefficients.</p>
+</section>
+<section id="linear-regression-models-4" class="slide level2">
+<h2>Linear regression models</h2>
+<p>If we think more generally about the mean as a function of the predictors</p>
 <p>The mean function <span class="math inline">\(f(\mathbf{x})\equiv\mu\)</span> could be any linear function in <span class="math inline">\(\mathbf{x}=(x_1,\ldots,x_m)\)</span> in which case <span class="math inline">\(\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x}\)</span> is a linear approximation around <span class="math inline">\(\beta_{0}\)</span> per the Taylor series for <span class="math inline">\(f(\mathbf{x})\)</span>. When <span class="math inline">\(D=1\)</span> the Taylor series is<sup>1</sup></p>
 <p><span class="math display">\[
-f(x)=f(\beta_{0})+f^{(1)}(\beta_{0})(x-\beta_{0})+\frac{1}{2}f^{(2)}(\beta_{0})(x-\beta_{0})^{2}+\ldots
+f(x)=f(x_{0})+f^{(1)}(x_{0})(x-x_{0})+\frac{1}{2}f^{(2)}(x_{0})(x-x_{0})^{2}+\ldots
 \]</span></p>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>where <span class="math inline">\(\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}\)</span></p></li></ol></aside></section>
-<section id="linear-regression-models-3" class="slide level2">
+<aside><ol class="aside-footnotes"><li id="fn2"><p>where <span class="math inline">\(\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}\)</span></p></li></ol></aside></section>
+<section id="linear-regression-models-5" class="slide level2">
 <h2>Linear regression models</h2>
 <p>When <span class="math inline">\(D=2\)</span> the Taylor series is (writing <span class="math inline">\(f_{x}\equiv\frac{\partial f}{\partial x}\)</span>, <span class="math inline">\(f_{y}\equiv\frac{\partial f}{\partial y}\)</span>, <span class="math inline">\(f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}\)</span> and so on):</p>
 <p><span class="math display">\[
@@ -452,7 +494,7 @@ f(x,y) &amp; =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-4" class="slide level2">
+<section id="linear-regression-models-6" class="slide level2">
 <h2>Linear regression models</h2>
 <p>To fit the 1D linear regression model to <span class="math inline">\(N\)</span> data samples, we minimize the negative log-likelihood on the training set.</p>
 <p><span class="math display">\[
@@ -463,7 +505,7 @@ f(x,y) &amp; =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+
 \]</span></p>
 <p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>.</p>
 </section>
-<section id="linear-regression-models-5" class="slide level2">
+<section id="linear-regression-models-7" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Focusing on just the weights, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS):</p>
 <p><span class="math display">\[
@@ -473,7 +515,7 @@ f(x,y) &amp; =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-6" class="slide level2">
+<section id="linear-regression-models-8" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols">Ordinary least squares (OLS)</h4>
 <p>We can write our regression assumption as</p>
@@ -482,7 +524,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \]</span></p>
 <p>where <span class="math inline">\(u_i\)</span> is a sample from <span class="math inline">\(\mathcal{N}\left(0,\sigma^{2}\right)\)</span> which in turn implies <span class="math inline">\(\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0\)</span></p>
 </section>
-<section id="linear-regression-models-7" class="slide level2">
+<section id="linear-regression-models-9" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-1">Ordinary least squares (OLS)</h4>
 <p>It follows that</p>
@@ -493,7 +535,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-8" class="slide level2">
+<section id="linear-regression-models-10" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-2">Ordinary least squares (OLS)</h4>
 <p>Writing the same thing for our samples (where <span class="math inline">\(\hat{\beta}_{0}, \hat{\beta}_{1}\)</span> are our estimates)</p>
@@ -504,7 +546,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-9" class="slide level2">
+<section id="linear-regression-models-11" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-3">Ordinary least squares (OLS)</h4>
 <p>From the first equation</p>
@@ -515,7 +557,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-10" class="slide level2">
+<section id="linear-regression-models-12" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-4">Ordinary least squares (OLS)</h4>
 <p>Substituting the expression for <span class="math inline">\(\hat{\beta}_{0}\)</span> in the independence equation</p>
@@ -527,7 +569,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-11" class="slide level2">
+<section id="linear-regression-models-13" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-5">Ordinary least squares (OLS)</h4>
 <p>So as long as <span class="math inline">\(\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2\ne 0\)</span></p>
@@ -538,7 +580,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-12" class="slide level2">
+<section id="linear-regression-models-14" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Similarly, in the vector equation, the minimum of the RSS is solved by (assuming <span class="math inline">\(N&gt;D\)</span>):</p>
 <p><span class="math display">\[
@@ -616,7 +658,7 @@ Q'QR\beta &amp; = Q'y\\
 <span id="cb8-6"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector y</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb8-7"><a></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> A <span class="sc">%*%</span> x ; y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-nrow="3" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-nrow="3">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code>matrix A</code></pre>
@@ -675,7 +717,7 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 </div>
 </section>
-<section id="linear-regression-models-13" class="slide level2">
+<section id="linear-regression-models-15" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing</p>
 <ul>
@@ -794,7 +836,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="ridge-regression-example-3" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -818,7 +860,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression" class="slide level2">
 <h2>Lasso Regression</h2>
 <p>Lasso regression is another example of a penalized regression model; in this case both the magnitude of the weights and the number of parameters are penalized by using the <span class="math inline">\(\ell_1\)</span> norm of the weights to the loss function of the lasso regression. In particular, the lasso regression weights are:</p>
@@ -888,7 +930,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression-example-2" class="slide level2">
 <h2>Lasso Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -912,7 +954,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="elastic-net-regression" class="slide level2">
 <h2>Elastic Net Regression</h2>
 <p>Elastic Net regression is a hybrid of ridge and lasso regression.</p>
@@ -1038,7 +1080,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
+<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="generalized-linear-models" class="slide level2">
 <h2>Generalized Linear Models</h2>
 <p>A <strong>generalized linear model</strong> (<strong>GLM</strong>) is a flexible generalization of ordinary linear regression.</p>
@@ -1306,21 +1348,10 @@ qsec        -18.944318</code></pre>
 </div>
 <div id="tabset-2-2">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="sc">&gt;</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">test =</span> data_test<span class="sc">$</span>medv, <span class="at">predicted =</span> pr.nn<span class="sc">$</span>net.result) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-2"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>test, <span class="at">y=</span>predicted)) <span class="sc">+</span></span>
-<span id="cb39-3"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">color=</span><span class="st">'red'</span>) <span class="sc">+</span></span>
-<span id="cb39-4"><a></a><span class="sc">+</span>   <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">color=</span><span class="st">"blue"</span>, </span>
-<span id="cb39-5"><a></a><span class="sc">+</span>                  <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb39-6"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Neural Net Regression'</span></span>
-<span id="cb39-7"><a></a><span class="sc">+</span>      , <span class="at">subtitle =</span> </span>
-<span id="cb39-8"><a></a><span class="sc">+</span>        stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
-<span id="cb39-9"><a></a><span class="sc">+</span>          <span class="st">"Mean squared prediction error is {scales::number(MSE.nn, accuracy=0.01)}"</span></span>
-<span id="cb39-10"><a></a><span class="sc">+</span>        )</span>
-<span id="cb39-11"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1560,6 +1591,44 @@ qsec        -18.944318</code></pre>
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

@@ -103,7 +103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -436,7 +436,7 @@ Note
 <p>In the simple linear regression model, you have <span class="math inline">\(n\)</span> observations of the response variable <span class="math inline">\(Y\)</span> with a linear combination of <span class="math inline">\(m\)</span> predictor variables <span class="math inline">\(\mathbf{x}\)</span> where</p>
 <p><span id="eq-linear"><span class="math display">\[
 \pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)
-\tag{1}\]</span></span></p>
+\qquad(1)\]</span></span></p>
 <p>where <span class="math inline">\(\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)\)</span> are all the parameters of the model. The vector of parameters <span class="math inline">\(\beta_{1:D}\)</span> are the weights or regression coefficients. Each coefficient <span class="math inline">\(\beta_i\)</span> specifies the change in the output that we expect if the corresponding input feature <span class="math inline">\(x_i\)</span> changes by one unit. The term <span class="math inline">\(\beta_0\)</span> is the offset or bias term, and specifies the output if all the inputs are zero. This captures the unconditional response, and acts as a baseline. We sometimes write the input as <span class="math inline">\(\left(1,x_{1},\ldots,x_{D}\right)\)</span> so the offset can be absorbed into the weight vector.</p>
 <p>We can always apply a transformation <span class="math inline">\(\phi\)</span> (linear or non-linear) to the input vector, replacing <span class="math inline">\(\beta\)</span> with <span class="math inline">\(\phi(\beta)\)</span>. As long as the parameters of the feature extractor are fixed, the model remain linear in the parameters even if not linear in the inputs.</p>
 <p>Least squares estimation</p>
@@ -456,25 +456,25 @@ Note
 <p>We must estimate the parameter values <span class="math inline">\(\mathbf{\hat{\beta}}\)</span> from the data, and using the OLS method, the loss function is</p>
 <p><span id="eq-OLS-loss"><span class="math display">\[
 \text{L}_{OLS}\left(\hat{\beta}\right)=\sum_{i=1}^{n}\left(y_{i}-x_{i}^{'}\hat{\beta}\right)^{2}=\left\Vert y-X\hat{\beta}\right\Vert ^{2}
-\tag{2}\]</span></span></p>
+\qquad(2)\]</span></span></p>
 <p>which is minimized with the estimate</p>
 <p><span id="eq-OLS-soln"><span class="math display">\[
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right)
-\tag{3}\]</span></span></p>
+\qquad(3)\]</span></span></p>
 <section id="bias-and-variance" class="level3">
 <h3 class="anchored" data-anchor-id="bias-and-variance">Bias and variance</h3>
 <p>The bias is the difference between the true population parameter and the expected estimator:</p>
 <p><span id="eq-OLS-bias"><span class="math display">\[
 \text{Bias}\left(\hat{\mathbf{\beta}}_{OLS}\right)=\mathbb{E\left[\hat{\mathbf{\beta}}_{OLS}\right]-\mathbf{\beta}}
-\tag{4}\]</span></span></p>
+\qquad(4)\]</span></span></p>
 <p>The variance uncertainty, in these estimates:</p>
 <p><span id="eq-OLS-variance"><span class="math display">\[
 \text{Var}\left(\hat{\mathbf{\beta}}_{OLS}\right)=\sigma^{2}\left(X'X\right)^{-1}
-\tag{5}\]</span></span></p>
+\qquad(5)\]</span></span></p>
 <p>where <span class="math inline">\(\sigma^2\)</span> is estimated form the residuals <span class="math inline">\(e\)</span></p>
 <p><span id="eq-OLS-residuals"><span class="math display">\[
 \begin{align*}e &amp; =y-x\hat{\mathbf{\beta}}\\\hat{\sigma}^{2} &amp; =\frac{e'e}{n-m}\end{align*}
-\tag{6}\]</span></span></p>
+\qquad(6)\]</span></span></p>
 <p>This picture illustrates what bias and variance are.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -485,7 +485,7 @@ Note
 <p>Both the bias and the variance are desired to be low, and the model’s error can be decomposed into three parts: error resulting from a large variance, error resulting from significant bias, and the remainder - the unexplainable part.</p>
 <p><span id="eq-OLS-expected-error"><span class="math display">\[
 \begin{align*}\mathbb{E}\left[e\right] &amp; =\left(\mathbb{E}\left[X\hat{\beta}\right]-X\hat{\beta}\right)^{2}+\mathbb{E}\left[\left(X\hat{\beta}-X\hat{\beta}\right)^{2}\right]+\sigma^{2}\\ &amp; =\text{Bias}^{2}+\text{Variance}+\sigma^{2}\end{align*}
-\tag{7}\]</span></span></p>
+\qquad(7)\]</span></span></p>
 <p>The OLS estimator has the desired property of being unbiased. However, it can have a huge variance. Specifically, this happens when:</p>
 <ul>
 <li>The predictor variables are highly correlated with each other;</li>
