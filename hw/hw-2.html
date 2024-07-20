@@ -122,35 +122,6 @@ div.csl-indent {
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="HW 2 - Multiple linear regression – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Due Friday, February 18, 5pm on Gradescope">
@@ -524,8 +495,8 @@ window.Quarto = {
 <li><p><strong>Multiple regression fact checking.</strong> Determine which of the following statements are true and false. For each statement that is false, explain why it is false.</p>
 <ol type="a">
 <li><p>If predictors are colinear, then removing one variable will have no influence on the point estimate of another variable’s coefficient.</p></li>
-<li><p>Suppose a numerical predictor <span class="math inline">\(x\)</span> has a coefficient of <span class="math inline">\(\hat{\beta}_1 = 2.5\)</span> in a multiple regression model. Suppose also that the first observation has <span class="math inline">\(x_{1,1} = 7.2\)</span>, the second observation has a value of <span class="math inline">\(x_{2,1} = 8.2\)</span>, and these two observations have the same values for all other predictors. Then the predicted value of the second observation will be 2.5 higher than the prediction of the first observation based on the multiple regression model.</p></li>
-<li><p>If a regression model’s first predictor has a coefficient of <span class="math inline">\(\hat{\beta}_1 = 5.7\)</span> and if we are able to influence the data so that an observation will have its <span class="math inline">\(x_1\)</span> be 1 larger than it would otherwise, the value <span class="math inline">\(\hat{y}_1\)</span> for this observation would increase by 5.7.</p></li>
+<li><p>Suppose a numerical predictor <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> has a coefficient of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>=</mo><mn>2.5</mn></mrow><annotation encoding="application/x-tex">\hat{\beta}_1 = 2.5</annotation></semantics></math> in a multiple regression model. Suppose also that the first observation has <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mrow><mn>1</mn><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>7.2</mn></mrow><annotation encoding="application/x-tex">x_{1,1} = 7.2</annotation></semantics></math>, the second observation has a value of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mrow><mn>2</mn><mo>,</mo><mn>1</mn></mrow></msub><mo>=</mo><mn>8.2</mn></mrow><annotation encoding="application/x-tex">x_{2,1} = 8.2</annotation></semantics></math>, and these two observations have the same values for all other predictors. Then the predicted value of the second observation will be 2.5 higher than the prediction of the first observation based on the multiple regression model.</p></li>
+<li><p>If a regression model’s first predictor has a coefficient of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>=</mo><mn>5.7</mn></mrow><annotation encoding="application/x-tex">\hat{\beta}_1 = 5.7</annotation></semantics></math> and if we are able to influence the data so that an observation will have its <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>1</mn></msub><annotation encoding="application/x-tex">x_1</annotation></semantics></math> be 1 larger than it would otherwise, the value <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><annotation encoding="application/x-tex">\hat{y}_1</annotation></semantics></math> for this observation would increase by 5.7.</p></li>
 </ol></li>
 </ol>
 </section>
@@ -546,7 +517,7 @@ window.Quarto = {
 <li><p>Write the equation of the regression model.</p></li>
 <li><p>Interpret each one of the slopes in this context.</p></li>
 <li><p>Calculate the residual for a male Adelie penguin that weighs 3750 grams with the following body measurements: <code>bill_length_mm</code> = 39.1, <code>bill_depth_mm</code> = 18.7, <code>flipper_length_mm</code> = 181. Does the model overpredict or underpredict this penguin’s weight?</p></li>
-<li><p>Find the <span class="math inline">\(R^2\)</span> of this model and interpret this value in context of the data and the model.</p></li>
+<li><p>Find the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math> of this model and interpret this value in context of the data and the model.</p></li>
 </ol></li>
 </ol>
 <p><img src="images/culmen_depth.png" class="img-fluid" style="float: right;" width="300"></p>

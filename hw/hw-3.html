@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="HW 3 - Logistic regression and log transformation – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Due Friday, March 25, 5pm on Gradescope">
@@ -521,11 +492,11 @@ window.Quarto = {
 </div>
 </div></li>
 <li><p>Calculate the odds ratio of a penguin being from the Adelie species for those recorded on Dream compared to those recorded on Biscoe.</p></li>
-<li><p>You want to fit a model using <code>island</code> to predict the odds of being from the Adelie species. Let <span class="math inline">\(\pi\)</span> be the probability a penguin is from the Adelie species. The model has the following form. What do you expect the value of <span class="math inline">\(\hat{\beta}_1\)</span>, the estimated coefficient for <em>Dream</em>, to be? Explain your reasoning.</p></li>
+<li><p>You want to fit a model using <code>island</code> to predict the odds of being from the Adelie species. Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math> be the probability a penguin is from the Adelie species. The model has the following form. What do you expect the value of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><annotation encoding="application/x-tex">\hat{\beta}_1</annotation></semantics></math>, the estimated coefficient for <em>Dream</em>, to be? Explain your reasoning.</p></li>
 </ol>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><mi>π</mi><mrow><mn>1</mn><mo>−</mo><mi>π</mi></mrow></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mspace width="0.222em"></mspace><mi>D</mi><mi>r</mi><mi>e</mi><mi>a</mi><mi>m</mi><mo>+</mo><msub><mi>β</mi><mn>2</mn></msub><mspace width="0.222em"></mspace><mi>T</mi><mi>o</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>r</mi><mi>s</mi><mi>e</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">
 \log\Big(\frac{\pi}{1-\pi}\Big) = \beta_0 + \beta_1 ~ Dream + \beta_2 ~ Torgersen
-\]</span></p>
+</annotation></semantics></math></p>
 <ol start="4" type="1">
 <li>Fit a model predicting <code>adelie</code> from <code>island</code> and display the model output. For the following exercise, use this model.</li>
 <li>Based on this model, what are the <strong>odds</strong> of a penguin being from the Adelie species if it was recorded on Biscoe island? on Dream island?</li>
@@ -584,24 +555,24 @@ window.Quarto = {
 </div>
 </div>
 <p>The linear model for predicting log of GDP can be expressed as follows:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>G</mi><mi>D</mi><mi>P</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo accent="true">̂</mo></mover><mo>=</mo><mn>6.11</mn><mo>+</mo><mn>0.042</mn><mo>×</mo><mi>u</mi><mi>r</mi><mi>b</mi><mi>a</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">
 \widehat{\log(GDP)} = 6.11 + 0.042 \times urban
-\]</span></p>
+</annotation></semantics></math></p>
 <p>Therefore, the coefficient of <code>urban</code> (0.042) can be interpreted as the change in logged GDP associated with 1 percentage point increase in urban population. The problem is, logged GDP is not a very informative value to talk about. So we need to undo the transformation we’ve done.</p>
 <p>To do so, let’s do a quick review of some properties of logs.</p>
 <ul>
-<li>Subtraction and logs: <span class="math inline">\(log(a) − log(b) = log(\frac{a}{b})\)</span></li>
-<li>Natural logarithm: <span class="math inline">\(e^{log(x)} = x\)</span></li>
+<li>Subtraction and logs: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mi>a</mi><mi>b</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">log(a) − log(b) = log(\frac{a}{b})</annotation></semantics></math></li>
+<li>Natural logarithm: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>e</mi><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msup><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">e^{log(x)} = x</annotation></semantics></math></li>
 </ul>
 <p>Based on the interpretation of the slope above, the difference between the predicted values of logged GDP for a given value of <code>urban</code> and a value that is 1 percentage point higher is 0.0425. Let’s write this out mathematically, and then use the properties we’ve listed above to work through the equation.</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>l</mi><mi>o</mi><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mn>0.042</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>l</mi><mi>o</mi><mi>g</mi><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi></mrow></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mn>0.042</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msup><mi>e</mi><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi></mrow></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo></mrow></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msup><mi>e</mi><mn>0.042</mn></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mrow><mrow><mtext mathvariant="normal">GDP for urban </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msup><mi>e</mi><mn>0.042</mn></msup></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 log(\text{GDP for urban } x + 1) - log(\text{GDP for urban } x) &amp;= 0.042 \\
 log\Big( \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} \Big) &amp;= 0.042 \\
 e^{log\Big( \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} \Big)} &amp;= e^{0.042}\\
 \frac{\text{GDP for urban } x + 1}{\text{GDP for urban } x} &amp;= e^{0.042}
 \end{aligned}
-\]</span></p>
+</annotation></semantics></math></p>
 <ol start="16" type="1">
 <li><p>Based on the derivation above, fill in the blanks in the following sentence for an alternative (and more useful interpretation) of the slope of <code>urban</code>.</p>
 <blockquote class="blockquote">

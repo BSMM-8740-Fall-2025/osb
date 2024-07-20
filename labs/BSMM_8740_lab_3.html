@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="Lab 3 - The Recipes package – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
@@ -602,7 +573,7 @@ Important
 </section>
 <section id="exercise-6" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-6">Exercise 6</h3>
-<p>As in the last exercise, use the variable with the tidied PCA data and use only PCA components PC1 to PC4. Take/slice the top 8 ingedients by component, ordered by their absolute value using the verb <code>dplyr::slice_max</code>. Next, generate a grouped table using gt::gt, colouring the cell backgrounds (i.e.&nbsp;fill) with green for values <span class="math inline">\(\ge0\)</span> and red for values <span class="math inline">\(&lt;0\)</span>.</p>
+<p>As in the last exercise, use the variable with the tidied PCA data and use only PCA components PC1 to PC4. Take/slice the top 8 ingedients by component, ordered by their absolute value using the verb <code>dplyr::slice_max</code>. Next, generate a grouped table using gt::gt, colouring the cell backgrounds (i.e.&nbsp;fill) with green for values <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\ge0</annotation></semantics></math> and red for values <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">&lt;0</annotation></semantics></math>.</p>
 <p>What is the characteristic alcoholic beverage of each of the first 4 principle components.</p>
 </section>
 <section id="exercise-7" class="level3">
@@ -634,7 +605,7 @@ Important
 <p>where the date and region-name are id variables, not predictor variables. Instead we will use the prior-month lagged prices as the only predictor.</p>
 <p>The recipe uses the following 5 steps from the <code>recipes</code> package: <code>update_role</code>(date, region_name, new_role = “id”) | <code>recipe</code>(sales_volume ~ ., data = df |&gt; janitor::clean_names()) | <code>step_naomit</code>(lag_1_sales_volume, skip=FALSE) | <code>step_lag</code>(sales_volume, lag=1) | <code>step_arrange</code>(region_name, date)</p>
 <p>Use these 5 step in the proper order to create a recipe to pre-process the time series data for each region. Prep and then bake your recipe using <code>df</code>.</p>
-<p>The result of the bake step, after filtering for dates <span class="math inline">\(\le\)</span> 2005-03-01, should look like this:</p>
+<p>The result of the bake step, after filtering for dates <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≤</mo><annotation encoding="application/x-tex">\le</annotation></semantics></math> 2005-03-01, should look like this:</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="lfycosducv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">

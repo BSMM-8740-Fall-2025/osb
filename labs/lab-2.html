@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="Lab 2 - College scorecard – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
@@ -552,12 +523,12 @@ Note
 </section>
 <section id="exercise-10" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-10">Exercise 10</h3>
-<p>Finally, we want to answer the question “Do the data provide sufficient evidence of a linear relationship between cost and admissions rate, i.e.&nbsp;<span class="math inline">\(\beta_1\)</span> is different from 0?”</p>
+<p>Finally, we want to answer the question “Do the data provide sufficient evidence of a linear relationship between cost and admissions rate, i.e.&nbsp;<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\beta_1</annotation></semantics></math> is different from 0?”</p>
 <p>To answer this question we will use a hypothesis test. We can conduct a hypothesis test via simulation (what we’ll do in this lab) or using mathematical models (what we’ll do in the next class).</p>
 <p>Before we can conduct the hypothesis test, let’s first set our hypotheses. Remember that the null hypothesis represents the status quo (nothing going on, i.e.&nbsp;there is no relationship) and the alternative hypothesis represents our research question (there is something going on, i.e.&nbsp;there is a relationship).</p>
 <ul>
-<li><span class="math inline">\(H_0\)</span>: There is no linear relationship between the admissions rate and cost of colleges in the United States, <span class="math inline">\(\beta_1 = 0\)</span></li>
-<li><span class="math inline">\(H_A\)</span>: There is a linear relationship between the admissions rate and cost of colleges in the United States, <span class="math inline">\(\beta_1 \ne 0\)</span></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math>: There is no linear relationship between the admissions rate and cost of colleges in the United States, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta_1 = 0</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mi>A</mi></msub><annotation encoding="application/x-tex">H_A</annotation></semantics></math>: There is a linear relationship between the admissions rate and cost of colleges in the United States, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>1</mn></msub><mo>≠</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta_1 \ne 0</annotation></semantics></math></li>
 </ul>
 <p>To test these hypotheses, we will use a permutation test, where we</p>
 <ul>
