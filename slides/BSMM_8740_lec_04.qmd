@@ -38,30 +38,82 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 -   Last time we worked with the `recipes` package to develop workflows for pre-processing our data.
 
--   Today we look at regression methods we might apply to our data.
+-   Today we look at regression methods we might apply to understand relationships between measurements in our data.
 
 # Linear regression
 
 ## Linear regression models
 
-In the simple linear regression model, you have $N$ observations of the response variable $Y$ with a linear combination of $D$ predictor variables $\mathbf{x}$ where
+In the simple linear regression (SLR) model, we have $N$ observations of a single outcome variable $Y$ along with $D$ predictor (aka co-variate) variables $\mathbf{x}$ where the likelihood[^1] of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta,\sigma^2\}$:
+
+[^1]: In SLR models we assume a Normal (Gaussian) probability model for the data generation process. For non-Normal data generation processes we use generalized linear models, which we'll discuss later.
 
 $$
-\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)
+\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
 $$
 
 ## Linear regression models
 
-where $\mathcal{N}\left(\left.y\right|\mu,\sigma^{2}\right)$ is a Normal distribution with mean $\mu$ and variance $\sigma^2$, $\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)$ are the *parameters* of the model and the vector of parameters $\beta_{1:D}$ are the *weights* or *regression* coefficients.
+In the SLR model, $\mathcal{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ with a vector of parameters $\beta$.
+
+The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e. a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g. polynomial functions (like straight lines, parabolas, and more).
 
 ## Linear regression models
 
-The mean function $f(\mathbf{x})\equiv\mu$ could be any linear function in $\mathbf{x}=(x_1,\ldots,x_m)$ in which case $\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x}$ is a linear approximation around $\beta_{0}$ per the Taylor series for $f(\mathbf{x})$. When $D=1$ the Taylor series is[^1]
+The Taylor formula gives us an equation for the polynomial expansion for *every* smooth function f, as follows
 
-[^1]: where $\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}$
+1.  **Start with a Point**: Choose a point on the function where you want to approximate it. Let’s call this point ($x_0$).
+
+2.  **Use Derivatives**: Derivatives measure how a function changes. The first derivative tells us the slope (rate of change) of the function at a point, the second derivative tells us how the slope itself changes, and so on.
+
+3.  **Build the Series**: We use these derivatives to build a polynomial that approximates the function. The more derivatives we use, the better our approximation will be.
+
+Imagine you have a function ($f(x)$), and you want to approximate it around the reference point ($x = x_0$).
+
+1.  **Function Value**: Start with the value of the function at ($x_0$), which is ($f(x_0)$).
+
+2.  **First Derivative**: Add the slope of the function at ($x_0$), which is ($f'(x_0)$), multiplied by ($(x - x_0)$). This gives us a straight line approximation.
+
+3.  **Second Derivative**: Add a term involving the second derivative, ($f''(x_0)$), to account for how the slope changes. This term is ($\frac{f''(x_0)}{2!}(x - x_0)^2$). Now we have a parabola that fits better.
+
+4.  **Higher Derivatives**: Keep adding terms for higher derivatives to get a more accurate approximation. The general term for the (n)-th derivative is ($\frac{f^{(n)}(x_0)}{n!}(x - x_0)^n$).
+
+## Taylor Series
+
+The decomposition the mean function into a sum of simpler polynomial functions is defined as follows:
 
 $$
-f(x)=f(\beta_{0})+f^{(1)}(\beta_{0})(x-\beta_{0})+\frac{1}{2}f^{(2)}(\beta_{0})(x-\beta_{0})^{2}+\ldots
+f(x;x_0)=\sum_na_n(x-x_0)^n=a_0+a_1(x-x_0)+a_2(x-x_0)^2+a_3(x-x_0)^3+\ldots
+$$
+
+where $\frac{d^nx}{dx^n}|_{x=x_0}\equiv f^{(n)}(x_0) = n!a_n\rightarrow a_n=\frac{1}{n!}f^{(n)}(x_0)$
+
+## Taylor Series
+
+We can use the following constructive proof to find the coefficients in the series:
+
+1.  $0^{th}$ derivative at $x=x_0$: $f(x_0) = a_0$
+2.  $1^{st}$ derivative at $x=x_0$: $f'(x_0) = a_1$
+3.  $2^{nd}$ derivative at $x=x_0$: $f''(x_0) = 2a_2$
+4.  $3^{rd}$ derivative at $x=x_0$: $f'''(x_0) = 6a_3$
+5.  $n^{th}$ derivative at $x=x_0$: $f^{(n)}(x_0) = n!a_n$
+
+## Linear regression models
+
+where the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
+
+$\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}$ are the *parameters* of the model and the vector of parameters $\beta_{1:D}$ are the *weights* or *regression* coefficients.
+
+## Linear regression models
+
+If we think more generally about the mean as a function of the predictors
+
+The mean function $f(\mathbf{x})\equiv\mu$ could be any linear function in $\mathbf{x}=(x_1,\ldots,x_m)$ in which case $\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x}$ is a linear approximation around $\beta_{0}$ per the Taylor series for $f(\mathbf{x})$. When $D=1$ the Taylor series is[^2]
+
+[^2]: where $\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}$
+
+$$
+f(x)=f(x_{0})+f^{(1)}(x_{0})(x-x_{0})+\frac{1}{2}f^{(2)}(x_{0})(x-x_{0})^{2}+\ldots
 $$
 
 ## Linear regression models
