@@ -102,6 +102,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script defer="" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <meta property="og:title" content="AE 02: Bike rentals in DC – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Exploring and modeling relationships">
@@ -494,7 +537,7 @@ Important
 <section id="exercise-5" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-5">Exercise 5</h3>
 <p>Suppose you want to fit a model so you can use the temperature to predict the number of bike rentals. Would a model of the form</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">count</mtext><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mspace width="0.222em"></mspace><mtext mathvariant="normal">temp_orig</mtext><mo>+</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\text{count} = \beta_0 + \beta_1 ~ \text{temp_orig} + \epsilon</annotation></semantics></math></p>
+<p><span class="math display">\text{count} = \beta_0 + \beta_1 ~ \text{temp_orig} + \epsilon</span></p>
 <p>be the best fit for the data? Why or why not?</p>
 <p>No.</p>
 </section>
