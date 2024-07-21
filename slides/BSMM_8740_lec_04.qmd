@@ -54,83 +54,89 @@ $$
 
 ## Linear regression models
 
-In the SLR model, $\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ with a vector of parameters $\beta$.
+In the SLR model, $\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ and a vector of parameters $\beta$.
 
 The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e. a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g. polynomial functions (like straight lines, parabolas, and more).
 
-## Linear regression models
+## Taylor Series
 
-The Taylor formula gives us an equation for the polynomial expansion for *every* smooth function f, as follows
+The decomposition of a function of a single variable $x$ into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:
 
-1.  **Start with a Point**: Choose a point on the function where you want to approximate it. Let’s call this point ($x_0$).
+::: {style="font-size: xx-large"}
+$$
+f(x;x_0)=\sum_{n=0}\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
+$$
+:::
 
-2.  **Use Derivatives**: Derivatives measure how a function changes. The first derivative tells us the slope (rate of change) of the function at a point, the second derivative tells us how the slope itself changes, and so on.
-
-3.  **Build the Series**: We use these derivatives to build a polynomial that approximates the function. The more derivatives we use, the better our approximation will be.
-
-Imagine you have a function ($f(x)$), and you want to approximate it around the reference point ($x = x_0$).
-
-1.  **Function Value**: Start with the value of the function at ($x_0$), which is ($f(x_0)$).
-
-2.  **First Derivative**: Add the slope of the function at ($x_0$), which is ($f'(x_0)$), multiplied by ($(x - x_0)$). This gives us a straight line approximation.
-
-3.  **Second Derivative**: Add a term involving the second derivative, ($f''(x_0)$), to account for how the slope changes. This term is ($\frac{f''(x_0)}{2!}(x - x_0)^2$). Now we have a parabola that fits better.
-
-4.  **Higher Derivatives**: Keep adding terms for higher derivatives to get a more accurate approximation. The general term for the (n)-th derivative is ($\frac{f^{(n)}(x_0)}{n!}(x - x_0)^n$).
+where $\frac{d^nf(x)}{dx^n}|_{x=x_0} \equiv f^{(n)}(x_0) = n!\beta_n\;\rightarrow \beta_n=\frac{1}{n!}f^{(n)}(x_0)$
 
 ## Taylor Series
 
-The decomposition the mean function into a sum of simpler polynomial functions is defined as follows:
-
+::: {style="font-size: x-large"}
 $$
-f(x;x_0)=\sum_na_n(x-x_0)^n=a_0+a_1(x-x_0)+a_2(x-x_0)^2+a_3(x-x_0)^3+\ldots
+f(x;x_0)=\sum_n\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
 $$
-
-where $\frac{d^nx}{dx^n}|_{x=x_0}\equiv f^{(n)}(x_0) = n!a_n\rightarrow a_n=\frac{1}{n!}f^{(n)}(x_0)$
-
-## Taylor Series
+:::
 
 We can use the following constructive proof to find the coefficients in the series:
 
-1.  $0^{th}$ derivative at $x=x_0$: $f(x_0) = a_0$
-2.  $1^{st}$ derivative at $x=x_0$: $f'(x_0) = a_1$
-3.  $2^{nd}$ derivative at $x=x_0$: $f''(x_0) = 2a_2$
-4.  $3^{rd}$ derivative at $x=x_0$: $f'''(x_0) = 6a_3$
-5.  $n^{th}$ derivative at $x=x_0$: $f^{(n)}(x_0) = n!a_n$
+::: {style="font-size: x-large"}
+1.  $0^{th}$ derivative at $x=x_0$: $f(x_0) = \beta_0$
+2.  $1^{st}$ derivative at $x=x_0$: $f'(x_0) = \beta_1$
+3.  $2^{nd}$ derivative at $x=x_0$: $f''(x_0) = 2\beta_2$
+4.  $3^{rd}$ derivative at $x=x_0$: $f'''(x_0) = 6\beta_3$
+5.  $n^{th}$ derivative at $x=x_0$: $f^{(n)}(x_0) = n!\beta_n$
+:::
 
 ## Linear regression models
 
-where the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
+Similarly, when the number of variables is $D=2$ the Taylor series is (writing $f_{x}\equiv\frac{\partial f}{\partial x}$, $f_{y}\equiv\frac{\partial f}{\partial y}$, $f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}$ and so on):
 
-$\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}$ are the *parameters* of the model and the vector of parameters $\beta_{1:D}$ are the *weights* or *regression* coefficients.
-
-## Linear regression models
-
-If we think more generally about the mean as a function of the predictors
-
-The mean function $f(\mathbf{x})\equiv\mu$ could be any linear function in $\mathbf{x}=(x_1,\ldots,x_m)$ in which case $\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x}$ is a linear approximation around $\beta_{0}$ per the Taylor series for $f(\mathbf{x})$. When $D=1$ the Taylor series is[^2]
-
-[^2]: where $\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}$
-
-$$
-f(x)=f(x_{0})+f^{(1)}(x_{0})(x-x_{0})+\frac{1}{2}f^{(2)}(x_{0})(x-x_{0})^{2}+\ldots
-$$
-
-## Linear regression models
-
-When $D=2$ the Taylor series is (writing $f_{x}\equiv\frac{\partial f}{\partial x}$, $f_{y}\equiv\frac{\partial f}{\partial y}$, $f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}$ and so on):
-
+::: {style="font-size: xx-large"}
 $$
 \begin{align*}
-f(x,y) & =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+f_{y}(\alpha_{0},\beta_{0})(y-\beta_{0})\\
- & = + f_{x,x}(\alpha_{0},\beta_{0})(x-\alpha_{0})^{2}+f_{y,y}(\alpha_{0},\beta_{0})(y-\beta_{0})^{2}\\
- & = + f_{x,y}(\alpha_{0},\beta_{0})(x-\alpha_{0})(y-\beta_{0})+\ldots
+f(x,y;x_0,y_0) & =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{0})(y-y_{0})\\
+ & = + \frac{1}{2}f_{x,x}(x_{0},y_{0})(x-x_{0})^{2}+\frac{1}{2}f_{y,y}(x_{0},y_{0})(y-y_{0})^{2}\\
+ & = + \frac{1}{2}f_{x,y}(x_{0},y_{0})(x-x_{0})(y-y_{0})+\ldots
 \end{align*}
 $$
 
+which decomposes a function of two variables into a sum of simpler functions, e.g. polynomial functions (like 2-D straight lines, parabolas, and more).
+:::
+
 ## Linear regression models
 
-To fit the 1D linear regression model to $N$ data samples, we minimize the negative log-likelihood on the training set.
+For one co-variate, If the mean function is smooth (i.e. not changing rapidly with the co-variate) then $\mu^{(n)}$ will be decreasing in $n$, and furthermore $\beta_n$ decreases as $1/n!$, so SLR models in one co-variate typically use only the first two or at most three $\beta$ coefficients.
+
+Thus the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
+
+$\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}$ are the *parameters* of the model, where $\beta_0$ is a constant and $\beta_1$ is the co-variate *weight* or *regression* coefficient.
+
+## Linear regression models
+
+For multiple co-variates, If the mean function is smooth (i.e. not changing rapidly with the co-variates) then under similar (reasonable) assumptions on the differentials, it is common to see SLR models using only the first order coefficients, i.e. a constant and one coefficient for each co-variate.
+
+## Linear regression models
+
+::: callout-note
+It is common to add the unit constant to the covariate vector $x=(1,x_1,x_2,\ldots)$ so that the coefficient vector is $\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)$, and the model can be expressed as a vector equation: \$y=\\mathbf{\\beta}\\cdot \\mathbf{x}[^2]\$\$.
+:::
+
+[^2]: sometime written as $\beta'\mathbf{x}$
+
+## Linear regression models
+
+Recall that the one dimensional Normal/Gaussian probability density (aka likelihood) is:
+
+$$
+\mathscr{N}\left(x;\mu,\sigma^2\right)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{1}{2}\frac{x-\mu}{\sigma^2}}
+$$
+
+The likelihood of multiple observations is the product of the likelihoods for each observation.
+
+## Linear regression models
+
+To fit the 1D linear regression model given $N$ data samples, we minimize the negative log-likelihood on the training set.
 
 $$
 \begin{align*}
@@ -139,11 +145,13 @@ $$
 \end{align*}
 $$
 
-where the predicted response is $\hat{y}\equiv\beta'x_{n}$.
+where the predicted response is $\hat{y}\equiv\beta'x_{n}$. This is the maximum likelihood method.
 
 ## Linear regression models
 
-Focusing on just the weights, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS):
+Focusing on just the coefficients $\beta$, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS)[^3] with coefficient estimates $\hat\beta$ :
+
+[^3]: i.e. minimizing the squared prediction error, aka ordinary least squares.
 
 $$ 
 \begin{align*}\text{RSS}\left(\beta\right) & =\frac{1}{2}\sum_{n=1}^{N}\left(y_{n}-\beta'x_{n}\right)^{2}=\frac{1}{2}\left\Vert y_{n}-\beta'x_{n}\right\Vert ^{2}\\
@@ -156,19 +164,21 @@ $$
 
 #### Ordinary least squares (OLS)
 
-We can write our regression assumption as
+Note that, given the assumption that the data generation process is Normal/Gaussian, we can write our regression equation in terms of individual observations as
 
 $$
 y_i=\beta_0+\beta_1 x_i + u_i
 $$
 
-where $u_i$ is a sample from $\mathcal{N}\left(0,\sigma^{2}\right)$ which in turn implies $\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0$
+where error term $u_i$ is a sample from $\mathscr{N}\left(0,\sigma^{2}\right)$ which in turn implies $\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0$
+
+The independence of the covariates and the errors is a testable assumption.
 
 ## Linear regression models
 
 #### Ordinary least squares (OLS)
 
-It follows that
+It follows independence of the covariates and the errors that
 
 $$
 \begin{align*}
@@ -181,7 +191,7 @@ $$
 
 #### Ordinary least squares (OLS)
 
-Writing the same thing for our samples (where $\hat{\beta}_{0}, \hat{\beta}_{1}$ are our estimates)
+Writing these equations in terms of our samples (where $\hat{\beta}_{0}, \hat{\beta}_{1}$ are our coefficient estimates)
 
 $$
 \begin{align*}
@@ -198,7 +208,7 @@ From the first equation
 
 $$
 \begin{align*}
-\bar{y}-\hat{\beta}_{0}-\hat{\beta}_{1}\bar{x}_{i} & =0\\
+\bar{y}-\hat{\beta}_{0}-\hat{\beta}_{1}\bar{x} & =0\\
 \bar{y}-\hat{\beta}_{1}\bar{x} & =\hat{\beta}_{0}
 \end{align*}
 $$
@@ -238,7 +248,7 @@ $$
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right) = \frac{\text{cov}(X,Y)}{\text{var}(X)}
 $$
 
-There are algorithmic issues though.
+There are algorithmic issues with computing $\left(X'X\right)^{-1}$ though.
 
 ## Linear regression algorithms
 
@@ -350,6 +360,8 @@ $$
 
 This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.
 
+## Need bridge here
+
 ## Collinearity
 
 One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors. While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.
@@ -361,6 +373,16 @@ Data collection methods, constraints on the fitted regression model, model speci
 ## Collinearity
 
 The problem of collinearity has potentially serious effect on the regression estimates such as implausible coefficient signs, impossible inversion of matrix $X'X$ as it becomes near or exactly singular, large magnitude of coefficients in absolute value, large variance or standard errors with wider confidence intervals.
+
+## Collinearity
+
+Mitigating Collinearity:
+
+-   Remove Highly Correlated Variables: If two variables are highly correlated, consider removing one of them.
+-   Combine Variables: Create a new variable that combines the collinear variables
+-   Principal Component Analysis (PCA): Use PCA to transform the correlated variables into a smaller set of uncorrelated variables.
+
+## Need bridge here
 
 ## Ridge Regression
 
@@ -700,6 +722,119 @@ Where $\lambda$ is both the mean and the variance. In the glm the link function 
 $$
 \log\mathbb{E}\left[\left.Y\right|X\right] = \beta X=\log\lambda
 $$
+
+## Generalized Linear Models
+
+### Key Components of GLMs
+
+::: panel-tabset
+## Random
+
+**Random Component**:
+
+-   Specifies the probability distribution of the data generation process of the response variable ($Y$). Examples include Normal, Binomial, Poisson, etc.
+
+## Systemic
+
+**Systematic Component**:
+
+-   Specifies the linear predictor ($\eta = X\beta)$, where ($X$) is the matrix of predictors and ($\beta$) is the vector of coefficients.
+
+## Link
+
+**Link Function**:
+
+-   Connects the mean of the response variable ($\mathbb{E}(Y)$) to the linear predictor ($\eta$). It transforms the expected value of the response variable to the linear predictor scale.
+:::
+
+## Generalized Linear Models
+
+### Common Types of GLMs
+
+::: panel-tabset
+## Linear
+
+::: {style="font-size: xx-large"}
+Linear Regression (Binomial Distribution)
+
+-   **Response Variable**: Continuous
+-   **Link Function**: Identity ($(g(\mu) = \mu$))
+-   **Example**: Predicting house prices based on square footage, number of bedrooms, etc.
+-   **Formula**: $(Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \epsilon)$, where $(Y$) is normally distributed.
+:::
+
+## Logistic
+
+::: {style="font-size: xx-large"}
+Logistic Regression (binomial Distribution)
+
+-   **Response Variable**: Binary (0 or 1)
+-   **Link Function**: Logit ($(g(\mu) = \log(\frac{\mu}{1-\mu})$))
+-   **Example**: Predicting whether a customer will buy a product (yes/no) based on age, income, etc.
+-   **Formula**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots$), where ($p$) is the probability of the event occurring.
+:::
+
+## Poisson
+
+::: {style="font-size: xx-large"}
+Poisson Regression (Poisson Distribution)
+
+-   **Response Variable**: Count data (non-negative integers)
+-   **Link Function**: Log ($(g(\mu) = \log(\mu)$))
+-   **Example**: Predicting the number of insurance claims in a year based on driver age, vehicle type, etc.
+-   **Formula**: $(\log(\lambda) = \beta\_0 + \beta\_1 X_1 + \beta\_2 X_2 + \ldots)$, where $(\lambda)$ is the expected count.
+:::
+
+## Gamma
+
+::: {style="font-size: xx-large"}
+Gamma Regression (Gamma Distribution)
+
+-   **Response Variable**: Continuous and positive
+-   **Link Function**: Inverse ($(g(\mu) = \frac{1}{\mu}$))
+-   **Example**: Predicting the time until failure of a machine based on temperature, pressure, etc.
+-   **Formula**: $(\frac{1}{\mu} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where ($\mu$) is the mean of the response variable.
+:::
+:::
+
+## Generalized Linear Models
+
+### Examples of GLMs
+
+::: panel-tabset
+## Logistic
+
+::: {style="font-size: xx-large"}
+**Logistic Regression Example**:
+
+-   **Scenario**: A marketing team wants to predict whether a customer will buy a product.
+-   **Variables**: Customer age, income, and previous purchase history.
+-   **Model**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{Income} + \beta_3 \text{History}$)
+-   **Interpretation**: The coefficients (\beta\_1, \beta\_2, \beta\_3) indicate how each predictor affects the log odds of making a purchase.
+:::
+
+## Poisson
+
+::: {style="font-size: xx-large"}
+**Poisson Regression Example**:
+
+-   **Scenario**: An insurance company wants to predict the number of claims a policyholder will file.
+-   **Variables**: Age of the policyholder, type of vehicle, and driving experience.
+-   **Model**: $(\log(\lambda) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{VehicleType} + \beta_3 \text{Experience}$)
+-   **Interpretation**: The coefficients $(\beta_1, \beta_2, \beta_3)$ indicate how each predictor affects the expected number of claims.
+:::
+
+## Gamma
+
+::: {style="font-size: xx-large"}
+**Gamma Regression Example**:
+
+-   **Scenario**: A manufacturing company wants to predict the lifetime of a machine part.
+-   **Variables**: Operating temperature, pressure, and usage frequency.
+-   **Model**: $(\frac{1}{\mu} = \beta_0 + \beta_1 \text{Temperature} + \beta_2 \text{Pressure} + \beta_3 \text{Frequency})$
+-   **Interpretation**: The coefficients $(\beta_1, \beta_2, \beta_3)$ indicate how each predictor affects the inverse of the expected lifetime.
+:::
+:::
 
 # Tree regression
 

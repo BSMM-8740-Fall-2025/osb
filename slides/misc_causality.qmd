@@ -1,0 +1,26 @@
+---
+title: "Misc Causality"
+editor: visual
+---
+
+```         
+[Applied Causal Analysis in R](https://bookdown.org/paul/applied-causal-analysis/att.html)
+
+[Intro to Causality](https://digitalcausalitylab.github.io/lecture/lecture_1_intro/Lecture_1_intro.html#/introduction-to-causality-4)
+
+[Causal inference in R](https://www.r-causal.org/)
+
+[CausInfinR-github](https://github.com/r-causal/causal-inference-in-R/blob/main/chapters/chapter-05.qmd)
+
+[Statistical tools for causal inference](https://chabefer.github.io/STCI/index.html)
+
+[Causal graphs](https://github.com/NickCH-K/causalgraphs)
+
+[Causal data sets](https://cran.r-project.org/web/packages/causaldata/causaldata.pdf)
+
+[Causality slides](https://github.com/NickCH-K/CausalitySlides/tree/main)
+
+[more slides](https://users.ssc.wisc.edu/~felwert/causality/?page_id=66)
+
+[workshop](https://github.com/r-causal/causal_inference_r_workshop)
+```
