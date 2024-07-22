@@ -350,12 +350,12 @@ Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same a
 The minimum NLL estimate is also the maximum likelihood estimate (MLE)
 :::
 
-## Empirical risk minimization
+## Aside: empirical risk minimization
 
 The MLE can be generalized by replacing the NLL ($\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)$) with any other loss function to get
 
 $$
-\mathcal{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
+\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
 $$
 
 This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.
@@ -382,7 +382,73 @@ Mitigating Collinearity:
 -   Combine Variables: Create a new variable that combines the collinear variables
 -   Principal Component Analysis (PCA): Use PCA to transform the correlated variables into a smaller set of uncorrelated variables.
 
-## Need bridge here
+## Bias vs Variance
+
+We introduced truncated Taylor series approximations to motivate using simplified models of the mean function when using regression.
+
+But bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model.
+
+So to reduce bias, why not include more Taylor series terms, or more covariates in a first-order model?
+
+## Bias vs Variance
+
+Note that for random variables in general and Gaussian random variables in particular
+
+-   the mean of the sum of random variables is the sum of the means of the random variables.
+-   the variance of the sum of random variables is the sum of the variances of the random variables.
+
+So adding more terms or more covariates may reduce bias by improving the mean estimate, but will certainly increase the variance of the estimate.
+
+## Bias (B) vs Variance (V) tradeoffs
+
+::: panel-tabset
+## $\downarrow$ B $\uparrow$ V
+
+**Low Bias and High Variance**
+
+-   A model with low bias fits the training data very closely, capturing all the details and fluctuations.
+-   This leads to overfitting, where the model performs well on the training data but poorly on new data because it has learned the noise in the training data as if it were a signal.
+
+## $\uparrow$ B $\downarrow$ V
+
+**High Bias and Low Variance**
+
+-   A model with high bias makes oversimplified assumptions about the data, ignoring relevant complexities.
+
+-   This leads to underfitting, where the model is too simple to capture the underlying patterns in the data, resulting in poor performance on both training and new data.
+
+## $-$ B $-$ V
+
+**Balancing Bias and Variance**
+
+-   The goal is to find a sweet spot where the model is complex enough to capture the underlying patterns (low bias) but simple enough not to capture the noise (low variance).
+-   Achieving this balance ensures the model generalizes well to new data, providing good performance overall.
+:::
+
+## Bias (B) vs Variance (V) examples
+
+::: panel-tabset
+## Underfitting
+
+**Underfitting (High Bias, Low Variance)**
+
+-   Suppose you're predicting house prices using just the size of the house (one variable) in a linear regression model.
+-   If the true relationship is complex (e.g., non-linear, involving multiple factors), this simple model will have high bias and underfit the data, missing important patterns.
+
+## Overfitting
+
+**Overfitting (Low Bias, High Variance)**
+
+-   Now, imagine you use a very complex model, like a high-degree polynomial regression, that uses many variables and interactions.
+-   This model fits the training data very well but captures noise as well. When applied to new data, its performance drops because it has learned patterns that don’t generalize (high variance).
+
+## Balanced
+
+**Balanced Model**
+
+-   A balanced model might use a moderate number of relevant variables and a reasonable complexity (like a linear regression with interaction terms or a low-degree polynomial).
+-   This model captures the essential patterns without fitting the noise, resulting in good generalization to new data.
+:::
 
 ## Ridge Regression
 
@@ -502,7 +568,7 @@ $$
 The Lasso objective function is
 
 $$
-\mathcal{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
+\mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
 $$
 
 ## Lasso Regression Example
@@ -587,7 +653,7 @@ Elastic Net regression is a hybrid of ridge and lasso regression.
 The elastic net objective function is
 
 $$
-\mathcal{L}\left(\beta,\lambda,\alpha\right)=\text{NLL}+\lambda\left(\left(1-\alpha\right)\left\Vert \beta\right\Vert _{2}^{2}+\alpha\left\Vert \beta\right\Vert _{1}\right)
+\mathscr{L}\left(\beta,\lambda,\alpha\right)=\text{NLL}+\lambda\left(\left(1-\alpha\right)\left\Vert \beta\right\Vert _{2}^{2}+\alpha\left\Vert \beta\right\Vert _{1}\right)
 $$
 
 so that $\alpha=0$ is ridge regression and $\alpha=1$ is lasso regression and $\alpha\in\left(0,1\right)$ is the general elastic net.
@@ -836,7 +902,7 @@ Gamma Regression (Gamma Distribution)
 :::
 :::
 
-# Tree regression
+# Non-parametric regression
 
 ## Regression with trees
 
@@ -1023,9 +1089,162 @@ While the `XGBoost` model often achieves higher accuracy than a single decision 
 
 We will work with `XGBoost` in today's lab.
 
+## Kernel Regression
+
+Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables. Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.
+
+## Kernel Regression
+
+::: {style="font-size: x-large"}
+1.  **Select a Kernel Function**:
+    -   Choose a kernel function that will determine how weights are assigned to nearby data points. The Gaussian kernel is a common choice, where weights decrease with distance according to a normal distribution.
+2.  **Choose a Bandwidth**:
+    -   Decide on the bandwidth parameter that will control the spread of the kernel function. This affects the smoothness of the regression curve.
+3.  **Compute Weights**:
+    -   For each point where you want to estimate the dependent variable, compute the weights for all observed data points using the kernel function.
+4.  **Calculate Weighted Average**:
+    -   Use the weights to compute a weighted average of the dependent variable values, giving more influence to points closer to the point of interest.
+:::
+
+## Kernel Regression: example
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| code-fold: true
+#Kernel regression
+# from https://towardsdatascience.com/kernel-regression-made-easy-to-understand-86caf2d2b844
+Kdata <- 
+  tibble::tibble(
+    Area = c(11,22,33,44,50,56,67,70,78,89,90,100)
+    , RiverFlow = c(2337,2750,2301,2500,1700,2100,1100,1750,1000,1642, 2000,1932)
+  )
+
+#function to calculate Gaussian kernel
+gausinKernel <- function(x,b){exp(-0.5 *(x/b)^2)/(sqrt(2*pi))}
+#plotting function
+plt_fit <- function(bandwidth = 10, support = seq(5,110,1)){
+  tibble::tibble(x_hat = support) |> 
+  dplyr::mutate(
+    y_hat =
+      purrr::map_dbl(
+        x_hat
+        , (
+        \(x){
+          K <- gausinKernel(Kdata$Area-x, bandwidth)
+          sum( Kdata$RiverFlow * K/sum(K) )
+        })
+      )
+  ) |> 
+  ggplot(aes(x=x_hat, y=y_hat)) + 
+  geom_line(color="blue") +
+  geom_point(data = Kdata, aes(x=Area, y=RiverFlow), size=4, color="red") +
+  labs(title = "Kernel regression", subtitle = stringr::str_glue("bandwith = {bandwidth}; data = red | fit = blue") ) +
+  theme_minimal()
+}
+
+```
+
+::: panel-tabset
+## B = 5
+
+```{r}
+plt_fit(bandwidth = 5)
+```
+
+## B=10
+
+```{r}
+plt_fit(bandwidth = 10)
+```
+
+## B=15
+
+```{r}
+plt_fit(bandwidth = 15)
+```
+:::
+
+## Kernel Regression:
+
+::: {style="font-size: xx-large"}
+### Advantages of Kernel Regression
+
+-   **Flexibility**: Can capture complex, non-linear relationships between variables.
+-   **No Assumptions**: Does not require the assumption of a specific functional form for the relationship.
+
+### Disadvantages of Kernel Regression
+
+-   **Computationally Intensive**: Can be slow, especially with large datasets, since it requires calculating weights for all data points for each estimate.
+-   **Choice of Parameters**: The results can be sensitive to the choice of kernel function and bandwidth, requiring careful tuning.
+:::
+
 ## Regression with neural nets
 
-Architecture of a Neural Net (NN)
+Regression with neural nets involves using artificial neural networks (ANNs) to predict a continuous output variable based on one or more input variables. Neural nets are powerful, flexible models that can capture complex relationships and patterns in the data.
+
+## Regression with ANNs: Components
+
+::: {style="font-size: xx-large"}
+1.  **Neurons**:
+    -   The building blocks of neural networks. Each neuron takes an input, processes it, and passes the output to the next layer.
+2.  **Layers**:
+    -   **Input Layer**: Receives the input data.
+    -   **Hidden Layers**: Intermediate layers that process the input data through neurons. There can be one or more hidden layers.
+    -   **Output Layer**: Produces the final prediction.
+3.  **Weights and Biases**:
+    -   Each connection between neurons has a weight, which adjusts the strength of the signal.
+    -   Each neuron has a bias, which adjusts the output along with the weighted sum of inputs.
+:::
+
+## Regression with ANNs: Components
+
+::: {style="font-size: xx-large"}
+4.  **Activation Functions**:
+    -   Functions applied to the output of each neuron in hidden layers to introduce non-linearity. Common activation functions include ReLU (Rectified Linear Unit), sigmoid, and tanh.
+5.  **Loss Function**:
+    -   Measures the difference between the predicted output and the actual output. For regression tasks, common loss functions include Mean Squared Error (MSE) and Mean Absolute Error (MAE).
+6.  **Optimization Algorithm**:
+    -   Adjusts the weights and biases to minimize the loss function. The most common optimization algorithm is Gradient Descent and its variants like Adam.
+:::
+
+## Regression with ANNs: Algorithm
+
+::: {style="font-size: x-large"}
+1.  **Forward Propagation**:
+    -   Input data is passed through the network, layer by layer, with each neuron applying its weights, bias, and activation function, until the output layer produces the prediction.
+2.  **Loss Calculation**:
+    -   The loss function calculates the error between the predicted output and the actual target value.
+3.  **Backward Propagation**:
+    -   The network uses the error to adjust the weights and biases. This involves calculating the gradient of the loss function with respect to each weight and bias (using the chain rule), and then updating the weights and biases to reduce the error.
+4.  **Iterative Training**:
+    -   The process of forward propagation, loss calculation, and backward propagation is repeated for many iterations (epochs) until the loss converges to a minimum value.
+:::
+
+## Regression with ANNs: 
+
+::: panel-tabset
+## Advantages
+
+### Advantages of ANNs for Regression
+
+-   **Flexibility**: Can model complex, non-linear relationships between inputs and outputs.
+-   **High Performance**: Can achieve high accuracy with sufficient data and proper tuning.
+-   **Feature Learning**: Automatically learns relevant features from raw input data.
+
+## Disadvantages
+
+### Disadvantages of ANNs for Regression
+
+-   **Computationally Intensive**: Requires significant computational resources.
+-   **Data Hungry**: Needs a large amount of training data to perform well.
+-   **Complexity**: Requires careful tuning of hyperparameters (e.g., number of layers, neurons, learning rate) and can be prone to overfitting if not properly regularized.
+:::
+
+## Regression with neural nets
+
+Architecture of an ANN
 
 ![Single layer NN architecture](/images/single_layer_nn.png){fig-alt="credit deep learning.a"}
 
@@ -1033,7 +1252,7 @@ Architecture of a Neural Net (NN)
 
 ![Common Activation Functions](/images/activation_functions.png){fig-alt="credits - analyticsindiamag"}
 
-## Regression with neural nets
+## Regression with ANNs: example
 
 ```{r}
 #| echo: true
@@ -1109,8 +1328,8 @@ tibble::tibble(test = data_test$medv, predicted = pr.nn$net.result) %>%
 
 ## Recap
 
--   Today we worked though a few regression methods that are useful for predicting a value given a set of covariates
+-   Today we worked though a parametric and non-parametric regression methods that are useful for predicting a value given a set of covariates.
 
--   Next week we will look at the `tidymodels` package which will give a way to develop a workflow for fitting and comparing our models
+-   Next week we will look in detail at the `tidymodels` package which will give a way to develop a workflow for fitting and comparing our models across different feature sets.
 
 ## 

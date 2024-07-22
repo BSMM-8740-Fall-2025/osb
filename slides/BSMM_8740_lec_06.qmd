@@ -1,13 +1,13 @@
 ---
 title: "Classification & clustering methods"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 6]"
+subtitle: "BSMM8740-2-R-2023F [WEEK - 6]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
 logo: "images/logo.png"
-title-slide-attributes:
-  data-background-image: images/my-DRAFT.png
-  data-background-size: contain
-  data-background-opacity: "0.40"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
 format: 
   revealjs: 
     theme: slides.scss
@@ -37,7 +37,7 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## Recap of last week
 
--   Last week we introduced the Tidymodels framework in R
+-   Last time we introduced the Tidymodels framework in R
 
 -   We showed how we can use the Tidymodels framework to create a workflow for data prep, feature engineering, model fitting and model evaluation.
 
@@ -72,12 +72,15 @@ They usually require less time to make predictions. Example eager learners are:
 
 -   Binary classification
 -   Multi-Class Classification (mutually exclusive)
+    -   [multiclass](https://juliasilge.com/blog/datasaurus-multiclass/)
 -   Multi-Label Classification (not mutually exclusive)
+    -   [multilabel](https://en.wikipedia.org/wiki/Multi-label_classification)
 -   Imbalanced Classification
+    -   [class imbalance](https://www.tidymodels.org/learn/models/sub-sampling/)
 
 ## Binary Logistic Regression
 
-Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in ${0,1}$. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
+Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in $\{0,1\}$. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
 
 Logistic regression is an example of supervised learning.
 
@@ -93,26 +96,45 @@ It follows that $\pi = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}}$, which i
 
 ## Binary Logistic Regression
 
+::: columns
+::: {.column width="40%"}
+```{r}
+tibble::tibble(eta = seq(-5,5,0.2)) %>% dplyr::mutate(pi = 1/(1+exp(-eta))) %>% 
+ggplot(aes(x=eta, y=pi)) + geom_point()
+```
+:::
+
+::: {.column width="60%" style="font-size: smaller"}
+$$\begin{align*}
+\pi & =\frac{1}{1+e^{-\eta}}\;\text{(logistic function)}\\
+\log\left(\frac{\pi}{1-\pi}\right) & =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{1-\frac{1}{1+e^{-\eta}}}\right)\\
+ & =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{\frac{e^{-\eta}}{1+e^{-\eta}}}\right)=\log\left(e^{\eta}\right)=\eta
+\end{align*}$$
+:::
+:::
+
+## Binary Logistic Regression
+
 The term $\frac{\pi}{1-\pi}$ is called the the odds-ratio. By its definition $\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}$
 
 So if $x_1$ changes by one unit ($x_1\rightarrow x_1+1$), then the odds ratio changes by $e^{\beta_1}$.
 
-## Classifier metrics
+## Binary Classifier metrics
 
 ### Confusion matrix
 
-The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model:
+The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary):
 
 |          | predict 1                | predict 0                |
 |----------|--------------------------|--------------------------|
-| data =1  | true positives (TP)      | false negatives (FN)[^1] |
+| data = 1 | true positives (TP)      | false negatives (FN)[^1] |
 | data = 0 | false positives (FP)[^2] | true negatives (TN)      |
 
 [^1]: Type II error
 
 [^2]: Type I error
 
-## Classifier metrics
+## Binary Classifier metrics
 
 ### Accuracy
 
@@ -130,7 +152,7 @@ $$
 \frac{\text{TP}}{\text{TP}+\text{FP}}
 $$
 
-## Classifier metrics
+## Binary Classifier metrics
 
 ### Recall / Sensitivity
 
@@ -148,25 +170,16 @@ $$
 \frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
 $$
 
-## Classifier metrics
+## Binary Classifier metrics
 
 ### ROC Curves
 
-Consider plotting the TPR against the FPR (1-TNR) at different classification thresholds. This is the ROC.
+Consider plotting the TPR against the FPR (1-TNR) [**at different classification thresholds**]{.underline}. This is the ROC.
 
 -   the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e. no predictive power)
 -   our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.
 
 So, how to compute?
-
-## Classifier metrics
-
-### The AUC: the area under the ROC.
-
-It turns out the AUC is very easy to compute and gives us the ROC at the same time.
-
--   rank order your data by decreasing positive predicted probability
--   against the cumulative percent of negative observations plot the cumulative percent of positive observations
 
 ## Example: create the workflow
 
@@ -176,7 +189,6 @@ It turns out the AUC is very easy to compute and gives us the ROC at the same ti
 #| echo: true
 #| code-fold: true
 #| fig-align: center
-#| eval: false
 data <- ISLR::Default %>% tibble::as_tibble()
 set.seed(8740)
 
@@ -205,7 +217,6 @@ default_workflow <- workflows::workflow() %>%
 ```{r}
 #| echo: true
 #| code-fold: false
-#| eval: false
 # fit the model
 lm_fit <- 
   default_workflow %>% 
@@ -214,75 +225,42 @@ lm_fit <-
 # augment the data with the predictions using the model fit
 training_results <- 
   broom::augment(lm_fit , default_train) 
+
+training_results %>% dplyr::slice_head(n=6)
 ```
 
 ## Example: compute the AUC
 
+::: columns
+::: {.column width="50%"}
 ```{r}
 #| echo: true
-#| code-fold: false
-#| eval: false
-auc_roc_tbl <- training_results %>% 
-  # order prediction probability from high to low
-  dplyr::arrange( desc(.pred_Yes) ) %>% 
-  # make new variable for cumulative % of 'Yes' category
-  dplyr::mutate( 
-    # scale to percent (# of all 'Yes' categories)
-    y = ifelse(default == "Yes", 1/sum(default == "Yes"),0)
-    # accumulate the values
-    , y = cumsum(y)
-  ) %>% 
-  # keep the 'No' category values
-  dplyr::filter(default == "No") %>% 
-  # number rows & scale to % of total; compute incremental areas
-  tibble::rowid_to_column("ID") %>% 
-  dplyr::mutate(
-    auc_inc = y / max(ID) # multiply the height by the width
-    , ID = ID / max(ID)   # scale to percent (# of all 'No' categories)
-  ) 
-```
 
-## Example: plot the ROC
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| fig-align: center
-#| eval: false
-auc_roc_tbl %>% 
-  ggplot(aes(x=ID, y = y)) +
-  geom_line() +
-  # xlim(c(0,1)) +
-  geom_abline(slope=1) + 
-    coord_fixed() +
-    labs(
-      title = "ROC curve for load default prediction",
-      subtitle = 
-        stringr::str_glue("Logistic Regression AUC = {scales::label_number(accuracy = 10^-7)(sum(auc_roc_tbl$auc_inc) )}")
-    )
-```
-
-## Example: yardstick
-
-```{r}
-#| echo: true
-#| code-fold: false
-#| eval: false
 training_results %>% 
-  yardstick::roc_auc(.pred_No, truth = default)
+  yardstick::roc_curve(
+    truth = default
+    , .pred_No
+  ) %>% 
+  autoplot() + 
+  theme_bw(base_size = 18) 
 ```
+:::
 
-## Example: yardstick
-
+::: {.column width="50%"}
 ```{r}
 #| echo: true
-#| code-fold: true
-#| fig-align: center
-#| eval: false
-training_results %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
-```
+training_results %>% 
+   yardstick::roc_auc(
+     truth = default
+     , .pred_No
+    )
 
-## Other Classification Methods
+
+```
+:::
+:::
+
+# Other Classification Methods
 
 ## Naive Bayes Classification
 
@@ -332,7 +310,6 @@ If any features are numeric, we can estimate conditional probabilities by assumi
 #| fig-align: center
 #| message: false
 #| warning: false
-#| eval: false
 library(discrim)
 # create a naive bayes classifier
 default_model_nb <- parsnip::naive_Bayes() %>% 
@@ -366,7 +343,6 @@ training_results_nb <-
 ```{r}
 #| echo: true
 #| code-fold: false
-#| eval: false
 training_results_nb %>% 
   yardstick::roc_auc(.pred_No, truth = default)
 ```
@@ -374,10 +350,9 @@ training_results_nb %>%
 ## ROC
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| fig-align: center
-#| eval: false
 training_results_nb %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
 ```
 :::
@@ -409,27 +384,57 @@ The k value in the k-NN algorithm determines how many neighbors will be checked 
 ## KNN Classification: algorithm
 
 1.  Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.
-2.  Calculate the distance between that point and all the points in the training set.
+2.  Calculate the distance between the point you want to classify and all the points in the training set.
 3.  Select the K nearest neighbors based on the distances calculated.
 4.  Assign the label of the majority class to the new data point.
 5.  Repeat steps 2 to 4 for all the data points in the test set.
 
 ## KNN Classification: model
 
+Our classification workflow only differs by the model, e.g.:
+
 ```{r}
 #| echo: true
-#| code-fold: true
-#| eval: false
 default_model_knn <- parsnip::nearest_neighbor(neighbors = 4) %>% 
   parsnip::set_engine("kknn") %>% 
   parsnip::set_mode("classification")
 ```
 
+::: callout-note
+## k-NN regression
+
+To use k-NN for a regression problem, calculate the mean or median (or another aggregate measure) of the dependent variable among the k neighbors.
+:::
+
+## KNN Classification: metrics
+
+In the context of k-Nearest Neighbors (kNN) classification, while the general evaluation metrics like accuracy, precision, recall, F1 score, and others are commonly used, there are no unique metrics that are exclusively specific to kNN. However, there are certain considerations and additional analyses that are particularly relevant when evaluating a kNN model.
+
+## KNN Classification: metrics
+
+::: {style="font-size: smaller"}
+1.  **Choice of k (Number of Neighbors):** The value of k affects the performance of a kNN model. Testing the model with various values of k and evaluating the performance using standard metrics (like accuracy, F1 score) can to select the best k.
+
+2.  **Feature Scaling Sensitivity:** kNN is sensitive to the scale of the features because it relies on calculating distances. Evaluate the model's performance before and after feature scaling (like Min-Max scaling or Z-score normalization)
+
+3.  **Curse of Dimensionality:** kNN can perform poorly with high-dimensional data (many features). Evaluating the model's performance in relation to the number of features (dimensionality) can be important. Dimensionality reduction techniques like PCA might be used with kNN.
+:::
+
 ## Support Vector Machine Classification
 
 The SVM assumes a training set of the form $(x_1,y_1),\ldots,(x_n,y_n)$ where the $y_i$ are either $-1$ or $1$, indicating the class to which each $x_i$ belongs.
 
-The SVM algorithm looks to find the **maaximum-margin hyperplane** that divides the group of points $x_i$ for which $y_1=-1$ from the group for which $Y_1=1$, such that the distance between the hyperplane and the nearest point $x_i$ from either group is maximized
+The SVM algorithm looks to find the **maximum-margin hyperplane** that divides the group of points $x_i$ for which $y_1=-1$ from the group for which $Y_1=1$, such that the distance between the hyperplane and the nearest point $x_i$ from either group is maximized.
+
+## SVM Classification
+
+### Basic Concepts
+
+::: {style="font-size: smaller"}
+1.  **Separating Hyperplane:** The core idea of SVM is to find a hyperplane (in two-dimensional space, this would be a line) that best separates the classes in the feature space.
+2.  **Support Vectors:** Support vectors are the data points that are closest to the separating hyperplane. These points are critical in defining the position and orientation of the hyperplane.
+3.  **Margin:** The algorithm aims to maximize the margin, which is the distance between the hyperplane and the nearest points from both classes. A larger margin is considered better as it may lead to lower generalization error of the classifier.
+:::
 
 ## SVM Classification: large margin
 
@@ -441,7 +446,7 @@ Illustration of SVM large-margin principle
 
 ::: columns
 ::: {.column width="50%" style="font-size: smaller"}
--   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}$, for a vector $w$ perpendicular to the boundary.
+-   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}=0$, for a vector $w$ perpendicular to the boundary[^3].
 
 -   We can express any point as $x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }$
 
@@ -452,6 +457,8 @@ Illustration of SVM large-margin principle
 ![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
 :::
 :::
+
+[^3]: any point $x$ on the red line satisfies $w^\top x+w_0=0$
 
 ## SVM Classification:
 
@@ -548,11 +555,13 @@ The purpose of cluster analysis is to help reveal patterns and structures within
 
 ## Clustering Applications
 
+::: {style="font-size: 70%"}
 1.  **Market Segmentation:** Cluster analysis is often used in marketing to segment customers into groups based on their buying behavior, demographics, or other characteristics.
 2.  **Image Processing:** In image processing, cluster analysis is used to group pixels with similar properties together, allowing for the identification of objects and patterns in images.
 3.  **Biology and Medicine:** Cluster analysis is used in biology and medicine to identify genes associated with specific diseases or to group patients with similar clinical characteristics together.
 4.  **Social Network Analysis:** In social network analysis, cluster analysis is used to group individuals with similar social connections and characteristics together, allowing for the identification of subgroups within a larger network.
 5.  **Anomaly Detection:** Cluster analysis can be used to detect anomalies in data, such as fraudulent financial transactions, unusual patterns in network traffic, or outliers in medical data.
+:::
 
 ## K-means Clustering
 
@@ -567,7 +576,7 @@ In *k-means* clustering, observed variables (columns) are considered to be locat
 The basic k-means algorithm has the following steps.
 
 1.  pick the number of clusters k
-2.  Choose *k* random observations in the dataset. These locations in space are declared to be the **initial centroids**.
+2.  Choose *k* observations in the dataset. These locations in space are declared to be the **initial centroids**.
 3.  Assign each observation to the nearest **centroid**.
 4.  Compute the new **centroids** of each cluster.
 5.  Repeat steps 3 and 4 until the **centroids** do not change.
@@ -588,6 +597,35 @@ Because the initial conditions are based on random selection in both approaches,
 
 ```{r}
 #| echo: true
+#| code-fold: true
+#| eval: false
+#| code-line-numbers: "1-3|5-10|11-12|14-22"
+# create recipe for 2-D clustering
+cluster_recipe <- data %>% 
+  recipes::recipe(~ x1 + x2, data = .)
+
+# specify the workflows
+all_workflows <- 
+  workflowsets::workflow_set(
+    preproc = list(base = cluster_recipe),
+    models = list(tidyclust::k_means( num_clusters = parsnip::tune() ) )
+  )
+# create bootstrap samples
+dat_resamples <- data %>% rsample::bootstraps(apparent = TRUE)
+
+tuned_results <-
+   all_workflows %>% 
+   workflow_map(
+      fn = "tune_cluster"
+      , resamples = dat_resamples
+      , grid = dials::grid_regular(dials::num_clusters(), levels = 10)
+      , metrics = tidyclust::cluster_metric_set(sse_within_total, sse_total, sse_ratio)
+      , control = tune::control_grid(save_pred = TRUE, extract = identity)
+   )
+```
+
+```{r}
+#| echo: false
 #| code-fold: true
 #| eval: false
 set.seed(8740)
@@ -613,7 +651,7 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| eval: false
 # penguins <- modeldata::penguins
@@ -627,24 +665,26 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
 # create recipe
 labelled_points_recipe <- labelled_points %>% 
   recipes::recipe(~ x1 + x2, data = .)
+
+
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| eval: false
 labelled_points
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| eval: false
 kmeans_spec <- tidyclust::k_means( num_clusters = 3 )
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| eval: false
 wflow <- workflows::workflow() %>%
@@ -656,7 +696,7 @@ labelled_points_resamples <- labelled_points %>% rsample::bootstraps(apparent = 
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| code-fold: true
 #| eval: false
 wflow %>%
@@ -665,7 +705,7 @@ wflow %>%
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 wflow %>%
   parsnip::fit(labelled_points) %>% tidyclust::extract_centroids()
@@ -690,7 +730,7 @@ wflow %>%
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 # all_workflows <- all_workflows %>% 
 #   workflowsets::workflow_map(
@@ -701,7 +741,7 @@ wflow %>%
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 # all_workflows %>% 
 #   dplyr::select(wflow_id,result) %>% 
@@ -723,7 +763,7 @@ all_workflows <-
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 all_workflows <- all_workflows %>% 
   workflowsets::workflow_map(
@@ -734,13 +774,13 @@ all_workflows <- all_workflows %>%
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 all_workflows %>% workflowsets::rank_results(select_best = TRUE)
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 all_workflows %>% 
   dplyr::select(wflow_id,result) %>% 
@@ -753,7 +793,7 @@ all_workflows %>%
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 tune_results <-
    all_workflows %>% 
@@ -768,19 +808,23 @@ tune_results <-
 
 ## Hierarchical Clustering
 
-*Hierarchical Clustering*, sometimes called *Agglomerative Clustering*, is a method of *unsupervised* learning that produces a *dendrogram*, which can be used to partition observations into clusters.
+*Hierarchical Clustering*, sometimes called *Agglomerative Clustering*, is a method of *unsupervised* learning that produces a *dendrogram*, which can be used to partition observations into clusters (see [tidyclust](https://tidyclust.tidymodels.org/articles/hier_clust.html))
 
-## Tidymodels
+For other clustering algorithms, see
 
-### Key Components of Tidymodels
+::: {style="font-size: 80%"}
+-   DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+-   Mean Shift Clustering
+-   Spectral Clustering
+:::
 
--   Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
--   Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.
+## Clustering: General Considerations
 
-```{r}
+-   **Feature Scaling:** Most clustering algorithms benefit from feature scaling.
 
+-   **Choosing the Right Algorithm:** Depends on the size, dimensionality of data, and the nature of the clusters.
 
-```
+-   **Evaluation:** Since clustering is unsupervised, evaluating the results can be subjective and is often based on domain knowledge.
 
 ## More
 
@@ -788,6 +832,6 @@ tune_results <-
 
 ## Recap
 
--   In this section we have worked with the `tidymodels` package to build a workflow that facilitates building and evaluating multiple models.
+-   We have looked at several classification algorithms in the context of tidymodels workflows.
 
--   Combined with the recipes package we now have a complete data modeling framework.
+-   We also looked at clustering and several algorithms in the `tidyclust` package.

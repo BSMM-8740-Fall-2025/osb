@@ -1,20 +1,20 @@
 ---
-title: "More tidymodels packages"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 5]"
+title: "The tidymodels Framework"
+subtitle: "BSMM8740-2-R-2023F [WEEK - 5]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
 logo: "images/logo.png"
-title-slide-attributes:
-  data-background-image: images/my-DRAFT.png
-  data-background-size: contain
-  data-background-opacity: "0.40"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
 format: 
   revealjs: 
     theme: slides.scss
     multiplex: true
     transition: fade
     slide-number: true
-    margin: 0.05
+#    margin: 0.05
 editor: visual
 menu:
   numbers: true
@@ -37,17 +37,17 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## Recap of last week
 
--   Last week we looked at several regression models that are useful for predictions
+-   Last week we looked at several regression models that are useful for predictions.
 
--   However, these models have different conventions on how they accept data and describe the model
+-   However, R packages that implement these models have different conventions on how they accept data and specify the model.
 
--   Today we look at the tidymodels package which will give us a workflow to describe, fit and compare models, using the same approach across methods.
+-   Today we look at the `tidymodels` package which will give us a workflow to describe, fit and compare models, using the same approach across methods.
 
 # Tidymodels
 
 ## Tidymodels
 
--   Tidymodels is an R package that provides a unified and consistent framework for modeling and machine learning tasks.
+-   Tidymodels is a collection of R packages that provides a unified and consistent framework for modeling and machine learning tasks.
 -   It is built on top of the tidyverse, making it easy to integrate with other tidyverse packages.
 -   Tidymodels promotes best practices, repeatability, and clear documentation in your data analysis and modeling workflow.
 
@@ -55,83 +55,137 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ### Key Components of Tidymodels
 
--   Model Building: tidymodels provides various modeling engines for different algorithms like lm(), glm(), randomForest(), xgboost(), etc.
--   Preprocessing: Easy and flexible data preprocessing using recipes, allowing for seamless data transformation and feature engineering.
+-   Model Building: the `parsnip` package provides various modeling engines for different algorithms like lm(), glm(), randomForest(), xgboost(), etc.
+-   Preprocessing: Easy and flexible data preprocessing using the `recipes` package, allowing for seamless data transformation and feature engineering.
 
 ## Tidymodels
 
 ### Key Components of Tidymodels
 
--   Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
--   Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.
+-   Resampling: The `rsample` package supplies efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
+-   Metrics: the `yardstick` package gives a wide range of evaluation metrics to assess model performance and choose the best model.
+-   Tuning: the `tune` package facilitates hyperparameter tuning for the tidymodels packages.
+
+## Tidymodels
+
+### Key Components of Tidymodels
+
+::: {style="font-size: xx-large"}
+-   Workflows: functions in the `workflows` package can bundle together your pre-processing,
+    modeling, and post-processing requests. The advantages are:
+    -   You don’t have to keep track of separate objects in your workspace.
+    -   The recipe prepping and model fitting can be executed using a single call to [`fit()`](https://generics.r-lib.org/reference/fit.html).
+    -   If you have custom tuning parameter settings, these can be defined using a simpler interface when combined with [tune](https://github.com/tidymodels/tune).
+-   Workflowsets: The `workflowsets` package facilitates multiple workwflows - applying different types of models and preprocessing methods on a given data set.
+:::
+
+## Tidymodels
+
+In base R, the **predict** function returns results in a format that depends on the models.
+
+By contrast, **parsnip** and **workflows** conforms to the following rules:
+
+1.  The results are always a tibble.
+2.  The column names of the tibble are always predictable.
+3.  There are always as many rows in the tibble as there are in the input data set, and in the same order.
+
+## Tidymodels
+
+![](images/tidymodels.png){fig-align="center"}
+
+# Parsnip
+
+## Tidymodels: parsnip
+
+We've seen how the form of the arguments to linear models in R can be very different[^1].
+
+[^1]: e.g. `stats::lm` takes a formula, while `glmnet::glmnet` takes separate outcome and co-variate matrices
+
+Parsnip is one of the tidymodels packages that provides a standardized interface across models.
+
+We look at how to fit and predict with parsnip in the next few slides, given data has been preprocessed.
 
 ## Fitting with parsnip
 
-We've seen how the form of the arguments to linear models in R can be very different.
+For example we call `stats::lm`, specifying the model using a formula. By contrast `glmnet::glmnet` specify the model with separate outcome and co-variate matrices
 
-Parsnip is one of the tidymodels packages that provides a standardized interface across models
-
-We look at how to fit and predict with parsnip in the next few slides, once the data has been prepped.
+By contrast, the tidymodels permits using both models with a uniform model specification.
 
 ## Fitting with parsnip
 
-We can fit a linear regression with OLS (model spec) or penalized regression (x,y spec) using data structured specifically for the model.
-
-By contrast the tidymodels approach is more uniform.
-
-## Fitting with parsnip
-
-1.  *Specify the type of model based on its mathematical structure* (e.g., linear regression, random forest, KNN, etc).
-2.  *Specify the engine for fitting the model.* Most often this reflects the software package that should be used, like lm or **glmnet**.
+1.  *Specify the type of model based on its algorithm* (e.g., linear regression, random forest, KNN, etc).
+2.  *Specify the engine for fitting the model.* Most often this reflects the software package and function that should be used, like `lm` or `glmnet`.
 3.  *When required, declare the mode of the model.* The mode reflects the type of prediction outcome. For numeric outcomes, the mode is regression; for qualitative outcomes, it is classification.
 
 ## Fitting with parsnip
 
-The specification are built without referencing the data:
+With `parsnip` specifications are built without referencing the data:
+
+::: panel-tabset
+## lm
 
 ```{r}
 #| echo: true
-#| message: false
-#| code-fold: true
-#| code-summary: "tidymodel specification"
-#| code-line-numbers: "2|4"
 # basic linear model
-parsnip::linear_reg() %>% parsnip::set_engine("lm")
-# basic penalized linear model
-parsnip::linear_reg() %>% parsnip::set_engine("glmnet")
+parsnip::linear_reg() %>% 
+  set_mode("regression") %>%
+  parsnip::set_engine("lm")
 ```
+
+## glmnet
+
+```{r}
+#| echo: true
+# basic penalized linear model
+parsnip::linear_reg() %>% 
+  set_mode("regression") %>%
+  parsnip::set_engine("glmnet")
+```
+:::
 
 ## Fitting with parsnip
 
-The translate function can be used to see how the spec is converted to the correct syntax for different methods
+The translate function can be used to see how the `parsnip` spec is converted to the correct syntax for the underlying package / functions.
+
+::: panel-tabset
+## lm
 
 ```{r}
 #| echo: true
-#| message: false
-#| code-fold: true
-#| code-summary: "tidymodel spec translation"
-#| code-line-numbers: "2|4"
-# basic linear model
-parsnip::linear_reg() %>% parsnip::set_engine("lm") %>% parsnip::translate()
-# basic penalized linear model
-parsnip::linear_reg(penalty = 1) %>% parsnip::set_engine("glmnet") %>% parsnip::translate()
+#| # basic linear model
+parsnip::linear_reg() %>% 
+  parsnip::set_engine("lm") %>% 
+  set_mode("regression") %>%
+  parsnip::translate()
 ```
+
+## glmnet
+
+```{r}
+#| echo: true
+parsnip::linear_reg(penalty = 1) %>% 
+  parsnip::set_engine("glmnet") %>% 
+  set_mode("regression") %>%
+  parsnip::translate()
+```
+:::
 
 ## Fitting with parsnip
 
-The translate function can be used to see how the spec is converted to the correct syntax
+We can specify the model with either a formula or outcome and model matrix:
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2-4|6|8-10|12-16"
+#| code-line-numbers: "2-4|6-8|10-12|14-18"
 # prep data
 data_split <- rsample::initial_split(modeldata::ames, strata = "Sale_Price")
 ames_train <- rsample::training(data_split)
 ames_test  <- rsample::testing(data_split)
 # spec model
-lm_model <- parsnip::linear_reg() %>% parsnip::set_engine("lm")
+lm_model <- parsnip::linear_reg() 
+  set_mode("regression") %>%
+  parsnip::set_engine("lm")
 # fit model
 lm_form_fit <- lm_model %>% 
   # Recall that Sale_Price has been pre-logged
@@ -151,7 +205,6 @@ Model results can be extracted from the fit object
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "2|4"
 
 lm_form_fit %>% parsnip::extract_fit_engine()
@@ -161,33 +214,32 @@ lm_form_fit %>% parsnip::extract_fit_engine() %>% stats::vcov()
 
 ## Fitting with parsnip
 
-Exercise: random forest regression
-
 A list of all parsnip-type models can be found [here](https://www.tidymodels.org/find/parsnip/).
 
-## Tidymodels
+# Workflows
 
-If we use the term **model** to reference a a structural equation that relates some predictors to one or more outcomes, then everything before the model is fit is related to structuring the predictors and outcomes.
+## Tidymodels: workflows
 
-The model workflow refers to the broader process, including any pre-processing steps, the model fit itself, as well as potential post-processing activities. Similar collections of steps are sometimes called pipelines.
+The model **workflow** collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities. Similar collections of steps are sometimes called pipelines.
 
 ## Tidymodels
 
 ![](/images/proper-workflow.svg)
 
-## Tidymodels basics
+## Workflows example
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+
 #| code-line-numbers: "2|4-9|11-13|15-18"
 # create test/train splits
 ames <- modeldata::ames %>% dplyr::mutate( Sale_Price = log10(Sale_Price) )
 
 set.seed(502)
-ames_split <- rsample::initial_split(
-  ames, prop = 0.80, strata = "Sale_Price"
+ames_split <- 
+  rsample::initial_split(
+    ames, prop = 0.80, strata = "Sale_Price"
   )
 ames_train <- rsample::training(ames_split)
 ames_test  <- rsample::testing(ames_split)
@@ -202,12 +254,11 @@ lm_wflow <-
   workflows::add_model(lm_model)
 ```
 
-## Tidymodels basics
+## Tidymodels example
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "2-4|6-7|9-10"
 
 # preprocessing not specified; a formula is sufficient
@@ -221,16 +272,6 @@ lm_fit <- lm_wflow %>% parsnip::fit(ames_train)
 lm_fit %>% stats::predict(ames_test %>% dplyr::slice(1:3))
 
 ```
-
-## Tidymodels basics
-
-In base R, the **predict** function returns results in a format that depends on the models.
-
-By contrast, **parsnip** and **workflows** conforms to the following rules:
-
-1.  The results are always a tibble.
-2.  The column names of the tibble are always predictable.
-3.  There are always as many rows in the tibble as there are in the input data set, and in the same order.
 
 ## Tidymodels basics
 
@@ -255,7 +296,7 @@ tibble::tibble(
 
 </div>
 
-## Tidymodels basics
+## Tidymodels updating
 
 The model and preprocessor can be removed or updated:
 
@@ -281,9 +322,63 @@ Predictors can be selected using **tidyselect** selectors, e.g. *everything()*, 
 
 # Workflowsets
 
+## Tidymodels: workflowset
+
+There is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set.
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: false
+#| code-line-numbers: "2|4-7"
+# pull 
+final_lm_res <- tune::last_fit(lm_wflow, ames_split)
+
+# view
+final_lm_res %>% dplyr::glimpse()
+```
+
+## Tidymodels: workflowset
+
+Similarly, **collect_metrics()** and **collect_predictions()** provide access to the performance metrics and predictions, respectively.
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: false
+#| code-line-numbers: "2-3|5-6"
+#
+# get the fit metrics
+workflowsets::collect_metrics(final_lm_res)
+
+# get the predictions, post-fit
+workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:5)
+```
+
 ## Tidymodels: workflowsets
 
-The `workflowset`package creates combinations of workflow components. A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined with a list of model specifications, resulting in a set of workflows.
+When using **predict(workflow, new_data)**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data. Take centering and scaling using **step_normalize()** as an example. Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **predict()** is invoked.
+
+## Tidymodels: workflowsets
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: false
+lm_fit %>%
+  # pull the parsnip object
+  workflows::extract_fit_parsnip() %>% 
+  # tidy up the fit results
+  yardstick::tidy() %>% 
+  # show the first n rows
+  dplyr::slice_head(n=5)
+```
+
+# Workflowsets
+
+## Tidymodels: workflowsets
+
+The `workflowset` package creates combinations of workflow components. A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined with a list of model specifications, resulting in a set of workflows.
 
 ## Tidymodels: workflowsets
 
@@ -323,7 +418,8 @@ Create model fits
 #| message: false
 #| eval: false
 #| code-line-numbers: "1-8|10-11"
-# create a new column (fit) by mapping fit against the data in the info column
+# create a new column (fit) by mapping fit 
+# against the data in the info column
 location_models %<>%
    dplyr::mutate(
      fit = purrr::map(
@@ -336,61 +432,6 @@ location_models %<>%
 location_models$fit[[1]]
 ```
 
-## Tidymodels: workflowsets
-
-There is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set.
-
-```{r}
-#| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "2|4-7"
-
-final_lm_res <- tune::last_fit(lm_wflow, ames_split)
-
-# view
-final_lm_res %>% dplyr::glimpse()
-# pull the fitted workflow
-fitted_lm_wflow <-  workflowsets::extract_workflow(final_lm_res)
-```
-
-## Tidymodels: workflowsets
-
-Similarly, **collect_metrics()** and **collect_predictions()** provide access to the performance metrics and predictions, respectively.
-
-```{r}
-#| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "2-3|5-6"
-
-# get the fit metrics
-workflowsets::collect_metrics(final_lm_res)
-
-# get the predictions, post-fit
-workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:5)
-```
-
-## Tidymodels: workflowsets
-
-When using **predict(workflow, new_data)**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data. Take centering and scaling using **step_normalize()** as an example. Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **predict()** is invoked.
-
-## Tidymodels: workflowsets
-
-```{r}
-#| echo: true
-#| message: false
-#| eval: false
-
-lm_fit %>%
-  # pull the parsnip object
-  workflows::extract_fit_parsnip() %>% 
-  # tidy up the fit results
-  yardstick::tidy() %>% 
-  # show the first n rows
-  dplyr::slice_head(n=5)
-```
-
 # Yardstick
 
 ## Tidymodels: yardstick
@@ -401,12 +442,10 @@ An inferential model is used primarily to understand relationships, and typicall
 
 For a model used primarily for prediction, by contrast, predictive strength is of primary importance and other concerns about underlying statistical qualities may be less important.
 
-# Yardstick
-
 ## Tidymodels: yardstick
 
 ```{r}
-#| echo: false
+#| echo: true
 #| message: false
 #| eval: false
 #| code-fold: true
@@ -429,7 +468,7 @@ ames_rec <-
   recipes::step_interact( ~ Gr_Liv_Area:starts_with("Bldg_Type_") ) %>% 
   recipes::step_ns(Latitude, Longitude, deg_free = 20)
   
-lm_model <- parsnip::linear_reg() %>% set_engine("lm")
+lm_model <- parsnip::linear_reg() %>% parsnip::set_engine("lm")
 
 lm_wflow <- 
   workflows::workflow() %>% 
@@ -446,8 +485,9 @@ lm_fit <- parsnip::fit(lm_wflow, ames_train)
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| code-fold: true
 #| code-line-numbers: "2-7|9-13|15"
+#| layout-ncol: 3
 # fit with new data
 ames_test_res <- 
   stats::predict(
@@ -472,7 +512,6 @@ yardstick::rmse(ames_test_res, truth = Sale_Price, estimate = .pred)
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "1-7|9"
 # create metric set
 ames_metrics <- 
@@ -490,26 +529,37 @@ ames_metrics(ames_test_res, truth = Sale_Price, estimate = .pred)
 
 ### Classification metrics: binary class targets
 
+::: panel-tabset
+## confusion mat
+
 ```{r}
 #| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: ""
-# data for two-set classification
-two_class_example <- modeldata::two_class_example
-
-tibble::tibble(two_class_example)
-
 # compute the confusion matrix: 
-yardstick::conf_mat(two_class_example, truth = truth, estimate = predicted)
-
-# compute the accuracy:
-yardstick::accuracy(two_class_example, truth, predicted)
-
-# Matthews correlation coefficient:
-yardstick::mcc(two_class_example, truth, predicted)
-
+yardstick::conf_mat(
+  modeldata::two_class_example, truth = truth, estimate = predicted
+)
 ```
+
+## accuracy
+
+```{r}
+#| echo: true
+# compute the accuracy:
+yardstick::accuracy(
+  modeldata::two_class_example, truth, predicted
+)
+```
+
+## mcc
+
+```{r}
+#| echo: true
+# Matthews correlation coefficient:
+yardstick::mcc(
+  modeldata::two_class_example, truth, predicted
+)
+```
+:::
 
 ## Tidymodels: yardstick
 
@@ -518,10 +568,11 @@ yardstick::mcc(two_class_example, truth, predicted)
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
+#| code-fold: true
 #| code-line-numbers: "1-2|3-10|12-16"
-# F1 metric:
-yardstick::f_meas(two_class_example, truth, predicted)
+# F1 metric: (The measure "F" is a combination of precision and recall )  
+yardstick::f_meas(modeldata::two_class_example, truth, predicted)
 
 # Combining these three classification metrics together
 classification_metrics <- 
@@ -532,7 +583,7 @@ classification_metrics <-
   )
 
 classification_metrics(
-  two_class_example
+  modeldata::two_class_example
   , truth = truth
   , estimate = predicted
 )
@@ -545,18 +596,17 @@ classification_metrics(
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-6|8|10|12"
+#| layout-ncol: 2
+#| code-fold: true
+#| code-line-numbers: "1-6|8|10"
 two_class_curve <- 
   yardstick::roc_curve(
-    two_class_example
+    modeldata::two_class_example
     , truth
     , Class1
   )
 
-two_class_curve
-
-yardstick::roc_auc(two_class_example, truth, Class1)
+yardstick::roc_auc(modeldata::two_class_example, truth, Class1)
 
 parsnip::autoplot(two_class_curve)
 ```
@@ -583,6 +633,13 @@ Take sensitivity for example:
 :::
 
 ## Tidymodels: yardstick
+
+### Regression metrics: multi-class targets
+
+```{r}
+#| echo: true
+modeldata::hpc_cv
+```
 
 ### Regression metrics: multi-class targets
 
@@ -636,7 +693,6 @@ hpc_cv %>%
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "1-5|7-13|15-16"
 # create  random forest model object
 rf_model <- 
@@ -663,8 +719,7 @@ A function to compare models
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "3-6|8-10|12-18"
+#| code-line-numbers: "1|3-6|8-10|12-18"
 estimate_perf <- function(model, dat) {
   # Capture the names of the `model` and `dat` objects
   cl <- match.call()
@@ -689,20 +744,28 @@ estimate_perf <- function(model, dat) {
 
 Use the function on the random forest and linear models
 
+::: panel-tabset
+## rand forest - train
+
 ```{r}
-#| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "1-2|4-5|6-7"
 # get performance of the random forest model (train)
 estimate_perf(rf_fit, ames_train)
+```
 
+## linear -train
+
+```{r}
 # get performance of the linear model (train)
 estimate_perf(lm_fit, ames_train)
+```
 
+## linear - test
+
+```{r}
 # get performance of the linear model  (test)
 estimate_perf(rf_fit, ames_test)
 ```
+:::
 
 ## Tidymodels: performance evaluation
 
@@ -711,9 +774,8 @@ Summarize and present the performance comparison
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-fold: true
-#| code-line-numbers: "3-6|8-9|10-12|"
+#| code-line-numbers: "1-7|8-9|10-12|"
 # get performance of the random forest model (train)
 dplyr::bind_rows(
   estimate_perf(rf_fit, ames_train)
@@ -729,7 +791,7 @@ dplyr::bind_rows(
   ) %>% 
   gt::gt() %>% 
   gt::fmt_number(decimals=4) %>% 
-  gt::tab_header(title = "Performance statistics") %>% 
+  gt::tab_header(title = "Performance statistics (rmse") %>% 
   gtExtras::gt_theme_espn()
 
 ```
@@ -748,10 +810,12 @@ dplyr::bind_rows(
 
 Larger *V* values result in resampling estimates with small bias but substantial variance. Smaller values of *V* have large bias but low variance. 
 
+## Tidymodels: performance evaluation
+
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
 #| code-line-numbers: "1-3-6|4-5"
 set.seed(1001)
 ames_folds <- rsample::vfold_cv(ames_train, v = 10)
@@ -769,7 +833,7 @@ R repetitions of V-fold cross-validation reduces variance by a factor of $1/\sqr
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
 rsample::vfold_cv(ames_train, v = 10, repeats = 5)
 ```
 
@@ -782,7 +846,7 @@ rsample::vfold_cv(ames_train, v = 10, repeats = 5)
 
 ## Tidymodels: performance evaluation
 
-**Re-sampling**: validation sets:
+**Re-sampling**: validation sets: (`rsample::validation_set()`)
 
 Validation sets are often used when the original pool of data is very large. In this case, a single large partition may be adequate to characterize model performance without having to do multiple resampling iterations.
 
@@ -799,7 +863,7 @@ When bootstrapping, the assessment set is often called the *out-of-bag* sample
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
 rsample::bootstraps(ames_train, times = 5)
 ```
 
@@ -836,10 +900,15 @@ For a year's worth of data, suppose that six sets of 30-day blocks define the an
 #| echo: true
 #| message: false
 #| eval: false
-#| code-line-numbers: "2|3"
+#| code-line-numbers: "2|3-8"
 time_slices <- 
   tibble::tibble(x = 1:365) %>% 
-  rsample::rolling_origin(initial = 6 * 30, assess = 30, skip = 29, cumulative = FALSE)
+  rsample::rolling_origin(
+    initial = 6 * 30
+    , assess = 30
+    , skip = 29
+    , cumulative = FALSE
+  )
 ```
 
 ## Tidymodels: performance evaluation
@@ -850,7 +919,7 @@ time_slices <-
 #| echo: true
 #| message: false
 #| eval: false
-#| code-line-numbers: "2|3-7|9-13"
+#| code-line-numbers: "1-2|3-7|9-13"
 # pull out first and last data points in the analysis dataset
 time_slices$splits %>% 
   purrr::map_dfr( 
@@ -880,14 +949,14 @@ This sequence repeats for every resample.
 
 **Evaluation**:
 
-The function **tune::fit_resamples** is like parsnip::fit with a resamples argment instead of a data argument:
+The function **tune::fit_resamples** is like parsnip::fit with a resamples argument instead of a data argument:
 
 ```{r}
 #| echo: true
 #| message: false
 #| eval: false
 #| code-line-numbers: "2|4|6"
-
+#
 model_spec %>% fit_resamples(formula,  resamples, ...)
 
 model_spec %>% fit_resamples(recipe,   resamples, ...)
@@ -922,9 +991,11 @@ Save the predictions in order to visualize the model fit and residuals:
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1|3-6"
-keep_pred <- tune::control_resamples(save_pred = TRUE, save_workflow = TRUE)
+#| code-fold: true
+#| layout-ncol: 2
+#| code-line-numbers: "1-2|4-7"
+keep_pred <- 
+  tune::control_resamples(save_pred = TRUE, save_workflow = TRUE)
 
 set.seed(1003)
 rf_res <- 
