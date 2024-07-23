@@ -71,8 +71,7 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ### Key Components of Tidymodels
 
 ::: {style="font-size: xx-large"}
--   Workflows: functions in the `workflows` package can bundle together your pre-processing,
-    modeling, and post-processing requests. The advantages are:
+-   Workflows: functions in the `workflows` package can bundle together your pre-processing, modeling, and post-processing requests. The advantages are:
     -   You don’t have to keep track of separate objects in your workspace.
     -   The recipe prepping and model fitting can be executed using a single call to [`fit()`](https://generics.r-lib.org/reference/fit.html).
     -   If you have custom tuning parameter settings, these can be defined using a simpler interface when combined with [tune](https://github.com/tidymodels/tune).
@@ -128,7 +127,7 @@ With `parsnip` specifications are built without referencing the data:
 #| echo: true
 # basic linear model
 parsnip::linear_reg() %>% 
-  set_mode("regression") %>%
+  parsnip::set_mode("regression") %>%
   parsnip::set_engine("lm")
 ```
 
@@ -138,7 +137,7 @@ parsnip::linear_reg() %>%
 #| echo: true
 # basic penalized linear model
 parsnip::linear_reg() %>% 
-  set_mode("regression") %>%
+  parsnip::set_mode("regression") %>%
   parsnip::set_engine("glmnet")
 ```
 :::
@@ -155,7 +154,7 @@ The translate function can be used to see how the `parsnip` spec is converted to
 #| # basic linear model
 parsnip::linear_reg() %>% 
   parsnip::set_engine("lm") %>% 
-  set_mode("regression") %>%
+  parsnip::set_mode("regression") %>%
   parsnip::translate()
 ```
 
@@ -165,7 +164,7 @@ parsnip::linear_reg() %>%
 #| echo: true
 parsnip::linear_reg(penalty = 1) %>% 
   parsnip::set_engine("glmnet") %>% 
-  set_mode("regression") %>%
+  parsnip::set_mode("regression") %>%
   parsnip::translate()
 ```
 :::
@@ -183,8 +182,8 @@ data_split <- rsample::initial_split(modeldata::ames, strata = "Sale_Price")
 ames_train <- rsample::training(data_split)
 ames_test  <- rsample::testing(data_split)
 # spec model
-lm_model <- parsnip::linear_reg() 
-  set_mode("regression") %>%
+lm_model <- parsnip::linear_reg() %>%
+  parsnip::set_mode("regression") %>%
   parsnip::set_engine("lm")
 # fit model
 lm_form_fit <- lm_model %>% 
@@ -220,19 +219,18 @@ A list of all parsnip-type models can be found [here](https://www.tidymodels.org
 
 ## Tidymodels: workflows
 
-The model **workflow** collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities. Similar collections of steps are sometimes called pipelines.
+The model **workflow** collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities.
 
-## Tidymodels
-
-![](/images/proper-workflow.svg)
+Similar collections of steps are sometimes called pipelines.
 
 ## Workflows example
+
+Workflows always require a `parsnip` model object
 
 ```{r}
 #| echo: true
 #| message: false
-
-#| code-line-numbers: "2|4-9|11-13|15-18"
+#| code-line-numbers: "2|4-10|12-14|16-19"
 # create test/train splits
 ames <- modeldata::ames %>% dplyr::mutate( Sale_Price = log10(Sale_Price) )
 
@@ -254,131 +252,130 @@ lm_wflow <-
   workflows::add_model(lm_model)
 ```
 
-## Tidymodels example
+## Workflows example
+
+If our model is very simple, a standard R formula can be used as a preprocessor:
 
 ```{r}
 #| echo: true
 #| message: false
-#| code-line-numbers: "2-4|6-7|9-10"
-
+#| code-fold: true
+#| code-line-numbers: "1-3|4-5|6-13"
 # preprocessing not specified; a formula is sufficient
 lm_wflow %<>% 
   workflows::add_formula(Sale_Price ~ Longitude + Latitude)
-
-# fit the model
+# fit the model ( can be witten as fit(lm_wflow, ames_train) )
 lm_fit <- lm_wflow %>% parsnip::fit(ames_train)
-
-# predict on the fitted workflow
-lm_fit %>% stats::predict(ames_test %>% dplyr::slice(1:3))
-
+# tidy up the fitted coefficients
+lm_fit %>%
+  # pull the parsnip object
+  workflows::extract_fit_parsnip() %>% 
+  # tidy up the fit results
+  broom::tidy() %>% 
+  # show the first n rows
+  dplyr::slice_head(n=5)
 ```
 
-## Tidymodels basics
+## Workflows prediction
 
-The predictable column names are
+When using **`predict(workflow, new_data)`**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data.
 
-<div>
+Take centering and scaling using **`step_normalize()`** as an example.
+
+Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **`predict()`** is invoked.
+
+## Workflows prediction
+
+The fitted workflow can be used to predict outcomes given a new dataset of co-variates. Alternatively, the `parsnip::augment` function can be used to augment the new data with the prediction and other information about the prediction.
+
+::: panel-tabset
+## predict
 
 ```{r}
-#| echo: false
-#| output: asis
-#| message: false
-tibble::tibble(
-  'type value' = c('numeric','class','prob','conf_int','pred_int')
-  , 'column name(s)' = c('.pred','.pred_class','.pred_{class levels}','.pred_lower, .pred_upper'
-                         , '.pred_lower, .pred_upper')
-) %>% 
-  gt::gt() %>% 
-  gtExtras::gt_theme_espn() %>% 
-  gt::tab_options( table.font.size = gt::px(38) ) %>% 
-  gt::as_raw_html()
+#| echo: true
+# predict on the fitted workflow
+lm_fit %>% stats::predict(ames_test %>% dplyr::slice(1:3))
 ```
 
-</div>
+## augment
 
-## Tidymodels updating
+```{r}
+#| echo: true
+lm_fit |> 
+  parsnip::augment(new_data = ames_test %>% dplyr::slice(1:3)) |> 
+  dplyr::select(starts_with("."))
+```
+:::
 
-The model and preprocessor can be removed or updated:
+## Workflows updating
+
+The model and data pre-processor can be removed or updated:
 
 ```{r}
 #| echo: true
 #| message: false
 #| eval: false
-#| code-line-numbers: "2-3|5-10"
-
-# update the formula
-lm_fit %>% workflows::update_formula(Sale_Price ~ Longitude)
-
+#| code-line-numbers: "1-3|4-6"
 # remove the formula and use add_variables instead
 lm_wflow %<>% 
   workflows::remove_formula() %>% 
   workflows::add_variables(
     outcome = Sale_Price, predictors = c(Longitude, Latitude)
   )
-
 ```
 
-Predictors can be selected using **tidyselect** selectors, e.g. *everything()*, *ends_with()*, etc.
+Predictors can be selected using **tidyselect** selectors, e.g. *everything()*, *ends_with("tude")*, etc.
 
-# Workflowsets
+## Workflows use of formulas
 
-## Tidymodels: workflowset
+We've noted that R formulas can specify a good deal of preprocessing, including inline transformations and creating dummy variables, interactions and other column expansions. But some R packages extend the formula in ways that base R functions cannot parse or execute.
 
-There is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set.
+When `add_formula` is executed, since preprocessing is model dependent, `workflows` attempts to emulate what the underlying model would do whenever possible.
+
+## Workflows use of formulas
+
+If a random forest model is fit using the `ranger` or `randomForest` packages, the workflow knows predictors columns that are factors should be left as is (not converted to dummy vaiables).
+
+By contrast, a boosted tree created with the `xgboost` package requires the user to create dummy variables from factor predictors (since `xgboost::xgb.train()` will not). A workflow using xgboost will create the indicator columns for this engine. Also note that a different engine for boosted trees, C5.0, does not require dummy variables so none are made by the workflow.
+
+## Workflows: special formulas
+
+Some packages have specilized formula specification, i.e. the `lme4` package allows random effects per
+
+``` r
+lme4::lmer(distance ~ Sex + (age | Subject), data = Orthodont)
+```
+
+The effect of this is that each subject will have an estimated intercept and slope parameter for `age`. Standard R methods can’t properly process this formula.
+
+## Workflows: special formulas
+
+In this case The `add_variables()` specification provides the bare column names, and then the actual formula given to the model is set within `add_model()`:
 
 ```{r}
 #| echo: true
-#| message: false
 #| eval: false
-#| code-line-numbers: "2|4-7"
-# pull 
-final_lm_res <- tune::last_fit(lm_wflow, ames_split)
+multilevel_spec <- parsnip::linear_reg() %>% parsnip::set_engine("lmer")
 
-# view
-final_lm_res %>% dplyr::glimpse()
-```
+multilevel_workflow <- 
+  workflows::workflow() %>% 
+  # Pass the data along as-is: 
+  workflows::add_variables(outcome = distance, predictors = c(Sex, age, Subject)) %>% 
+  workflows::add_model(multilevel_spec, 
+            # This formula is given to the model
+            formula = distance ~ Sex + (age | Subject))
 
-## Tidymodels: workflowset
-
-Similarly, **collect_metrics()** and **collect_predictions()** provide access to the performance metrics and predictions, respectively.
-
-```{r}
-#| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "2-3|5-6"
-#
-# get the fit metrics
-workflowsets::collect_metrics(final_lm_res)
-
-# get the predictions, post-fit
-workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:5)
-```
-
-## Tidymodels: workflowsets
-
-When using **predict(workflow, new_data)**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data. Take centering and scaling using **step_normalize()** as an example. Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **predict()** is invoked.
-
-## Tidymodels: workflowsets
-
-```{r}
-#| echo: true
-#| message: false
-#| eval: false
-lm_fit %>%
-  # pull the parsnip object
-  workflows::extract_fit_parsnip() %>% 
-  # tidy up the fit results
-  yardstick::tidy() %>% 
-  # show the first n rows
-  dplyr::slice_head(n=5)
 ```
 
 # Workflowsets
 
 ## Tidymodels: workflowsets
 
-The `workflowset` package creates combinations of workflow components. A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined with a list of model specifications, resulting in a set of workflows.
+### Creating multiple workflows at once
+
+The `workflowset` package creates combinations of workflow components.
+
+A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined (i.e. a crossproduct) with a list of model specifications, resulting in a set of workflows.
 
 ## Tidymodels: workflowsets
 
@@ -387,8 +384,8 @@ Create a set of preprocessors by formula
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-7|9-13|15-18"
+#| eval: true
+#| code-line-numbers: "1-7|9-13"
 # set up a list of formulas
 location <- list(
   longitude = Sale_Price ~ Longitude,
@@ -402,10 +399,21 @@ location_models <-
   workflowsets::workflow_set(
     preproc = location, models = list(lm = lm_model)
   )
+```
 
+## Tidymodels: workflowsets
+
+A workflow set is a data structure
+
+```{r}
+#| echo: true
 # view
-location_models$info[[1]]
-# extract
+location_models
+```
+
+You can extract the elements of the `workflowset` using `tidy::unnest`, `dplyr::filter`, etc. Alternatively the are a number of `workflowsets::extract_X` functions that will do the job, e.g.
+
+``` r
 workflowsets::extract_workflow(location_models, id = "coords_lm")
 ```
 
@@ -416,8 +424,8 @@ Create model fits
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-8|10-11"
+#| eval: true
+#| code-line-numbers: "1-9|11-12"
 # create a new column (fit) by mapping fit 
 # against the data in the info column
 location_models %<>%
@@ -429,8 +437,38 @@ location_models %<>%
    )
 
 # view
-location_models$fit[[1]]
+location_models$fit[[1]] |> broom::tidy()
 ```
+
+## Tidymodels: evaluation
+
+Once we've settled on a final model there is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set. Notice that `last_fit()` takes a data split as an input, not a dataframe.
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: true
+#| code-line-numbers: "1-2"
+# pull 
+final_lm_res <- tune::last_fit(lm_wflow, ames_split)
+
+```
+
+::: panel-tabset
+## metrics
+
+```{r}
+#| echo: true
+final_lm_res %>% workflowsets::collect_metrics() 
+```
+
+## predictions
+
+```{r}
+#| echo: true
+workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:3)
+```
+:::
 
 # Yardstick
 
@@ -441,6 +479,12 @@ location_models$fit[[1]]
 An inferential model is used primarily to understand relationships, and typically emphasizes the choice (and validity) of probabilistic distributions and other generative qualities that define the model.
 
 For a model used primarily for prediction, by contrast, predictive strength is of primary importance and other concerns about underlying statistical qualities may be less important.
+
+## Tidymodels: yardstick
+
+The point of this analysis is to demonstrate the idea that optimization of statistical characteristics of the model does not imply that the model fits the data well.
+
+Even for purely inferential models, some measure of fidelity to the data should accompany the inferential results. With empirical validation, the users of the analyses can calibrate their expectations of the results.
 
 ## Tidymodels: yardstick
 
@@ -486,7 +530,7 @@ lm_fit <- parsnip::fit(lm_wflow, ames_train)
 #| echo: true
 #| message: false
 #| code-fold: true
-#| code-line-numbers: "2-7|9-13|15"
+#| code-line-numbers: "1-7|8-12|13-14"
 #| layout-ncol: 3
 # fit with new data
 ames_test_res <- 
@@ -495,25 +539,24 @@ ames_test_res <-
     , new_data = ames_test %>% dplyr::select(-Sale_Price)
   )
 ames_test_res
-
 # compare predictions with corresponding data
 ames_test_res <- 
   dplyr::bind_cols(
     ames_test_res, ames_test %>% dplyr::select(Sale_Price))
 ames_test_res
-
+# there is a standard output format for yardstick functions
 yardstick::rmse(ames_test_res, truth = Sale_Price, estimate = .pred)
 ```
 
 ## Tidymodels: yardstick
 
-### Regression metrics: numeric targets
+### Regression metrics: multiple metrics at once
 
 ```{r}
 #| echo: true
 #| message: false
 #| code-line-numbers: "1-7|9"
-# create metric set
+# NOTE: yardstick::metric_set returns a function
 ames_metrics <- 
   yardstick::metric_set(
     yardstick::rmse
@@ -559,6 +602,14 @@ yardstick::mcc(
   modeldata::two_class_example, truth, predicted
 )
 ```
+
+## F-metric
+
+```{r}
+#| echo: true
+# F1 metric: (The measure "F" is a combination of precision and recall )  
+yardstick::f_meas(modeldata::two_class_example, truth, predicted)
+```
 :::
 
 ## Tidymodels: yardstick
@@ -570,11 +621,8 @@ yardstick::mcc(
 #| message: false
 #| layout-ncol: 2
 #| code-fold: true
-#| code-line-numbers: "1-2|3-10|12-16"
-# F1 metric: (The measure "F" is a combination of precision and recall )  
-yardstick::f_meas(modeldata::two_class_example, truth, predicted)
-
-# Combining these three classification metrics together
+#| code-line-numbers: "1-7|9-13"
+# Combining three classification metrics together
 classification_metrics <- 
   yardstick::metric_set(
     yardstick::accuracy
@@ -598,7 +646,8 @@ classification_metrics(
 #| message: false
 #| layout-ncol: 2
 #| code-fold: true
-#| code-line-numbers: "1-6|8|10"
+#| code-line-numbers: "1-6"
+#| layout: [[100]]
 two_class_curve <- 
   yardstick::roc_curve(
     modeldata::two_class_example
@@ -606,12 +655,13 @@ two_class_curve <-
     , Class1
   )
 
-yardstick::roc_auc(modeldata::two_class_example, truth, Class1)
-
-parsnip::autoplot(two_class_curve)
+parsnip::autoplot(two_class_curve) +
+  labs(
+    title = stringr::str_glue("roc_auc = {yardstick::roc_auc(modeldata::two_class_example, truth, Class1)[1,3]}") 
+  )
 ```
 
-There are other functions that use probability estimates, including `gain_curve`, `lift_curve`, and pr_curve.
+There are other functions that use probability estimates, including `gain_curve`, `lift_curve`, and `pr_curve`.
 
 ## Tidymodels: yardstick
 
@@ -640,6 +690,8 @@ Take sensitivity for example:
 #| echo: true
 modeldata::hpc_cv
 ```
+
+## Tidymodels: yardstick
 
 ### Regression metrics: multi-class targets
 
@@ -685,6 +737,8 @@ hpc_cv %>%
   yardstick::roc_curve(obs, VF, F, M, L) %>% 
   autoplot()
 ```
+
+# Resampling
 
 ## Tidymodels: performance evaluation
 
@@ -748,6 +802,7 @@ Use the function on the random forest and linear models
 ## rand forest - train
 
 ```{r}
+#| echo: true
 # get performance of the random forest model (train)
 estimate_perf(rf_fit, ames_train)
 ```
@@ -755,6 +810,7 @@ estimate_perf(rf_fit, ames_train)
 ## linear -train
 
 ```{r}
+#| echo: true
 # get performance of the linear model (train)
 estimate_perf(lm_fit, ames_train)
 ```
@@ -762,6 +818,7 @@ estimate_perf(lm_fit, ames_train)
 ## linear - test
 
 ```{r}
+#| echo: true
 # get performance of the linear model  (test)
 estimate_perf(rf_fit, ames_test)
 ```
