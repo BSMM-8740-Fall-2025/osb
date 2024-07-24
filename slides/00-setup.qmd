@@ -1,8 +1,20 @@
 ```{r}
 #| include: false
+
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  magrittr, tidyverse, malcolmbarrett/causalworkshop
+)
+
 source("R/ggdag-mask.R")
 source("R/setup.R")
-require(magrittr)
-library(tidyverse)
+
+
 
 ```
