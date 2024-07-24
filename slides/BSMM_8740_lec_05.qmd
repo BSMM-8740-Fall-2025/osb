@@ -1,20 +1,20 @@
 ---
-title: "More tidymodels packages"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 5]"
+title: "The tidymodels Framework"
+subtitle: "BSMM8740-2-R-2023F [WEEK - 5]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
 logo: "images/logo.png"
-title-slide-attributes:
-  data-background-image: images/my-DRAFT.png
-  data-background-size: contain
-  data-background-opacity: "0.40"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
 format: 
   revealjs: 
     theme: slides.scss
     multiplex: true
     transition: fade
     slide-number: true
-    margin: 0.05
+#    margin: 0.05
 editor: visual
 menu:
   numbers: true
@@ -37,17 +37,17 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## Recap of last week
 
--   Last week we looked at several regression models that are useful for predictions
+-   Last week we looked at several regression models that are useful for predictions.
 
--   However, these models have different conventions on how they accept data and describe the model
+-   However, R packages that implement these models have different conventions on how they accept data and specify the model.
 
--   Today we look at the tidymodels package which will give us a workflow to describe, fit and compare models, using the same approach across methods.
+-   Today we look at the `tidymodels` package which will give us a workflow to describe, fit and compare models, using the same approach across methods.
 
 # Tidymodels
 
 ## Tidymodels
 
--   Tidymodels is an R package that provides a unified and consistent framework for modeling and machine learning tasks.
+-   Tidymodels is a collection of R packages that provides a unified and consistent framework for modeling and machine learning tasks.
 -   It is built on top of the tidyverse, making it easy to integrate with other tidyverse packages.
 -   Tidymodels promotes best practices, repeatability, and clear documentation in your data analysis and modeling workflow.
 
@@ -55,83 +55,136 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ### Key Components of Tidymodels
 
--   Model Building: tidymodels provides various modeling engines for different algorithms like lm(), glm(), randomForest(), xgboost(), etc.
--   Preprocessing: Easy and flexible data preprocessing using recipes, allowing for seamless data transformation and feature engineering.
+-   Model Building: the `parsnip` package provides various modeling engines for different algorithms like lm(), glm(), randomForest(), xgboost(), etc.
+-   Preprocessing: Easy and flexible data preprocessing using the `recipes` package, allowing for seamless data transformation and feature engineering.
 
 ## Tidymodels
 
 ### Key Components of Tidymodels
 
--   Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
--   Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.
+-   Resampling: The `rsample` package supplies efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
+-   Metrics: the `yardstick` package gives a wide range of evaluation metrics to assess model performance and choose the best model.
+-   Tuning: the `tune` package facilitates hyperparameter tuning for the tidymodels packages.
+
+## Tidymodels
+
+### Key Components of Tidymodels
+
+::: {style="font-size: xx-large"}
+-   Workflows: functions in the `workflows` package can bundle together your pre-processing, modeling, and post-processing requests. The advantages are:
+    -   You don’t have to keep track of separate objects in your workspace.
+    -   The recipe prepping and model fitting can be executed using a single call to [`fit()`](https://generics.r-lib.org/reference/fit.html).
+    -   If you have custom tuning parameter settings, these can be defined using a simpler interface when combined with [tune](https://github.com/tidymodels/tune).
+-   Workflowsets: The `workflowsets` package facilitates multiple workwflows - applying different types of models and preprocessing methods on a given data set.
+:::
+
+## Tidymodels
+
+In base R, the **predict** function returns results in a format that depends on the models.
+
+By contrast, **parsnip** and **workflows** conforms to the following rules:
+
+1.  The results are always a tibble.
+2.  The column names of the tibble are always predictable.
+3.  There are always as many rows in the tibble as there are in the input data set, and in the same order.
+
+## Tidymodels
+
+![](images/tidymodels.png){fig-align="center"}
+
+# Parsnip
+
+## Tidymodels: parsnip
+
+We've seen how the form of the arguments to linear models in R can be very different[^1].
+
+[^1]: e.g. `stats::lm` takes a formula, while `glmnet::glmnet` takes separate outcome and co-variate matrices
+
+Parsnip is one of the tidymodels packages that provides a standardized interface across models.
+
+We look at how to fit and predict with parsnip in the next few slides, given data has been preprocessed.
 
 ## Fitting with parsnip
 
-We've seen how the form of the arguments to linear models in R can be very different.
+For example we call `stats::lm`, specifying the model using a formula. By contrast `glmnet::glmnet` specify the model with separate outcome and co-variate matrices
 
-Parsnip is one of the tidymodels packages that provides a standardized interface across models
-
-We look at how to fit and predict with parsnip in the next few slides, once the data has been prepped.
+By contrast, the tidymodels permits using both models with a uniform model specification.
 
 ## Fitting with parsnip
 
-We can fit a linear regression with OLS (model spec) or penalized regression (x,y spec) using data structured specifically for the model.
-
-By contrast the tidymodels approach is more uniform.
-
-## Fitting with parsnip
-
-1.  *Specify the type of model based on its mathematical structure* (e.g., linear regression, random forest, KNN, etc).
-2.  *Specify the engine for fitting the model.* Most often this reflects the software package that should be used, like lm or **glmnet**.
+1.  *Specify the type of model based on its algorithm* (e.g., linear regression, random forest, KNN, etc).
+2.  *Specify the engine for fitting the model.* Most often this reflects the software package and function that should be used, like `lm` or `glmnet`.
 3.  *When required, declare the mode of the model.* The mode reflects the type of prediction outcome. For numeric outcomes, the mode is regression; for qualitative outcomes, it is classification.
 
 ## Fitting with parsnip
 
-The specification are built without referencing the data:
+With `parsnip` specifications are built without referencing the data:
+
+::: panel-tabset
+## lm
 
 ```{r}
 #| echo: true
-#| message: false
-#| code-fold: true
-#| code-summary: "tidymodel specification"
-#| code-line-numbers: "2|4"
 # basic linear model
-parsnip::linear_reg() %>% parsnip::set_engine("lm")
-# basic penalized linear model
-parsnip::linear_reg() %>% parsnip::set_engine("glmnet")
+parsnip::linear_reg() %>% 
+  parsnip::set_mode("regression") %>%
+  parsnip::set_engine("lm")
 ```
+
+## glmnet
+
+```{r}
+#| echo: true
+# basic penalized linear model
+parsnip::linear_reg() %>% 
+  parsnip::set_mode("regression") %>%
+  parsnip::set_engine("glmnet")
+```
+:::
 
 ## Fitting with parsnip
 
-The translate function can be used to see how the spec is converted to the correct syntax for different methods
+The translate function can be used to see how the `parsnip` spec is converted to the correct syntax for the underlying package / functions.
+
+::: panel-tabset
+## lm
 
 ```{r}
 #| echo: true
-#| message: false
-#| code-fold: true
-#| code-summary: "tidymodel spec translation"
-#| code-line-numbers: "2|4"
-# basic linear model
-parsnip::linear_reg() %>% parsnip::set_engine("lm") %>% parsnip::translate()
-# basic penalized linear model
-parsnip::linear_reg(penalty = 1) %>% parsnip::set_engine("glmnet") %>% parsnip::translate()
+#| # basic linear model
+parsnip::linear_reg() %>% 
+  parsnip::set_engine("lm") %>% 
+  parsnip::set_mode("regression") %>%
+  parsnip::translate()
 ```
+
+## glmnet
+
+```{r}
+#| echo: true
+parsnip::linear_reg(penalty = 1) %>% 
+  parsnip::set_engine("glmnet") %>% 
+  parsnip::set_mode("regression") %>%
+  parsnip::translate()
+```
+:::
 
 ## Fitting with parsnip
 
-The translate function can be used to see how the spec is converted to the correct syntax
+We can specify the model with either a formula or outcome and model matrix:
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2-4|6|8-10|12-16"
+#| code-line-numbers: "2-4|6-8|10-12|14-18"
 # prep data
 data_split <- rsample::initial_split(modeldata::ames, strata = "Sale_Price")
 ames_train <- rsample::training(data_split)
 ames_test  <- rsample::testing(data_split)
 # spec model
-lm_model <- parsnip::linear_reg() %>% parsnip::set_engine("lm")
+lm_model <- parsnip::linear_reg() %>%
+  parsnip::set_mode("regression") %>%
+  parsnip::set_engine("lm")
 # fit model
 lm_form_fit <- lm_model %>% 
   # Recall that Sale_Price has been pre-logged
@@ -151,7 +204,6 @@ Model results can be extracted from the fit object
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "2|4"
 
 lm_form_fit %>% parsnip::extract_fit_engine()
@@ -161,33 +213,31 @@ lm_form_fit %>% parsnip::extract_fit_engine() %>% stats::vcov()
 
 ## Fitting with parsnip
 
-Exercise: random forest regression
-
 A list of all parsnip-type models can be found [here](https://www.tidymodels.org/find/parsnip/).
 
-## Tidymodels
+# Workflows
 
-If we use the term **model** to reference a a structural equation that relates some predictors to one or more outcomes, then everything before the model is fit is related to structuring the predictors and outcomes.
+## Tidymodels: workflows
 
-The model workflow refers to the broader process, including any pre-processing steps, the model fit itself, as well as potential post-processing activities. Similar collections of steps are sometimes called pipelines.
+The model **workflow** collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities.
 
-## Tidymodels
+Similar collections of steps are sometimes called pipelines.
 
-![](/images/proper-workflow.svg)
+## Workflows example
 
-## Tidymodels basics
+Workflows always require a `parsnip` model object
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2|4-9|11-13|15-18"
+#| code-line-numbers: "2|4-10|12-14|16-19"
 # create test/train splits
 ames <- modeldata::ames %>% dplyr::mutate( Sale_Price = log10(Sale_Price) )
 
 set.seed(502)
-ames_split <- rsample::initial_split(
-  ames, prop = 0.80, strata = "Sale_Price"
+ames_split <- 
+  rsample::initial_split(
+    ames, prop = 0.80, strata = "Sale_Price"
   )
 ames_train <- rsample::training(ames_split)
 ames_test  <- rsample::testing(ames_split)
@@ -202,88 +252,130 @@ lm_wflow <-
   workflows::add_model(lm_model)
 ```
 
-## Tidymodels basics
+## Workflows example
+
+If our model is very simple, a standard R formula can be used as a preprocessor:
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2-4|6-7|9-10"
-
+#| code-fold: true
+#| code-line-numbers: "1-3|4-5|6-13"
 # preprocessing not specified; a formula is sufficient
 lm_wflow %<>% 
   workflows::add_formula(Sale_Price ~ Longitude + Latitude)
-
-# fit the model
+# fit the model ( can be witten as fit(lm_wflow, ames_train) )
 lm_fit <- lm_wflow %>% parsnip::fit(ames_train)
-
-# predict on the fitted workflow
-lm_fit %>% stats::predict(ames_test %>% dplyr::slice(1:3))
-
+# tidy up the fitted coefficients
+lm_fit %>%
+  # pull the parsnip object
+  workflows::extract_fit_parsnip() %>% 
+  # tidy up the fit results
+  broom::tidy() %>% 
+  # show the first n rows
+  dplyr::slice_head(n=5)
 ```
 
-## Tidymodels basics
+## Workflows prediction
 
-In base R, the **predict** function returns results in a format that depends on the models.
+When using **`predict(workflow, new_data)`**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data.
 
-By contrast, **parsnip** and **workflows** conforms to the following rules:
+Take centering and scaling using **`step_normalize()`** as an example.
 
-1.  The results are always a tibble.
-2.  The column names of the tibble are always predictable.
-3.  There are always as many rows in the tibble as there are in the input data set, and in the same order.
+Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **`predict()`** is invoked.
 
-## Tidymodels basics
+## Workflows prediction
 
-The predictable column names are
+The fitted workflow can be used to predict outcomes given a new dataset of co-variates. Alternatively, the `parsnip::augment` function can be used to augment the new data with the prediction and other information about the prediction.
 
-<div>
+::: panel-tabset
+## predict
 
 ```{r}
-#| echo: false
-#| output: asis
-#| message: false
-tibble::tibble(
-  'type value' = c('numeric','class','prob','conf_int','pred_int')
-  , 'column name(s)' = c('.pred','.pred_class','.pred_{class levels}','.pred_lower, .pred_upper'
-                         , '.pred_lower, .pred_upper')
-) %>% 
-  gt::gt() %>% 
-  gtExtras::gt_theme_espn() %>% 
-  gt::tab_options( table.font.size = gt::px(38) ) %>% 
-  gt::as_raw_html()
+#| echo: true
+# predict on the fitted workflow
+lm_fit %>% stats::predict(ames_test %>% dplyr::slice(1:3))
 ```
 
-</div>
+## augment
 
-## Tidymodels basics
+```{r}
+#| echo: true
+lm_fit |> 
+  parsnip::augment(new_data = ames_test %>% dplyr::slice(1:3)) |> 
+  dplyr::select(starts_with("."))
+```
+:::
 
-The model and preprocessor can be removed or updated:
+## Workflows updating
+
+The model and data pre-processor can be removed or updated:
 
 ```{r}
 #| echo: true
 #| message: false
 #| eval: false
-#| code-line-numbers: "2-3|5-10"
-
-# update the formula
-lm_fit %>% workflows::update_formula(Sale_Price ~ Longitude)
-
+#| code-line-numbers: "1-3|4-6"
 # remove the formula and use add_variables instead
 lm_wflow %<>% 
   workflows::remove_formula() %>% 
   workflows::add_variables(
     outcome = Sale_Price, predictors = c(Longitude, Latitude)
   )
-
 ```
 
-Predictors can be selected using **tidyselect** selectors, e.g. *everything()*, *ends_with()*, etc.
+Predictors can be selected using **tidyselect** selectors, e.g. *everything()*, *ends_with("tude")*, etc.
+
+## Workflows use of formulas
+
+We've noted that R formulas can specify a good deal of preprocessing, including inline transformations and creating dummy variables, interactions and other column expansions. But some R packages extend the formula in ways that base R functions cannot parse or execute.
+
+When `add_formula` is executed, since preprocessing is model dependent, `workflows` attempts to emulate what the underlying model would do whenever possible.
+
+## Workflows use of formulas
+
+If a random forest model is fit using the `ranger` or `randomForest` packages, the workflow knows predictors columns that are factors should be left as is (not converted to dummy vaiables).
+
+By contrast, a boosted tree created with the `xgboost` package requires the user to create dummy variables from factor predictors (since `xgboost::xgb.train()` will not). A workflow using xgboost will create the indicator columns for this engine. Also note that a different engine for boosted trees, C5.0, does not require dummy variables so none are made by the workflow.
+
+## Workflows: special formulas
+
+Some packages have specilized formula specification, i.e. the `lme4` package allows random effects per
+
+``` r
+lme4::lmer(distance ~ Sex + (age | Subject), data = Orthodont)
+```
+
+The effect of this is that each subject will have an estimated intercept and slope parameter for `age`. Standard R methods can’t properly process this formula.
+
+## Workflows: special formulas
+
+In this case The `add_variables()` specification provides the bare column names, and then the actual formula given to the model is set within `add_model()`:
+
+```{r}
+#| echo: true
+#| eval: false
+multilevel_spec <- parsnip::linear_reg() %>% parsnip::set_engine("lmer")
+
+multilevel_workflow <- 
+  workflows::workflow() %>% 
+  # Pass the data along as-is: 
+  workflows::add_variables(outcome = distance, predictors = c(Sex, age, Subject)) %>% 
+  workflows::add_model(multilevel_spec, 
+            # This formula is given to the model
+            formula = distance ~ Sex + (age | Subject))
+
+```
 
 # Workflowsets
 
 ## Tidymodels: workflowsets
 
-The `workflowset`package creates combinations of workflow components. A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined with a list of model specifications, resulting in a set of workflows.
+### Creating multiple workflows at once
+
+The `workflowset` package creates combinations of workflow components.
+
+A list of preprocessors (e.g., formulas, `dplyr` selectors, or feature engineering recipe objects) can be combined (i.e. a crossproduct) with a list of model specifications, resulting in a set of workflows.
 
 ## Tidymodels: workflowsets
 
@@ -292,8 +384,8 @@ Create a set of preprocessors by formula
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-7|9-13|15-18"
+#| eval: true
+#| code-line-numbers: "1-7|9-13"
 # set up a list of formulas
 location <- list(
   longitude = Sale_Price ~ Longitude,
@@ -307,10 +399,21 @@ location_models <-
   workflowsets::workflow_set(
     preproc = location, models = list(lm = lm_model)
   )
+```
 
+## Tidymodels: workflowsets
+
+A workflow set is a data structure
+
+```{r}
+#| echo: true
 # view
-location_models$info[[1]]
-# extract
+location_models
+```
+
+You can extract the elements of the `workflowset` using `tidy::unnest`, `dplyr::filter`, etc. Alternatively the are a number of `workflowsets::extract_X` functions that will do the job, e.g.
+
+``` r
 workflowsets::extract_workflow(location_models, id = "coords_lm")
 ```
 
@@ -321,9 +424,10 @@ Create model fits
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-8|10-11"
-# create a new column (fit) by mapping fit against the data in the info column
+#| eval: true
+#| code-line-numbers: "1-9|11-12"
+# create a new column (fit) by mapping fit 
+# against the data in the info column
 location_models %<>%
    dplyr::mutate(
      fit = purrr::map(
@@ -333,63 +437,38 @@ location_models %<>%
    )
 
 # view
-location_models$fit[[1]]
+location_models$fit[[1]] |> broom::tidy()
 ```
 
-## Tidymodels: workflowsets
+## Tidymodels: evaluation
 
-There is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set.
+Once we've settled on a final model there is a convenience function called `last_fit()` that will *fit* the model to the entire training set and *evaluate* it with the testing set. Notice that `last_fit()` takes a data split as an input, not a dataframe.
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2|4-7"
-
+#| eval: true
+#| code-line-numbers: "1-2"
+# pull 
 final_lm_res <- tune::last_fit(lm_wflow, ames_split)
 
-# view
-final_lm_res %>% dplyr::glimpse()
-# pull the fitted workflow
-fitted_lm_wflow <-  workflowsets::extract_workflow(final_lm_res)
 ```
 
-## Tidymodels: workflowsets
-
-Similarly, **collect_metrics()** and **collect_predictions()** provide access to the performance metrics and predictions, respectively.
+::: panel-tabset
+## metrics
 
 ```{r}
 #| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "2-3|5-6"
-
-# get the fit metrics
-workflowsets::collect_metrics(final_lm_res)
-
-# get the predictions, post-fit
-workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:5)
+final_lm_res %>% workflowsets::collect_metrics() 
 ```
 
-## Tidymodels: workflowsets
-
-When using **predict(workflow, new_data)**, no model or preprocessor parameters like those from recipes are re-estimated using the values in new_data. Take centering and scaling using **step_normalize()** as an example. Using this step, the means and standard deviations from the appropriate columns are determined from the training set; new samples at prediction time are standardized using these values from training when **predict()** is invoked.
-
-## Tidymodels: workflowsets
+## predictions
 
 ```{r}
 #| echo: true
-#| message: false
-#| eval: false
-
-lm_fit %>%
-  # pull the parsnip object
-  workflows::extract_fit_parsnip() %>% 
-  # tidy up the fit results
-  yardstick::tidy() %>% 
-  # show the first n rows
-  dplyr::slice_head(n=5)
+workflowsets::collect_predictions(final_lm_res) %>% dplyr::slice(1:3)
 ```
+:::
 
 # Yardstick
 
@@ -401,12 +480,16 @@ An inferential model is used primarily to understand relationships, and typicall
 
 For a model used primarily for prediction, by contrast, predictive strength is of primary importance and other concerns about underlying statistical qualities may be less important.
 
-# Yardstick
+## Tidymodels: yardstick
+
+The point of this analysis is to demonstrate the idea that optimization of statistical characteristics of the model does not imply that the model fits the data well.
+
+Even for purely inferential models, some measure of fidelity to the data should accompany the inferential results. With empirical validation, the users of the analyses can calibrate their expectations of the results.
 
 ## Tidymodels: yardstick
 
 ```{r}
-#| echo: false
+#| echo: true
 #| message: false
 #| eval: false
 #| code-fold: true
@@ -429,7 +512,7 @@ ames_rec <-
   recipes::step_interact( ~ Gr_Liv_Area:starts_with("Bldg_Type_") ) %>% 
   recipes::step_ns(Latitude, Longitude, deg_free = 20)
   
-lm_model <- parsnip::linear_reg() %>% set_engine("lm")
+lm_model <- parsnip::linear_reg() %>% parsnip::set_engine("lm")
 
 lm_wflow <- 
   workflows::workflow() %>% 
@@ -446,8 +529,9 @@ lm_fit <- parsnip::fit(lm_wflow, ames_train)
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2-7|9-13|15"
+#| code-fold: true
+#| code-line-numbers: "1-7|8-12|13-14"
+#| layout-ncol: 3
 # fit with new data
 ames_test_res <- 
   stats::predict(
@@ -455,26 +539,24 @@ ames_test_res <-
     , new_data = ames_test %>% dplyr::select(-Sale_Price)
   )
 ames_test_res
-
 # compare predictions with corresponding data
 ames_test_res <- 
   dplyr::bind_cols(
     ames_test_res, ames_test %>% dplyr::select(Sale_Price))
 ames_test_res
-
+# there is a standard output format for yardstick functions
 yardstick::rmse(ames_test_res, truth = Sale_Price, estimate = .pred)
 ```
 
 ## Tidymodels: yardstick
 
-### Regression metrics: numeric targets
+### Regression metrics: multiple metrics at once
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "1-7|9"
-# create metric set
+# NOTE: yardstick::metric_set returns a function
 ames_metrics <- 
   yardstick::metric_set(
     yardstick::rmse
@@ -490,26 +572,45 @@ ames_metrics(ames_test_res, truth = Sale_Price, estimate = .pred)
 
 ### Classification metrics: binary class targets
 
+::: panel-tabset
+## confusion mat
+
 ```{r}
 #| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: ""
-# data for two-set classification
-two_class_example <- modeldata::two_class_example
-
-tibble::tibble(two_class_example)
-
 # compute the confusion matrix: 
-yardstick::conf_mat(two_class_example, truth = truth, estimate = predicted)
-
-# compute the accuracy:
-yardstick::accuracy(two_class_example, truth, predicted)
-
-# Matthews correlation coefficient:
-yardstick::mcc(two_class_example, truth, predicted)
-
+yardstick::conf_mat(
+  modeldata::two_class_example, truth = truth, estimate = predicted
+)
 ```
+
+## accuracy
+
+```{r}
+#| echo: true
+# compute the accuracy:
+yardstick::accuracy(
+  modeldata::two_class_example, truth, predicted
+)
+```
+
+## mcc
+
+```{r}
+#| echo: true
+# Matthews correlation coefficient:
+yardstick::mcc(
+  modeldata::two_class_example, truth, predicted
+)
+```
+
+## F-metric
+
+```{r}
+#| echo: true
+# F1 metric: (The measure "F" is a combination of precision and recall )  
+yardstick::f_meas(modeldata::two_class_example, truth, predicted)
+```
+:::
 
 ## Tidymodels: yardstick
 
@@ -518,12 +619,10 @@ yardstick::mcc(two_class_example, truth, predicted)
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-2|3-10|12-16"
-# F1 metric:
-yardstick::f_meas(two_class_example, truth, predicted)
-
-# Combining these three classification metrics together
+#| layout-ncol: 2
+#| code-fold: true
+#| code-line-numbers: "1-7|9-13"
+# Combining three classification metrics together
 classification_metrics <- 
   yardstick::metric_set(
     yardstick::accuracy
@@ -532,7 +631,7 @@ classification_metrics <-
   )
 
 classification_metrics(
-  two_class_example
+  modeldata::two_class_example
   , truth = truth
   , estimate = predicted
 )
@@ -545,23 +644,24 @@ classification_metrics(
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-6|8|10|12"
+#| layout-ncol: 2
+#| code-fold: true
+#| code-line-numbers: "1-6"
+#| layout: [[100]]
 two_class_curve <- 
   yardstick::roc_curve(
-    two_class_example
+    modeldata::two_class_example
     , truth
     , Class1
   )
 
-two_class_curve
-
-yardstick::roc_auc(two_class_example, truth, Class1)
-
-parsnip::autoplot(two_class_curve)
+parsnip::autoplot(two_class_curve) +
+  labs(
+    title = stringr::str_glue("roc_auc = {yardstick::roc_auc(modeldata::two_class_example, truth, Class1)[1,3]}") 
+  )
 ```
 
-There are other functions that use probability estimates, including `gain_curve`, `lift_curve`, and pr_curve.
+There are other functions that use probability estimates, including `gain_curve`, `lift_curve`, and `pr_curve`.
 
 ## Tidymodels: yardstick
 
@@ -581,6 +681,15 @@ Take sensitivity for example:
 -   Macro-weighted averaging does the same but the average is weighted by the number of samples in each class.
 -   Micro-averaging computes the contribution for each class, aggregates them, then computes a single metric from the aggregates.
 :::
+
+## Tidymodels: yardstick
+
+### Regression metrics: multi-class targets
+
+```{r}
+#| echo: true
+modeldata::hpc_cv
+```
 
 ## Tidymodels: yardstick
 
@@ -636,7 +745,6 @@ hpc_cv %>%
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-line-numbers: "1-5|7-13|15-16"
 # create  random forest model object
 rf_model <- 
@@ -663,8 +771,7 @@ A function to compare models
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "3-6|8-10|12-18"
+#| code-line-numbers: "1|3-6|8-10|12-18"
 estimate_perf <- function(model, dat) {
   # Capture the names of the `model` and `dat` objects
   cl <- match.call()
@@ -677,7 +784,7 @@ estimate_perf <- function(model, dat) {
     yardstick::metric_set(yardstick::rmse, yardstick::rsq)
   
   model %>%
-    stats::predict(dat) %>%                          # predict
+    stats::predict(dat) %>%                  # predict
     dplyr::bind_cols(dat %>% dplyr::select(Sale_Price)) %>% 
     reg_metrics(Sale_Price, .pred) %>%
     dplyr::select(-.estimator) %>%
@@ -689,20 +796,31 @@ estimate_perf <- function(model, dat) {
 
 Use the function on the random forest and linear models
 
+::: panel-tabset
+## rand forest - train
+
 ```{r}
 #| echo: true
-#| message: false
-#| eval: false
-#| code-line-numbers: "1-2|4-5|6-7"
 # get performance of the random forest model (train)
 estimate_perf(rf_fit, ames_train)
+```
 
+## linear -train
+
+```{r}
+#| echo: true
 # get performance of the linear model (train)
 estimate_perf(lm_fit, ames_train)
+```
 
+## linear - test
+
+```{r}
+#| echo: true
 # get performance of the linear model  (test)
 estimate_perf(rf_fit, ames_test)
 ```
+:::
 
 ## Tidymodels: performance evaluation
 
@@ -711,9 +829,8 @@ Summarize and present the performance comparison
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
 #| code-fold: true
-#| code-line-numbers: "3-6|8-9|10-12|"
+#| code-line-numbers: "1-7|8-9|10-12|"
 # get performance of the random forest model (train)
 dplyr::bind_rows(
   estimate_perf(rf_fit, ames_train)
@@ -729,66 +846,140 @@ dplyr::bind_rows(
   ) %>% 
   gt::gt() %>% 
   gt::fmt_number(decimals=4) %>% 
-  gt::tab_header(title = "Performance statistics") %>% 
+  gt::tab_header(title = "Performance statistics", subtitle = "metric: rmse") %>% 
   gtExtras::gt_theme_espn()
 
 ```
 
-## Tidymodels: performance evaluation
+# Sampling / Resampling
 
-**Re-sampling**: iterative comparison:
+## Sampling
+
+The primary approach for empirical model validation is to split the existing pool of data into two distinct sets, the training set and the test set.
+
+The *training set* is used to develop and optimize the model and is usually the majority of the data.
+
+The *test set* is the remainder of the data, held in reserve to determine the efficacy of the model. It is critical to look at the test set only once; otherwise, it becomes part of the modeling process.
+
+## Sampling
+
+The `rsample` package has tools for making data splits, as follows
+
+```{r}
+#| echo: true
+set.seed(501)
+
+# Save the split information for an 80/20 split of the data
+ames_split <- rsample::initial_split(ames, prop = 0.80)
+ames_split
+```
+
+The functions `training` and `testing` extract the corresponding data.
+
+```{r}
+#| echo: true
+ames_train <- rsample::training(ames_split)
+ames_test  <- rsample::testing(ames_split)
+```
+
+## Sampling: class imbalance
+
+Simple random sampling is appropriate in many cases but there are exceptions. When there is a dramatic *class imbalance* in **classification** problems, one class occurs much less frequently than another. To avoid this, *stratified sampling* can be used. For regession problems the outcome data can be binned and then stratified sampling will keep the distributions of the outcome similar between the training and test set.
+
+```{r}
+#| echo: true
+set.seed(502)
+ames_split <- 
+  rsample::initial_split(ames, prop = 0.80, strata = Sale_Price)
+ames_train <- rsample::training(ames_split)
+ames_test  <- rsample::testing(ames_split)
+```
+
+## Sampling: time variables
+
+With time variables, random sampling is not the best choice. The rsample package contains a function called `initial_time_split()` that is very similar to `initial_split()` .
+
+The `prop` argument denotes what proportion of the first part of the data should be used as the training set; the function assumes that the data have been pre-sorted in an appropriate order.
+
+## Sampling: validation sets
+
+Validation sets are the answer to the question: “How can we tell what is best if we don’t measure performance until the test set?” The validation set is a means to get a rough sense of how well the model performed prior to the test set.
+
+Validation sets are a special case of *resampling* methods.
+
+```{r}
+#| echo: true
+set.seed(52)
+# To put 60% into training, 20% in validation, and 20% in testing:
+ames_val_split <- 
+  rsample::initial_validation_split(ames, prop = c(0.6, 0.2))
+ames_val_split
+```
+
+The functions `validation` extracts the corresponding data.
+
+## Resampling
+
+While the test set is used for obtaining an unbiased estimate of performance, we usually need to understand the performance of a model or even multiple models *before using the test set*.
+
+## Resampling
+
+Resampling is conducted only on the training set; the test set is not involved.
 
 ![](/images/resampling.svg){fig-align="center" width="494"}
 
-## Tidymodels: performance evaluation
+## Resampling: cross-validation
 
-**Re-sampling**: V-fold cross validation:
+While there are a number of variations, the most common cross-validation method is *V*-fold cross-validation. The data are randomly partitioned into *V* sets of roughly equal size (called the **folds**).
 
-*In V*-fold cross-validation. The data are randomly partitioned into *V* sets of roughly equal size (called the folds).
+In the example of 3-fold cross validation. In each of 3 iterations, one fold is held out for assessment statistics and the remaining folds are used for modeling.
 
-Larger *V* values result in resampling estimates with small bias but substantial variance. Smaller values of *V* have large bias but low variance. 
+The final resampling estimate of performance averages each of the *V* replicates.
+
+In practice, values of *V* are most often 5 or 10.
+
+## Resampling: cv example
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-3-6|4-5"
 set.seed(1001)
 ames_folds <- rsample::vfold_cv(ames_train, v = 10)
-ames_folds
-# rsample::analysis() and rsample::assessment() extract samples
-ames_folds$splits[[1]] %>% rsample::analysis() %>% dim()
+ames_folds |> dplyr::slice_head(n=5)
 ```
 
-## Tidymodels: performance evaluation
+The `rsample::analysis()` and `rsample::assessment()` functions return the corresponding data frames:
 
-**Re-sampling**: cross validation variants: repeated cross validation
+## Resampling: repeated cv
 
-R repetitions of V-fold cross-validation reduces variance by a factor of $1/\sqrt{\text{R}}$.
+The most important variation on cross-validation is repeated *V*-fold cross-validation. Repeated V-fold cv, reduce noise in the estimate by using more data, i.e. averaging more *V* statistics.
+
+R repetitions of V-fold cross-validation reduces the standard error variance by a factor of $1/\sqrt{\text{R}}$.
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
 rsample::vfold_cv(ames_train, v = 10, repeats = 5)
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: LOO cv
 
-**Re-sampling**: cross validation variants: LOO and MCCV
+One variation of cross-validation is leave-one-out (LOO) cross-validation. If there are n training set samples, n models are fit using n−1 rows of the training set.
 
--   Leave-one-out (LOO) cross-validation with a training set of $n$ rows generates fit using $n-1$ rows of the training set (`rsample::loo_cv`).
--   Monte carlo cross validation (MCCV) uses a fixed proportion of the training set, randomly selected on each cross validation, making the assessment sets not mutually exclusive (e.g. (`rsample::mc_cv( prop=0.9, times=20 )`).
+Each model predicts the single excluded data point. At the end of resampling, the n predictions are pooled to produce a single performance statistic. LOO cv is created using `rsample::loo_cv()`.
 
-## Tidymodels: performance evaluation
+Leave-one-out methods are deficient compared to almost any other method. For anything but pathologically small samples, LOO is computationally excessive.
 
-**Re-sampling**: validation sets:
+## Resampling: MC cv
 
-Validation sets are often used when the original pool of data is very large. In this case, a single large partition may be adequate to characterize model performance without having to do multiple resampling iterations.
+Another variant of *V*-fold cross-validation is Monte Carlo cross-validation (MCCV).
 
-With the **rsample** package, a validation set is like any other resampling object; this type is different only in that it has a single iteration.
+The difference between MCCV and regular cross-validation is that, for MCCV, the input proportion of the data is randomly selected each time.
 
-## Tidymodels: performance evaluation
+MCCV is performed using `rsample::mv_cv()`.
+
+## Resampling: Boostrapping
 
 **Re-sampling**: bootstrapping:
 
@@ -799,11 +990,19 @@ When bootstrapping, the assessment set is often called the *out-of-bag* sample
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#| layout-ncol: 2
 rsample::bootstraps(ames_train, times = 5)
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: Boostrapping
+
+Each data point has a 63.2% chance of inclusion in the training set at least once.
+
+The assessment set contains all of the training set samples that were not selected for the analysis set (on average, with 36.8% of the training set), and so they can vary in size.
+
+Bootstrap samples produce performance estimates that have very low variance (unlike cross-validation) but have significant pessimistic bias. This means that, if the true accuracy of a model is 90%, the bootstrap would tend to estimate the value to be less than 90%.
+
+## Resampling: time variables
 
 **Re-sampling**: resampling time:
 
@@ -811,61 +1010,69 @@ When the data have a strong time component, a resampling method needs to support
 
 For this type of resampling, the size of the initial analysis and assessment sets are specified and subsequent iterations are shifted in time
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
+**Rolling forecast orgin resampling:**
 
 ![](/images/rolling.svg){fig-align="center"}
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
-
-Two different configurations of this method:
+Two different configurations of rolling forecast orgin resampling:
 
 -   The analysis set can cumulatively grow (as opposed to remaining the same size). After the first initial analysis set, new samples can accrue without discarding the earlier data.
 -   The resamples need not increment by one. For example, for large data sets, the incremental block could be a week or month instead of a day.
 
-## Tidymodels: performance evaluation
-
-**Re-sampling**: resampling time:
+## Resampling: time variables
 
 For a year's worth of data, suppose that six sets of 30-day blocks define the analysis set. For assessment sets of 30 days with a 29-day skip, we can use the **rsample** package to specify:
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2|3"
+#eval: false
+#| code-line-numbers: "2|3-8"
 time_slices <- 
   tibble::tibble(x = 1:365) %>% 
-  rsample::rolling_origin(initial = 6 * 30, assess = 30, skip = 29, cumulative = FALSE)
+  rsample::rolling_origin(
+    initial = 6 * 30
+    , assess = 30
+    , skip = 29
+    , cumulative = FALSE
+  )
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
+::: panel-tabset
+## analysis
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "2|3-7|9-13"
+#| eval: true
 # pull out first and last data points in the analysis dataset
 time_slices$splits %>% 
   purrr::map_dfr( 
-    .f = 
-      ~rsample::analysis(.x) %>% 
+    .f = ~rsample::analysis(.x) %>% 
       dplyr::summarize(first = min(.), last = max(.))
   )
+```
+
+## assessment
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: true
 # pull out first and last data points in the assessment dataset
 time_slices$splits %>% 
   purrr::map_dfr(
     .f = ~rsample::assessment(.x) %>% 
       dplyr::summarize(first = min(.), last = max(.))
   )
-
 ```
+:::
 
 ## Tidymodels: performance evaluation
 
@@ -878,21 +1085,27 @@ This sequence repeats for every resample.
 
 ## Tidymodels: performance evaluation
 
-**Evaluation**:
+Any of the resampling methods discussed here can be used to evaluate the modeling process (including preprocessing, model fitting, etc). These methods are effective because different groups of data are used to train the model and assess the model. To reiterate, the process to use resampling is:
 
-The function **tune::fit_resamples** is like parsnip::fit with a resamples argment instead of a data argument:
+1.  During resampling, the analysis set is used to preprocess the data, apply the preprocessing to itself, and use these processed data to fit the model.
+
+2.  The preprocessing statistics produced by the analysis set are applied to the assessment set. The predictions from the assessment set estimate performance on new data.
+
+## Tidymodels: performance evaluation
+
+The function `tune::fit_resamples` is like `parsnip::fit` with a resamples argument instead of a data argument:
 
 ```{r}
 #| echo: true
 #| message: false
 #| eval: false
 #| code-line-numbers: "2|4|6"
+#
+model_spec %>% tune::fit_resamples(formula,  resamples, ...)
 
-model_spec %>% fit_resamples(formula,  resamples, ...)
+model_spec %>% tune::fit_resamples(recipe,   resamples, ...)
 
-model_spec %>% fit_resamples(recipe,   resamples, ...)
-
-workflow   %>% fit_resamples(          resamples, ...)
+workflow   %>% tune::fit_resamples(          resamples, ...)
 ```
 
 ## Tidymodels: performance evaluation
@@ -922,9 +1135,11 @@ Save the predictions in order to visualize the model fit and residuals:
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1|3-6"
-keep_pred <- tune::control_resamples(save_pred = TRUE, save_workflow = TRUE)
+#| code-fold: true
+#| layout-ncol: 2
+#| code-line-numbers: "1-2|4-7"
+keep_pred <- 
+  tune::control_resamples(save_pred = TRUE, save_workflow = TRUE)
 
 set.seed(1003)
 rf_res <- 
@@ -943,7 +1158,7 @@ The return value is a tibble similar to the input resamples, along with some ext
 
 ## Tidymodels: performance evaluation
 
-Convenience functions in tidymodels can extract and format the results produced by tuning functions, e.g.
+While the list columns may look daunting, they can be easily reconfigured using `tidyr` or with convenience functions that `tidymodels` provides. For example, to return the performance metrics in a more usable format:
 
 ```{r}
 #| echo: true
@@ -957,9 +1172,13 @@ rf_res %>% tune::collect_predictions()
 val_res %>% tune::collect_metrics()
 ```
 
+What is collected are the resampling estimates averaged over the individual replicates. To get the metrics for each resample, use the option `summarize = FALSE`.
+
 ## Tidymodels: parallelism
 
 The models created during resampling are independent of one another and can be processed in parallel across processors on the same computer.
+
+The code below determines the number of of possible worker processes.
 
 ```{r}
 #| echo: true
@@ -974,6 +1193,10 @@ parallel::detectCores(logical = FALSE)
 parallel::detectCores(logical = TRUE)
 
 ```
+
+## Tidymodels: parallelism
+
+For `fit_resamples()` and other functions in tune, parallel processing occurs when the user registers a parallel backend package. These R packages define how to execute parallel processing.
 
 ## Recap
 

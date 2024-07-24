@@ -47,7 +47,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ## Today's Outline
 
 -   We'll review the R model formula approach to model specification,
--   We'll introducte data pre-processing and design/model matrix generation with the `Recipes` package, and
+-   We'll introducte data pre-processing and design/model matrix generation with the `recipes` package, and
 -   We'll show how using recipes will facilitate developing feature engineering workflows that can be applied to multiple datasets (e.g. train and test as well as cross-validation[^1] datasets)
 
 [^1]: Cross-validation is a resampling method that uses different portions of the data to test and train a model on different iterations.
@@ -400,6 +400,21 @@ aq_recipe <- aq_recipe %>%
   recipes::update_role(Ozone, new_role = 'outcome') %>% 
   recipes::update_role(Solar.R, new_role = 'predictor')
 ```
+
+## Recommended Baseline Steps
+
+Baseline preprocessing methods can be categorized as:
+
+::: {style="font-size: xx-large"}
+-   **dummy**: Do qualitative predictors require a numeric encoding (e.g., via dummy variables or other methods)?
+-   **zv**: Should columns with a single unique value be removed?
+-   **impute**: If some predictors are missing, should they be estimated via imputation?
+-   **decorrelate**: If there are correlated predictors, should this correlation be mitigated? This might mean filtering out predictors, using principal component analysis, or a model-based technique (e.g., regularization).
+-   **normalize**: Should predictors be centered and scaled?
+-   **transform**: Is it helpful to transform predictors to be more symmetric?
+:::
+
+See [recommended preprocessing](https://www.tmwr.org/pre-proc-table) for recipe steps.
 
 ## Available Steps
 
