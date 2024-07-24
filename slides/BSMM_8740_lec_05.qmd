@@ -738,8 +738,6 @@ hpc_cv %>%
   autoplot()
 ```
 
-# Resampling
-
 ## Tidymodels: performance evaluation
 
 **Re-substitution**: comparison using same training data
@@ -786,7 +784,7 @@ estimate_perf <- function(model, dat) {
     yardstick::metric_set(yardstick::rmse, yardstick::rsq)
   
   model %>%
-    stats::predict(dat) %>%                          # predict
+    stats::predict(dat) %>%                  # predict
     dplyr::bind_cols(dat %>% dplyr::select(Sale_Price)) %>% 
     reg_metrics(Sale_Price, .pred) %>%
     dplyr::select(-.estimator) %>%
@@ -848,44 +846,115 @@ dplyr::bind_rows(
   ) %>% 
   gt::gt() %>% 
   gt::fmt_number(decimals=4) %>% 
-  gt::tab_header(title = "Performance statistics (rmse") %>% 
+  gt::tab_header(title = "Performance statistics", subtitle = "metric: rmse") %>% 
   gtExtras::gt_theme_espn()
 
 ```
 
-## Tidymodels: performance evaluation
+# Sampling / Resampling
 
-**Re-sampling**: iterative comparison:
+## Sampling
+
+The primary approach for empirical model validation is to split the existing pool of data into two distinct sets, the training set and the test set.
+
+The *training set* is used to develop and optimize the model and is usually the majority of the data.
+
+The *test set* is the remainder of the data, held in reserve to determine the efficacy of the model. It is critical to look at the test set only once; otherwise, it becomes part of the modeling process.
+
+## Sampling
+
+The `rsample` package has tools for making data splits, as follows
+
+```{r}
+#| echo: true
+set.seed(501)
+
+# Save the split information for an 80/20 split of the data
+ames_split <- rsample::initial_split(ames, prop = 0.80)
+ames_split
+```
+
+The functions `training` and `testing` extract the corresponding data.
+
+```{r}
+#| echo: true
+ames_train <- rsample::training(ames_split)
+ames_test  <- rsample::testing(ames_split)
+```
+
+## Sampling: class imbalance
+
+Simple random sampling is appropriate in many cases but there are exceptions. When there is a dramatic *class imbalance* in **classification** problems, one class occurs much less frequently than another. To avoid this, *stratified sampling* can be used. For regession problems the outcome data can be binned and then stratified sampling will keep the distributions of the outcome similar between the training and test set.
+
+```{r}
+#| echo: true
+set.seed(502)
+ames_split <- 
+  rsample::initial_split(ames, prop = 0.80, strata = Sale_Price)
+ames_train <- rsample::training(ames_split)
+ames_test  <- rsample::testing(ames_split)
+```
+
+## Sampling: time variables
+
+With time variables, random sampling is not the best choice. The rsample package contains a function called `initial_time_split()` that is very similar to `initial_split()` .
+
+The `prop` argument denotes what proportion of the first part of the data should be used as the training set; the function assumes that the data have been pre-sorted in an appropriate order.
+
+## Sampling: validation sets
+
+Validation sets are the answer to the question: “How can we tell what is best if we don’t measure performance until the test set?” The validation set is a means to get a rough sense of how well the model performed prior to the test set.
+
+Validation sets are a special case of *resampling* methods.
+
+```{r}
+#| echo: true
+set.seed(52)
+# To put 60% into training, 20% in validation, and 20% in testing:
+ames_val_split <- 
+  rsample::initial_validation_split(ames, prop = c(0.6, 0.2))
+ames_val_split
+```
+
+The functions `validation` extracts the corresponding data.
+
+## Resampling
+
+While the test set is used for obtaining an unbiased estimate of performance, we usually need to understand the performance of a model or even multiple models *before using the test set*.
+
+## Resampling
+
+Resampling is conducted only on the training set; the test set is not involved.
 
 ![](/images/resampling.svg){fig-align="center" width="494"}
 
-## Tidymodels: performance evaluation
+## Resampling: cross-validation
 
-**Re-sampling**: V-fold cross validation:
+While there are a number of variations, the most common cross-validation method is *V*-fold cross-validation. The data are randomly partitioned into *V* sets of roughly equal size (called the **folds**).
 
-*In V*-fold cross-validation. The data are randomly partitioned into *V* sets of roughly equal size (called the folds).
+In the example of 3-fold cross validation. In each of 3 iterations, one fold is held out for assessment statistics and the remaining folds are used for modeling.
 
-Larger *V* values result in resampling estimates with small bias but substantial variance. Smaller values of *V* have large bias but low variance. 
+The final resampling estimate of performance averages each of the *V* replicates.
 
-## Tidymodels: performance evaluation
+In practice, values of *V* are most often 5 or 10.
+
+## Resampling: cv example
 
 ```{r}
 #| echo: true
 #| message: false
-#| layout-ncol: 2
-#| code-line-numbers: "1-3-6|4-5"
 set.seed(1001)
 ames_folds <- rsample::vfold_cv(ames_train, v = 10)
-ames_folds
-# rsample::analysis() and rsample::assessment() extract samples
-ames_folds$splits[[1]] %>% rsample::analysis() %>% dim()
+ames_folds |> dplyr::slice_head(n=5)
 ```
 
-## Tidymodels: performance evaluation
+The `rsample::analysis()` and `rsample::assessment()` functions return the corresponding data frames:
 
-**Re-sampling**: cross validation variants: repeated cross validation
+## Resampling: repeated cv
 
-R repetitions of V-fold cross-validation reduces variance by a factor of $1/\sqrt{\text{R}}$.
+The most important variation on cross-validation is repeated *V*-fold cross-validation. Repeated V-fold cv, reduce noise in the estimate by using more data, i.e. averaging more *V* statistics.
+
+R repetitions of V-fold cross-validation reduces the standard error variance by a factor of $1/\sqrt{\text{R}}$.
 
 ```{r}
 #| echo: true
@@ -894,22 +963,23 @@ R repetitions of V-fold cross-validation reduces variance by a factor of $1/\sqr
 rsample::vfold_cv(ames_train, v = 10, repeats = 5)
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: LOO cv
 
-**Re-sampling**: cross validation variants: LOO and MCCV
+One variation of cross-validation is leave-one-out (LOO) cross-validation. If there are n training set samples, n models are fit using n−1 rows of the training set.
 
--   Leave-one-out (LOO) cross-validation with a training set of $n$ rows generates fit using $n-1$ rows of the training set (`rsample::loo_cv`).
--   Monte carlo cross validation (MCCV) uses a fixed proportion of the training set, randomly selected on each cross validation, making the assessment sets not mutually exclusive (e.g. (`rsample::mc_cv( prop=0.9, times=20 )`).
+Each model predicts the single excluded data point. At the end of resampling, the n predictions are pooled to produce a single performance statistic. LOO cv is created using `rsample::loo_cv()`.
 
-## Tidymodels: performance evaluation
+Leave-one-out methods are deficient compared to almost any other method. For anything but pathologically small samples, LOO is computationally excessive.
 
-**Re-sampling**: validation sets: (`rsample::validation_set()`)
+## Resampling: MC cv
 
-Validation sets are often used when the original pool of data is very large. In this case, a single large partition may be adequate to characterize model performance without having to do multiple resampling iterations.
+Another variant of *V*-fold cross-validation is Monte Carlo cross-validation (MCCV).
 
-With the **rsample** package, a validation set is like any other resampling object; this type is different only in that it has a single iteration.
+The difference between MCCV and regular cross-validation is that, for MCCV, the input proportion of the data is randomly selected each time.
 
-## Tidymodels: performance evaluation
+MCCV is performed using `rsample::mv_cv()`.
+
+## Resampling: Boostrapping
 
 **Re-sampling**: bootstrapping:
 
@@ -924,7 +994,15 @@ When bootstrapping, the assessment set is often called the *out-of-bag* sample
 rsample::bootstraps(ames_train, times = 5)
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: Boostrapping
+
+Each data point has a 63.2% chance of inclusion in the training set at least once.
+
+The assessment set contains all of the training set samples that were not selected for the analysis set (on average, with 36.8% of the training set), and so they can vary in size.
+
+Bootstrap samples produce performance estimates that have very low variance (unlike cross-validation) but have significant pessimistic bias. This means that, if the true accuracy of a model is 90%, the bootstrap would tend to estimate the value to be less than 90%.
+
+## Resampling: time variables
 
 **Re-sampling**: resampling time:
 
@@ -932,31 +1010,27 @@ When the data have a strong time component, a resampling method needs to support
 
 For this type of resampling, the size of the initial analysis and assessment sets are specified and subsequent iterations are shifted in time
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
+**Rolling forecast orgin resampling:**
 
 ![](/images/rolling.svg){fig-align="center"}
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
-
-Two different configurations of this method:
+Two different configurations of rolling forecast orgin resampling:
 
 -   The analysis set can cumulatively grow (as opposed to remaining the same size). After the first initial analysis set, new samples can accrue without discarding the earlier data.
 -   The resamples need not increment by one. For example, for large data sets, the incremental block could be a week or month instead of a day.
 
-## Tidymodels: performance evaluation
-
-**Re-sampling**: resampling time:
+## Resampling: time variables
 
 For a year's worth of data, suppose that six sets of 30-day blocks define the analysis set. For assessment sets of 30 days with a 29-day skip, we can use the **rsample** package to specify:
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
+#eval: false
 #| code-line-numbers: "2|3-8"
 time_slices <- 
   tibble::tibble(x = 1:365) %>% 
@@ -968,30 +1042,37 @@ time_slices <-
   )
 ```
 
-## Tidymodels: performance evaluation
+## Resampling: time variables
 
-**Re-sampling**: resampling time:
+::: panel-tabset
+## analysis
 
 ```{r}
 #| echo: true
 #| message: false
-#| eval: false
-#| code-line-numbers: "1-2|3-7|9-13"
+#| eval: true
 # pull out first and last data points in the analysis dataset
 time_slices$splits %>% 
   purrr::map_dfr( 
-    .f = 
-      ~rsample::analysis(.x) %>% 
+    .f = ~rsample::analysis(.x) %>% 
       dplyr::summarize(first = min(.), last = max(.))
   )
+```
+
+## assessment
+
+```{r}
+#| echo: true
+#| message: false
+#| eval: true
 # pull out first and last data points in the assessment dataset
 time_slices$splits %>% 
   purrr::map_dfr(
     .f = ~rsample::assessment(.x) %>% 
       dplyr::summarize(first = min(.), last = max(.))
   )
-
 ```
+:::
 
 ## Tidymodels: performance evaluation
 
@@ -1004,9 +1085,15 @@ This sequence repeats for every resample.
 
 ## Tidymodels: performance evaluation
 
-**Evaluation**:
+Any of the resampling methods discussed here can be used to evaluate the modeling process (including preprocessing, model fitting, etc). These methods are effective because different groups of data are used to train the model and assess the model. To reiterate, the process to use resampling is:
 
-The function **tune::fit_resamples** is like parsnip::fit with a resamples argument instead of a data argument:
+1.  During resampling, the analysis set is used to preprocess the data, apply the preprocessing to itself, and use these processed data to fit the model.
+
+2.  The preprocessing statistics produced by the analysis set are applied to the assessment set. The predictions from the assessment set estimate performance on new data.
+
+## Tidymodels: performance evaluation
+
+The function `tune::fit_resamples` is like `parsnip::fit` with a resamples argument instead of a data argument:
 
 ```{r}
 #| echo: true
@@ -1014,11 +1101,11 @@ The function **tune::fit_resamples** is like parsnip::fit with a resamples argum
 #| eval: false
 #| code-line-numbers: "2|4|6"
 #
-model_spec %>% fit_resamples(formula,  resamples, ...)
+model_spec %>% tune::fit_resamples(formula,  resamples, ...)
 
-model_spec %>% fit_resamples(recipe,   resamples, ...)
+model_spec %>% tune::fit_resamples(recipe,   resamples, ...)
 
-workflow   %>% fit_resamples(          resamples, ...)
+workflow   %>% tune::fit_resamples(          resamples, ...)
 ```
 
 ## Tidymodels: performance evaluation
@@ -1071,7 +1158,7 @@ The return value is a tibble similar to the input resamples, along with some ext
 
 ## Tidymodels: performance evaluation
 
-Convenience functions in tidymodels can extract and format the results produced by tuning functions, e.g.
+While the list columns may look daunting, they can be easily reconfigured using `tidyr` or with convenience functions that `tidymodels` provides. For example, to return the performance metrics in a more usable format:
 
 ```{r}
 #| echo: true
@@ -1085,9 +1172,13 @@ rf_res %>% tune::collect_predictions()
 val_res %>% tune::collect_metrics()
 ```
 
+What is collected are the resampling estimates averaged over the individual replicates. To get the metrics for each resample, use the option `summarize = FALSE`.
+
 ## Tidymodels: parallelism
 
 The models created during resampling are independent of one another and can be processed in parallel across processors on the same computer.
+
+The code below determines the number of of possible worker processes.
 
 ```{r}
 #| echo: true
@@ -1102,6 +1193,10 @@ parallel::detectCores(logical = FALSE)
 parallel::detectCores(logical = TRUE)
 
 ```
+
+## Tidymodels: parallelism
+
+For `fit_resamples()` and other functions in tune, parallel processing occurs when the user registers a parallel backend package. These R packages define how to execute parallel processing.
 
 ## Recap
 
