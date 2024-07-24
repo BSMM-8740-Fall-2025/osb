@@ -421,7 +421,7 @@ derived from Max Kuhn (RStudio)
 <h2>Today’s Outline</h2>
 <ul>
 <li>We’ll review the R model formula approach to model specification,</li>
-<li>We’ll introducte data pre-processing and design/model matrix generation with the <code>Recipes</code> package, and</li>
+<li>We’ll introducte data pre-processing and design/model matrix generation with the <code>recipes</code> package, and</li>
 <li>We’ll show how using recipes will facilitate developing feature engineering workflows that can be applied to multiple datasets (e.g.&nbsp;train and test as well as cross-validation<sup>1</sup> datasets)</li>
 </ul>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Cross-validation is a resampling method that uses different portions of the data to test and train a model on different iterations.</p></li></ol></aside></section>
@@ -465,7 +465,7 @@ derived from Max Kuhn (RStudio)
 <span id="cb2-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="upmtvuzzyl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="dvmskgduug" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
@@ -766,7 +766,7 @@ derived from Max Kuhn (RStudio)
 <span id="cb17-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">%&gt;%</span> </span>
 <span id="cb17-8"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="chxqrbfeeu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="bkenmthrri" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
@@ -903,10 +903,10 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 4 × 6
   number operation type        trained skip  id               
    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;       &lt;lgl&gt;   &lt;lgl&gt; &lt;chr&gt;            
-1      1 step      impute_mean TRUE    FALSE impute_mean_XiqXv
-2      2 step      impute_knn  TRUE    FALSE impute_knn_DgI0x 
-3      3 step      center      TRUE    FALSE center_zMGGP     
-4      4 step      scale       TRUE    FALSE scale_srtP7      </code></pre>
+1      1 step      impute_mean TRUE    FALSE impute_mean_MkQQh
+2      2 step      impute_knn  TRUE    FALSE impute_knn_zodHR 
+3      3 step      center      TRUE    FALSE center_U1mlP     
+4      4 step      scale       TRUE    FALSE scale_JzxDV      </code></pre>
 </div>
 </div>
 </section>
@@ -919,10 +919,10 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 4 × 3
   terms value id          
   &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;       
-1 Wind   9.61 center_zMGGP
-2 Temp  78.3  center_zMGGP
-3 Month  7.01 center_zMGGP
-4 Day   16.2  center_zMGGP</code></pre>
+1 Wind  10.1  center_U1mlP
+2 Temp  77.6  center_U1mlP
+3 Month  6.91 center_U1mlP
+4 Day   16.5  center_U1mlP</code></pre>
 </div>
 </div>
 </section>
@@ -934,6 +934,21 @@ derived from Max Kuhn (RStudio)
 <span id="cb28-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Ozone, <span class="at">new_role =</span> <span class="st">'outcome'</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb28-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Solar.R, <span class="at">new_role =</span> <span class="st">'predictor'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="recommended-baseline-steps" class="slide level2">
+<h2>Recommended Baseline Steps</h2>
+<p>Baseline preprocessing methods can be categorized as:</p>
+<div style="font-size: xx-large">
+<ul>
+<li><strong>dummy</strong>: Do qualitative predictors require a numeric encoding (e.g., via dummy variables or other methods)?</li>
+<li><strong>zv</strong>: Should columns with a single unique value be removed?</li>
+<li><strong>impute</strong>: If some predictors are missing, should they be estimated via imputation?</li>
+<li><strong>decorrelate</strong>: If there are correlated predictors, should this correlation be mitigated? This might mean filtering out predictors, using principal component analysis, or a model-based technique (e.g., regularization).</li>
+<li><strong>normalize</strong>: Should predictors be centered and scaled?</li>
+<li><strong>transform</strong>: Is it helpful to transform predictors to be more symmetric?</li>
+</ul>
+</div>
+<p>See <a href="https://www.tmwr.org/pre-proc-table">recommended preprocessing</a> for recipe steps.</p>
 </section>
 <section id="available-steps" class="slide level2">
 <h2>Available Steps</h2>
@@ -1084,16 +1099,16 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 54 × 3
    terms                value id              
    &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;           
- 1 AngleCh1             0.806 YeoJohnson_lXIo1
- 2 AreaCh1             -0.861 YeoJohnson_lXIo1
- 3 AvgIntenCh1         -0.340 YeoJohnson_lXIo1
- 4 AvgIntenCh2          0.434 YeoJohnson_lXIo1
- 5 AvgIntenCh3          0.219 YeoJohnson_lXIo1
- 6 AvgIntenCh4          0.213 YeoJohnson_lXIo1
- 7 DiffIntenDensityCh1 -0.929 YeoJohnson_lXIo1
- 8 DiffIntenDensityCh3  0.116 YeoJohnson_lXIo1
- 9 DiffIntenDensityCh4  0.112 YeoJohnson_lXIo1
-10 EntropyIntenCh1     -0.440 YeoJohnson_lXIo1
+ 1 AngleCh1             0.806 YeoJohnson_xyKY3
+ 2 AreaCh1             -0.861 YeoJohnson_xyKY3
+ 3 AvgIntenCh1         -0.340 YeoJohnson_xyKY3
+ 4 AvgIntenCh2          0.434 YeoJohnson_xyKY3
+ 5 AvgIntenCh3          0.219 YeoJohnson_xyKY3
+ 6 AvgIntenCh4          0.213 YeoJohnson_xyKY3
+ 7 DiffIntenDensityCh1 -0.929 YeoJohnson_xyKY3
+ 8 DiffIntenDensityCh3  0.116 YeoJohnson_xyKY3
+ 9 DiffIntenDensityCh4  0.112 YeoJohnson_xyKY3
+10 EntropyIntenCh1     -0.440 YeoJohnson_xyKY3
 # ℹ 44 more rows</code></pre>
 </div>
 </div>
@@ -1105,16 +1120,16 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 58 × 3
    terms                    value id          
    &lt;chr&gt;                    &lt;dbl&gt; &lt;chr&gt;       
- 1 AngleCh1                45.0   center_8SlXn
- 2 AreaCh1                  1.15  center_8SlXn
- 3 AvgIntenCh1              2.24  center_8SlXn
- 4 AvgIntenCh2             17.4   center_8SlXn
- 5 AvgIntenCh3              6.99  center_8SlXn
- 6 AvgIntenCh4              7.56  center_8SlXn
- 7 ConvexHullAreaRatioCh1   1.21  center_8SlXn
- 8 ConvexHullPerimRatioCh1  0.893 center_8SlXn
- 9 DiffIntenDensityCh1      1.05  center_8SlXn
-10 DiffIntenDensityCh3      5.15  center_8SlXn
+ 1 AngleCh1                45.0   center_t2Q3m
+ 2 AreaCh1                  1.15  center_t2Q3m
+ 3 AvgIntenCh1              2.24  center_t2Q3m
+ 4 AvgIntenCh2             17.4   center_t2Q3m
+ 5 AvgIntenCh3              6.99  center_t2Q3m
+ 6 AvgIntenCh4              7.56  center_t2Q3m
+ 7 ConvexHullAreaRatioCh1   1.21  center_t2Q3m
+ 8 ConvexHullPerimRatioCh1  0.893 center_t2Q3m
+ 9 DiffIntenDensityCh1      1.05  center_t2Q3m
+10 DiffIntenDensityCh3      5.15  center_t2Q3m
 # ℹ 48 more rows</code></pre>
 </div>
 </div>
@@ -1126,16 +1141,16 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 58 × 3
    terms                      value id         
    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt;      
- 1 AngleCh1                21.1     scale_Me0aP
- 2 AreaCh1                  0.00334 scale_Me0aP
- 3 AvgIntenCh1              0.204   scale_Me0aP
- 4 AvgIntenCh2              9.42    scale_Me0aP
- 5 AvgIntenCh3              2.50    scale_Me0aP
- 6 AvgIntenCh4              3.04    scale_Me0aP
- 7 ConvexHullAreaRatioCh1   0.210   scale_Me0aP
- 8 ConvexHullPerimRatioCh1  0.0777  scale_Me0aP
- 9 DiffIntenDensityCh1      0.00929 scale_Me0aP
-10 DiffIntenDensityCh3      1.37    scale_Me0aP
+ 1 AngleCh1                21.1     scale_x4O89
+ 2 AreaCh1                  0.00334 scale_x4O89
+ 3 AvgIntenCh1              0.204   scale_x4O89
+ 4 AvgIntenCh2              9.42    scale_x4O89
+ 5 AvgIntenCh3              2.50    scale_x4O89
+ 6 AvgIntenCh4              3.04    scale_x4O89
+ 7 ConvexHullAreaRatioCh1   0.210   scale_x4O89
+ 8 ConvexHullPerimRatioCh1  0.0777  scale_x4O89
+ 9 DiffIntenDensityCh1      0.00929 scale_x4O89
+10 DiffIntenDensityCh3      1.37    scale_x4O89
 # ℹ 48 more rows</code></pre>
 </div>
 </div>
@@ -1263,16 +1278,16 @@ derived from Max Kuhn (RStudio)
 <pre><code># A tibble: 3,364 × 4
    terms                      value component id       
    &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    
- 1 AngleCh1                 0.00521 PC1       pca_AWkpg
- 2 AreaCh1                  0.0823  PC1       pca_AWkpg
- 3 AvgIntenCh1             -0.204   PC1       pca_AWkpg
- 4 AvgIntenCh2             -0.209   PC1       pca_AWkpg
- 5 AvgIntenCh3             -0.0873  PC1       pca_AWkpg
- 6 AvgIntenCh4             -0.203   PC1       pca_AWkpg
- 7 ConvexHullAreaRatioCh1   0.191   PC1       pca_AWkpg
- 8 ConvexHullPerimRatioCh1 -0.181   PC1       pca_AWkpg
- 9 DiffIntenDensityCh1     -0.185   PC1       pca_AWkpg
-10 DiffIntenDensityCh3     -0.0760  PC1       pca_AWkpg
+ 1 AngleCh1                 0.00521 PC1       pca_AXbdX
+ 2 AreaCh1                  0.0823  PC1       pca_AXbdX
+ 3 AvgIntenCh1             -0.204   PC1       pca_AXbdX
+ 4 AvgIntenCh2             -0.209   PC1       pca_AXbdX
+ 5 AvgIntenCh3             -0.0873  PC1       pca_AXbdX
+ 6 AvgIntenCh4             -0.203   PC1       pca_AXbdX
+ 7 ConvexHullAreaRatioCh1   0.191   PC1       pca_AXbdX
+ 8 ConvexHullPerimRatioCh1 -0.181   PC1       pca_AXbdX
+ 9 DiffIntenDensityCh1     -0.185   PC1       pca_AXbdX
+10 DiffIntenDensityCh3     -0.0760  PC1       pca_AXbdX
 # ℹ 3,354 more rows</code></pre>
 </div>
 </div>

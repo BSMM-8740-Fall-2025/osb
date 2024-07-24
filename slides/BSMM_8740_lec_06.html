@@ -386,10 +386,10 @@
     }
   </style>
 <meta property="og:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
+<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
+<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -398,9 +398,9 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-image="images/my-DRAFT.png" data-background-opacity="0.40" data-background-size="contain" class="quarto-title-block center">
+<section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Classification &amp; clustering methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 6]</p>
+  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 6]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -414,7 +414,7 @@ L.L. Odette
 <section id="recap-of-last-week" class="slide level2">
 <h2>Recap of last week</h2>
 <ul>
-<li><p>Last week we introduced the Tidymodels framework in R</p></li>
+<li><p>Last time we introduced the Tidymodels framework in R</p></li>
 <li><p>We showed how we can use the Tidymodels framework to create a workflow for data prep, feature engineering, model fitting and model evaluation.</p></li>
 <li><p>Today we look at the using the Tidymodels package to build classification and clustering models.</p></li>
 </ul>
@@ -454,14 +454,23 @@ L.L. Odette
 <h2>Types of classification</h2>
 <ul>
 <li>Binary classification</li>
-<li>Multi-Class Classification (mutually exclusive)</li>
-<li>Multi-Label Classification (not mutually exclusive)</li>
-<li>Imbalanced Classification</li>
+<li>Multi-Class Classification (mutually exclusive)
+<ul>
+<li><a href="https://juliasilge.com/blog/datasaurus-multiclass/">multiclass</a></li>
+</ul></li>
+<li>Multi-Label Classification (not mutually exclusive)
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Multi-label_classification">multilabel</a></li>
+</ul></li>
+<li>Imbalanced Classification
+<ul>
+<li><a href="https://www.tidymodels.org/learn/models/sub-sampling/">class imbalance</a></li>
+</ul></li>
 </ul>
 </section>
 <section id="binary-logistic-regression" class="slide level2">
 <h2>Binary Logistic Regression</h2>
-<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> takes values in <span class="math inline">\({0,1}\)</span>. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
+<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> takes values in <span class="math inline">\(\{0,1\}\)</span>. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
 <p>Logistic regression is an example of supervised learning.</p>
 </section>
 <section id="binary-logistic-regression-1" class="slide level2">
@@ -476,13 +485,34 @@ L.L. Odette
 </section>
 <section id="binary-logistic-regression-2" class="slide level2">
 <h2>Binary Logistic Regression</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="BSMM_8740_lec_06_files/figure-revealjs/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="font-size: smaller">
+<p><span class="math display">\[\begin{align*}
+\pi &amp; =\frac{1}{1+e^{-\eta}}\;\text{(logistic function)}\\
+\log\left(\frac{\pi}{1-\pi}\right) &amp; =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{1-\frac{1}{1+e^{-\eta}}}\right)\\
+&amp; =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{\frac{e^{-\eta}}{1+e^{-\eta}}}\right)=\log\left(e^{\eta}\right)=\eta
+\end{align*}\]</span></p>
+</div></div>
+</section>
+<section id="binary-logistic-regression-3" class="slide level2">
+<h2>Binary Logistic Regression</h2>
 <p>The term <span class="math inline">\(\frac{\pi}{1-\pi}\)</span> is called the the odds-ratio. By its definition <span class="math inline">\(\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}\)</span></p>
 <p>So if <span class="math inline">\(x_1\)</span> changes by one unit (<span class="math inline">\(x_1\rightarrow x_1+1\)</span>), then the odds ratio changes by <span class="math inline">\(e^{\beta_1}\)</span>.</p>
 </section>
-<section id="classifier-metrics" class="slide level2">
-<h2>Classifier metrics</h2>
+<section id="binary-classifier-metrics" class="slide level2">
+<h2>Binary Classifier metrics</h2>
 <h3 id="confusion-matrix">Confusion matrix</h3>
-<p>The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model:</p>
+<p>The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary):</p>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -493,7 +523,7 @@ L.L. Odette
 </thead>
 <tbody>
 <tr class="odd">
-<td>data =1</td>
+<td>data = 1</td>
 <td>true positives (TP)</td>
 <td>false negatives (FN)<sup>1</sup></td>
 </tr>
@@ -505,8 +535,8 @@ L.L. Odette
 </tbody>
 </table>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Type II error</p></li><li id="fn2"><p>Type I error</p></li></ol></aside></section>
-<section id="classifier-metrics-1" class="slide level2">
-<h2>Classifier metrics</h2>
+<section id="binary-classifier-metrics-1" class="slide level2">
+<h2>Binary Classifier metrics</h2>
 <h3 id="accuracy">Accuracy</h3>
 <p>Accuracy measure the percent of correct predictions:</p>
 <p><span class="math display">\[
@@ -518,8 +548,8 @@ L.L. Odette
 \frac{\text{TP}}{\text{TP}+\text{FP}}
 \]</span></p>
 </section>
-<section id="classifier-metrics-2" class="slide level2">
-<h2>Classifier metrics</h2>
+<section id="binary-classifier-metrics-2" class="slide level2">
+<h2>Binary Classifier metrics</h2>
 <h3 id="recall-sensitivity">Recall / Sensitivity</h3>
 <p>Measures the success at predicting the first class</p>
 <p><span class="math display">\[
@@ -531,24 +561,15 @@ L.L. Odette
 \frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
 \]</span></p>
 </section>
-<section id="classifier-metrics-3" class="slide level2">
-<h2>Classifier metrics</h2>
+<section id="binary-classifier-metrics-3" class="slide level2">
+<h2>Binary Classifier metrics</h2>
 <h3 id="roc-curves">ROC Curves</h3>
-<p>Consider plotting the TPR against the FPR (1-TNR) at different classification thresholds. This is the ROC.</p>
+<p>Consider plotting the TPR against the FPR (1-TNR) <u><strong>at different classification thresholds</strong></u>. This is the ROC.</p>
 <ul>
 <li>the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e.&nbsp;no predictive power)</li>
 <li>our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.</li>
 </ul>
 <p>So, how to compute?</p>
-</section>
-<section id="classifier-metrics-4" class="slide level2">
-<h2>Classifier metrics</h2>
-<h3 id="the-auc-the-area-under-the-roc.">The AUC: the area under the ROC.</h3>
-<p>It turns out the AUC is very easy to compute and gives us the ROC at the same time.</p>
-<ul>
-<li>rank order your data by decreasing positive predicted probability</li>
-<li>against the cumulative percent of negative observations plot the cumulative percent of positive observations</li>
-</ul>
 </section>
 <section id="example-create-the-workflow" class="slide level2">
 <h2>Example: create the workflow</h2>
@@ -590,69 +611,62 @@ L.L. Odette
 <span id="cb2-5"><a></a><span class="sc">&gt;</span> </span>
 <span id="cb2-6"><a></a><span class="er">&gt;</span> <span class="co"># augment the data with the predictions using the model fit</span></span>
 <span id="cb2-7"><a></a><span class="er">&gt;</span> training_results <span class="ot">&lt;-</span> </span>
-<span id="cb2-8"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit , default_train) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-8"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit , default_train) </span>
+<span id="cb2-9"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb2-10"><a></a><span class="er">&gt;</span> training_results <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+  .pred_class .pred_No .pred_Yes default student balance income
+  &lt;fct&gt;          &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+1 No             0.998  0.00164  No      No         759. 45774.
+2 No             1.00   0.000145 No      Yes        452. 19923.
+3 No             0.770  0.230    Yes     No        1666. 30070.
+4 No             1.00   0.000256 No      No         434. 57146.
+5 No             1.00   0.000449 No      No         536. 32994.
+6 No             0.973  0.0269   No      No        1252. 32721.</code></pre>
+</div>
 </div>
 </section>
 <section id="example-compute-the-auc" class="slide level2">
 <h2>Example: compute the AUC</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="sc">&gt;</span> auc_roc_tbl <span class="ot">&lt;-</span> training_results <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a></a><span class="sc">+</span>   <span class="co"># order prediction probability from high to low</span></span>
-<span id="cb3-3"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">arrange</span>( <span class="fu">desc</span>(.pred_Yes) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-4"><a></a><span class="sc">+</span>   <span class="co"># make new variable for cumulative % of 'Yes' category</span></span>
-<span id="cb3-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>( </span>
-<span id="cb3-6"><a></a><span class="sc">+</span>     <span class="co"># scale to percent (# of all 'Yes' categories)</span></span>
-<span id="cb3-7"><a></a><span class="sc">+</span>     <span class="at">y =</span> <span class="fu">ifelse</span>(default <span class="sc">==</span> <span class="st">"Yes"</span>, <span class="dv">1</span><span class="sc">/</span><span class="fu">sum</span>(default <span class="sc">==</span> <span class="st">"Yes"</span>),<span class="dv">0</span>)</span>
-<span id="cb3-8"><a></a><span class="sc">+</span>     <span class="co"># accumulate the values</span></span>
-<span id="cb3-9"><a></a><span class="sc">+</span>     , <span class="at">y =</span> <span class="fu">cumsum</span>(y)</span>
-<span id="cb3-10"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-11"><a></a><span class="sc">+</span>   <span class="co"># keep the 'No' category values</span></span>
-<span id="cb3-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(default <span class="sc">==</span> <span class="st">"No"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-13"><a></a><span class="sc">+</span>   <span class="co"># number rows &amp; scale to % of total; compute incremental areas</span></span>
-<span id="cb3-14"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-15"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb3-16"><a></a><span class="sc">+</span>     <span class="at">auc_inc =</span> y <span class="sc">/</span> <span class="fu">max</span>(ID) <span class="co"># multiply the height by the width</span></span>
-<span id="cb3-17"><a></a><span class="sc">+</span>     , <span class="at">ID =</span> ID <span class="sc">/</span> <span class="fu">max</span>(ID)   <span class="co"># scale to percent (# of all 'No' categories)</span></span>
-<span id="cb3-18"><a></a><span class="sc">+</span>   ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(</span>
+<span id="cb4-3"><a></a><span class="sc">+</span>     <span class="at">truth =</span> default</span>
+<span id="cb4-4"><a></a><span class="sc">+</span>     , .pred_No</span>
+<span id="cb4-5"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>() <span class="sc">+</span> </span>
+<span id="cb4-7"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="BSMM_8740_lec_06_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
 </div>
-</section>
-<section id="example-plot-the-roc" class="slide level2">
-<h2>Example: plot the ROC</h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="sc">&gt;</span> auc_roc_tbl <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ID, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb4-3"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb4-4"><a></a><span class="sc">+</span>   <span class="co"># xlim(c(0,1)) +</span></span>
-<span id="cb4-5"><a></a><span class="sc">+</span>   <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb4-6"><a></a><span class="sc">+</span>     <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
-<span id="cb4-7"><a></a><span class="sc">+</span>     <span class="fu">labs</span>(</span>
-<span id="cb4-8"><a></a><span class="sc">+</span>       <span class="at">title =</span> <span class="st">"ROC curve for load default prediction"</span>,</span>
-<span id="cb4-9"><a></a><span class="sc">+</span>       <span class="at">subtitle =</span> </span>
-<span id="cb4-10"><a></a><span class="sc">+</span>         stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"Logistic Regression AUC = {scales::label_number(accuracy = 10^-7)(sum(auc_roc_tbl$auc_inc) )}"</span>)</span>
-<span id="cb4-11"><a></a><span class="sc">+</span>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-</section>
-<section id="example-yardstick" class="slide level2">
-<h2>Example: yardstick</h2>
+</div>
+</div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(.pred_No, <span class="at">truth =</span> default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a></a><span class="sc">+</span>    yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(</span>
+<span id="cb5-3"><a></a><span class="sc">+</span>      <span class="at">truth =</span> default</span>
+<span id="cb5-4"><a></a><span class="sc">+</span>      , .pred_No</span>
+<span id="cb5-5"><a></a><span class="sc">+</span>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.949</code></pre>
 </div>
-</section>
-<section id="example-yardstick-1" class="slide level2">
-<h2>Example: yardstick</h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(.pred_No, <span class="at">truth =</span> default) <span class="sc">%&gt;%</span> <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
-</section>
-<section id="other-classification-methods" class="slide level2">
-<h2>Other Classification Methods</h2>
+</div></div>
+</section></section>
+<section>
+<section id="other-classification-methods" class="title-slide slide level1 center">
+<h1>Other Classification Methods</h1>
+
 </section>
 <section id="naive-bayes-classification" class="slide level2">
 <h2>Naive Bayes Classification</h2>
@@ -729,14 +743,23 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> training_results_nb <span class="sc">%&gt;%</span> </span>
 <span id="cb8-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(.pred_No, <span class="at">truth =</span> default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 roc_auc binary         0.942</code></pre>
+</div>
 </div>
 </div>
 <div id="tabset-1-2">
 <div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="sc">&gt;</span> training_results_nb <span class="sc">%&gt;%</span> yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(.pred_No, <span class="at">truth =</span> default) <span class="sc">%&gt;%</span> <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="BSMM_8740_lec_06_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -769,7 +792,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <h2>KNN Classification: algorithm</h2>
 <ol type="1">
 <li>Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.</li>
-<li>Calculate the distance between that point and all the points in the training set.</li>
+<li>Calculate the distance between the point you want to classify and all the points in the training set.</li>
 <li>Select the K nearest neighbors based on the distances calculated.</li>
 <li>Assign the label of the majority class to the new data point.</li>
 <li>Repeat steps 2 to 4 for all the data points in the test set.</li>
@@ -777,19 +800,55 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </section>
 <section id="knn-classification-model" class="slide level2">
 <h2>KNN Classification: model</h2>
+<p>Our classification workflow only differs by the model, e.g.:</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="sc">&gt;</span> default_model_knn <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">nearest_neighbor</span>(<span class="at">neighbors =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb10-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"kknn"</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb10-3"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>k-NN regression</strong></p>
+</div>
+<div class="callout-content">
+<p>To use k-NN for a regression problem, calculate the mean or median (or another aggregate measure) of the dependent variable among the k neighbors.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="knn-classification-metrics" class="slide level2">
+<h2>KNN Classification: metrics</h2>
+<p>In the context of k-Nearest Neighbors (kNN) classification, while the general evaluation metrics like accuracy, precision, recall, F1 score, and others are commonly used, there are no unique metrics that are exclusively specific to kNN. However, there are certain considerations and additional analyses that are particularly relevant when evaluating a kNN model.</p>
+</section>
+<section id="knn-classification-metrics-1" class="slide level2">
+<h2>KNN Classification: metrics</h2>
+<div style="font-size: smaller">
+<ol type="1">
+<li><p><strong>Choice of k (Number of Neighbors):</strong> The value of k affects the performance of a kNN model. Testing the model with various values of k and evaluating the performance using standard metrics (like accuracy, F1 score) can to select the best k.</p></li>
+<li><p><strong>Feature Scaling Sensitivity:</strong> kNN is sensitive to the scale of the features because it relies on calculating distances. Evaluate the model’s performance before and after feature scaling (like Min-Max scaling or Z-score normalization)</p></li>
+<li><p><strong>Curse of Dimensionality:</strong> kNN can perform poorly with high-dimensional data (many features). Evaluating the model’s performance in relation to the number of features (dimensionality) can be important. Dimensionality reduction techniques like PCA might be used with kNN.</p></li>
+</ol>
 </div>
 </section>
 <section id="support-vector-machine-classification" class="slide level2">
 <h2>Support Vector Machine Classification</h2>
 <p>The SVM assumes a training set of the form <span class="math inline">\((x_1,y_1),\ldots,(x_n,y_n)\)</span> where the <span class="math inline">\(y_i\)</span> are either <span class="math inline">\(-1\)</span> or <span class="math inline">\(1\)</span>, indicating the class to which each <span class="math inline">\(x_i\)</span> belongs.</p>
-<p>The SVM algorithm looks to find the <strong>maaximum-margin hyperplane</strong> that divides the group of points <span class="math inline">\(x_i\)</span> for which <span class="math inline">\(y_1=-1\)</span> from the group for which <span class="math inline">\(Y_1=1\)</span>, such that the distance between the hyperplane and the nearest point <span class="math inline">\(x_i\)</span> from either group is maximized</p>
+<p>The SVM algorithm looks to find the <strong>maximum-margin hyperplane</strong> that divides the group of points <span class="math inline">\(x_i\)</span> for which <span class="math inline">\(y_1=-1\)</span> from the group for which <span class="math inline">\(Y_1=1\)</span>, such that the distance between the hyperplane and the nearest point <span class="math inline">\(x_i\)</span> from either group is maximized.</p>
+</section>
+<section id="svm-classification" class="slide level2">
+<h2>SVM Classification</h2>
+<h3 id="basic-concepts">Basic Concepts</h3>
+<div style="font-size: smaller">
+<ol type="1">
+<li><strong>Separating Hyperplane:</strong> The core idea of SVM is to find a hyperplane (in two-dimensional space, this would be a line) that best separates the classes in the feature space.</li>
+<li><strong>Support Vectors:</strong> Support vectors are the data points that are closest to the separating hyperplane. These points are critical in defining the position and orientation of the hyperplane.</li>
+<li><strong>Margin:</strong> The algorithm aims to maximize the margin, which is the distance between the hyperplane and the nearest points from both classes. A larger margin is considered better as it may lead to lower generalization error of the classifier.</li>
+</ol>
+</div>
 </section>
 <section id="svm-classification-large-margin" class="slide level2">
 <h2>SVM Classification: large margin</h2>
@@ -800,12 +859,12 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </figure>
 </div>
 </section>
-<section id="svm-classification" class="slide level2">
+<section id="svm-classification-1" class="slide level2">
 <h2>SVM Classification:</h2>
 <div class="columns">
 <div class="column" style="font-size: smaller">
 <ul>
-<li><p>Let our decision boundary be given by <span class="math inline">\(f\left(x\right)=w^{\top}x+w_{0}\)</span>, for a vector <span class="math inline">\(w\)</span> perpendicular to the boundary.</p></li>
+<li><p>Let our decision boundary be given by <span class="math inline">\(f\left(x\right)=w^{\top}x+w_{0}=0\)</span>, for a vector <span class="math inline">\(w\)</span> perpendicular to the boundary<sup>1</sup>.</p></li>
 <li><p>We can express any point as <span class="math inline">\(x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }\)</span></p></li>
 <li><p>Note that <span class="math inline">\(f\left(x\right)=\left(w^{\top}x_{\bot}+w_{0}\right)+r\left\Vert w\right\Vert\)</span></p></li>
 </ul>
@@ -816,8 +875,8 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </figure>
 </div>
 </div></div>
-</section>
-<section id="svm-classification-1" class="slide level2">
+<aside><ol class="aside-footnotes"><li id="fn3"><p>any point <span class="math inline">\(x\)</span> on the red line satisfies <span class="math inline">\(w^\top x+w_0=0\)</span></p></li></ol></aside></section>
+<section id="svm-classification-2" class="slide level2">
 <h2>SVM Classification:</h2>
 <div class="columns">
 <div class="column" style="font-size: smaller">
@@ -834,7 +893,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </div>
 </div></div>
 </section>
-<section id="svm-classification-2" class="slide level2">
+<section id="svm-classification-3" class="slide level2">
 <h2>SVM Classification:</h2>
 <p>It is common to scale the vector <span class="math inline">\(w\)</span> and the offset <span class="math inline">\(w_0\)</span> such that <span class="math inline">\(f_n\hat{y}_n=1\)</span> for the point nearest the decision boundary, such that <span class="math inline">\(f_n\hat{y}_n\ge1\)</span> for all <span class="math inline">\(n\)</span>.</p>
 <p>In addition, since minimizing <span class="math inline">\(1/ \left\Vert w\right\Vert\)</span> is equivalent to minimizing <span class="math inline">\(\left\Vert w\right\Vert^2\)</span>, we can state the objective as</p>
@@ -842,7 +901,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 \min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
 \]</span></p>
 </section>
-<section id="svm-classification-3" class="slide level2">
+<section id="svm-classification-4" class="slide level2">
 <h2>SVM Classification:</h2>
 <div class="columns">
 <div class="column" style="font-size: smaller">
@@ -911,6 +970,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </section>
 <section id="clustering-applications" class="slide level2">
 <h2>Clustering Applications</h2>
+<div style="font-size: 70%">
 <ol type="1">
 <li><strong>Market Segmentation:</strong>&nbsp;Cluster analysis is often used in marketing to segment customers into groups based on their buying behavior, demographics, or other characteristics.</li>
 <li><strong>Image Processing:</strong>&nbsp;In image processing, cluster analysis is used to group pixels with similar properties together, allowing for the identification of objects and patterns in images.</li>
@@ -918,6 +978,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <li><strong>Social Network Analysis:</strong>&nbsp;In social network analysis, cluster analysis is used to group individuals with similar social connections and characteristics together, allowing for the identification of subgroups within a larger network.</li>
 <li><strong>Anomaly Detection:</strong>&nbsp;Cluster analysis can be used to detect anomalies in data, such as fraudulent financial transactions, unusual patterns in network traffic, or outliers in medical data.</li>
 </ol>
+</div>
 </section>
 <section id="k-means-clustering" class="slide level2">
 <h2>K-means Clustering</h2>
@@ -930,7 +991,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p>The basic k-means algorithm has the following steps.</p>
 <ol type="1">
 <li>pick the number of clusters k</li>
-<li>Choose <em>k</em> random observations in the dataset. These locations in space are declared to be the <strong>initial centroids</strong>.</li>
+<li>Choose <em>k</em> observations in the dataset. These locations in space are declared to be the <strong>initial centroids</strong>.</li>
 <li>Assign each observation to the nearest <strong>centroid</strong>.</li>
 <li>Compute the new <strong>centroids</strong> of each cluster.</li>
 <li>Repeat steps 3 and 4 until the <strong>centroids</strong> do not change.</li>
@@ -954,161 +1015,49 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
-<span id="cb12-2"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb12-3"><a></a><span class="er">&gt;</span> centers <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb12-4"><a></a><span class="sc">+</span>   <span class="at">cluster =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>), </span>
-<span id="cb12-5"><a></a><span class="sc">+</span>   <span class="at">num_points =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">50</span>, <span class="dv">90</span>),  <span class="co"># number points in each cluster</span></span>
-<span id="cb12-6"><a></a><span class="sc">+</span>   <span class="at">x1 =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">4</span>),              <span class="co"># x1 coordinate of cluster center</span></span>
-<span id="cb12-7"><a></a><span class="sc">+</span>   <span class="at">x2 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="fl">1.5</span>)               <span class="co"># x2 coordinate of cluster center</span></span>
-<span id="cb12-8"><a></a><span class="sc">+</span> )</span>
-<span id="cb12-9"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb12-10"><a></a><span class="er">&gt;</span> labelled_points <span class="ot">&lt;-</span> </span>
-<span id="cb12-11"><a></a><span class="sc">+</span>   centers <span class="sc">%&gt;%</span></span>
-<span id="cb12-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb12-13"><a></a><span class="sc">+</span>     <span class="at">x1 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x1, rnorm),</span>
-<span id="cb12-14"><a></a><span class="sc">+</span>     <span class="at">x2 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x2, rnorm)</span>
-<span id="cb12-15"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
-<span id="cb12-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>num_points) <span class="sc">%&gt;%</span> </span>
-<span id="cb12-17"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(x1, x2))</span>
-<span id="cb12-18"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb12-19"><a></a><span class="er">&gt;</span> <span class="fu">ggplot</span>(labelled_points, <span class="fu">aes</span>(x1, x2, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
-<span id="cb12-20"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12" data-code-line-numbers="1-3|5-10|11-12|14-22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe for 2-D clustering</span></span>
+<span id="cb12-2"><a></a><span class="er">&gt;</span> cluster_recipe <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> .)</span>
+<span id="cb12-4"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb12-5"><a></a><span class="er">&gt;</span> <span class="co"># specify the workflows</span></span>
+<span id="cb12-6"><a></a><span class="er">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
+<span id="cb12-7"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
+<span id="cb12-8"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> cluster_recipe),</span>
+<span id="cb12-9"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
+<span id="cb12-10"><a></a><span class="sc">+</span>   )</span>
+<span id="cb12-11"><a></a><span class="sc">&gt;</span> <span class="co"># create bootstrap samples</span></span>
+<span id="cb12-12"><a></a><span class="er">&gt;</span> dat_resamples <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-13"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb12-14"><a></a><span class="er">&gt;</span> tuned_results <span class="ot">&lt;-</span></span>
+<span id="cb12-15"><a></a><span class="sc">+</span>    all_workflows <span class="sc">%&gt;%</span> </span>
+<span id="cb12-16"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
+<span id="cb12-17"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
+<span id="cb12-18"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> dat_resamples</span>
+<span id="cb12-19"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
+<span id="cb12-20"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
+<span id="cb12-21"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
+<span id="cb12-22"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> <span class="co"># penguins &lt;- modeldata::penguins</span></span>
-<span id="cb13-2"><a></a><span class="er">&gt;</span> <span class="co"># </span></span>
-<span id="cb13-3"><a></a><span class="er">&gt;</span> <span class="co"># labelled_points &lt;- penguins %&gt;%</span></span>
-<span id="cb13-4"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::select(bill_length_mm, bill_depth_mm) %&gt;%</span></span>
-<span id="cb13-5"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::drop_na() %&gt;%</span></span>
-<span id="cb13-6"><a></a><span class="er">&gt;</span> <span class="co">#   # shuffle rows</span></span>
-<span id="cb13-7"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::slice_sample( n = nrow(penguins) )</span></span>
-<span id="cb13-8"><a></a><span class="er">&gt;</span> </span>
-<span id="cb13-9"><a></a><span class="er">&gt;</span> <span class="co"># create recipe</span></span>
-<span id="cb13-10"><a></a><span class="er">&gt;</span> labelled_points_recipe <span class="ot">&lt;-</span> labelled_points <span class="sc">%&gt;%</span> </span>
-<span id="cb13-11"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> .)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="sc">&gt;</span> labelled_points</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> kmeans_spec <span class="ot">&lt;-</span> tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> <span class="dv">3</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="sc">&gt;</span> wflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb16-2"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(kmeans_spec) <span class="sc">%&gt;%</span></span>
-<span id="cb16-3"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(labelled_points_recipe)</span>
-<span id="cb16-4"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb16-5"><a></a><span class="er">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
-<span id="cb16-6"><a></a><span class="sc">&gt;</span> labelled_points_resamples <span class="ot">&lt;-</span> labelled_points <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> wflow <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(labelled_points) <span class="sc">%&gt;%</span> </span>
-<span id="cb17-3"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="sc">&gt;</span> wflow <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(labelled_points) <span class="sc">%&gt;%</span> tidyclust<span class="sc">::</span><span class="fu">extract_centroids</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- all_workflows %&gt;% </span></span>
-<span id="cb19-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_map(</span></span>
-<span id="cb19-3"><a></a><span class="er">&gt;</span> <span class="co">#     resamples = train_resamples, grid = 5, verbose = TRUE</span></span>
-<span id="cb19-4"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- </span></span>
-<span id="cb20-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_set(</span></span>
-<span id="cb20-3"><a></a><span class="er">&gt;</span> <span class="co">#     preproc = list(base = labelled_points_recipe),</span></span>
-<span id="cb20-4"><a></a><span class="er">&gt;</span> <span class="co">#     models = </span></span>
-<span id="cb20-5"><a></a><span class="er">&gt;</span> <span class="co">#       3:20 %&gt;% purrr::map( ~tidyclust::k_means( num_clusters = .x ) )</span></span>
-<span id="cb20-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- all_workflows %&gt;% </span></span>
-<span id="cb21-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_map(</span></span>
-<span id="cb21-3"><a></a><span class="er">&gt;</span> <span class="co">#     verbose = TRUE                # enable logging</span></span>
-<span id="cb21-4"><a></a><span class="er">&gt;</span> <span class="co">#     , fn = "tune_cluster"</span></span>
-<span id="cb21-5"><a></a><span class="er">&gt;</span> <span class="co">#     , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()</span></span>
-<span id="cb21-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows %&gt;% </span></span>
-<span id="cb22-2"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::select(wflow_id,result) %&gt;% </span></span>
-<span id="cb22-3"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(result) %&gt;% </span></span>
-<span id="cb22-4"><a></a><span class="er">&gt;</span> <span class="co">#   tidyr::unnest(.metrics) %&gt;% </span></span>
-<span id="cb22-5"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::filter(.metric == 'sse_total') %&gt;% </span></span>
-<span id="cb22-6"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::group_by(wflow_id) %&gt;% </span></span>
-<span id="cb22-7"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::arrange(desc(.estimate) ) %&gt;% </span></span>
-<span id="cb22-8"><a></a><span class="er">&gt;</span> <span class="co">#   dplyr::slice(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
-<span id="cb23-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
-<span id="cb23-3"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> labelled_points_recipe),</span>
-<span id="cb23-4"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
-<span id="cb23-5"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb24-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_map</span>(</span>
-<span id="cb24-3"><a></a><span class="sc">+</span>     <span class="at">verbose =</span> <span class="cn">TRUE</span>                <span class="co"># enable logging</span></span>
-<span id="cb24-4"><a></a><span class="sc">+</span>     , <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
-<span id="cb24-5"><a></a><span class="sc">+</span>     , <span class="at">resamples =</span> labelled_points_resamples <span class="co"># a parameter passed to tune::tune_grid()</span></span>
-<span id="cb24-6"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> workflowsets<span class="sc">::</span><span class="fu">rank_results</span>(<span class="at">select_best =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb26-2"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(wflow_id,result) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(result) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-4"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(.metrics) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">'sse_within_total'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-6"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(wflow_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-7"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(.estimate) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-8"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="sc">&gt;</span> tune_results <span class="ot">&lt;-</span></span>
-<span id="cb27-2"><a></a><span class="sc">+</span>    all_workflows <span class="sc">%&gt;%</span> </span>
-<span id="cb27-3"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
-<span id="cb27-4"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
-<span id="cb27-5"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> labelled_points_resamples</span>
-<span id="cb27-6"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
-<span id="cb27-7"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
-<span id="cb27-8"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
-<span id="cb27-9"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="hierarchical-clustering" class="slide level2">
 <h2>Hierarchical Clustering</h2>
-<p><em>Hierarchical Clustering</em>, sometimes called <em>Agglomerative Clustering</em>, is a method of <em>unsupervised</em> learning that produces a <em>dendrogram</em>, which can be used to partition observations into clusters.</p>
-</section>
-<section id="tidymodels" class="slide level2">
-<h2>Tidymodels</h2>
-<h3 id="key-components-of-tidymodels">Key Components of Tidymodels</h3>
+<p><em>Hierarchical Clustering</em>, sometimes called <em>Agglomerative Clustering</em>, is a method of <em>unsupervised</em> learning that produces a <em>dendrogram</em>, which can be used to partition observations into clusters (see <a href="https://tidyclust.tidymodels.org/articles/hier_clust.html">tidyclust</a>)</p>
+<p>For other clustering algorithms, see</p>
+<div style="font-size: 80%">
 <ul>
-<li>Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.</li>
-<li>Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.</li>
+<li>DBSCAN (Density-Based Spatial Clustering of Applications with Noise)</li>
+<li>Mean Shift Clustering</li>
+<li>Spectral Clustering</li>
+</ul>
+</div>
+</section>
+<section id="clustering-general-considerations" class="slide level2">
+<h2>Clustering: General Considerations</h2>
+<ul>
+<li><p><strong>Feature Scaling:</strong> Most clustering algorithms benefit from feature scaling.</p></li>
+<li><p><strong>Choosing the Right Algorithm:</strong> Depends on the size, dimensionality of data, and the nature of the clusters.</p></li>
+<li><p><strong>Evaluation:</strong> Since clustering is unsupervised, evaluating the results can be subjective and is often based on domain knowledge.</p></li>
 </ul>
 </section>
 <section id="more" class="slide level2">
@@ -1120,14 +1069,14 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
 <ul>
-<li><p>In this section we have worked with the <code>tidymodels</code> package to build a workflow that facilitates building and evaluating multiple models.</p></li>
-<li><p>Combined with the recipes package we now have a complete data modeling framework.</p></li>
+<li><p>We have looked at several classification algorithms in the context of tidymodels workflows.</p></li>
+<li><p>We also looked at clustering and several algorithms in the <code>tidyclust</code> package.</p></li>
 </ul>
 
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1345,6 +1294,44 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

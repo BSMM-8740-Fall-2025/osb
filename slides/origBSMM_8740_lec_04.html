@@ -386,10 +386,10 @@
     }
   </style>
 <meta property="og:title" content="Regression methods – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
+<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="Regression methods – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
+<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -400,7 +400,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Regression methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 4]</p>
+  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 4]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -415,7 +415,7 @@ L.L. Odette
 <h2>Recap of last lecture</h2>
 <ul>
 <li><p>Last time we worked with the <code>recipes</code> package to develop workflows for pre-processing our data.</p></li>
-<li><p>Today we look at regression methods we might apply to understand relationships between measurements in our data.</p></li>
+<li><p>Today we look at regression methods we might apply to our data.</p></li>
 </ul>
 </section>
 <section>
@@ -425,127 +425,67 @@ L.L. Odette
 </section>
 <section id="linear-regression-models" class="slide level2">
 <h2>Linear regression models</h2>
-<p>In the simple linear regression (SLR) model, we have <span class="math inline">\(N\)</span> observations of a single outcome variable <span class="math inline">\(Y\)</span> along with <span class="math inline">\(D\)</span> predictor (aka co-variate) variables <span class="math inline">\(\mathbf{x}\)</span> where the likelihood<sup>1</sup> of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta,\sigma^2\}\)</span>:</p>
+<p>In the simple linear regression model, you have <span class="math inline">\(N\)</span> observations of the response variable <span class="math inline">\(Y\)</span> with a linear combination of <span class="math inline">\(D\)</span> predictor variables <span class="math inline">\(\mathbf{x}\)</span> where</p>
 <p><span class="math display">\[
-\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)
+\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)
 \]</span></p>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>In SLR models we assume a Normal (Gaussian) probability model for the data generation process. For non-Normal data generation processes we use generalized linear models, which we’ll discuss later.</p></li></ol></aside></section>
+</section>
 <section id="linear-regression-models-1" class="slide level2">
 <h2>Linear regression models</h2>
-<p>In the SLR model, <span class="math inline">\(\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)\)</span> is a Normal probability density with mean <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, where <span class="math inline">\(\sigma^2\)</span> is a constant and the mean is a function of the predictors <span class="math inline">\(\mathbf{x}\)</span> and a vector of parameters <span class="math inline">\(\beta\)</span>.</p>
-<p>The mean function <span class="math inline">\(\mu(\mathbf{x};\beta)\)</span> is often assumed to be continuous, i.e.&nbsp;a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g.&nbsp;polynomial functions (like straight lines, parabolas, and more).</p>
-</section>
-<section id="taylor-series" class="slide level2">
-<h2>Taylor Series</h2>
-<p>The decomposition of a function of a single variable <span class="math inline">\(x\)</span> into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:</p>
-<div style="font-size: xx-large">
-<p><span class="math display">\[
-f(x;x_0)=\sum_{n=0}\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
-\]</span></p>
-</div>
-<p>where <span class="math inline">\(\frac{d^nf(x)}{dx^n}|_{x=x_0} \equiv f^{(n)}(x_0) = n!\beta_n\;\rightarrow \beta_n=\frac{1}{n!}f^{(n)}(x_0)\)</span></p>
-</section>
-<section id="taylor-series-1" class="slide level2">
-<h2>Taylor Series</h2>
-<div style="font-size: x-large">
-<p><span class="math display">\[
-f(x;x_0)=\sum_n\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
-\]</span></p>
-</div>
-<p>We can use the following constructive proof to find the coefficients in the series:</p>
-<div style="font-size: x-large">
-<ol type="1">
-<li><span class="math inline">\(0^{th}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f(x_0) = \beta_0\)</span></li>
-<li><span class="math inline">\(1^{st}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f'(x_0) = \beta_1\)</span></li>
-<li><span class="math inline">\(2^{nd}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f''(x_0) = 2\beta_2\)</span></li>
-<li><span class="math inline">\(3^{rd}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f'''(x_0) = 6\beta_3\)</span></li>
-<li><span class="math inline">\(n^{th}\)</span> derivative at <span class="math inline">\(x=x_0\)</span>: <span class="math inline">\(f^{(n)}(x_0) = n!\beta_n\)</span></li>
-</ol>
-</div>
+<p>where <span class="math inline">\(\mathcal{N}\left(\left.y\right|\mu,\sigma^{2}\right)\)</span> is a Normal distribution with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(\theta=\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)\)</span> are the <em>parameters</em> of the model and the vector of parameters <span class="math inline">\(\beta_{1:D}\)</span> are the <em>weights</em> or <em>regression</em> coefficients.</p>
 </section>
 <section id="linear-regression-models-2" class="slide level2">
 <h2>Linear regression models</h2>
-<p>Similarly, when the number of variables is <span class="math inline">\(D=2\)</span> the Taylor series is (writing <span class="math inline">\(f_{x}\equiv\frac{\partial f}{\partial x}\)</span>, <span class="math inline">\(f_{y}\equiv\frac{\partial f}{\partial y}\)</span>, <span class="math inline">\(f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}\)</span> and so on):</p>
-<div style="font-size: xx-large">
+<p>The mean function <span class="math inline">\(f(\mathbf{x})\equiv\mu\)</span> could be any linear function in <span class="math inline">\(\mathbf{x}=(x_1,\ldots,x_m)\)</span> in which case <span class="math inline">\(\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x}\)</span> is a linear approximation around <span class="math inline">\(\beta_{0}\)</span> per the Taylor series for <span class="math inline">\(f(\mathbf{x})\)</span>. When <span class="math inline">\(D=1\)</span> the Taylor series is<sup>1</sup></p>
 <p><span class="math display">\[
-\begin{align*}
-f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{0})(y-y_{0})\\
-&amp; = + \frac{1}{2}f_{x,x}(x_{0},y_{0})(x-x_{0})^{2}+\frac{1}{2}f_{y,y}(x_{0},y_{0})(y-y_{0})^{2}\\
-&amp; = + \frac{1}{2}f_{x,y}(x_{0},y_{0})(x-x_{0})(y-y_{0})+\ldots
-\end{align*}
+f(x)=f(\beta_{0})+f^{(1)}(\beta_{0})(x-\beta_{0})+\frac{1}{2}f^{(2)}(\beta_{0})(x-\beta_{0})^{2}+\ldots
 \]</span></p>
-<p>which decomposes a function of two variables into a sum of simpler functions, e.g.&nbsp;polynomial functions (like 2-D straight lines, parabolas, and more).</p>
-</div>
-</section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>where <span class="math inline">\(\ldots = \sum_{n=3}^{\infty}\frac{1}{n!}f^{(n)}(\beta_{0})(x-\beta_{0})^{n}\)</span></p></li></ol></aside></section>
 <section id="linear-regression-models-3" class="slide level2">
 <h2>Linear regression models</h2>
-<p>For one co-variate, If the mean function is smooth (i.e.&nbsp;not changing rapidly with the co-variate) then <span class="math inline">\(\mu^{(n)}\)</span> will be decreasing in <span class="math inline">\(n\)</span>, and furthermore <span class="math inline">\(\beta_n\)</span> decreases as <span class="math inline">\(1/n!\)</span>, so SLR models in one co-variate typically use only the first two or at most three <span class="math inline">\(\beta\)</span> coefficients.</p>
-<p>Thus the likelihood of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta_0,\beta_1,\sigma^2\}\)</span>:</p>
-<p><span class="math inline">\(\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}\)</span> are the <em>parameters</em> of the model, where <span class="math inline">\(\beta_0\)</span> is a constant and <span class="math inline">\(\beta_1\)</span> is the co-variate <em>weight</em> or <em>regression</em> coefficient.</p>
+<p>When <span class="math inline">\(D=2\)</span> the Taylor series is (writing <span class="math inline">\(f_{x}\equiv\frac{\partial f}{\partial x}\)</span>, <span class="math inline">\(f_{y}\equiv\frac{\partial f}{\partial y}\)</span>, <span class="math inline">\(f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}\)</span> and so on):</p>
+<p><span class="math display">\[
+\begin{align*}
+f(x,y) &amp; =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+f_{y}(\alpha_{0},\beta_{0})(y-\beta_{0})\\
+&amp; = + f_{x,x}(\alpha_{0},\beta_{0})(x-\alpha_{0})^{2}+f_{y,y}(\alpha_{0},\beta_{0})(y-\beta_{0})^{2}\\
+&amp; = + f_{x,y}(\alpha_{0},\beta_{0})(x-\alpha_{0})(y-\beta_{0})+\ldots
+\end{align*}
+\]</span></p>
 </section>
 <section id="linear-regression-models-4" class="slide level2">
 <h2>Linear regression models</h2>
-<p>For multiple co-variates, If the mean function is smooth (i.e.&nbsp;not changing rapidly with the co-variates) then under similar (reasonable) assumptions on the differentials, it is common to see SLR models using only the first order coefficients, i.e.&nbsp;a constant and one coefficient for each co-variate.</p>
-</section>
-<section id="linear-regression-models-5" class="slide level2">
-<h2>Linear regression models</h2>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>It is common to add the unit constant to the covariate vector <span class="math inline">\(x=(1,x_1,x_2,\ldots)\)</span> so that the coefficient vector is <span class="math inline">\(\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)\)</span>, and the model can be expressed as a vector equation: $y=\mathbf{\beta}\cdot \mathbf{x}<sup>1</sup>$$.</p>
-</div>
-</div>
-</div>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>sometime written as <span class="math inline">\(\beta'\mathbf{x}\)</span></p></li></ol></aside></section>
-<section id="linear-regression-models-6" class="slide level2">
-<h2>Linear regression models</h2>
-<p>Recall that the one dimensional Normal/Gaussian probability density (aka likelihood) is:</p>
-<p><span class="math display">\[
-\mathscr{N}\left(x;\mu,\sigma^2\right)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{1}{2}\frac{x-\mu}{\sigma^2}}
-\]</span></p>
-<p>The likelihood of multiple observations is the product of the likelihoods for each observation.</p>
-</section>
-<section id="linear-regression-models-7" class="slide level2">
-<h2>Linear regression models</h2>
-<p>To fit the 1D linear regression model given <span class="math inline">\(N\)</span> data samples, we minimize the negative log-likelihood on the training set.</p>
+<p>To fit the 1D linear regression model to <span class="math inline">\(N\)</span> data samples, we minimize the negative log-likelihood on the training set.</p>
 <p><span class="math display">\[
 \begin{align*}
 \text{NLL}\left(\beta,\sigma^{2}\right) &amp; =\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
 &amp; =-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
 \end{align*}
 \]</span></p>
-<p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>. This is the maximum likelihood method.</p>
+<p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>.</p>
 </section>
-<section id="linear-regression-models-8" class="slide level2">
+<section id="linear-regression-models-5" class="slide level2">
 <h2>Linear regression models</h2>
-<p>Focusing on just the coefficients <span class="math inline">\(\beta\)</span>, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS)<sup>1</sup> with coefficient estimates <span class="math inline">\(\hat\beta\)</span> :</p>
+<p>Focusing on just the weights, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS):</p>
 <p><span class="math display">\[
 \begin{align*}\text{RSS}\left(\beta\right) &amp; =\frac{1}{2}\sum_{n=1}^{N}\left(y_{n}-\beta'x_{n}\right)^{2}=\frac{1}{2}\left\Vert y_{n}-\beta'x_{n}\right\Vert ^{2}\\
 &amp; =\frac{1}{2}\left(y_{n}-\beta'x_{n}\right)'\left(y_{n}-\beta'x_{n}\right)\\
 \\
 \end{align*}
 \]</span></p>
-<aside><ol class="aside-footnotes"><li id="fn3"><p>i.e.&nbsp;minimizing the squared prediction error, aka ordinary least squares.</p></li></ol></aside></section>
-<section id="linear-regression-models-9" class="slide level2">
+</section>
+<section id="linear-regression-models-6" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols">Ordinary least squares (OLS)</h4>
-<p>Note that, given the assumption that the data generation process is Normal/Gaussian, we can write our regression equation in terms of individual observations as</p>
+<p>We can write our regression assumption as</p>
 <p><span class="math display">\[
 y_i=\beta_0+\beta_1 x_i + u_i
 \]</span></p>
-<p>where error term <span class="math inline">\(u_i\)</span> is a sample from <span class="math inline">\(\mathscr{N}\left(0,\sigma^{2}\right)\)</span> which in turn implies <span class="math inline">\(\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0\)</span></p>
-<p>The independence of the covariates and the errors is a testable assumption.</p>
+<p>where <span class="math inline">\(u_i\)</span> is a sample from <span class="math inline">\(\mathcal{N}\left(0,\sigma^{2}\right)\)</span> which in turn implies <span class="math inline">\(\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0\)</span></p>
 </section>
-<section id="linear-regression-models-10" class="slide level2">
+<section id="linear-regression-models-7" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-1">Ordinary least squares (OLS)</h4>
-<p>It follows independence of the covariates and the errors that</p>
+<p>It follows that</p>
 <p><span class="math display">\[
 \begin{align*}
 \mathbb{E}\left[y-\beta_{0}-\beta_{1}x\right] &amp; =0\\
@@ -553,10 +493,10 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-11" class="slide level2">
+<section id="linear-regression-models-8" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-2">Ordinary least squares (OLS)</h4>
-<p>Writing these equations in terms of our samples (where <span class="math inline">\(\hat{\beta}_{0}, \hat{\beta}_{1}\)</span> are our coefficient estimates)</p>
+<p>Writing the same thing for our samples (where <span class="math inline">\(\hat{\beta}_{0}, \hat{\beta}_{1}\)</span> are our estimates)</p>
 <p><span class="math display">\[
 \begin{align*}
 \frac{1}{N}\sum_{i-1}^{N}y_{i}-\hat{\beta}_{0}-\hat{\beta}_{1}x_{i} &amp; =0\\
@@ -564,7 +504,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-12" class="slide level2">
+<section id="linear-regression-models-9" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-3">Ordinary least squares (OLS)</h4>
 <p>From the first equation</p>
@@ -575,7 +515,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-13" class="slide level2">
+<section id="linear-regression-models-10" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-4">Ordinary least squares (OLS)</h4>
 <p>Substituting the expression for <span class="math inline">\(\hat{\beta}_{0}\)</span> in the independence equation</p>
@@ -587,7 +527,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-14" class="slide level2">
+<section id="linear-regression-models-11" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-5">Ordinary least squares (OLS)</h4>
 <p>So as long as <span class="math inline">\(\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2\ne 0\)</span></p>
@@ -598,13 +538,13 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-15" class="slide level2">
+<section id="linear-regression-models-12" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Similarly, in the vector equation, the minimum of the RSS is solved by (assuming <span class="math inline">\(N&gt;D\)</span>):</p>
 <p><span class="math display">\[
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right) = \frac{\text{cov}(X,Y)}{\text{var}(X)}
 \]</span></p>
-<p>There are algorithmic issues with computing <span class="math inline">\(\left(X'X\right)^{-1}\)</span> though.</p>
+<p>There are algorithmic issues though.</p>
 </section>
 <section id="linear-regression-algorithms" class="slide level2">
 <h2>Linear regression algorithms</h2>
@@ -676,7 +616,7 @@ Q'QR\beta &amp; = Q'y\\
 <span id="cb8-6"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector y</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb8-7"><a></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> A <span class="sc">%*%</span> x ; y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-nrow="3" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-nrow="3">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code>matrix A</code></pre>
@@ -735,7 +675,7 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 </div>
 </section>
-<section id="linear-regression-models-16" class="slide level2">
+<section id="linear-regression-models-13" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing</p>
 <ul>
@@ -756,16 +696,13 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 </div>
 </section>
-<section id="aside-empirical-risk-minimization" class="slide level2">
-<h2>Aside: empirical risk minimization</h2>
+<section id="empirical-risk-minimization" class="slide level2">
+<h2>Empirical risk minimization</h2>
 <p>The MLE can be generalized by replacing the NLL (<span class="math inline">\(\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)\)</span>) with any other loss function to get</p>
 <p><span class="math display">\[
-\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
+\mathcal{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
 \]</span></p>
 <p>This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.</p>
-</section>
-<section id="need-bridge-here" class="slide level2">
-<h2>Need bridge here</h2>
 </section>
 <section id="collinearity" class="slide level2">
 <h2>Collinearity</h2>
@@ -778,88 +715,6 @@ Q'QR\beta &amp; = Q'y\\
 <section id="collinearity-2" class="slide level2">
 <h2>Collinearity</h2>
 <p>The problem of collinearity has potentially serious effect on the regression estimates such as implausible coefficient signs, impossible inversion of matrix <span class="math inline">\(X'X\)</span> as it becomes near or exactly singular, large magnitude of coefficients in absolute value, large variance or standard errors with wider confidence intervals.</p>
-</section>
-<section id="collinearity-3" class="slide level2">
-<h2>Collinearity</h2>
-<p>Mitigating Collinearity:</p>
-<ul>
-<li>Remove Highly Correlated Variables: If two variables are highly correlated, consider removing one of them.</li>
-<li>Combine Variables: Create a new variable that combines the collinear variables</li>
-<li>Principal Component Analysis (PCA): Use PCA to transform the correlated variables into a smaller set of uncorrelated variables.</li>
-</ul>
-</section>
-<section id="bias-vs-variance" class="slide level2">
-<h2>Bias vs Variance</h2>
-<p>We introduced truncated Taylor series approximations to motivate using simplified models of the mean function when using regression.</p>
-<p>But bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model.</p>
-<p>So to reduce bias, why not include more Taylor series terms, or more covariates in a first-order model?</p>
-</section>
-<section id="bias-vs-variance-1" class="slide level2">
-<h2>Bias vs Variance</h2>
-<p>Note that for random variables in general and Gaussian random variables in particular</p>
-<ul>
-<li>the mean of the sum of random variables is the sum of the means of the random variables.</li>
-<li>the variance of the sum of random variables is the sum of the variances of the random variables.</li>
-</ul>
-<p>So adding more terms or more covariates may reduce bias by improving the mean estimate, but will certainly increase the variance of the estimate.</p>
-</section>
-<section id="bias-b-vs-variance-v-tradeoffs" class="slide level2">
-<h2>Bias (B) vs Variance (V) tradeoffs</h2>
-<div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1"><span class="math inline">\(\downarrow\)</span> B <span class="math inline">\(\uparrow\)</span> V</a></li><li><a href="#tabset-2-2"><span class="math inline">\(\uparrow\)</span> B <span class="math inline">\(\downarrow\)</span> V</a></li><li><a href="#tabset-2-3"><span class="math inline">\(-\)</span> B <span class="math inline">\(-\)</span> V</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1">
-<p><strong>Low Bias and High Variance</strong></p>
-<ul>
-<li>A model with low bias fits the training data very closely, capturing all the details and fluctuations.</li>
-<li>This leads to overfitting, where the model performs well on the training data but poorly on new data because it has learned the noise in the training data as if it were a signal.</li>
-</ul>
-</div>
-<div id="tabset-2-2">
-<p><strong>High Bias and Low Variance</strong></p>
-<ul>
-<li><p>A model with high bias makes oversimplified assumptions about the data, ignoring relevant complexities.</p></li>
-<li><p>This leads to underfitting, where the model is too simple to capture the underlying patterns in the data, resulting in poor performance on both training and new data.</p></li>
-</ul>
-</div>
-<div id="tabset-2-3">
-<p><strong>Balancing Bias and Variance</strong></p>
-<ul>
-<li>The goal is to find a sweet spot where the model is complex enough to capture the underlying patterns (low bias) but simple enough not to capture the noise (low variance).</li>
-<li>Achieving this balance ensures the model generalizes well to new data, providing good performance overall.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="bias-b-vs-variance-v-examples" class="slide level2">
-<h2>Bias (B) vs Variance (V) examples</h2>
-<div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Underfitting</a></li><li><a href="#tabset-3-2">Overfitting</a></li><li><a href="#tabset-3-3">Balanced</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1">
-<p><strong>Underfitting (High Bias, Low Variance)</strong></p>
-<ul>
-<li>Suppose you’re predicting house prices using just the size of the house (one variable) in a linear regression model.</li>
-<li>If the true relationship is complex (e.g., non-linear, involving multiple factors), this simple model will have high bias and underfit the data, missing important patterns.</li>
-</ul>
-</div>
-<div id="tabset-3-2">
-<p><strong>Overfitting (Low Bias, High Variance)</strong></p>
-<ul>
-<li>Now, imagine you use a very complex model, like a high-degree polynomial regression, that uses many variables and interactions.</li>
-<li>This model fits the training data very well but captures noise as well. When applied to new data, its performance drops because it has learned patterns that don’t generalize (high variance).</li>
-</ul>
-</div>
-<div id="tabset-3-3">
-<p><strong>Balanced Model</strong></p>
-<ul>
-<li>A balanced model might use a moderate number of relevant variables and a reasonable complexity (like a linear regression with interaction terms or a low-degree polynomial).</li>
-<li>This model captures the essential patterns without fitting the noise, resulting in good generalization to new data.</li>
-</ul>
-</div>
-</div>
-</div>
 </section>
 <section id="ridge-regression" class="slide level2">
 <h2>Ridge Regression</h2>
@@ -939,7 +794,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="ridge-regression-example-3" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -963,7 +818,7 @@ qsec        -18.48934710</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression" class="slide level2">
 <h2>Lasso Regression</h2>
 <p>Lasso regression is another example of a penalized regression model; in this case both the magnitude of the weights and the number of parameters are penalized by using the <span class="math inline">\(\ell_1\)</span> norm of the weights to the loss function of the lasso regression. In particular, the lasso regression weights are:</p>
@@ -975,7 +830,7 @@ qsec        -18.48934710</code></pre>
 <h2>Lasso Regression</h2>
 <p>The Lasso objective function is</p>
 <p><span class="math display">\[
-\mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
+\mathcal{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
 \]</span></p>
 </section>
 <section id="lasso-regression-example" class="slide level2">
@@ -1033,7 +888,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression-example-2" class="slide level2">
 <h2>Lasso Regression Example</h2>
 <div class="cell" data-layout-align="center">
@@ -1057,13 +912,13 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="elastic-net-regression" class="slide level2">
 <h2>Elastic Net Regression</h2>
 <p>Elastic Net regression is a hybrid of ridge and lasso regression.</p>
 <p>The elastic net objective function is</p>
 <p><span class="math display">\[
-\mathscr{L}\left(\beta,\lambda,\alpha\right)=\text{NLL}+\lambda\left(\left(1-\alpha\right)\left\Vert \beta\right\Vert _{2}^{2}+\alpha\left\Vert \beta\right\Vert _{1}\right)
+\mathcal{L}\left(\beta,\lambda,\alpha\right)=\text{NLL}+\lambda\left(\left(1-\alpha\right)\left\Vert \beta\right\Vert _{2}^{2}+\alpha\left\Vert \beta\right\Vert _{1}\right)
 \]</span></p>
 <p>so that <span class="math inline">\(\alpha=0\)</span> is ridge regression and <span class="math inline">\(\alpha=1\)</span> is lasso regression and <span class="math inline">\(\alpha\in\left(0,1\right)\)</span> is the general elastic net.</p>
 </section>
@@ -1183,7 +1038,7 @@ qsec        -18.944318</code></pre>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="generalized-linear-models" class="slide level2">
 <h2>Generalized Linear Models</h2>
 <p>A <strong>generalized linear model</strong> (<strong>GLM</strong>) is a flexible generalization of ordinary linear regression.</p>
@@ -1202,132 +1057,10 @@ qsec        -18.944318</code></pre>
 <p><span class="math display">\[
 \log\mathbb{E}\left[\left.Y\right|X\right] = \beta X=\log\lambda
 \]</span></p>
-</section>
-<section id="generalized-linear-models-2" class="slide level2">
-<h2>Generalized Linear Models</h2>
-<h3 id="key-components-of-glms">Key Components of GLMs</h3>
-<div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Random</a></li><li><a href="#tabset-4-2">Systemic</a></li><li><a href="#tabset-4-3">Link</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1">
-<p><strong>Random Component</strong>:</p>
-<ul>
-<li>Specifies the probability distribution of the data generation process of the response variable (<span class="math inline">\(Y\)</span>). Examples include Normal, Binomial, Poisson, etc.</li>
-</ul>
-</div>
-<div id="tabset-4-2">
-<p><strong>Systematic Component</strong>:</p>
-<ul>
-<li>Specifies the linear predictor (<span class="math inline">\(\eta = X\beta)\)</span>, where (<span class="math inline">\(X\)</span>) is the matrix of predictors and (<span class="math inline">\(\beta\)</span>) is the vector of coefficients.</li>
-</ul>
-</div>
-<div id="tabset-4-3">
-<p><strong>Link Function</strong>:</p>
-<ul>
-<li>Connects the mean of the response variable (<span class="math inline">\(\mathbb{E}(Y)\)</span>) to the linear predictor (<span class="math inline">\(\eta\)</span>). It transforms the expected value of the response variable to the linear predictor scale.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="generalized-linear-models-3" class="slide level2">
-<h2>Generalized Linear Models</h2>
-<h3 id="common-types-of-glms">Common Types of GLMs</h3>
-<div class="panel-tabset">
-<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Linear</a></li><li><a href="#tabset-5-2">Logistic</a></li><li><a href="#tabset-5-3">Poisson</a></li><li><a href="#tabset-5-4">Gamma</a></li></ul>
-<div class="tab-content">
-<div id="tabset-5-1">
-<div style="font-size: xx-large">
-<p>Linear Regression (Binomial Distribution)</p>
-<ul>
-<li><strong>Response Variable</strong>: Continuous</li>
-<li><strong>Link Function</strong>: Identity (<span class="math inline">\((g(\mu) = \mu\)</span>))</li>
-<li><strong>Example</strong>: Predicting house prices based on square footage, number of bedrooms, etc.</li>
-<li><strong>Formula</strong>: <span class="math inline">\((Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \epsilon)\)</span>, where <span class="math inline">\((Y\)</span>) is normally distributed.</li>
-</ul>
-</div>
-</div>
-<div id="tabset-5-2">
-<div style="font-size: xx-large">
-<p>Logistic Regression (binomial Distribution)</p>
-<ul>
-<li><strong>Response Variable</strong>: Binary (0 or 1)</li>
-<li><strong>Link Function</strong>: Logit (<span class="math inline">\((g(\mu) = \log(\frac{\mu}{1-\mu})\)</span>))</li>
-<li><strong>Example</strong>: Predicting whether a customer will buy a product (yes/no) based on age, income, etc.</li>
-<li><strong>Formula</strong>: <span class="math inline">\((\log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots\)</span>), where (<span class="math inline">\(p\)</span>) is the probability of the event occurring.</li>
-</ul>
-</div>
-</div>
-<div id="tabset-5-3">
-<div style="font-size: xx-large">
-<p>Poisson Regression (Poisson Distribution)</p>
-<ul>
-<li><strong>Response Variable</strong>: Count data (non-negative integers)</li>
-<li><strong>Link Function</strong>: Log (<span class="math inline">\((g(\mu) = \log(\mu)\)</span>))</li>
-<li><strong>Example</strong>: Predicting the number of insurance claims in a year based on driver age, vehicle type, etc.</li>
-<li><strong>Formula</strong>: <span class="math inline">\((\log(\lambda) = \beta\_0 + \beta\_1 X_1 + \beta\_2 X_2 + \ldots)\)</span>, where <span class="math inline">\((\lambda)\)</span> is the expected count.</li>
-</ul>
-</div>
-</div>
-<div id="tabset-5-4">
-<div style="font-size: xx-large">
-<p>Gamma Regression (Gamma Distribution)</p>
-<ul>
-<li><strong>Response Variable</strong>: Continuous and positive</li>
-<li><strong>Link Function</strong>: Inverse (<span class="math inline">\((g(\mu) = \frac{1}{\mu}\)</span>))</li>
-<li><strong>Example</strong>: Predicting the time until failure of a machine based on temperature, pressure, etc.</li>
-<li><strong>Formula</strong>: <span class="math inline">\((\frac{1}{\mu} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)\)</span>, where (<span class="math inline">\(\mu\)</span>) is the mean of the response variable.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="generalized-linear-models-4" class="slide level2">
-<h2>Generalized Linear Models</h2>
-<h3 id="examples-of-glms">Examples of GLMs</h3>
-<div class="panel-tabset">
-<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Logistic</a></li><li><a href="#tabset-6-2">Poisson</a></li><li><a href="#tabset-6-3">Gamma</a></li></ul>
-<div class="tab-content">
-<div id="tabset-6-1">
-<div style="font-size: xx-large">
-<p><strong>Logistic Regression Example</strong>:</p>
-<ul>
-<li><strong>Scenario</strong>: A marketing team wants to predict whether a customer will buy a product.</li>
-<li><strong>Variables</strong>: Customer age, income, and previous purchase history.</li>
-<li><strong>Model</strong>: <span class="math inline">\((\log(\frac{p}{1-p}) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{Income} + \beta_3 \text{History}\)</span>)</li>
-<li><strong>Interpretation</strong>: The coefficients (_1, _2, _3) indicate how each predictor affects the log odds of making a purchase.</li>
-</ul>
-</div>
-</div>
-<div id="tabset-6-2">
-<div style="font-size: xx-large">
-<p><strong>Poisson Regression Example</strong>:</p>
-<ul>
-<li><strong>Scenario</strong>: An insurance company wants to predict the number of claims a policyholder will file.</li>
-<li><strong>Variables</strong>: Age of the policyholder, type of vehicle, and driving experience.</li>
-<li><strong>Model</strong>: <span class="math inline">\((\log(\lambda) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{VehicleType} + \beta_3 \text{Experience}\)</span>)</li>
-<li><strong>Interpretation</strong>: The coefficients <span class="math inline">\((\beta_1, \beta_2, \beta_3)\)</span> indicate how each predictor affects the expected number of claims.</li>
-</ul>
-</div>
-</div>
-<div id="tabset-6-3">
-<div style="font-size: xx-large">
-<p><strong>Gamma Regression Example</strong>:</p>
-<ul>
-<li><strong>Scenario</strong>: A manufacturing company wants to predict the lifetime of a machine part.</li>
-<li><strong>Variables</strong>: Operating temperature, pressure, and usage frequency.</li>
-<li><strong>Model</strong>: <span class="math inline">\((\frac{1}{\mu} = \beta_0 + \beta_1 \text{Temperature} + \beta_2 \text{Pressure} + \beta_3 \text{Frequency})\)</span></li>
-<li><strong>Interpretation</strong>: The coefficients <span class="math inline">\((\beta_1, \beta_2, \beta_3)\)</span> indicate how each predictor affects the inverse of the expected lifetime.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
 </section></section>
 <section>
-<section id="non-parametric-regression" class="title-slide slide level1 center">
-<h1>Non-parametric regression</h1>
+<section id="tree-regression" class="title-slide slide level1 center">
+<h1>Tree regression</h1>
 
 </section>
 <section id="regression-with-trees" class="slide level2">
@@ -1503,290 +1236,81 @@ qsec        -18.944318</code></pre>
 <p>While the <code>XGBoost</code> model often achieves higher accuracy than a single decision tree, it sacrifices the intrinsic interpretability of decision trees. For example, following the path that a decision tree takes to make its decision is trivial and self-explained, but following the paths of hundreds or thousands of trees is much harder.</p>
 <p>We will work with <code>XGBoost</code> in today’s lab.</p>
 </section>
-<section id="kernel-regression" class="slide level2">
-<h2>Kernel Regression</h2>
-<p>Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables. Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.</p>
-</section>
-<section id="kernel-regression-1" class="slide level2">
-<h2>Kernel Regression</h2>
-<div style="font-size: x-large">
-<ol type="1">
-<li><strong>Select a Kernel Function</strong>:
-<ul>
-<li>Choose a kernel function that will determine how weights are assigned to nearby data points. The Gaussian kernel is a common choice, where weights decrease with distance according to a normal distribution.</li>
-</ul></li>
-<li><strong>Choose a Bandwidth</strong>:
-<ul>
-<li>Decide on the bandwidth parameter that will control the spread of the kernel function. This affects the smoothness of the regression curve.</li>
-</ul></li>
-<li><strong>Compute Weights</strong>:
-<ul>
-<li>For each point where you want to estimate the dependent variable, compute the weights for all observed data points using the kernel function.</li>
-</ul></li>
-<li><strong>Calculate Weighted Average</strong>:
-<ul>
-<li>Use the weights to compute a weighted average of the dependent variable values, giving more influence to points closer to the point of interest.</li>
-</ul></li>
-</ol>
-</div>
-</section>
-<section id="kernel-regression-example" class="slide level2">
-<h2>Kernel Regression: example</h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="sc">&gt;</span> <span class="co">#Kernel regression</span></span>
-<span id="cb38-2"><a></a><span class="er">&gt;</span> <span class="co"># from https://towardsdatascience.com/kernel-regression-made-easy-to-understand-86caf2d2b844</span></span>
-<span id="cb38-3"><a></a><span class="er">&gt;</span> Kdata <span class="ot">&lt;-</span> </span>
-<span id="cb38-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb38-5"><a></a><span class="sc">+</span>     <span class="at">Area =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">22</span>,<span class="dv">33</span>,<span class="dv">44</span>,<span class="dv">50</span>,<span class="dv">56</span>,<span class="dv">67</span>,<span class="dv">70</span>,<span class="dv">78</span>,<span class="dv">89</span>,<span class="dv">90</span>,<span class="dv">100</span>)</span>
-<span id="cb38-6"><a></a><span class="sc">+</span>     , <span class="at">RiverFlow =</span> <span class="fu">c</span>(<span class="dv">2337</span>,<span class="dv">2750</span>,<span class="dv">2301</span>,<span class="dv">2500</span>,<span class="dv">1700</span>,<span class="dv">2100</span>,<span class="dv">1100</span>,<span class="dv">1750</span>,<span class="dv">1000</span>,<span class="dv">1642</span>, <span class="dv">2000</span>,<span class="dv">1932</span>)</span>
-<span id="cb38-7"><a></a><span class="sc">+</span>   )</span>
-<span id="cb38-8"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb38-9"><a></a><span class="er">&gt;</span> <span class="co">#function to calculate Gaussian kernel</span></span>
-<span id="cb38-10"><a></a><span class="er">&gt;</span> gausinKernel <span class="ot">&lt;-</span> <span class="cf">function</span>(x,b){<span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span>(x<span class="sc">/</span>b)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>pi))}</span>
-<span id="cb38-11"><a></a><span class="sc">&gt;</span> <span class="co">#plotting function</span></span>
-<span id="cb38-12"><a></a><span class="er">&gt;</span> plt_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">bandwidth =</span> <span class="dv">10</span>, <span class="at">support =</span> <span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">110</span>,<span class="dv">1</span>)){</span>
-<span id="cb38-13"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x_hat =</span> support) <span class="sc">|&gt;</span> </span>
-<span id="cb38-14"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb38-15"><a></a><span class="sc">+</span>     <span class="at">y_hat =</span></span>
-<span id="cb38-16"><a></a><span class="sc">+</span>       purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb38-17"><a></a><span class="sc">+</span>         x_hat</span>
-<span id="cb38-18"><a></a><span class="sc">+</span>         , (</span>
-<span id="cb38-19"><a></a><span class="sc">+</span>         \(x){</span>
-<span id="cb38-20"><a></a><span class="sc">+</span>           K <span class="ot">&lt;-</span> <span class="fu">gausinKernel</span>(Kdata<span class="sc">$</span>Area<span class="sc">-</span>x, bandwidth)</span>
-<span id="cb38-21"><a></a><span class="sc">+</span>           <span class="fu">sum</span>( Kdata<span class="sc">$</span>RiverFlow <span class="sc">*</span> K<span class="sc">/</span><span class="fu">sum</span>(K) )</span>
-<span id="cb38-22"><a></a><span class="sc">+</span>         })</span>
-<span id="cb38-23"><a></a><span class="sc">+</span>       )</span>
-<span id="cb38-24"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
-<span id="cb38-25"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x_hat, <span class="at">y=</span>y_hat)) <span class="sc">+</span> </span>
-<span id="cb38-26"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>(<span class="at">color=</span><span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb38-27"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> Kdata, <span class="fu">aes</span>(<span class="at">x=</span>Area, <span class="at">y=</span>RiverFlow), <span class="at">size=</span><span class="dv">4</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb38-28"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Kernel regression"</span>, <span class="at">subtitle =</span> stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"bandwith = {bandwidth}; data = red | fit = blue"</span>) ) <span class="sc">+</span></span>
-<span id="cb38-29"><a></a><span class="sc">+</span>   <span class="fu">theme_minimal</span>()</span>
-<span id="cb38-30"><a></a><span class="sc">+</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="panel-tabset">
-<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-7-1">B = 5</a></li><li><a href="#tabset-7-2">B=10</a></li><li><a href="#tabset-7-3">B=15</a></li></ul>
-<div class="tab-content">
-<div id="tabset-7-1">
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-7-2">
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-7-3">
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="kernel-regression-2" class="slide level2">
-<h2>Kernel Regression:</h2>
-<div style="font-size: xx-large">
-<h3 id="advantages-of-kernel-regression">Advantages of Kernel Regression</h3>
-<ul>
-<li><strong>Flexibility</strong>: Can capture complex, non-linear relationships between variables.</li>
-<li><strong>No Assumptions</strong>: Does not require the assumption of a specific functional form for the relationship.</li>
-</ul>
-<h3 id="disadvantages-of-kernel-regression">Disadvantages of Kernel Regression</h3>
-<ul>
-<li><strong>Computationally Intensive</strong>: Can be slow, especially with large datasets, since it requires calculating weights for all data points for each estimate.</li>
-<li><strong>Choice of Parameters</strong>: The results can be sensitive to the choice of kernel function and bandwidth, requiring careful tuning.</li>
-</ul>
-</div>
-</section>
 <section id="regression-with-neural-nets" class="slide level2">
 <h2>Regression with neural nets</h2>
-<p>Regression with neural nets involves using artificial neural networks (ANNs) to predict a continuous output variable based on one or more input variables. Neural nets are powerful, flexible models that can capture complex relationships and patterns in the data.</p>
-</section>
-<section id="regression-with-anns-components" class="slide level2">
-<h2>Regression with ANNs: Components</h2>
-<div style="font-size: xx-large">
-<ol type="1">
-<li><strong>Neurons</strong>:
-<ul>
-<li>The building blocks of neural networks. Each neuron takes an input, processes it, and passes the output to the next layer.</li>
-</ul></li>
-<li><strong>Layers</strong>:
-<ul>
-<li><strong>Input Layer</strong>: Receives the input data.</li>
-<li><strong>Hidden Layers</strong>: Intermediate layers that process the input data through neurons. There can be one or more hidden layers.</li>
-<li><strong>Output Layer</strong>: Produces the final prediction.</li>
-</ul></li>
-<li><strong>Weights and Biases</strong>:
-<ul>
-<li>Each connection between neurons has a weight, which adjusts the strength of the signal.</li>
-<li>Each neuron has a bias, which adjusts the output along with the weighted sum of inputs.</li>
-</ul></li>
-</ol>
-</div>
-</section>
-<section id="regression-with-anns-components-1" class="slide level2">
-<h2>Regression with ANNs: Components</h2>
-<div style="font-size: xx-large">
-<ol start="4" type="1">
-<li><strong>Activation Functions</strong>:
-<ul>
-<li>Functions applied to the output of each neuron in hidden layers to introduce non-linearity. Common activation functions include ReLU (Rectified Linear Unit), sigmoid, and tanh.</li>
-</ul></li>
-<li><strong>Loss Function</strong>:
-<ul>
-<li>Measures the difference between the predicted output and the actual output. For regression tasks, common loss functions include Mean Squared Error (MSE) and Mean Absolute Error (MAE).</li>
-</ul></li>
-<li><strong>Optimization Algorithm</strong>:
-<ul>
-<li>Adjusts the weights and biases to minimize the loss function. The most common optimization algorithm is Gradient Descent and its variants like Adam.</li>
-</ul></li>
-</ol>
-</div>
-</section>
-<section id="regression-with-anns-algorithm" class="slide level2">
-<h2>Regression with ANNs: Algorithm</h2>
-<div style="font-size: x-large">
-<ol type="1">
-<li><strong>Forward Propagation</strong>:
-<ul>
-<li>Input data is passed through the network, layer by layer, with each neuron applying its weights, bias, and activation function, until the output layer produces the prediction.</li>
-</ul></li>
-<li><strong>Loss Calculation</strong>:
-<ul>
-<li>The loss function calculates the error between the predicted output and the actual target value.</li>
-</ul></li>
-<li><strong>Backward Propagation</strong>:
-<ul>
-<li>The network uses the error to adjust the weights and biases. This involves calculating the gradient of the loss function with respect to each weight and bias (using the chain rule), and then updating the weights and biases to reduce the error.</li>
-</ul></li>
-<li><strong>Iterative Training</strong>:
-<ul>
-<li>The process of forward propagation, loss calculation, and backward propagation is repeated for many iterations (epochs) until the loss converges to a minimum value.</li>
-</ul></li>
-</ol>
-</div>
-</section>
-<section id="regression-with-anns" class="slide level2">
-<h2>Regression with ANNs:</h2>
-<div class="panel-tabset">
-<ul id="tabset-8" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-8-1">Advantages</a></li><li><a href="#tabset-8-2">Disadvantages</a></li></ul>
-<div class="tab-content">
-<div id="tabset-8-1">
-<h3 id="advantages-of-anns-for-regression">Advantages of ANNs for Regression</h3>
-<ul>
-<li><strong>Flexibility</strong>: Can model complex, non-linear relationships between inputs and outputs.</li>
-<li><strong>High Performance</strong>: Can achieve high accuracy with sufficient data and proper tuning.</li>
-<li><strong>Feature Learning</strong>: Automatically learns relevant features from raw input data.</li>
-</ul>
-</div>
-<div id="tabset-8-2">
-<h3 id="disadvantages-of-anns-for-regression">Disadvantages of ANNs for Regression</h3>
-<ul>
-<li><strong>Computationally Intensive</strong>: Requires significant computational resources.</li>
-<li><strong>Data Hungry</strong>: Needs a large amount of training data to perform well.</li>
-<li><strong>Complexity</strong>: Requires careful tuning of hyperparameters (e.g., number of layers, neurons, learning rate) and can be prone to overfitting if not properly regularized.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="regression-with-neural-nets-1" class="slide level2">
-<h2>Regression with neural nets</h2>
-<p>Architecture of an ANN</p>
+<p>Architecture of a Neural Net (NN)</p>
 
 <img data-src="../images/single_layer_nn.png" alt="credit deep learning.a" class="r-stretch quarto-figure-center"><p class="caption">Single layer NN architecture</p></section>
-<section id="regression-with-neural-nets-2" class="slide level2">
+<section id="regression-with-neural-nets-1" class="slide level2">
 <h2>Regression with neural nets</h2>
 
 <img data-src="../images/activation_functions.png" alt="credits - analyticsindiamag" class="r-stretch quarto-figure-center"><p class="caption">Common Activation Functions</p></section>
-<section id="regression-with-anns-example" class="slide level2">
-<h2>Regression with ANNs: example</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="sc">&gt;</span> <span class="co"># layout-nrow: 3</span></span>
-<span id="cb39-2"><a></a><span class="er">&gt;</span> <span class="co">#| code-line-numbers: "1|3-4|6-11|13-17|19-25|27-28|30-39"</span></span>
-<span id="cb39-3"><a></a><span class="er">&gt;</span> <span class="co">#| code-fold: true</span></span>
-<span id="cb39-4"><a></a><span class="er">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">500</span>)</span>
-<span id="cb39-5"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-6"><a></a><span class="er">&gt;</span> <span class="co"># Boston dataset from MASS</span></span>
-<span id="cb39-7"><a></a><span class="er">&gt;</span> data <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span>
-<span id="cb39-8"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb39-9"><a></a><span class="er">&gt;</span> <span class="co"># Normalize the data</span></span>
-<span id="cb39-10"><a></a><span class="er">&gt;</span> maxs <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(max) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
-<span id="cb39-11"><a></a><span class="sc">&gt;</span> mins <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
-<span id="cb39-12"><a></a><span class="sc">&gt;</span> data_scaled <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb39-13"><a></a><span class="sc">+</span>   <span class="fu">scale</span>(<span class="at">center =</span> mins, <span class="at">scale =</span> maxs <span class="sc">-</span> mins) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-14"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
-<span id="cb39-15"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-16"><a></a><span class="er">&gt;</span> <span class="co"># Split the data into training and testing set</span></span>
-<span id="cb39-17"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> data_scaled <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> .<span class="dv">75</span>)</span>
-<span id="cb39-18"><a></a><span class="sc">&gt;</span> <span class="co"># extracting training data and test data as two seperate dataframes</span></span>
-<span id="cb39-19"><a></a><span class="er">&gt;</span> data_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
-<span id="cb39-20"><a></a><span class="sc">&gt;</span> data_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(data_split)</span>
-<span id="cb39-21"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb39-22"><a></a><span class="er">&gt;</span> nn <span class="ot">&lt;-</span> data_train <span class="sc">%&gt;%</span> </span>
-<span id="cb39-23"><a></a><span class="sc">+</span>   neuralnet<span class="sc">::</span><span class="fu">neuralnet</span>(</span>
-<span id="cb39-24"><a></a><span class="sc">+</span>     medv <span class="sc">~</span> .</span>
-<span id="cb39-25"><a></a><span class="sc">+</span>     , <span class="at">data =</span> .</span>
-<span id="cb39-26"><a></a><span class="sc">+</span>     , <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">3</span>)</span>
-<span id="cb39-27"><a></a><span class="sc">+</span>     , <span class="at">linear.output =</span> <span class="cn">TRUE</span></span>
-<span id="cb39-28"><a></a><span class="sc">+</span>   )</span>
-<span id="cb39-29"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-30"><a></a><span class="er">&gt;</span> <span class="co"># Predict on test data</span></span>
-<span id="cb39-31"><a></a><span class="er">&gt;</span> pr.nn <span class="ot">&lt;-</span> neuralnet<span class="sc">::</span><span class="fu">compute</span>( nn, data_test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>medv) )</span>
-<span id="cb39-32"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-33"><a></a><span class="er">&gt;</span> <span class="co"># Compute mean squared error</span></span>
-<span id="cb39-34"><a></a><span class="er">&gt;</span> pr.nn_ <span class="ot">&lt;-</span> </span>
-<span id="cb39-35"><a></a><span class="sc">+</span>   pr.nn<span class="sc">$</span>net.result <span class="sc">*</span> </span>
-<span id="cb39-36"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span></span>
-<span id="cb39-37"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
-<span id="cb39-38"><a></a><span class="sc">&gt;</span> test.r <span class="ot">&lt;-</span> </span>
-<span id="cb39-39"><a></a><span class="sc">+</span>   data_test<span class="sc">$</span>medv <span class="sc">*</span> </span>
-<span id="cb39-40"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span> </span>
-<span id="cb39-41"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
-<span id="cb39-42"><a></a><span class="sc">&gt;</span> MSE.nn <span class="ot">&lt;-</span> <span class="fu">sum</span>((test.r <span class="sc">-</span> pr.nn_)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">nrow</span>(data_test)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="regression-with-neural-nets-2" class="slide level2">
+<h2>Regression with neural nets</h2>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38" data-code-line-numbers="1|3-4|6-11|13-17|19-25|27-28|30-39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">500</span>)</span>
+<span id="cb38-2"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb38-3"><a></a><span class="er">&gt;</span> <span class="co"># Boston dataset from MASS</span></span>
+<span id="cb38-4"><a></a><span class="er">&gt;</span> data <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span>
+<span id="cb38-5"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb38-6"><a></a><span class="er">&gt;</span> <span class="co"># Normalize the data</span></span>
+<span id="cb38-7"><a></a><span class="er">&gt;</span> maxs <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(max) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
+<span id="cb38-8"><a></a><span class="sc">&gt;</span> mins <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
+<span id="cb38-9"><a></a><span class="sc">&gt;</span> data_scaled <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb38-10"><a></a><span class="sc">+</span>   <span class="fu">scale</span>(<span class="at">center =</span> mins, <span class="at">scale =</span> maxs <span class="sc">-</span> mins) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-11"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb38-12"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb38-13"><a></a><span class="er">&gt;</span> <span class="co"># Split the data into training and testing set</span></span>
+<span id="cb38-14"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> data_scaled <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> .<span class="dv">75</span>)</span>
+<span id="cb38-15"><a></a><span class="sc">&gt;</span> <span class="co"># extracting training data and test data as two seperate dataframes</span></span>
+<span id="cb38-16"><a></a><span class="er">&gt;</span> data_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
+<span id="cb38-17"><a></a><span class="sc">&gt;</span> data_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(data_split)</span>
+<span id="cb38-18"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb38-19"><a></a><span class="er">&gt;</span> nn <span class="ot">&lt;-</span> data_train <span class="sc">%&gt;%</span> </span>
+<span id="cb38-20"><a></a><span class="sc">+</span>   neuralnet<span class="sc">::</span><span class="fu">neuralnet</span>(</span>
+<span id="cb38-21"><a></a><span class="sc">+</span>     medv <span class="sc">~</span> .</span>
+<span id="cb38-22"><a></a><span class="sc">+</span>     , <span class="at">data =</span> .</span>
+<span id="cb38-23"><a></a><span class="sc">+</span>     , <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">3</span>)</span>
+<span id="cb38-24"><a></a><span class="sc">+</span>     , <span class="at">linear.output =</span> <span class="cn">TRUE</span></span>
+<span id="cb38-25"><a></a><span class="sc">+</span>   )</span>
+<span id="cb38-26"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb38-27"><a></a><span class="er">&gt;</span> <span class="co"># Predict on test data</span></span>
+<span id="cb38-28"><a></a><span class="er">&gt;</span> pr.nn <span class="ot">&lt;-</span> neuralnet<span class="sc">::</span><span class="fu">compute</span>( nn, data_test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>medv) )</span>
+<span id="cb38-29"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb38-30"><a></a><span class="er">&gt;</span> <span class="co"># Compute mean squared error</span></span>
+<span id="cb38-31"><a></a><span class="er">&gt;</span> pr.nn_ <span class="ot">&lt;-</span> </span>
+<span id="cb38-32"><a></a><span class="sc">+</span>   pr.nn<span class="sc">$</span>net.result <span class="sc">*</span> </span>
+<span id="cb38-33"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span></span>
+<span id="cb38-34"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
+<span id="cb38-35"><a></a><span class="sc">&gt;</span> test.r <span class="ot">&lt;-</span> </span>
+<span id="cb38-36"><a></a><span class="sc">+</span>   data_test<span class="sc">$</span>medv <span class="sc">*</span> </span>
+<span id="cb38-37"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span> </span>
+<span id="cb38-38"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
+<span id="cb38-39"><a></a><span class="sc">&gt;</span> MSE.nn <span class="ot">&lt;-</span> <span class="fu">sum</span>((test.r <span class="sc">-</span> pr.nn_)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">nrow</span>(data_test)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-nrow="3">
+
 </div>
 </section>
 <section id="regression-with-neural-nets-3" class="slide level2">
 <h2>Regression with neural nets</h2>
 <div class="panel-tabset">
-<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">NN</a></li><li><a href="#tabset-9-2">Regression</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">NN</a></li><li><a href="#tabset-2-2">Regression</a></li></ul>
 <div class="tab-content">
-<div id="tabset-9-1">
+<div id="tabset-2-1">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="images/nn_plot.png" class="quarto-figure quarto-figure-center"></p>
 </figure>
 </div>
 </div>
-<div id="tabset-9-2">
+<div id="tabset-2-2">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-24-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="origBSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1798,8 +1322,8 @@ qsec        -18.944318</code></pre>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
 <ul>
-<li><p>Today we worked though a parametric and non-parametric regression methods that are useful for predicting a value given a set of covariates.</p></li>
-<li><p>Next week we will look in detail at the <code>tidymodels</code> package which will give a way to develop a workflow for fitting and comparing our models across different feature sets.</p></li>
+<li><p>Today we worked though a few regression methods that are useful for predicting a value given a set of covariates</p></li>
+<li><p>Next week we will look at the <code>tidymodels</code> package which will give a way to develop a workflow for fitting and comparing our models</p></li>
 </ul>
 </section>
 <section id="section" class="slide level2">
@@ -1808,7 +1332,7 @@ qsec        -18.944318</code></pre>
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
@@ -1846,7 +1370,7 @@ qsec        -18.944318</code></pre>
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true},
-'multiplex': {"secret":null,"id":"ce3a0af204e3949a","url":"https://reveal-multiplex.glitch.me/"},
+'multiplex': {"secret":null,"id":"263f2c54a906dcf5","url":"https://reveal-multiplex.glitch.me/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
