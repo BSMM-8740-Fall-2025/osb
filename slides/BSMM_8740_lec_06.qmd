@@ -1,8 +1,8 @@
 ---
 title: "Classification & clustering methods"
-subtitle: "BSMM8740-2-R-2023F [WEEK - 6]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 6]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
 # title-slide-attributes:
 #   data-background-image: images/my-DRAFT.png
@@ -47,26 +47,127 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## Classification
 
--   Classification is a supervised machine learning method where the model tries to predict the correct class label for a given input data.
--   In classification, the model is fully trained using the training data, and then it is evaluated on test data before being used to perform prediction on new unseen data.
+-   Classification is a supervised machine learning method where the model tries to predict a categorical outcome for given input data.
+-   These models are essential in various business applications, such as credit scoring, customer segmentation, fraud detection, and more. Classification methods can broadly be categorized into two types: eager learners and lazy (instance-based) learners.
 
-## Classification
+## Eager Learners
 
 **Eager learners** are machine learning algorithms that first build a model from the training dataset before making any prediction on future datasets. They spend more time on the training process to better generalize from the data.
 
-They usually require less time to make predictions. Example eager learners are:
+They usually require less time to make predictions.
 
--   Logistic Regression.
--   Support Vector Machine.
--   Decision Trees.
--   Artificial Neural Networks.
+## Eager Learners
 
-## Classification
+### Example eager learners are:
 
-**Lazy learners or instance-based learners**, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they search for the nearest neighbor from the whole training data. Examples are:
+::: panel-tabset
+## LR
 
--   K-Nearest Neighbor.
--   Case-based reasoning.
+::: {style="font-size: xx-large"}
+**Logistic Regression**:
+
+-   **Overview**: A statistical method for binary classification that models the probability of a binary outcome based on one or more predictor variables.
+-   **Advantages**: Simple, interpretable, and works well with linear decision boundaries.
+-   **Disadvantages**: Assumes linearity between predictors and the log-odds of the outcome.
+:::
+
+## DT
+
+::: {style="font-size: xx-large"}
+**Decision Trees**:
+
+-   **Overview**: A model that splits the data into subsets based on feature values, resulting in a tree structure where each leaf node represents a class label.
+-   **Advantages**: Easy to interpret and visualize, handles both numerical and categorical data.
+-   **Disadvantages**: Prone to overfitting, especially with deep trees.
+:::
+
+## RF
+
+::: {style="font-size: xx-large"}
+**Random Forests**:
+
+-   **Overview**: An ensemble method that builds multiple decision trees and aggregates their predictions to improve accuracy and reduce overfitting.
+-   **Advantages**: Robust to overfitting, handles large datasets well.
+-   **Disadvantages**: Less interpretable than single decision trees.
+:::
+
+## SVM
+
+::: {style="font-size: xx-large"}
+**Support Vector Machines (SVM)**:
+
+-   **Overview**: A model that finds the hyperplane that best separates the classes in the feature space.
+-   **Advantages**: Effective in high-dimensional spaces, works well with a clear margin of separation.
+-   **Disadvantages**: Computationally intensive, less effective with noisy data or overlapping classes.
+:::
+
+## ANN
+
+::: {style="font-size: xx-large"}
+**Neural Networks**:
+
+-   **Overview**: Models inspired by the human brain, consisting of layers of interconnected neurons that learn to map inputs to outputs.
+-   **Advantages**: Capable of capturing complex patterns and relationships.
+-   **Disadvantages**: Requires large amounts of data and computational power, less interpretable.
+:::
+
+## GMB
+
+::: {style="font-size: xx-large"}
+**Gradient Boosting Machines (GBM)**:
+
+-   **Overview**: An ensemble technique that builds trees sequentially, where each new tree corrects errors made by the previous ones.
+-   **Advantages**: High accuracy, effective at handling various data types.
+-   **Disadvantages**: Computationally intensive, requires careful tuning.
+:::
+:::
+
+## Lazy Learners
+
+**Lazy learners or instance-based learners**, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they predict based on similarity between the query instance and stored instances.
+
+## Lazy Learners
+
+Example lazy learners are:
+
+::: panel-tabset
+## KNN
+
+::: {style="font-size: xx-large"}
+**k-Nearest Neighbors (k-NN)**:
+
+-   **Overview**: Predicts the class of a query instance based on the majority class among its k nearest neighbors in the training data.
+-   **Advantages**: Simple, intuitive, and effective for small datasets.
+-   **Disadvantages**: Computationally intensive during prediction, performance degrades with high-dimensional data.
+:::
+
+## Case-based
+
+::: {style="font-size: xx-large"}
+**Case-based Learning**:
+
+-   **Overview**: Makes predictions by fitting simple models (like linear regression) to localized regions of the data.
+-   **Advantages**: Flexible, can adapt to complex patterns locally.
+-   **Disadvantages**: Computationally expensive, sensitive to the choice of kernel and bandwidth parameters.
+:::
+:::
+
+## Comparing Eager and Lazy Learners
+
+::: {style="font-size: x-large"}
+-   **Training vs. Prediction Time**:
+    -   Eager learners invest time in building the model during training, resulting in faster predictions.
+    -   Lazy learners have negligible training time but are computationally intensive during prediction.
+-   **Model Interpretability**:
+    -   Eager learners like decision trees and logistic regression are generally more interpretable.
+    -   Lazy learners like k-NN are less interpretable as they rely on instance-based comparisons.
+-   **Handling of High-Dimensional Data**:
+    -   Eager learners like SVMs and neural networks can handle high-dimensional data effectively.
+    -   Lazy learners like k-NN can struggle with the curse of dimensionality.
+-   **Flexibility and Complexity**:
+    -   Eager learners can capture complex relationships and interactions through models like neural networks and gradient boosting.
+    -   Lazy learners are simpler but can be flexible in capturing local patterns.
+:::
 
 ## Types of classification
 
@@ -80,7 +181,7 @@ They usually require less time to make predictions. Example eager learners are:
 
 ## Binary Logistic Regression
 
-Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in $\{0,1\}$. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
+Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in $\{0,1\}$ (e.g., yes/no, success/failure). This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
 
 Logistic regression is an example of supervised learning.
 
@@ -88,7 +189,7 @@ Logistic regression is an example of supervised learning.
 
 For the logistic GLM:
 
--   the distribution of the observations is Binomial with parameter $\pi$
+-   the distribution of the observations is Binomial with parameter $\pi\equiv\mathbb{P}(Y=1|\eta)$
 -   the explanatory variables are linear in the parameters: $\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n$
 -   the link function is the logit: $\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})$
 
@@ -123,7 +224,7 @@ So if $x_1$ changes by one unit ($x_1\rightarrow x_1+1$), then the odds ratio ch
 
 ### Confusion matrix
 
-The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary):
+The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary): *It is the foundation for understanding other evaluation metrics.*
 
 |          | predict 1                | predict 0                |
 |----------|--------------------------|--------------------------|
@@ -136,13 +237,79 @@ The confusion matrix is a 2x2 table summarizing the number of correct prediction
 
 ## Binary Classifier metrics
 
-### Accuracy
+### Accuracy - the simplest metric:
 
-Accuracy measure the percent of correct predictions:
+Accuracy measures the percent of correct predictions:
 
 $$
-\frac{\text{TP}+\text{TN}}{\text{total # observations}}
+\begin{align*}
+\frac{\text{TP}+\text{TN}}{\text{observation count}}
+\end{align*}
 $$
+
+## Binary Classifier metrics
+
+### Accuracy:
+
+::: panel-tabset
+## Usefulness
+
+::: {style="font-size: x-large"}
+**Accuracy** is a useful metric in evaluating classification models under certain conditions:
+
+1.  **Balanced Datasets**: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy will give a good sense of how often the model correctly predicts the classes.
+
+2.  **General Performance**: When you want a quick, overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure. It tells you the proportion of correct predictions out of all predictions made.
+:::
+
+## Limitations
+
+::: {style="font-size: x-large"}
+Accuracy has several limitations, especially in the context of imbalanced datasets:
+:::
+
+::: panel-tabset
+## Imbalance
+
+::: {style="font-size: x-large"}
+**Imbalanced Datasets**:
+
+-   **False Sense of Performance**: In datasets where one class significantly outnumbers the other, accuracy can be misleading. For example, if 95% of the samples belong to class A and only 5% to class B, a model that always predicts class A will have a high accuracy (95%) but will fail to identify any instances of class B correctly.
+:::
+
+## Importance
+
+::: {style="font-size: x-large"}
+**Ignoring Class Importance**:
+
+-   **Precision and Recall**: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal. For instance, in medical diagnosis, a false negative might be much more serious than a false positive.
+:::
+
+## Behaviour
+
+::: {style="font-size: x-large"}
+**Lack of Insight into Model Behavior**:
+
+-   **Detailed Performance**: Accuracy does not provide insight into the specific types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes, which is crucial for understanding and improving the model.
+:::
+:::
+:::
+
+## Binary Classifier metrics
+
+### Accuracy: limitation examples
+
+::: {style="font-size: xx-large"}
+Fraud Detection:
+
+-   Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99%. However, it fails to identify any fraudulent transactions, making it useless for fraud detection purposes.
+
+Spam Detection:
+
+-   Scenario: Consider an email classification problem where 95% of emails are legitimate and 5% are spam. A model that always predicts “legitimate” will have high accuracy but will not catch any spam emails, which is the primary goal.
+:::
+
+## Binary Classifier metrics
 
 ### Precision
 
@@ -172,9 +339,21 @@ $$
 
 ## Binary Classifier metrics
 
+Receiver Operating Characteristic (ROC) curve & the Area Under the Curve (AUC)
+
+::: {style="font-size: xx-large"}
+-   **ROC Curve**: Plot of the true positive rate (Recall) against the false positive rate (1 - Specificity) at various threshold settings.
+
+-   **AUC**: The area under the ROC curve, representing the probability that the model ranks a randomly chosen positive instance higher than a randomly chosen negative instance.
+
+    -   AUC values range from 0.5 (no discrimination) to 1 (perfect discrimination).
+:::
+
+## Binary Classifier metrics
+
 ### ROC Curves
 
-Consider plotting the TPR against the FPR (1-TNR) [**at different classification thresholds**]{.underline}. This is the ROC.
+Consider plotting the TPR against the FPR (1-TNR) [**at different classification thresholds**]{.underline}.
 
 -   the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e. no predictive power)
 -   our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.
@@ -260,11 +439,80 @@ training_results %>%
 :::
 :::
 
+## Binary Classifier
+
+**Classification Threshold**
+
+**Recall**:
+
+-   In binary classification, the model predicts the probability of an instance belonging to the positive class. The classification threshold is the probability value above which an instance is classified as positive.
+-   Commonly, this threshold is set at 0.5, meaning any instance with a predicted probability above 0.5 is classified as positive, and below 0.5 as negative.
+
+## Binary Classifier
+
+**Classification Threshold Impact**
+
+::: {style="font-size: x-large"}
+**True Positives (TP) and False Positives (FP)**:
+
+-   **Lower Threshold**: A lower threshold increases the number of instances classified as positive, which increases both true positives and false positives.
+-   **Higher Threshold**: A higher threshold decreases the number of instances classified as positive, which decreases both true positives and false positives.
+
+**True Negatives (TN) and False Negatives (FN)**:
+
+-   **Lower Threshold**: A lower threshold decreases the number of instances classified as negative, which decreases both true negatives and increases false negatives.
+-   **Higher Threshold**: A higher threshold increases the number of instances classified as negative, which increases true negatives and decreases false negatives.
+
+**Trade-offs**:
+
+-   Adjusting the threshold affects the trade-off between sensitivity (recall) and specificity. A lower threshold improves sensitivity but reduces specificity, and vice versa.
+:::
+
+## Binary Classifier
+
+### ROC Curve and AUC
+
+1.  **ROC Curve**:
+    -   The ROC curve plots the true positive rate (TPR, or recall) against the false positive rate (FPR) at various threshold settings.
+    -   Each point on the ROC curve represents a TPR/FPR pair corresponding to a specific threshold.
+2.  **AUC (Area Under the Curve)**:
+    -   The AUC represents the model's ability to discriminate between positive and negative classes across all threshold values.
+    -   A higher AUC indicates better overall performance.
+
+## Binary Classifier: optimal threshold
+
+::: {style="font-size: x-large"}
+1.  **Business Context**:
+    -   The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in a medical diagnosis, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).
+2.  **Maximize Specific Metrics**:
+    -   You can choose a threshold that maximizes a specific metric such as F1 score, which balances precision and recall.
+    -   Alternatively, you might want to maximize precision, recall, or minimize a cost function that accounts for both false positives and false negatives.
+3.  **Youden's Index**:
+    -   One method to select an optimal threshold is to maximize Youden's Index ($J$), which is defined as: $J=\mathrm{Sensitivity}+\mathrm{Specificity}-1$
+    -   This index helps to find a threshold that maximizes the difference between true positive rate and false positive rate.
+4.  **Cost-Benefit Analysis**:
+    -   Perform a cost-benefit analysis by assigning costs to false positives and false negatives and choosing the threshold that minimizes the total expected cost.
+:::
+
+## Binary Classifier: threshold examples
+
+::: {style="font-size: xx-large"}
+### Example Scenario
+
+**Fraud Detection**: - In fraud detection, missing a fraudulent transaction (false negative) might be more costly than flagging a legitimate transaction as fraud (false positive). - You might choose a lower threshold to ensure higher sensitivity (recall), even if it means a higher false positive rate, thereby catching more fraudulent transactions.
+
+### Conclusion
+
+The choice of classification threshold in computing the ROC curve is crucial for balancing the trade-offs between sensitivity and specificity, and ultimately for optimizing the model's performance in a way that aligns with business goals and context. Understanding and carefully selecting the appropriate threshold ensures that the model's predictions are most useful and cost-effective for the specific application.
+:::
+
 # Other Classification Methods
 
 ## Naive Bayes Classification
 
-This method starts with Bayes rule: for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
+This method starts with Bayes rule:
+
+for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
 
 $$
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
@@ -278,7 +526,7 @@ $$
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[C_{k}\right]\times\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}
 $$
 
-and our classifier is
+and since the denominator is a constant, our classifier is
 
 $$
 C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]
