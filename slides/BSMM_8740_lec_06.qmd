@@ -510,6 +510,18 @@ The choice of classification threshold in computing the ROC curve is crucial for
 
 ## Naive Bayes Classification
 
+Bayes Rule - using the rules of conditional probability:
+
+$$
+\mathbb{P}(A,B) = \mathbb{P}(A|B)\mathbb{P}(B) = \mathbb{P}(B|A)\mathbb{P}(A)
+$$ We can write:
+
+$$
+\mathbb{P}(B|A) = \frac{\mathbb{P}(A|B)\mathbb{P}(B)}{\mathbb{P}(A)}
+$$
+
+## Naive Bayes Classification
+
 This method starts with Bayes rule:
 
 for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
@@ -526,7 +538,7 @@ $$
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[C_{k}\right]\times\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}
 $$
 
-and since the denominator is a constant, our classifier is
+and since the denominator is independent of $C_{k}$, our classifier is
 
 $$
 C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]
@@ -605,6 +617,56 @@ training_results_nb %>% yardstick::roc_curve(.pred_No, truth = default) %>% auto
 ```
 :::
 
+## Naive Bayes Classification: uses
+
+::: {style="font-size: large"}
+1.  **Text Classification**:
+    -   **Sentiment Analysis**: It can classify text data into categories such as positive, negative, or neutral sentiment.
+2.  **Document Categorization**:
+    -   Useful in classifying news articles, blog posts, or any document into predefined categories based on content.
+3.  **Medical Diagnosis**:
+    -   Can be used to predict the likelihood of a disease based on patient symptoms and medical history, assuming independence between symptoms.
+4.  **Recommender Systems**:
+    -   Helps in predicting user preferences and recommending items such as movies, books, or products based on previous user behavior.
+5.  **Real-time Prediction**:
+    -   Due to its simplicity and speed, Naive Bayes is suitable for real-time prediction tasks where quick decisions are essential.
+:::
+
+## Naive Bayes Classification: abuses
+
+::: {style="font-size: large"}
+1.  **Assumption of Feature Independence**:
+    -   **Misuse**: The model assumes that all features are independent given the class.
+    -   **Impact**: Poor performance if features are highly correlated.
+2.  **Imbalanced Data**:
+    -   **Misuse**: Naive Bayes can struggle with imbalanced class datasets.
+    -   **Impact**: Bias towards the majority class, leads to high accuracy but poor minority recall.
+3.  **Zero Probability Problem**:
+    -   **Misuse**: If a feature $x_j$ missing for class $k$, then $\mathbb{P}\left[\left.x_{j}\right|C_{k}\right]=0$, which can skew results.
+    -   **Solution**: Use techniques like Laplace Smoothing to handle zero probabilities.
+4.  **Overfitting on Small Datasets**:
+    -   **Misuse**: Naive Bayes may overfit if trained on a small dataset with noise or outliers.
+    -   **Impact**: This can result in poor generalization to new data.
+5.  **Ignoring Feature Scaling**:
+    -   **Misuse**: The model does not inherently handle features with different scales or units.
+    -   **Impact**: Features with larger scales can disproportionately influence the model
+:::
+
+## Naive Bayes Best Practices
+
+::: {style="font-size: large"}
+1.  **Feature Engineering**:
+    -   Proper feature selection and engineering can help mitigate some of the independence assumption issues. For instance, combining related features can improve performance.
+2.  **Handling Correlated Features**:
+    -   While Naive Bayes assumes independence, it can still perform well with moderately correlated features. In cases of strong correlation, consider using other models.
+3.  **Evaluation Metrics**:
+    -   Use appropriate metrics such as precision, recall, and ROC-AUC, especially for imbalanced datasets, to get a comprehensive understanding of model performance.
+4.  **Cross-Validation**:
+    -   Employ cross-validation techniques to ensure that the model generalizes well to unseen data and to avoid overfitting.
+5.  **Comparative Analysis**:
+    -   Compare Naive Bayes with other classifiers (e.g., logistic regression, SVM, random forest) to ensure that it is the best choice for your specific problem.
+:::
+
 ## Nearest Neighbour Classification
 
 The k-nearest neighbors algorithm, also known as KNN or k-NN, is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point.
@@ -666,6 +728,70 @@ In the context of k-Nearest Neighbors (kNN) classification, while the general ev
 2.  **Feature Scaling Sensitivity:** kNN is sensitive to the scale of the features because it relies on calculating distances. Evaluate the model's performance before and after feature scaling (like Min-Max scaling or Z-score normalization)
 
 3.  **Curse of Dimensionality:** kNN can perform poorly with high-dimensional data (many features). Evaluating the model's performance in relation to the number of features (dimensionality) can be important. Dimensionality reduction techniques like PCA might be used with kNN.
+:::
+
+## KNN Classification: uses
+
+::: {style="font-size: large"}
+1.  **Pattern Recognition**:
+    -   **Handwriting Recognition**: kNN can classify handwritten digits or letters using their features.
+    -   **Image Classification**: Categorize by comparing pixels/features with known images.
+2.  **Recommender Systems**:
+    -   **Content-Based Filtering**: kNN can recommend items using similarities between user preferences and the attributes of items.
+    -   **Collaborative Filtering**: Can also recommend items based on preferences of similar users.
+3.  **Medical Diagnosis**:
+    -   **Disease Prediction**: kNN can predict likelihood of diseases by comparing patient data to historical patient data with known diagnoses.
+4.  **Anomaly Detection**:
+    -   **Fraud Detection**: kNN can identify unusual transactions by comparing to known legitimate and fraudulent transactions.
+5.  **Customer Segmentation**:
+    -   **Market Analysis**: It can segment customers based on purchasing behavior, demographics, or other attributes.
+:::
+
+## KNN Classification: abuses
+
+::: {style="font-size: large"}
+-   **High Dimensionality**:
+    -   **Misuse**: kNN can struggle with high-dimensional data as distances become less meaningful (curse of dimensionality).
+    -   **Impact**: Performance degrades as irrelevant or noisy features overshadow important ones.
+    -   **Solution**: Use dimensionality reduction (e.g., PCA, t-SNE) or feature selection before using kNN.
+-   **Large Datasets**:
+    -   **Misuse**: kNN stores all training data and calculates all distances during prediction, & can be computationally expensive.
+    -   **Impact**: It becomes slow and impractical for large datasets.
+    -   **Solution**: Use approximate kNN techniques or consider other algorithms better suited for large datasets.
+-   **Imbalanced Datasets**:
+    -   **Misuse**: kNN can be biased towards the majority class in imbalanced datasets because the majority class neighbors dominate.
+    -   **Impact**: Low recall for minority class, & to poor performance in e.g. fraud detection or rare disease diagnosis.
+    -   **Solution**: Use resampling, synthetic data generation (SMOTE), or adjusting the decision rule to account for class imbalance.
+:::
+
+## KNN Classification: abuses
+
+::: {style="font-size: large"}
+-   **Choice of k and Distance Metric**:
+    -   **Misuse**: An inappropriate choice of ( k ) (too small or too large) or an unsuitable distance metric can lead to poor classification performance.
+    -   **Impact**: A small ( k ) can make the model sensitive to noise (overfitting), while a large ( k ) can oversmooth the decision boundary (underfitting).
+    -   **Solution**: Use cross-validation to choose the optimal ( k ) and experiment with different distance metrics (e.g., Euclidean, Manhattan).
+-   **Scalability**:
+    -   **Misuse**: kNN does not scale well to datasets with a large number of features or samples without optimization.
+    -   **Impact**: Slow predictions and high memory usage.
+    -   **Solution**: Use k-d trees, ball trees, or locality-sensitive hashing to speed up nearest neighbor searches.
+:::
+
+## KNN Classification Best Practices
+
+::: {style="font-size: large"}
+1.  **Normalization and Scaling**:
+    -   **Importance**: Features should be on a similar scale for kNN to perform well, as distance calculations are sensitive to feature scales.
+    -   **Practice**: Apply normalization (e.g., Min-Max scaling) or standardization (mean=0, variance=1) to the features.
+2.  **Handling Missing Data**:
+    -   **Importance**: kNN cannot handle missing values directly.
+    -   **Practice**: Impute missing values before applying kNN, using mean/mode imputation or kNN-based imputation.
+3.  **Choosing k**:
+    -   **Importance**: The choice of $k$ can significantly affect model performance.
+    -   **Practice**: Use cross-validation to determine the optimal value of $k$.
+4.  **Evaluating Model Performance**:
+    -   **Importance**: Use appropriate metrics to evaluate the model, especially with imbalanced data.
+    -   **Practice**: Evaluate using precision, recall, and ROC-AUC, not just accuracy.
 :::
 
 ## Support Vector Machine Classification
@@ -793,7 +919,131 @@ default_model_svm <- parsnip::svm_linear() %>%
   parsnip::set_mode("classification")
 ```
 
+## SVM Classification: variants
+
+The **linear SVM** constructs a linear decision boundary (hyperplane) to separate classes in the feature space. It aims to find the hyperplane that maximizes the margin between the closest points (support vectors) of the classes. The decision function is $f(x) = w \cdot x + b$, where $w$ is the weight vector and $b$ is the bias term.
+
+There are similar SVM methods that are adapted to more complex boundaries.
+
+## SVM Classification: polynomial
+
+**Polynomial SVM** uses a polynomial kernel to create a non-linear decision boundary. It transforms the input features into higher-dimensional space where a linear separation is possible.
+
+The polynomial kernel is $K(x, x') = (w \cdot x + b)^d$, where $d$ is the degree of the polynomial. This kernel is implemented though `parsnip::svm_poly` and engine **kernlab**.
+
+## SVM Classification: radial basis
+
+**RBF SVM** uses the Radial Basis Function (Gaussian) kernel to handle non-linear classification problems. It maps the input space into an infinite-dimensional space where a linear separation is possible.
+
+The RBF kernel is $K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$, where $\gamma$ controls the width of the Gaussian function. This kernel is implemented though `parsnip::svm_rbf` and engine **kernlab**.
+
+## SVM Classification: Comparisons
+
+::: {style="font-size: large"}
+| Feature                 | Linear SVM                                               | Polynomial SVM                              | RBF SVM                                                   |
+|-------------------------|----------------------------------------------------------|---------------------------------------------|-----------------------------------------------------------|
+| **Kernel Function**     | Linear                                                   | Polynomial                                  | Radial Basis Function                                     |
+| **Equation**            | $w \cdot x + b$                                          | $(w \cdot x + b)^d$                         | $\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$ |
+| **Complexity**          | Low                                                      | Medium to High (depending on $d$)           | High                                                      |
+| **Interpretability**    | High                                                     | Medium                                      | Low                                                       |
+| **Computational Cost**  | Low                                                      | Medium to High (higher with increasing $d$) | High                                                      |
+| **Flexibility**         | Low                                                      | Medium to High                              | High                                                      |
+| **Risk of Overfitting** | Low                                                      | Medium to High (higher with increasing $d$) | Medium to High (depends on $\gamma$ and $C$)              |
+| **Typical Use Cases**   | Linearly separable, high-dimensional spaces (e.g., text) | Data with polynomial relationships          | Highly non-linear data, complex patterns                  |
+:::
+
+## SVM Classification Best Practices
+
+::: {style="font-size: small"}
+### 1. **Data Preparation**
+
+#### a. **Feature Scaling**
+
+-   **Importance**: SVM is sensitive to the scale of the features. Features with larger ranges can dominate the distance calculations, leading to suboptimal boundaries.
+-   **Best Practice**: Standardize or normalize the features so that they have similar scales. Common techniques include Min-Max scaling (to a \[0, 1\] range) and StandardScaler (to zero mean and unit variance).
+
+#### b. **Handling Missing Data**
+
+-   **Importance**: SVM cannot handle missing values directly.
+-   **Best Practice**: Impute missing values using methods like mean/mode/median imputation or more sophisticated techniques such as k-NN imputation or using models to predict missing values.
+
+### 2. **Choosing the Kernel**
+
+#### a. **Linear Kernel**
+
+-   **When to Use**: If the data is approximately linearly separable or when the number of features is very large compared to the number of samples.
+-   **Best Practice**: Start with a linear kernel as a baseline, especially for high-dimensional data like text classification.
+
+#### b. **Non-linear Kernels (Polynomial, RBF)**
+
+-   **When to Use**: If the data is not linearly separable. The RBF kernel is generally a good first choice for non-linear problems.
+-   **Best Practice**: Experiment with different kernels. Use cross-validation to compare performance and select the most appropriate kernel.
+:::
+
+## SVM Classification Best Practices
+
+::: {style="font-size: small"}
+### 3. **Hyperparameter Tuning**
+
+#### a. **Regularization Parameter (cost** $C$)
+
+-   **Importance**: Controls the trade-off between achieving a low training error and a low testing error.
+-   **Best Practice**: Use cross-validation to find the optimal value of cost $C$. Start with a wide range and then narrow down.
+
+#### b. **Kernel-specific Parameters**
+
+-   **For RBF Kernel**: Tune the $\sigma$ parameter, which defines the influence of individual data points.
+-   **For Polynomial Kernel**: Tune the degree $d$, the margin coefficient $r$, and the `scale_factor`.
+-   **Best Practice**: Use grid search or random search for hyperparameter tuning. Cross-validation is crucial to avoid overfitting and to find the best combination of parameters.
+
+### 4. **Handling Imbalanced Data**
+
+#### a. **Class Weights**
+
+-   **Importance**: Imbalanced classes can bias the SVM towards the majority class.
+-   **Best Practice**: Adjust the class weights to give more importance to the minority class. Most SVM implementations allow setting the `class_weight` parameter to 'balanced' or manually specifying weights.
+
+#### b. **Resampling Techniques**
+
+-   **Importance**: Can further help in dealing with imbalanced datasets.
+-   **Best Practice**: Use oversampling (e.g., `themis::step_smote()`) or undersampling techniques to balance the class distribution before training the model.
+:::
+
+## SVM Classification Best Practices
+
+::: {style="font-size: small"}
+### 5. **Model Evaluation**
+
+#### a. **Performance Metrics**
+
+-   **Importance**: Accuracy alone may not be sufficient, especially for imbalanced datasets.
+-   **Best Practice**: Evaluate using metrics like precision, recall,and ROC-AUC to get a comprehensive understanding of model performance.
+
+#### b. **Cross-validation**
+
+-   **Importance**: Ensures that the model generalizes well to unseen data.
+-   **Best Practice**: Use k-fold cross-validation to assess the model’s performance and robustness. This helps in reducing the variance in performance estimates.
+
+### 6. **Implementation Considerations**
+
+#### a. **Choosing the Right Software/Library**
+
+-   **Importance**: Efficient and reliable implementation is crucial for performance.
+-   **Best Practice**: Use well-established libraries like those in parsnip.
+
+#### b. **Handling Large Datasets**
+
+-   **Importance**: SVM can be computationally intensive for large datasets.
+-   **Best Practice**: Use linear SVMs for very large datasets or use dimensionality reduction techniques (e.g., PCA) to reduce the feature space.
+:::
+
 # Clustering Methods
+
+## Clustering
+
+*Classification* and *clustering* serve different purposes in machine learning. *Classification* is a supervised learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.
+
+*Clustering*, on the other hand, is an unsupervised learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.
 
 ## Clustering
 
@@ -821,6 +1071,7 @@ The goal of *k-means* is to minimize the sum of squared Euclidian distances betw
 
 In *k-means* clustering, observed variables (columns) are considered to be locations on axes in multidimensional space.
 
+::: {style="font-size: x-large"}
 The basic k-means algorithm has the following steps.
 
 1.  pick the number of clusters k
@@ -828,6 +1079,7 @@ The basic k-means algorithm has the following steps.
 3.  Assign each observation to the nearest **centroid**.
 4.  Compute the new **centroids** of each cluster.
 5.  Repeat steps 3 and 4 until the **centroids** do not change.
+:::
 
 ## K-means Clustering
 
