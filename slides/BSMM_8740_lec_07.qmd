@@ -264,9 +264,9 @@ implications:
 ### Autoregressive Processes
 
 ::: {style="font-size: x-large"}
--   In an AR(1) process the present value is a linear function of the previous observation. $$y_t=\phi_1 y_{t-1}+\epsilon_t$$
--   Given the starting value $y_0=0$, and repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$
--   Could include several lags (i.e. AR(p) model) and the distribution of the error term could take many forms
+-   In an AR(1) process the current value is a linear function of the previous value. $$y_t=\phi_1 y_{t-1}+\epsilon_t$$
+-   Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$
+-   The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ and $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
 :::
 
 ## Time series - processes
@@ -274,14 +274,43 @@ implications:
 ### Autoregressive Processes
 
 ::: {style="font-size: x-large"}
-For an AR process to be stationary (its statistical properties do not change over time), the parameters $\phi_1, \phi_2, \ldots, \phi_p$ must satisfy certain conditions (typically related to the roots of the characteristic equation lying outside the unit circle).
+-   The characteristic equation for an AR(p) process is derived from the autoregressive parameters $(\phi_1, \phi_2, \ldots, \phi_p)$.
 
-The characteristic equation for an AR(p) process is derived from the autoregressive parameters ( $\phi_1, \phi_2, \ldots, \phi_p$ ).
+-   The characteristic equation is: $1-\phi_1 z-\phi_2 z^2-\cdots-\phi_p z^p = 0$
 
-The characteristic equation is: $ 1 - \phi_1 z - \phi_2 z^2 - \cdots - \phi_p z^p = 0$
+-   A process ${y_t}$ is strictly stationary if for each $k$ and $t$, and $n$, the distribution of ${y_t,\ldots,y_{t+k}}$ is the same as the distribution of ${y_{t+n},\ldots,y_{t+k+n}}$
+
+-   For an AR process to be stationary (its statistical properties do not change over time), the parameters $\phi_1, \phi_2, \ldots, \phi_p$ must satisfy certain conditions (typically related to the roots of the characteristic equation lying outside the unit circle).
 :::
 
-## 
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   The AR(p) model is sometimes expressed in terms of the Lag operator $\mathrm{L}$, where $\mathrm{L}y_t=y_{t-1}$.
+
+-   The lag operator can be raised to powers, e.g. $\mathrm{L}^2y_t=y_{t-2}$ and its powers can be combined into polynomials to form a new operator: $a(\mathrm{L})=a_0+a_1\mathrm{L}+a_2\mathrm{L}^2+\ldots+a_p\mathrm{L}^p$ such that $a(\mathrm{L})y_t=a_0y_t+a_1y_{t-1}+a_2y_{t-2}+\ldots+a_py_{t-p}$
+
+-   Lag polymonials can be multiplied and multiplication commutes: $a(\mathrm{L})b(\mathrm{L})=b(\mathrm{L})a(\mathrm{L})$.
+
+-   We define $(1-\rho\mathrm{L})^{-1}$ by $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   per the formula for the [geometric series](https://en.wikipedia.org/wiki/Geometric_series), if $|\rho|<1, then$
+
+$$
+(1-\rho\mathrm{L})^{-1} = \sum_{i=0}^\infty\rho^i\mathrm{L}^i
+$$
+
+-   EXERCISE: check that $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$ holds on both sides of the equation above.
+
+:::
 
 ## Time series - processes
 
