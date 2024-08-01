@@ -4,10 +4,10 @@ subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
-title-slide-attributes:
-  data-background-image: images/my-DRAFT.png
-  data-background-size: contain
-  data-background-opacity: "0.40"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
 format: 
   revealjs: 
     theme: slides.scss
@@ -32,22 +32,18 @@ opts_chunk$set(comment="",
                fig.align = 'center')
 require(magrittr)
 require(ggplot2)
+require(modeltime)
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
 
-## Recap of last week
+## Recap of last week:
 
--   Last week we introduced the Tidymodels framework in R
+-   Last week we introduced classification and clustering methods within the `Tidymodels` framework in R.
+-   Today we look at methods for analysing time series, and we use the `timetk` and `modeltime` packages in conjunction with `Tidymodels` to create and evaluate time series models.
 
--   We showed how we can use the Tidymodels framework to create a workflow for data prep, feature engineering, model fitting and model evaluation.
+## This week:
 
--   Today we look at the using the Tidymodels package to build classification and clustering models.
-
-# Time Series Methods
-
-## Time series
-
--   Today we will explore time series - data where each observation has a time value.
+-   Today we will explore time series - data where each observation includes a time measurement and the time measurements are ordered.
 
 -   We'll look at how to manipulate our time values, create time-based features, plot our time series, and decompose time series into components.
 
@@ -55,22 +51,702 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 [^1]: Auto Regressive Integrated Moving Average
 
+# Time Series Methods
+
+## Time series
+
+A time series data is a data frame (tibble) with an ordered temporal measurement.
+
+Why is this a separate area of study? Consider the simple linear regression model
+
+$$
+y_t=x_t^\top\beta + \epsilon_t;\;t=1,\ldots,R
+$$
+
+errors should not be serially correlated for OLS estimates:
+
+-   $\mathbb{E}[\epsilon_t]=\mathbb{E}[\epsilon_t|\epsilon_{t-1},\epsilon_{t-1},\ldots]$, and
+-   $\mathbb{E}[\epsilon_t\epsilon_{t-j}]=0,\forall j$
+
+## Time series: characteristics
+
+::: {style="font-size: 80%"}
+-   Most economic and financial time series exhibit some form of serial correlation
+    -   If economic output is large during the previous quarter then there is a good chance that it is going to be large in the current quarter
+-   A change that arises in the current period may only affect other variables in the distant future
+-   A particular shock may affect variables over successive quarters
+    -   Hence, we need to start thinking about the dynamic structure of the system that we are investigating
+:::
+
+## Time series: dynamics
+
+Whether time series data is used for forecasting or for testing various theories/hypotheses, we always need to identify the dynamic evolution of the variables, e.g.
+
+$$
+\begin{align*}
+\text{(trend)}\qquad T_{t} & =1+0.05t\qquad\\
+\text{(seasonality)}\qquad S_{t} & =1.5\cos(t\pi\times0.166)\\
+\text{(noise)}\qquad I_{t} & =0.5I_{t-1}+\epsilon_{t}\quad\epsilon_t\sim\mathscr{N}(0,\sigma^2)
+\end{align*}
+$$
+
+## Time series: generation
+
+```{r}
+#| echo: true
+#| code-fold: true
+set.seed(8740)
+
+dat <- tibble::tibble(
+  date = seq(as.Date('2015-04-7'),as.Date('2020-03-22'),'2 weeks')
+) %>% 
+  tibble::rowid_to_column("t") %>% 
+  dplyr::mutate(
+    trend = 1 + 0.05 * t
+    , seasonality = 1.5 * cos(pi * t * 0.166)
+    , noise = rnorm(length(t))
+    , temp = dplyr::lag(noise)
+  ) %>% 
+  tidyr::replace_na(list(temp = 0)) %>% 
+  dplyr::mutate(
+    noise =
+      purrr::map2_dbl(
+        noise
+        , temp
+        , ~ .x + 0.5 * .y
+      )
+  ) %>% 
+  dplyr::select(-temp)
+```
+
+## Time series: generation
+
+::: {.panel-tabset style="font-size: large"}
+## components
+
+```{r}
+#| echo: true
+#| code-fold: true
+dat %>% 
+  tidyr::pivot_longer(-c(t, date)) %>% 
+  ggplot(aes(x=date, y=value, color=name)) + geom_line(linewidth=1) + 
+  labs(
+    title = 'trend, seasonality, and noise'
+    , subtitle = "deterministic: trend, seasonality | stochastic: noise"
+    , color=NULL) + theme_minimal() + theme(plot.margin = margin(0,0,0,0, "cm"))
+```
+
+## combined
+
+```{r}
+#| echo: true
+#| code-fold: true
+dat %>% 
+  dplyr::mutate(y = trend + seasonality + noise) %>% 
+  ggplot(aes(x=date, y=y)) + geom_line(linewidth=1) +
+  labs(
+    title = 'trend + seasonality + noise'
+    , subtitle = "deterministic: trend, seasonality | stochastic: noise") + theme_minimal() +
+  theme(plot.margin = margin(0,0,0,0, "cm"))
+```
+:::
+
+## Time series - processes
+
+-   Time series is a collection of observations indexed by the date of each realisation
+
+-   Using notation that starts at time, $t=1$, and using the end point, $t=T$
+
+$$\{y_1,y_2,y_3,…,y_T\}$$
+
+-   Time index can be of any frequency (e.g. daily, quarterly, etc.)
+
+## Time series - processes
+
+### Deterministic and Stochastic Processes
+
+-   deterministic processes always produce the same output from a given starting point or state
+
+-   stochastic processes have indeterminacy
+
+    -   Usually described by some form of statistical distribution
+    -   Examples include: white noise processes, random walks, Brownian motions, Markov chains, martingale difference sequences, etc.
+
+## Time series - processes
+
+### Stochastic Processes - White noise
+
+::: {style="font-size: 80%"}
+-   A white noise series is made of serially uncorrelated random variables with zero mean and finite variance
+-   For example, errors may be characterised by a Gaussian white noise process, where such a variable has a normal distribution
+-   Slightly stronger condition is that they are independent from one another
+
+$$\epsilon_{t}\sim\text{{i.i.d.}}\mathscr{N}\left(0,\sigma_{\epsilon_{t}}^{2}\right)$$
+:::
+
+## Time series - processes
+
+### Stochastic Processes - White noise
+
+::: {style="font-size: 80%"}
+implications:
+
+-   $\mathbb{E}\left[\epsilon_{t}\right]=\mathbb{E}\left[\left.\epsilon_{t}\right|\epsilon_{t-1},\epsilon_{t-2},\ldots\right]=0$
+-   $\mathbb{E}\left[\epsilon_{t}\epsilon_{t-j}\right]=\text{cov}\left(\epsilon_{t},\epsilon_{t-j}\right)=0$
+-   $\text{var}\left(\epsilon_{t}\right)=\text{cov}\left(\epsilon_{t},\epsilon_{t}\right)=\sigma_{\epsilon_{t}}^{2}$
+:::
+
+## Time series - processes
+
+### Stochastic Processes - Random walk
+
+::: {style="font-size: 80%"}
+-   Random walk would imply that the effect of a shock is permanent. $$y_t=y_{t-1}+\epsilon_t$$
+-   Given the starting value $y_0$, and using recursive substitution, this process could be represented as $$y_t=y_0+\sum_{j=1}^t\epsilon_t$$
+-   Since the effect of past shocks do not dissipate we say it has an infinite memory
+:::
+
+## Time series - processes
+
+### Stochastic Processes - Random walk + drift
+
+::: {style="font-size: x-large"}
+-   Random walk plus a constant term. $$y_t=\mu+y_{t-1}+\epsilon_t$$
+-   Given the starting value $y_0=0$, and using recursive substitution, this process could be represented as $$y_t=\mu t+\sum_{j=1}^t\epsilon_t$$
+-   Shocks have permanent effects and are influenced by drift
+:::
+
+## Time series - processes
+
+### Stochastic Processes - Random walks
+
+::: {style="font-size: x-large"}
+**Characteristics**:
+
+1.  **Independence**:
+    -   The steps in a random walk are independent of each other. The future position depends only on the current position and a random step.
+2.  **Types**:
+    -   **Simple Random Walk**: The step sizes are often $\pm 1$, with equal probability.
+    -   **General Random Walk**: The step sizes can follow any distribution.
+3.  **Applications**:
+    -   Stock price movements, particle diffusion, and population genetics.
+:::
+
+## Time series - processes
+
+### Stochastic Processes - Markov chains
+
+::: {style="font-size: medium"}
+**Characteristics**:
+
+1.  **State Space**: - A Markov chain consists of a set of states and transition probabilities between these states.
+
+2.  **Markov Property**:
+
+    -   The probability of transitioning to the next state depends only on the current state: $\mathbb{P}(X_{t+1} = s' | X_t = s, X_{t-1}, ..., X_0) = \mathbb{P}(X_{t+1} = s' | X_t = s)$.
+
+3.  **Transition Matrix**:
+
+    -   The transitions are governed by a matrix of probabilities, where each entry $\mathbb{P}_{i,j}$ represents the probability of moving from state $i$ to state $j$.
+
+4.  **Types**:
+
+    -   **Discrete-Time Markov Chain**: The process is observed at discrete time intervals.
+    -   **Continuous-Time Markov Chain**: The process evolves continuously over time.
+
+5.  **Applications**:
+
+    -   Weather modeling, queueing theory, board games (like Monopoly), and speech recognition.
+:::
+
+## Time series - processes
+
+### Stochastic Processes - Markov chains
+
+::: {style="font-size: x-large"}
+In the discrete case, given a state transition matrix $A$ and an initial state $\pi_0$, then
+
+$$
+\begin{align*}
+\pi_1 & = A\pi_0\\
+\pi_2 & = A\pi_1 = A^2\pi_0\\
+&\vdots\\
+\pi_n & = A^n\pi_0
+\end{align*}
+$$
+
+If the markov chain has a stationary distribution $\pi^{s}$, then $A\pi^{s}=\pi^{s}$ by definition and $(I-A)\pi^{s}=0$ determines $\pi^{s}$ up to a constant.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   In an AR(1) process the current value is a linear function of the previous value.
+
+$$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$ - The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ with $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
+:::
+
+## Time series - processes
+
+### Moments of distribution
+
+::: {style="font-size: 80%"}
+-   The first moment of a stochastic process is the average of $y_t$ over all possible realisations $$\hat{y}=\mathbb{E}[y_t];\;\;t=1,\ldots,T$$
+-   The second moment is defined as the variance $$\text{var}(y_t)=\mathbb{E}[y_t\times y_t]=\mathbb{E}[y_t- \mathbb{E}[y_t]^2];\;\;t=1,\ldots,T$$
+-   The covariance, for $j$ $$\text{cov}(y_t,y_{t-j})=\mathbb{E}[y_t\times y_{t-j}]=\mathbb{E}[(y_t- \mathbb{E}[y_t])(y_{t-j}- \mathbb{E}[y_{t-j}])];\;\;t=1,\ldots,T$$
+:::
+
+## Time series - processes
+
+### Conditional moments
+
+::: {style="font-size: 80%"}
+-   Conditional distribution is based on past realisations of a random variable
+-   For the AR(1) model (where $\epsilon_t$ are iid Gausian and $|\phi|<0$) $$y_t=\phi y_{t-1}+\epsilon_t$$
+-   The conditional moments are $$
+    \begin{align*}
+    \mathbb{E}\left[\left.y_{t}\right|y_{t-1}\right] & =\phi y_{t-1}\\
+    \text{var}\left(\left.y_{t}\right|y_{t-1}\right) & =\mathbb{E}\left[\phi y_{t-1}+\epsilon_{t}-\phi y_{t-1}\right]^{2}=\mathbb{E}\left[\epsilon\right]^{2}=\sigma^{2}\\
+    \text{cov}\left(\left.y_{t}\right|y_{t-1},\left.y_{t-j}\right|y_{t-j-1}\right) & =0;\;j>1
+    \end{align*}
+    $$
+:::
+
+## Time series - processes
+
+### Conditional moments
+
+::: {style="font-size: 80%"}
+-   Conditioning on $y_{t-2}$ for $y_t$ $$
+    \begin{align*}
+    \mathbb{E}\left[\left.y_{t}\right|y_{t-2}\right] & =\phi^{2}y_{t-2}\\
+    \text{var}\left(\left.y_{t}\right|y_{t-2}\right) & =\left(1+\phi^{2}\right)\sigma^{2}\\
+    \text{cov}\left(\left.y_{t}\right|y_{t-2},\left.y_{t-j}\right|y_{t-j-2}\right) & =\phi\sigma^{2};\;j=1\\
+     & =0;\;j>1
+    \end{align*}
+    $$
+:::
+
+## Time series - processes
+
+### Unconditional moments
+
+::: {style="font-size: 80%"}
+-   For the AR(1) model (where $\epsilon_t$ are iid Gausian and $|\phi|<1$) $$y_t=\phi y_{t-1}+\epsilon_t$$
+-   The unconditional moments are (assuming stationarity and $\phi<1$) $$
+    \begin{align*}
+    \mathbb{E}\left[y_{t}\right] & =0\\
+    \text{var}\left(y_{t}\right) & =\text{var}\left(\phi y_{t-1}+\epsilon_t\right)\\
+    & = \phi^2 \text{var}\left(y_{t-1}\right) + \text{var}\left(\epsilon_{t}\right)\\
+    & = \frac{\sigma^2}{1-\phi^2}\\
+    \text{cov}\left(y_{t},y_{t-k}\right) & =\phi^k\frac{\sigma^2}{1-\phi^2}
+    \end{align*}
+    $$
+:::
+
+## Time series - processes
+
+### Stationarity
+
+::: {style="font-size: 80%"}
+-   A time series is strictly stationary if for any $\{j_1,j_2,\ldots,j_n\}$
+-   the joint distribution of $\{y_t,y_{t+j_1},y_{t+j_2},\ldots,y_{t+j_n}\}$
+-   depends only on the intervals separating the dates $\{j_1,j_2,\ldots,j_n\}$
+-   and not on the date $t$ itself
+:::
+
+## Time series - processes
+
+### Covariance stationary
+
+::: {style="font-size: 80%"}
+-   If neither the mean $\hat{y}$ nor the covariance $\text{cov}(y_t,y_{t-j})$ depend on $t$
+-   the the process for $y_t$ is said to be covariance (weakly) stationary, where $\forall t,j$ $$
+    \begin{align*}
+    \mathbb{E}\left[y_{t}\right] & =\bar{y}\\
+    \mathbb{E}\left[\left(y_{t}-\bar{y}\right)\left(y_{t-j}-\bar{y}\right)\right] & =\text{cov}\left(y_{t},y_{t-j}\right)
+    \end{align*}
+    $$
+-   Note that the process $y_t=\alpha t+\epsilon_t$ would not be stationary, as the mean clearly depends on $t$
+-   We saw that the unconditional moments of the AR(1) with $|ϕ|<1$ had a mean and covariance that did not depend on time
+:::
+
+## Time series - processes
+
+### Autocorrelation function (ACF)
+
+::: {style="font-size: 80%"}
+-   For a stationary process we can plot the standardised covariance of the process over successive lags
+
+-   The autocovariance function is denoted by $\gamma (j)\equiv\text{cov}(y_t,y_{t-j})$ for $t=1,\ldots,T$
+
+-   Th autocovariance function is standardized by dividing each function by the variance, giving the ACF for successive values of $j$
+
+    $$\rho(j)\equiv\frac{\gamma(j)}{\gamma(0)}$$
+
+-   To display the results of the ACF we usually plot $ρ(j)$ against (non-negative) $j$ to illustrate the degree of persistence in a variable
+:::
+
+## Time series - processes
+
+### Partial autocorrelation function (PACF)
+
+::: {style="font-size: 80%"}
+-   With an AR(1) process $y_t=\phi y_{t-1}+\epsilon_t$, the ACF would suggest $y_t$ and $y_{t-2}$ are correlated, even though $y_{t-2}$ does not appear in the model.
+
+-   This is due to the pass through, where we noted that $y_t=\phi^2y_{t-2}$ when performing recursive substitution
+
+-   PACF eliminates the effects of passthrough and puts the focus on the independent relationship between $y_t$ and $y_{t_2}$
+:::
+
+## Time series - processes
+
+### Partial autocorrelation function (PACF)
+
+```{r}
+#| layout-ncol: 3
+#| echo: true
+#| code-fold: true
+library(ggfortify)
+# Parameters for the AR(1) process
+phi = 0.8  # Autoregressive coefficient (should be less than 1 in absolute value)
+n = 100    # Number of observations
+
+# Simulate AR(1) process
+set.seed(123)  # For reproducibility
+epsilon = rnorm(n)  # White noise
+X = rep(0, n)  # Initialize the series
+
+# Generate the AR(1) series
+for (t in 2:n) {
+  X[t] = phi * X[t-1] + epsilon[t]
+}
+
+# Plot the AR(1) series
+# plot(X, type = "l", main = "AR(1) Process", xlab = "Time", ylab = "Value")
+tibble::tibble(y=X, x=1:length(X)) %>% ggplot(aes(x=x, y=y)) + geom_line() + 
+  labs(title="AR(1) Process", x = "Time", y = "Value")
+
+# Plot the autocorrelation function (ACF)
+#stats::acf(X, main = "Autocorrelation of AR(1) Process")
+autoplot(stats::acf(X, plot = FALSE)) + labs(title = "Autocorrelation of AR(1) Process")
+
+# Plot the autocorrelation function (ACF)
+#stats::pacf(X, main = "Partial Autocorrelation of AR(1) Process")
+autoplot(stats::pacf(X, plot = FALSE)) + labs(title = "Partial Autocorrelation of AR(1) Process")
+
+```
+
+## 
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   The characteristic equation for an AR(p) process is derived from the autoregressive parameters $(\phi_1, \phi_2, \ldots, \phi_p)$.
+
+-   The characteristic equation is: $1-\phi_1 z-\phi_2 z^2-\cdots-\phi_p z^p = 0$
+
+-   A process ${y_t}$ is strictly stationary if for each $k$ and $t$, and $n$, the distribution of ${y_t,\ldots,y_{t+k}}$ is the same as the distribution of ${y_{t+n},\ldots,y_{t+k+n}}$
+
+-   For an AR process to be stationary (its statistical properties do not change over time), the parameters $\phi_1, \phi_2, \ldots, \phi_p$ must satisfy certain conditions (typically related to the roots of the characteristic equation lying outside the unit circle).
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   The AR(p) model is sometimes expressed in terms of the Lag operator $\mathrm{L}$, where $\mathrm{L}y_t=y_{t-1}$.
+
+-   The lag operator can be raised to powers, e.g. $\mathrm{L}^2y_t=y_{t-2}$ and its powers can be combined into polynomials to form a new operator: $a(\mathrm{L})=a_0+a_1\mathrm{L}+a_2\mathrm{L}^2+\ldots+a_p\mathrm{L}^p$ such that $a(\mathrm{L})y_t=a_0y_t+a_1y_{t-1}+a_2y_{t-2}+\ldots+a_py_{t-p}$
+
+-   Lag polymonials can be multiplied and multiplication commutes: $a(\mathrm{L})b(\mathrm{L})=b(\mathrm{L})a(\mathrm{L})$.
+
+-   We define $(1-\rho\mathrm{L})^{-1}$ by $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   per the formula for the [geometric series](https://en.wikipedia.org/wiki/Geometric_series), if $|\rho|<1, then$
+
+$$
+(1-\rho\mathrm{L})^{-1} = \sum_{i=0}^\infty\rho^i\mathrm{L}^i
+$$
+
+-   EXERCISE: check that $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$ holds on both sides of the equation above.
+
+-   If the sum is to converge, then we need $|\rho|<1$
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+For the AR(1) process, using the lag operator we can write:
+
+$$
+\begin{align*}
+y_t & = \phi_1 y_{t-1}+\epsilon_t\\
+(1-\phi L)y_t & =  \epsilon_t\\
+y_t & = (1-\phi L)^{-1} \epsilon_t\\
+  & = (\sum_{i=0}^\infty\phi^i\mathrm{L}^i)\epsilon_t\\
+  & = \sum_{j=1}^t\phi_1^{t-j}\epsilon_j
+\end{align*}
+$$ - EXERCISE: check that the last equality holds.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+AR(p) processes can be written as AR(1) vector processes, e.g. for AR(2)
+
+$$
+\left(\begin{array}{c}
+y_{t}\\
+y_{t-1}
+\end{array}\right)=\left(\begin{array}{cc}
+\phi_{1} & \phi_{2}\\
+1 & 0
+\end{array}\right)\left(\begin{array}{c}
+y_{t-1}\\
+y_{t-2}
+\end{array}\right)+\left(\begin{array}{c}
+\epsilon_{t}\\
+0
+\end{array}\right)
+$$ where the matrix $A$ here is (i.e. AR(2)):
+
+$$A=\left(\begin{array}{cc}
+\phi_{1} & \phi_{2}\\
+1 & 0
+\end{array}\right)
+$$
+
+## Time series - processes
+
+### Autoregressive Processes
+
+Repeating the argument for AR(1) processes
+
+$$
+\begin{align*}
+\vec{y}_t & = (1-A L)^{-1} \vec{\epsilon}_t\\
+  & = (\sum_{i=0}^\infty A^i\mathrm{L}^i)\vec{\epsilon}_t\\
+\end{align*}
+$$
+
+And we only converge if $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$, i.e. all eigenvalues are \< 1.
+
+## Time series - processes
+
+### Autoregressive Processes
+
+-   In general if an $n\times n$ matrix $A$ has $n$ distinct eigenvalues, then all eigenvalues must have magnitude $<1$ for $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$.
+-   In this case we have $A=X\Lambda X^{-1}$ where the columns of $x$ are the eigenvectors of $A$ and $\Lambda$ is a diagonal matrix with the eigenvalues on the diagonal.
+-   $A^i=X\Lambda^i X^{-1}$ so $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$
+
+## Time series - processes
+
+### Computing determinants
+
+::: {style="font-size: m"}
+**Definitions**
+
+1.  **Minor**:
+    -   The minor $M_{ij}$ of an element $a_{ij}$ in an $n \times n$ matrix $A$ is the determinant of the $(n-1) \times (n-1)$ matrix that results from removing the $i$-th row and $j$-th column from $A$.
+2.  **Cofactor**:
+    -   The cofactor $C_{ij}$ of an element $a_{ij}$ is given by: $C_{ij} = (-1)^{i+j} M_{ij}$
+    -   The sign factor $(-1)^{i+j}$ alternates according to the position of the element in the matrix.
+
+**Cofactor Expansion**
+
+The determinant of an $n \times n$ matrix $A$ can be computed by expanding along any row or column. The cofactor expansion along the $i$-th row is given by:
+
+$$
+\det(A) = \sum_{j=1}^n a_{ij} C_{ij}
+$$ Similarly, the cofactor expansion along the $j$-th column is: $\det(A) = \sum_{i=1}^n a_{ij} C_{ij}$
+:::
+
+## Time series - processes
+
+### Computing determinants
+
+The structure of the AR(1) vector process makes it easy to compute the polynomial for the determinant in therms of the coefficients of the process.
+
+The roots of the polynomial can be computed using `polyroot`, passing in a vector of polynomial coefficients in increasing order. The magnitudes of the eigenvalues can using the base function `Mod`.
+
+``` r
+polyroot(c(1,.2,3,.6)) |> Mod()
+```
+
+## Time series - processes
+
+### Moving Average Processes
+
+::: {style="font-size: 80%"}
+-   In an MA(q) process the present value is a weighted sum on the current and previous errors. $$y_t= \epsilon_t +\theta_1\epsilon_{t-1};\;\text(MA(1))$$
+-   MA(q) models describe processes where it takes a bit of time for the error (or "shock") to dissipate
+-   This type of expression may be used to describe a wide variety of stationary time series processes
+:::
+
+## Time series - processes
+
+### Moving Average Processes
+
+::: {style="font-size: x-large"}
+-   There is a duality of AR() and MA() processes.
+
+-   We have already seen how AR processes can be expressed as MA() processes:
+
+$$
+\vec{y}_t = (1-A L)^{-1} \vec{\epsilon}_t = (\sum_{i=0}^\infty A^i\mathrm{L}^i)\vec{\epsilon}_t\\
+$$
+
+and MA() processes can be expressed as AR processes by a similar argument.
+:::
+
+## Time series - processes
+
+### ARMA Processes
+
+::: {style="font-size: 80%"}
+-   A combination of an AR(1) and a MA(1) process is termed an ARMA(1,1) observation. $$y_t=\phi y_{t-1}+\epsilon_t+\theta\epsilon_{t-1}$$
+-   AN ARMA(p,q) process takes the form $$y_t=\sum_{j=1}^p\phi_jy_{t-j}+\epsilon_t+\sum_{i=1}^q\theta_i\epsilon_{t-i}$$
+-   This model was popularized by Box & Jenkins, who developed a methodology that may be used to identify the terms that should be included in the model
+:::
+
+## Time series - processes
+
+### Long memory & fractional differencing
+
+### 
+
+::: {style="font-size: 80%"}
+-   Most AR(p), MA(q) and ARMA(p,q) processes are termed short-memory process because the coefficients in the representation are dominated by exponential decay
+-   Long-memory (or persistent) time series are considered intermediate compromises between the short-memory models and integrated nonstationary processes
+:::
+
+## Time series - processes
+
+### ARIMA
+
+::: {style="font-size: 75%"}
+-   AutoRegressive Integrated Moving Average combines three key concepts: autoregression (AR), differencing (I - for Integrated), and moving average (MA).
+-   **AR (AutoRegressive)**: captures the relationship between an observation and lagged observations.
+-   **I (Integrated)**: Differencing is used to make the time series stationary.
+-   **MA (Moving Average)**: captures the relationship between an observation and a residual error from a moving average model.
+-   An ARIMA model is denoted as ARIMA(p, d, q), where: - p is the number of lag observations in the model (AR part), - d is the number of times that the raw observations are differenced (I part), - q is the size of the moving average window (MA part).
+:::
+
+## Time series - exponential smoothing
+
+Exponential smoothing or exponential moving average (EMA) is a rule of thumb technique for smoothing time series data using the exponential window function.
+
+For a raw data series $\{x_t\}$ the output of the exponential smoothing process is $\{y_t\}$, where, for $0\le\alpha\le1$ and $t>0$
+
+$$
+\begin{align*}
+y_0 & = x_0 \\
+y_t & = \alpha x_t + (1-\alpha)y_{t-1}
+\end{align*}
+$$
+
+$\alpha$ is called the **smoothing factor**.
+
+## Time series - exponential smoothing
+
+The time constant $\tau$ is the amount of time for the smoothed response of a unit step function to reach $1-1/e\approx 63.2\%$ of the original signal.
+
+$$
+\begin{align*}
+\alpha & = 1-e^{-\Delta T/\tau}\\
+\tau & = -\frac{\Delta T}{ln(1-\alpha)}
+\end{align*}
+$$
+
+where $\Delta T$ is the time interval.
+
+## Time series - exponential smoothing
+
+We can also include a trend term
+
+$$
+\begin{align*}
+y_0 & = x_0 \\
+b_0 & = x_1 - x_0\\
+\end{align*}
+$$
+
+and for $t>0$, $0\le\alpha\le1$ and $0\le\beta\le1$
+
+$$
+\begin{align*}
+y_t & = \alpha x_t + (1-\alpha)(y_{t-1} + b_{t-1})\\
+b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}
+\end{align*}
+$$
+
+## Time series - exponential smoothing
+
+Finally we can also include a seasonality term, with a cycle length of $K$ time intervals.
+
+and for $t>0$, $0\le\alpha\le1$, $0\le\beta\le1$ and $0\le\gamma\le1$
+
+$$
+\begin{align*}
+y_t & = \alpha \frac{x_t}{c_{t-L}} + (1-\alpha)(y_{t-1} + b_{t-1})\\
+b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}\\
+c_t & = \gamma\frac{x_t}{y_t} + (1-\gamma)c_{t-L}
+\end{align*}
+$$
+
+## Time series - ETS models
+
+::: {style="font-size: 80%"}
+ETS stands for Error-Trend-Seasonality, and the exponential smoothing model is clearly in this class, with each component additive. The more general taxonomy is:
+
+-   **Error**: "Additive" (A), or "Multiplicative" (M);
+-   **Trend**: "None" (N), "Additive" (A), "Additive damped" (Ad), "Multiplicative" (M), or "Multiplicative damped" (Md);
+-   **Seasonality**: "None" (N), or "Additive" (A), or "Multiplicative" (M).
+
+In this taxonomy, the exponential smoothing model is denoted as ETS(A,A,A).
+:::
+
+## Time series - ETS models
+
+The additive ETS models are shown below, and more detailed discussion can be found [here](https://openforecast.org/adam/ETSConventional.html)
+
+![](images/ETSTaxonomyAdditive-1.png){fig-align="center"}
+
+# The Timetk package
+
 ## Time series - plotting
 
 ```{r}
 #| echo: true
-timetk::bike_sharing_daily %>% dplyr::slice_head() %>% dplyr::glimpse()
+timetk::bike_sharing_daily %>% 
+  dplyr::slice_head(n=5) %>% 
+  dplyr::glimpse()
 ```
 
 ## Time series - plotting
 
 The `timetk::plot_time_series()` function is a good way to to get a quick timeseries plot. From a tidy table we
 
--   select the time value and the column we want to play
+-   select the time value and the columns we want to plot
 -   pivot (longer) the columns we want to plot
 -   plot
 
-The `timetk::plot_time_series()` function has any options that can be changed.
+The `timetk::plot_time_series()` function has many options that can be changed.
 
 ## Time series - plotting
 
@@ -110,7 +786,7 @@ timetk::bike_sharing_daily %>%
 
 ## Time series - `timetk::`
 
-### time upscalling
+### time upscaling
 
 ```{r}
 #| echo: true
@@ -226,8 +902,8 @@ tibble::tibble(
 #| echo: true
 #| code-fold: true
 timetk::tk_make_holiday_sequence(
-  start_date = "2025"
-  , end_date = "2027"
+  start_date = "2024"
+  , end_date = "2026"
   , calendar = "TSX"
 ) %>% 
   timetk::tk_get_holiday_signature(holiday_pattern = "Thanksgiving",locale_set = "CA", exchange = "TSX") %>% 
@@ -260,9 +936,9 @@ timetk::bike_sharing_daily %>%
 
 ### timeseries transformations
 
-::: {style="font-size: 30px"}
 ### See Also
 
+::: {style="font-size: 30px"}
 -   Lag Transformation: `lag_vec()`
 
 -   Differencing Transformation: `diff_vec()`
@@ -278,733 +954,334 @@ timetk::bike_sharing_daily %>%
 Other common transformations to reduce variance: `log()`, `log1p()` and `sqrt()`
 :::
 
-## Classification
-
-**Lazy learners or instance-based learners**, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they search for the nearest neighbor from the whole training data. Examples are:
-
--   K-Nearest Neighbor.
--   Case-based reasoning.
-
-## Types of classification
-
--   Binary classification
--   Multi-Class Classification (mutually exclusive)
--   Multi-Label Classification (not mutually exclusive)
--   Imbalanced Classification
-
-## Binary Logistic Regression
-
-Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in ${0,1}$. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
-
-Logistic regression is an example of supervised learning.
-
-## Binary Logistic Regression
-
-For the logistic GLM:
-
--   the distribution of the observations is Binomial with parameter $\pi$
--   the explanatory variables are linear in the parameters: $\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n$
--   the link function is the logit: $\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})$
-
-It follows that $\pi = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}}$, which is a sigmoid function in the explanatory variables. The equation $\eta=0$ defines a linear decision boundary or classification threshold.
-
-## Binary Logistic Regression
-
-The term $\frac{\pi}{1-\pi}$ is called the the odds-ratio. By its definition $\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}$
-
-So if $x_1$ changes by one unit ($x_1\rightarrow x_1+1$), then the odds ratio changes by $e^{\beta_1}$.
-
-## Classifier metrics
-
-### Confusion matrix
-
-The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model:
-
-|          | predict 1                | predict 0                |
-|----------|--------------------------|--------------------------|
-| data =1  | true positives (TP)      | false negatives (FN)[^2] |
-| data = 0 | false positives (FP)[^3] | true negatives (TN)      |
-
-[^2]: Type II error
-
-[^3]: Type I error
-
-## Classifier metrics
-
-### Accuracy
-
-Accuracy measure the percent of correct predictions:
-
-$$
-\frac{\text{TP}+\text{TN}}{\text{total # observations}}
-$$
-
-### Precision
-
-Accuracy measure the percent of positive predictions that are correct:
-
-$$
-\frac{\text{TP}}{\text{TP}+\text{FP}}
-$$
-
-## Classifier metrics
-
-### Recall / Sensitivity
-
-Measures the success at predicting the first class
-
-$$
-\frac{\text{TP}}{\text{TP}+\text{FN}}\qquad\text{(True Positive Rate - TPR)}
-$$
-
-### Recall / Specificity
-
-Measures the success at predicting the second class
-
-$$
-\frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
-$$
-
-## Classifier metrics
-
-### ROC Curves
-
-Consider plotting the TPR against the FPR (1-TNR) at different classification thresholds. This is the ROC.
-
--   the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e. no predictive power)
--   our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.
-
-So, how to compute?
-
-## Classifier metrics
-
-### The AUC: the area under the ROC.
-
-It turns out the AUC is very easy to compute and gives us the ROC at the same time.
-
--   rank order your data by decreasing positive predicted probability
--   against the cumulative percent of negative observations plot the cumulative percent of positive observations
-
-## Example: create the workflow
-
-#### Workflow to model credit card default
+## Time series - Feature engineering
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| fig-align: center
-#| eval: false
-data <- ISLR::Default %>% tibble::as_tibble()
-set.seed(8740)
+#| layout-ncol: 2
+#| code-line-numbers: "3-5|6-8|12-16"
+#| message: false
+subscribers_tbl   <- readRDS("data/00_data/mailchimp_users.rds")
 
-# split data
-data_split <- rsample::initial_split(data)
-default_train <- rsample::training(data_split)
+data_prepared_tbl <- subscribers_tbl %>% 
+  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) %>% 
+  timetk::pad_by_time(.pad_value=0) %>% 
+  # preprocessing
+  dplyr::mutate(optins_trans=timetk::log_interval_vec(optins, limit_lower=0, offset=1)) %>% 
+  dplyr::mutate(optins_trans=timetk::standardize_vec(optins_trans)) %>% 
+  # fix missing vals at start
+  timetk::filter_by_time(.start_date = "2018-07-03") %>% 
+  # outliers clean
+  dplyr::mutate(optins_trans_cleaned = timetk::ts_clean_vec(optins_trans, period=7)) %>% 
+  dplyr::mutate(optins_trans=ifelse(optin_time %>% timetk::between_time("2018-11-18","2018-11-20")
+                             , optins_trans_cleaned
+                             , optins_trans
+                             )) %>% 
+  dplyr::select(-optins, -optins_trans_cleaned)
+  
+data_prepared_tbl     # show the dt
 
-# create a recipe
-default_recipe <- default_train %>% 
-  recipes::recipe(formula = default ~ student + balance + income) %>% 
-  recipes::step_dummy(recipes::all_nominal_predictors())
-
-# create a linear regression model
-default_model <- parsnip::logistic_reg() %>% 
-  parsnip::set_engine("glm") %>% 
-  parsnip::set_mode("classification")
-
-# create a workflow
-default_workflow <- workflows::workflow() %>%
-  workflows::add_recipe(default_recipe) %>%
-  workflows::add_model(default_model)
+data_prepared_tbl %>% # plot the table
+  tidyr::pivot_longer(contains("trans")) %>% 
+  timetk::plot_time_series(optin_time,value,name) 
 ```
 
-## Example: fit the model using the data
+## Date Features
 
 ```{r}
 #| echo: true
-#| code-fold: false
-#| eval: false
-# fit the model
-lm_fit <- 
-  default_workflow %>% 
-  parsnip::fit(default_train)
-
-# augment the data with the predictions using the model fit
-training_results <- 
-  broom::augment(lm_fit , default_train) 
-```
-
-## Example: compute the AUC
-
-```{r}
-#| echo: true
-#| code-fold: false
-#| eval: false
-auc_roc_tbl <- training_results %>% 
-  # order prediction probability from high to low
-  dplyr::arrange( desc(.pred_Yes) ) %>% 
-  # make new variable for cumulative % of 'Yes' category
-  dplyr::mutate( 
-    # scale to percent (# of all 'Yes' categories)
-    y = ifelse(default == "Yes", 1/sum(default == "Yes"),0)
-    # accumulate the values
-    , y = cumsum(y)
-  ) %>% 
-  # keep the 'No' category values
-  dplyr::filter(default == "No") %>% 
-  # number rows & scale to % of total; compute incremental areas
-  tibble::rowid_to_column("ID") %>% 
-  dplyr::mutate(
-    auc_inc = y / max(ID) # multiply the height by the width
-    , ID = ID / max(ID)   # scale to percent (# of all 'No' categories)
+#| code-fold: true
+data_prep_signature_tbl <- 
+  data_prepared_tbl %>% 
+  timetk::tk_augment_timeseries_signature(
+    .date_var = optin_time
   ) 
 ```
 
-## Example: plot the ROC
+```{r}
+#| echo: false
+data_prep_signature_tbl %>% 
+  dplyr::slice_head(n=4) %>% 
+  dplyr::glimpse()
+```
+
+## Trend
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| fig-align: center
-#| eval: false
-auc_roc_tbl %>% 
-  ggplot(aes(x=ID, y = y)) +
-  geom_line() +
-  # xlim(c(0,1)) +
-  geom_abline(slope=1) + 
-    coord_fixed() +
-    labs(
-      title = "ROC curve for load default prediction",
-      subtitle = 
-        stringr::str_glue("Logistic Regression AUC = {scales::label_number(accuracy = 10^-7)(sum(auc_roc_tbl$auc_inc) )}")
-    )
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var = optin_time
+    , .formula = optins_trans ~ index.num
+  )
 ```
 
-## Example: yardstick
-
-```{r}
-#| echo: true
-#| code-fold: false
-#| eval: false
-training_results %>% 
-  yardstick::roc_auc(.pred_No, truth = default)
-```
-
-## Example: yardstick
+## Non-linear trends
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| fig-align: center
-#| eval: false
-training_results %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
-```
-
-## Other Classification Methods
-
-## Naive Bayes Classification
-
-This method starts with Bayes rule: for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
-
-$$
-\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
-$$
-
-## Naive Bayes Classification
-
-If we assume that the features are all independent we can write Bayes rule as
-
-$$
-\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[C_{k}\right]\times\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}
-$$
-
-and our classifier is
-
-$$
-C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]
-$$
-
-## Naive Bayes Classification
-
-So it remains to calculate the class probability $\mathbb{P}\left[C_{k}\right]$ and the conditional probabilities $\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]$
-
-The different naive Bayes classifiers differ mainly by the assumptions they make regarding the conditional probabilities.
-
-## Naive Bayes Classification
-
-If our features are all ordinal, then
-
--   The class probabilities are simply the frequency of instances that belong to each class divided by the total number of instances.
-
--   The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of instances with that class value.
-
-## Naive Bayes Classification
-
-If any features are numeric, we can estimate conditional probabilities by assuming that the numeric features have a Gaussian distribution for each class
-
-## Naive Bayes Classification
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| fig-align: center
-#| message: false
-#| warning: false
-#| eval: false
-library(discrim)
-# create a naive bayes classifier
-default_model_nb <- parsnip::naive_Bayes() %>% 
-  parsnip::set_engine("klaR") %>% 
-  parsnip::set_mode("classification")
-
-# create a workflow
-default_workflow_nb <- workflows::workflow() %>%
-  workflows::add_recipe(default_recipe) %>%
-  workflows::add_model(default_model_nb)
-
-# fit the model
-lm_fit_nb <- 
-  default_workflow_nb %>% 
-  parsnip::fit(
-    default_train
-  , control = 
-    workflows::control_workflow(parsnip::control_parsnip(verbosity = 1L))
+#| layout-ncol: 2
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var = optin_time
+    , .formula = optins_trans ~ splines::bs(index.num, degree=3)
+    , .show_summary = FALSE
+    , .title = "B-spline, degree 3"
   )
 
-# augment the data with the predictions using the model fit
-training_results_nb <- 
-  broom::augment(lm_fit_nb , default_train) 
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var=optin_time
+    , .formula=
+      optins_trans ~ splines::ns(
+        index.num
+        , knots=quantile(index.num, probs=c(0.25, 0.5, 0.75)))
+    , .show_summary = FALSE
+    , .title = "Cubic spline, 3 knots"
+  )
+
 ```
 
-## Naive Bayes Classification
-
-::: panel-tabset
-## AUC
-
-```{r}
-#| echo: true
-#| code-fold: false
-#| eval: false
-training_results_nb %>% 
-  yardstick::roc_auc(.pred_No, truth = default)
-```
-
-## ROC
+## Seasonality
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| fig-align: center
-#| eval: false
-training_results_nb %>% yardstick::roc_curve(.pred_No, truth = default) %>% autoplot()
+#| layout-ncol: 2
+# Weekly Seasonality
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var=optin_time
+    , .formula=optins_trans ~ wday.lbl + splines::bs(index.num, degree=3)
+    , .show_summary = FALSE
+    , .title = "Weekday seasonality"
+  )
+
+# ** Monthly Seasonality
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var=optin_time
+    , .formula=optins_trans ~ month.lbl + splines::bs(index.num, degree=3)
+    , .show_summary = FALSE
+    , .title = "Monthly seasonality"
+  )
 ```
-:::
 
-## Nearest Neighbour Classification
-
-The k-nearest neighbors algorithm, also known as KNN or k-NN, is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point.
-
-It is typically used as a classification algorithm, working off the assumption that similar points can be found near one another.
-
-## Nearest Neighbour Classification
-
-For classification problems, a class label is assigned on the basis of a majority vote---i.e. the label that is most frequently represented around a given data point is used.
-
-Before a classification can be made, the distance between points must be defined. Euclidean distance is most commonly used.
-
-## Nearest Neighbour Classification
-
-Note that the KNN algorithm is also part of a family of "lazy learning" models, meaning that it only stores a training dataset versus undergoing a training stage. This also means that all the computation occurs when a classification or prediction is being made.
-
-The k value in the k-NN algorithm determines how many neighbors will be checked to determine the classification of a specific query point.
-
-## KNN Classification: distance measures
-
--   Euclidean: $\text{d}(x,y)=\sqrt{\sum_i(y_i- x_i)^2}$
--   Manhattan: $\text{d}(x,y)=\sum_{i}\left|y_{i}-x_{i}\right|$
--   Minkowski: $\text{d}(x,y)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}$
-
-## KNN Classification: algorithm
-
-1.  Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.
-2.  Calculate the distance between that point and all the points in the training set.
-3.  Select the K nearest neighbors based on the distances calculated.
-4.  Assign the label of the majority class to the new data point.
-5.  Repeat steps 2 to 4 for all the data points in the test set.
-
-## KNN Classification: model
+## Seasonality
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| eval: false
-default_model_knn <- parsnip::nearest_neighbor(neighbors = 4) %>% 
-  parsnip::set_engine("kknn") %>% 
-  parsnip::set_mode("classification")
-```
-
-## Support Vector Machine Classification
-
-The SVM assumes a training set of the form $(x_1,y_1),\ldots,(x_n,y_n)$ where the $y_i$ are either $-1$ or $1$, indicating the class to which each $x_i$ belongs.
-
-The SVM algorithm looks to find the **maaximum-margin hyperplane** that divides the group of points $x_i$ for which $y_1=-1$ from the group for which $Y_1=1$, such that the distance between the hyperplane and the nearest point $x_i$ from either group is maximized
-
-## SVM Classification: large margin
-
-Illustration of SVM large-margin principle
-
-[![](images/lec-6/Murphy_Figure_17.12.png){fig-alt="from Murphy figure 17.12" fig-align="center"}](https://github.com/probml/pml-book/blob/main/book1-figures/Figure_17.12.png)
-
-## SVM Classification:
-
-::: columns
-::: {.column width="50%" style="font-size: smaller"}
--   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}$, for a vector $w$ perpendicular to the boundary.
-
--   We can express any point as $x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }$
-
--   Note that $f\left(x\right)=\left(w^{\top}x_{\bot}+w_{0}\right)+r\left\Vert w\right\Vert$
-:::
-
-::: {.column width="50%"}
-![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
-:::
-:::
-
-## SVM Classification:
-
-::: columns
-::: {.column width="50%" style="font-size: smaller"}
--   Since $f\left(x_{\bot}\right)=w^{\top}x_{\bot}+w_{0}=0$, we have $f\left(x\right)=r\left\Vert w\right\Vert$.
-
--   We also require $f\left(x_{n}\right)\tilde{y}_{n}>0$
-
--   To maximize the distance to the closest point, the objective is $\max_{w,w_{0}}\min_{n}\left[\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\right]$
-:::
-
-::: {.column width="50%"}
-![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
-:::
-:::
-
-## SVM Classification:
-
-It is common to scale the vector $w$ and the offset $w_0$ such that $f_n\hat{y}_n=1$ for the point nearest the decision boundary, such that $f_n\hat{y}_n\ge1$ for all $n$.
-
-In addition, since minimizing $1/ \left\Vert w\right\Vert$ is equivalent to minimizing $\left\Vert w\right\Vert^2$, we can state the objective as
-
-$$
-\min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
-$$
-
-## SVM Classification:
-
-::: columns
-::: {.column width="50%" style="font-size: smaller"}
-If there is no solution to the objective we can add slack variables $\xi_n\ge0$ to replace the hard constraints that $f_n\hat{y}_n\ge1$ with the soft margin constraints that $f_n\hat{y}_n\ge1-\xi_n$.
-
-The new objective is
-
-$$
-\min_{w,w_{0},\xi}\frac{{1}}{2}\left\Vert w\right\Vert ^{2} + C\sum_n \xi_n \\
-\text{s.t.}\xi_n\ge0, \quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
-$$
-:::
-
-::: {.column width="50%"}
-![](images/lec-6/Murphy_Figure_17.13_B.png){fig-alt="Murphy fig 17.13(b)" fig-align="center" width="299"}
-:::
-:::
-
-## SVM: data not separable
-
-::: columns
-::: {.column width="50%" style="font-size: smaller"}
-If the data is not separable:
-
--   a transformation of data may make them separable
-
--   an embedding in a higher dimensional space might make them separable
-:::
-
-::: {.column width="50%"}
-![](images/lec-6/Sebastian_Raschka.png){fig-align="center" width="600"}
-:::
-:::
-
-## SVM Classification: Support Vectors
-
--   Support vectors are the data points that lie closest to the decision surface (or hyperplane)
-
--   They are the data points most difficult to classify
-
--   They have direct bearing on the optimum location of the decision surface
-
--   Support vectors are the elements of the training set that would change the position of the dividing hyperplane if
-
-    removed
-
-## SVM Classification: example
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-# show_engines("svm_linear")
-default_model_svm <- parsnip::svm_linear() %>% 
-  parsnip::set_engine("svm_linear") %>% 
-  parsnip::set_mode("classification")
-```
-
-# Clustering Methods
-
-## Clustering
-
-***Cluster analysis*** refers to algorithms that group similar objects into groups called *clusters*. The endpoint of cluster analysis is a set of clusters*,* where each cluster is distinct from each other cluster, and the objects within each cluster are broadly similar to each other.
-
-The purpose of cluster analysis is to help reveal patterns and structures within a dataset that may provide insights into underlying relationships and associations.
-
-## Clustering Applications
-
-1.  **Market Segmentation:** Cluster analysis is often used in marketing to segment customers into groups based on their buying behavior, demographics, or other characteristics.
-2.  **Image Processing:** In image processing, cluster analysis is used to group pixels with similar properties together, allowing for the identification of objects and patterns in images.
-3.  **Biology and Medicine:** Cluster analysis is used in biology and medicine to identify genes associated with specific diseases or to group patients with similar clinical characteristics together.
-4.  **Social Network Analysis:** In social network analysis, cluster analysis is used to group individuals with similar social connections and characteristics together, allowing for the identification of subgroups within a larger network.
-5.  **Anomaly Detection:** Cluster analysis can be used to detect anomalies in data, such as fraudulent financial transactions, unusual patterns in network traffic, or outliers in medical data.
-
-## K-means Clustering
-
-*k-means* is a method of *unsupervised* learning that produces a partitioning of observations into *k* unique clusters.
-
-The goal of *k-means* is to minimize the sum of squared Euclidian distances between observations in a cluster and the **centroid**, or geometric mean, of that cluster.
-
-## K-means Clustering
-
-In *k-means* clustering, observed variables (columns) are considered to be locations on axes in multidimensional space.
-
-The basic k-means algorithm has the following steps.
-
-1.  pick the number of clusters k
-2.  Choose *k* random observations in the dataset. These locations in space are declared to be the **initial centroids**.
-3.  Assign each observation to the nearest **centroid**.
-4.  Compute the new **centroids** of each cluster.
-5.  Repeat steps 3 and 4 until the **centroids** do not change.
-
-## K-means Clustering
-
-There are three common methods for selecting initial centers:
-
-1.  **Random observations:** Chosing random observations to act as our initial centers is the most commonly used approach, implemented in the `Forgy`, `Lloyd`, and `MacQueen` methods.
-2.  **Random partition:** The observations are assigned to a cluster uniformly at random. The centroid of each cluster is computed, and these are used as the initial centers. This approach is implemented in the `Hartigan-Wong` method.
-3.  **k-means++:** Beginning with one random set of the observations, further observations are sampled via probability-weighted sampling until $k$ clusters are formed. The centroids of these clusters are used as the initial centers.
-
-## K-means Clustering
-
-Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic. That is, running the clustering twice on the same data may not result in the same cluster assignments.
-
-## K-means Example
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-set.seed(8740)
-
-centers <- tibble::tibble(
-  cluster = factor(1:4), 
-  num_points = c(100, 150, 50, 90),  # number points in each cluster
-  x1 = c(5, 0, -3, -4),              # x1 coordinate of cluster center
-  x2 = c(-1, 1, -2, 1.5)               # x2 coordinate of cluster center
+# ** Together with Trend
+model_formula_seasonality <- as.formula(
+  optins_trans ~ wday.lbl + month.lbl +
+    splines::ns(index.num
+                , knots=quantile(index.num, probs=c(0.25, 0.5, 0.75))) + .
 )
-
-labelled_points <- 
-  centers %>%
-  dplyr::mutate(
-    x1 = purrr::map2(num_points, x1, rnorm),
-    x2 = purrr::map2(num_points, x2, rnorm)
-  ) %>% 
-  dplyr::select(-num_points) %>% 
-  tidyr::unnest(cols = c(x1, x2))
-
-ggplot(labelled_points, aes(x1, x2, color = cluster)) +
-  geom_point(alpha = 0.3)
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-# penguins <- modeldata::penguins
-# 
-# labelled_points <- penguins %>%
-#   dplyr::select(bill_length_mm, bill_depth_mm) %>%
-#   tidyr::drop_na() %>%
-#   # shuffle rows
-#   dplyr::slice_sample( n = nrow(penguins) )
-
-# create recipe
-labelled_points_recipe <- labelled_points %>% 
-  recipes::recipe(~ x1 + x2, data = .)
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-labelled_points
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-kmeans_spec <- tidyclust::k_means( num_clusters = 3 )
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-wflow <- workflows::workflow() %>%
-  workflows::add_model(kmeans_spec) %>%
-  workflows::add_recipe(labelled_points_recipe)
-
-set.seed(8740)
-labelled_points_resamples <- labelled_points %>% rsample::bootstraps(apparent = TRUE)
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-#| eval: false
-wflow %>%
-  parsnip::fit(labelled_points) %>% 
-  broom::tidy()
-```
-
-```{r}
-#| echo: true
-#| eval: false
-wflow %>%
-  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids()
-```
-
-```{r}
-#| eval: false
-# all_workflows <- all_workflows %>% 
-#   workflowsets::workflow_map(
-#     resamples = train_resamples, grid = 5, verbose = TRUE
-#   )
-```
-
-```{r}
-#| eval: false
-# all_workflows <- 
-#   workflowsets::workflow_set(
-#     preproc = list(base = labelled_points_recipe),
-#     models = 
-#       3:20 %>% purrr::map( ~tidyclust::k_means( num_clusters = .x ) )
-#   )
-```
-
-```{r}
-#| echo: true
-#| eval: false
-# all_workflows <- all_workflows %>% 
-#   workflowsets::workflow_map(
-#     verbose = TRUE                # enable logging
-#     , fn = "tune_cluster"
-#     , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()
-#   )
-```
-
-```{r}
-#| echo: true
-#| eval: false
-# all_workflows %>% 
-#   dplyr::select(wflow_id,result) %>% 
-#   tidyr::unnest(result) %>% 
-#   tidyr::unnest(.metrics) %>% 
-#   dplyr::filter(.metric == 'sse_total') %>% 
-#   dplyr::group_by(wflow_id) %>% 
-#   dplyr::arrange(desc(.estimate) ) %>% 
-#   dplyr::slice(1)
-```
-
-```{r}
-#| eval: false
-all_workflows <- 
-  workflowsets::workflow_set(
-    preproc = list(base = labelled_points_recipe),
-    models = list(tidyclust::k_means( num_clusters = parsnip::tune() ) )
+data_prep_signature_tbl %>% 
+  timetk::plot_time_series_regression(
+    .date_var=optin_time
+    , .formula = model_formula_seasonality
+    , .show_summary = FALSE
+    , .title = "Day and Month seasonality + Cubic spline, 3 knots"
   )
 ```
 
+## Fourier series
+
 ```{r}
 #| echo: true
-#| eval: false
-all_workflows <- all_workflows %>% 
-  workflowsets::workflow_map(
-    verbose = TRUE                # enable logging
-    , fn = "tune_cluster"
-    , resamples = labelled_points_resamples # a parameter passed to tune::tune_grid()
+#| code-fold: true
+data_prep_signature_tbl %>% 
+  timetk::plot_acf_diagnostics(optin_time,optins_trans)
+```
+
+## Fourier series
+
+```{r}
+#| echo: true
+#| code-fold: true
+data_prep_fourier_tbl <- 
+  data_prep_signature_tbl %>% 
+  timetk::tk_augment_fourier(optin_time, .periods=c(7,14,30,90,365), .K=2)
+
+data_prep_fourier_tbl %>% dplyr::slice_head(n=3) %>% dplyr::glimpse()
+```
+
+## Visualization
+
+```{r}
+#| echo: true
+#| code-fold: true
+# Model
+model_formula_fourier <- 
+  as.formula(
+    optins_trans ~ . +
+      splines::ns(index.num
+                  , knots=quantile(index.num, probs=c(0.25, 0.5, 0.75)))
+  )
+
+# Visualize
+data_prep_fourier_tbl %>% 
+  timetk::filter_by_time(.start_date="2018-09-13") %>% 
+  timetk::plot_time_series_regression(
+    .date_var = optin_time
+    , .formula = model_formula_fourier
+    , .show_summary = FALSE
+    , .title = "Fourier + Cubic spline, 3 knots"
   )
 ```
 
-```{r}
-#| echo: true
-#| eval: false
-all_workflows %>% workflowsets::rank_results(select_best = TRUE)
-```
+## Test-train splits
 
 ```{r}
 #| echo: true
-#| eval: false
-all_workflows %>% 
-  dplyr::select(wflow_id,result) %>% 
-  tidyr::unnest(result) %>% 
-  tidyr::unnest(.metrics) %>% 
-  dplyr::filter(.metric == 'sse_within_total') %>% 
-  dplyr::group_by(wflow_id) %>% 
-  dplyr::arrange(desc(.estimate) ) %>% 
-  dplyr::slice(1)
+#| code-fold: true
+#| message: false
+dat <- subscribers_tbl %>% 
+  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) %>% 
+  timetk::pad_by_time(.pad_value=0) %>% 
+  timetk::filter_by_time(.start_date = "2018-12-15")
+
+# Split Data 80/20
+splits <- 
+  timetk::time_series_split(
+    data = dat
+    , initial = "12 months"
+    , assess = "1 months"
+  )
+
+splits %>%
+  timetk::tk_time_series_cv_plan() %>%
+  timetk::plot_time_series_cv_plan(.date_var = optin_time, .value = optins)
 ```
+
+## Feature engineering w/ recipes
 
 ```{r}
 #| echo: true
-#| eval: false
-tune_results <-
-   all_workflows %>% 
-   workflow_map(
-      fn = "tune_cluster"
-      , resamples = labelled_points_resamples
-      , grid = dials::grid_regular(dials::num_clusters(), levels = 10)
-      , metrics = tidyclust::cluster_metric_set(sse_within_total, sse_total, sse_ratio)
-      , control = tune::control_grid(save_pred = TRUE, extract = identity)
-   )
+#| code-fold: true
+#| message: false
+time_rec <- dat %>% 
+  recipes::recipe(optins ~ ., data = rsample::training(splits)) %>% 
+  timetk::step_log_interval(optins, limit_lower = 0, offset = 1) %>% 
+  recipes::step_normalize(recipes::all_outcomes()) %>% 
+  timetk::step_timeseries_signature(optin_time) %>% 
+  timetk::step_fourier(optin_time, period = c(7,14,30,90,365), K=2)
+
+time_rec %>% recipes::prep(training = rsample::training(splits)) %>% 
+  recipes::bake(new_data = NULL) %>% 
+  timetk::plot_time_series_regression(
+    .date_var = optin_time
+    , .formula = optins ~ .
+    , .show_summary = FALSE
+  )
 ```
 
-## Hierarchical Clustering
-
-*Hierarchical Clustering*, sometimes called *Agglomerative Clustering*, is a method of *unsupervised* learning that produces a *dendrogram*, which can be used to partition observations into clusters.
-
-## Tidymodels
-
-### Key Components of Tidymodels
-
--   Resampling: Efficient methods for handling data splitting, cross-validation, bootstrapping, and more.
--   Metrics: A wide range of evaluation metrics to assess model performance and choose the best model.
+## Workflows
 
 ```{r}
+#| echo: true
+#| code-fold: false
+#| message: false
+model_spec_arima <- modeltime::arima_reg() %>%
+    parsnip::set_engine("auto_arima")
+
+recipe_spec_fourier <- 
+  recipes::recipe(
+    optins ~ optin_time
+    , data = rsample::training(splits)
+  ) %>%
+    timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) 
+
+workflow_fit_arima <- workflows::workflow() %>%
+  workflows::add_recipe(recipe_spec_fourier) %>%
+  workflows::add_model(model_spec_arima) %>%
+  parsnip::fit(rsample::training(splits))
 
 
 ```
 
-## More
+## Workflows
 
--   Read [An Idiot's Guide to Support Vector Machines](https://web.mit.edu/6.034/wwwbob/svm.pdf)
+```{r}
+#| echo: true
+#| code-fold: false
+#| message: false
+model_spec_lm <- parsnip::linear_reg() %>%
+  parsnip::set_engine("lm") 
+
+recipe_spec_linear <- 
+  recipes::recipe(
+    optins ~ optin_time
+    , data = rsample::training(splits)
+  ) %>%
+    timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) 
+
+workflow_fit_linear <- workflows::workflow() %>%
+  workflows::add_recipe(recipe_spec_linear) %>%
+  workflows::add_model(model_spec_lm) %>%
+  parsnip::fit(rsample::training(splits))
+```
+
+## Predict
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+models_tbl <- 
+  modeltime::modeltime_table(workflow_fit_arima, workflow_fit_linear)
+
+calibration_tbl <- models_tbl %>%
+  modeltime::modeltime_calibrate(new_data = rsample::testing(splits))
+
+calibration_tbl %>%
+  modeltime::modeltime_forecast(
+    new_data    = rsample::testing(splits),
+    actual_data = dat
+  ) %>%
+  modeltime::plot_modeltime_forecast(
+    .legend_max_width = 25, # For mobile screens
+    .interactive      = TRUE
+  )
+```
+
+## Evaluate
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+calibration_tbl %>%
+  modeltime::modeltime_accuracy() %>%
+  modeltime::table_modeltime_accuracy(
+    .interactive = FALSE
+  )
+```
+
+## Re-fit
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+refit_tbl <- calibration_tbl %>%
+  modeltime::modeltime_refit(data = dat)
+
+refit_tbl %>%
+  modeltime::modeltime_forecast(h = "3 months", actual_data = dat) %>%
+  modeltime::plot_modeltime_forecast(
+    .legend_max_width = 12, # For mobile screens
+    .interactive      = TRUE
+  )
+```
 
 ## Recap
 
--   In this section we have worked with the `tidymodels` package to build a workflow that facilitates building and evaluating multiple models.
+-   In this section we have worked with the `tidymodels` and `timetk` packages to build a workflow that facilitates building and evaluating multiple models.
 
 -   Combined with the recipes package we now have a complete data modeling framework.
