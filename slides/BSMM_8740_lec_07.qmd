@@ -1,8 +1,8 @@
 ---
 title: "Time series methods"
-subtitle: "BSMM8740-2-R-2023F [WEEK - 7]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2023.github.io/osb](https://bsmm-8740-fall-2023.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
 # title-slide-attributes:
 #   data-background-image: images/my-DRAFT.png
@@ -261,26 +261,21 @@ implications:
 
 ## Time series - processes
 
-### Autoregressive Processes
+### Stochastic Processes - Markov chains
 
 ::: {style="font-size: x-large"}
--   In an AR(1) process the current value is a linear function of the previous value. $$y_t=\phi_1 y_{t-1}+\epsilon_t$$
--   Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$
--   The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ and $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
-:::
+In the discrete case, given a state transition matrix $A$ and an initial state $\pi_0$, then
 
-## Time series - processes
+$$
+\begin{align*}
+\pi_1 & = A\pi_0\\
+\pi_2 & = A\pi_1 = A^2\pi_0\\
+&\vdots\\
+\pi_n & = A^n\pi_0
+\end{align*}
+$$
 
-### Autoregressive Processes
-
-::: {style="font-size: x-large"}
--   The characteristic equation for an AR(p) process is derived from the autoregressive parameters $(\phi_1, \phi_2, \ldots, \phi_p)$.
-
--   The characteristic equation is: $1-\phi_1 z-\phi_2 z^2-\cdots-\phi_p z^p = 0$
-
--   A process ${y_t}$ is strictly stationary if for each $k$ and $t$, and $n$, the distribution of ${y_t,\ldots,y_{t+k}}$ is the same as the distribution of ${y_{t+n},\ldots,y_{t+k+n}}$
-
--   For an AR process to be stationary (its statistical properties do not change over time), the parameters $\phi_1, \phi_2, \ldots, \phi_p$ must satisfy certain conditions (typically related to the roots of the characteristic equation lying outside the unit circle).
+If the markov chain has a stationary distribution $\pi^{s}$, then $A\pi^{s}=\pi^{s}$ by definition and $(I-A)\pi^{s}=0$ determines $\pi^{s}$ up to a constant.
 :::
 
 ## Time series - processes
@@ -288,140 +283,10 @@ implications:
 ### Autoregressive Processes
 
 ::: {style="font-size: x-large"}
--   The AR(p) model is sometimes expressed in terms of the Lag operator $\mathrm{L}$, where $\mathrm{L}y_t=y_{t-1}$.
+-   In an AR(1) process the current value is a linear function of the previous value.
 
--   The lag operator can be raised to powers, e.g. $\mathrm{L}^2y_t=y_{t-2}$ and its powers can be combined into polynomials to form a new operator: $a(\mathrm{L})=a_0+a_1\mathrm{L}+a_2\mathrm{L}^2+\ldots+a_p\mathrm{L}^p$ such that $a(\mathrm{L})y_t=a_0y_t+a_1y_{t-1}+a_2y_{t-2}+\ldots+a_py_{t-p}$
-
--   Lag polymonials can be multiplied and multiplication commutes: $a(\mathrm{L})b(\mathrm{L})=b(\mathrm{L})a(\mathrm{L})$.
-
--   We define $(1-\rho\mathrm{L})^{-1}$ by $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$.
+$$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$ - The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ with $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
 :::
-
-## Time series - processes
-
-### Autoregressive Processes
-
-::: {style="font-size: x-large"}
--   per the formula for the [geometric series](https://en.wikipedia.org/wiki/Geometric_series), if $|\rho|<1, then$
-
-$$
-(1-\rho\mathrm{L})^{-1} = \sum_{i=0}^\infty\rho^i\mathrm{L}^i
-$$
-
--   EXERCISE: check that $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$ holds on both sides of the equation above.
-
-:::
-
-## Time series - processes
-
-### Moving Average Processes
-
-::: {style="font-size: 80%"}
--   In an MA(q) process the present value is a weighted sum on the current and previous errors. $$y_t= \epsilon_t +\theta_1\epsilon_{t-1};\;\text(MA(1))$$
--   MA(q) models describe processes where it takes a bit of time for the error (or "shock") to dissipate
--   This type of expression may be used to describe a wide variety of stationary time series processes
-:::
-
-## Time series - processes
-
-### ARMA Processes
-
-::: {style="font-size: 80%"}
--   A combination of an AR(1) and a MA(1) process is termed an ARMA(1,1) observation. $$y_t=\phi y_{t-1}+\epsilon_t+\theta\epsilon_{t-1}$$
--   AN ARMA(p,q) process takes the form $$y_t=\sum_{j=1}^p\phi_jy_{t-j}+\epsilon_t+\sum_{i=1}^q\theta_i\epsilon_{t-i}$$
--   This model was popularized by Box & Jenkins, who developed a methodology that may be used to identify the terms that should be included in the model
-:::
-
-## Time series - processes
-
-### Long memory & fractional differencing
-
-### 
-
-::: {style="font-size: 80%"}
--   Most AR(p), MA(q) and ARMA(p,q) processes are termed short-memory process because the coefficients in the representation are dominated by exponential decay
--   Long-memory (or persistent) time series are considered intermediate compromises between the short-memory models and integrated nonstationary processes
-:::
-
-## Time series - exponential smoothing
-
-Exponential smoothing or exponential moving average (EMA) is a rule of thumb technique for smoothing time series data using the exponential window function.
-
-For a raw data series $\{x_t\}$ the output of the exponential smoothing process is $\{y_t\}$, where, for $0\le\alpha\le1$ and $t>0$
-
-$$
-\begin{align*}
-y_0 & = x_0 \\
-y_t & = \alpha x_t + (1-\alpha)y_{t-1}
-\end{align*}
-$$
-
-$\alpha$ is called the **smoothing factor**.
-
-## Time series - exponential smoothing
-
-The time constant $\tau$ is the amount of time for the smoothed response of a unit step function to reach $1-1/e\approx 63.2\%$ of the original signal.
-
-$$
-\begin{align*}
-\alpha & = 1-e^{-\Delta T/\tau}\\
-\tau & = -\frac{\Delta T}{ln(1-\alpha)}
-\end{align*}
-$$
-
-where $\Delta T$ is the time interval.
-
-## Time series - exponential smoothing
-
-We can also include a trend term
-
-$$
-\begin{align*}
-y_0 & = x_0 \\
-b_0 & = x_1 - x_0\\
-\end{align*}
-$$
-
-and for $t>0$, $0\le\alpha\le1$ and $0\le\beta\le1$
-
-$$
-\begin{align*}
-y_t & = \alpha x_t + (1-\alpha)(y_{t-1} + b_{t-1})\\
-b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}
-\end{align*}
-$$
-
-## Time series - exponential smoothing
-
-Finally we can also include a seasonality term, with a cycle length of $L$ time intervals.
-
-and for $t>0$, $0\le\alpha\le1$, $0\le\beta\le1$ and $0\le\gamma\le1$
-
-$$
-\begin{align*}
-y_t & = \alpha \frac{x_t}{c_{t-L}} + (1-\alpha)(y_{t-1} + b_{t-1})\\
-b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}\\
-c_t & = \gamma\frac{x_t}{y_t} + (1-\gamma)c_{t-L}
-\end{align*}
-$$
-
-## Time series - ETS models
-
-::: {style="font-size: 80%"}
-ETS stands for Error-Trend-Seasonality, and the exponential smoothing model is clearly in this class, with each component additive. The more general taxonomy is:
-
--   **Error**: "Additive" (A), or "Multiplicative" (M);
--   **Trend**: "None" (N), "Additive" (A), "Additive damped" (Ad), "Multiplicative" (M), or "Multiplicative damped" (Md);
--   **Seasonality**: "None" (N), or "Additive" (A), or "Multiplicative" (M).
-
-In this taxonomy, the exponential smoothing model is denoted as ETS(A,A,A).
-:::
-
-## Time series - ETS models
-
-The additive ETS models are shown below, and more detailed discussion can be found [here](https://openforecast.org/adam/ETSConventional.html)
-
-![](images/ETSTaxonomyAdditive-1.png){fig-align="center"}
 
 ## Time series - processes
 
@@ -574,6 +439,202 @@ autoplot(stats::pacf(X, plot = FALSE)) + labs(title = "Partial Autocorrelation o
 
 ```
 
+## 
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   The characteristic equation for an AR(p) process is derived from the autoregressive parameters $(\phi_1, \phi_2, \ldots, \phi_p)$.
+
+-   The characteristic equation is: $1-\phi_1 z-\phi_2 z^2-\cdots-\phi_p z^p = 0$
+
+-   A process ${y_t}$ is strictly stationary if for each $k$ and $t$, and $n$, the distribution of ${y_t,\ldots,y_{t+k}}$ is the same as the distribution of ${y_{t+n},\ldots,y_{t+k+n}}$
+
+-   For an AR process to be stationary (its statistical properties do not change over time), the parameters $\phi_1, \phi_2, \ldots, \phi_p$ must satisfy certain conditions (typically related to the roots of the characteristic equation lying outside the unit circle).
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   The AR(p) model is sometimes expressed in terms of the Lag operator $\mathrm{L}$, where $\mathrm{L}y_t=y_{t-1}$.
+
+-   The lag operator can be raised to powers, e.g. $\mathrm{L}^2y_t=y_{t-2}$ and its powers can be combined into polynomials to form a new operator: $a(\mathrm{L})=a_0+a_1\mathrm{L}+a_2\mathrm{L}^2+\ldots+a_p\mathrm{L}^p$ such that $a(\mathrm{L})y_t=a_0y_t+a_1y_{t-1}+a_2y_{t-2}+\ldots+a_py_{t-p}$
+
+-   Lag polymonials can be multiplied and multiplication commutes: $a(\mathrm{L})b(\mathrm{L})=b(\mathrm{L})a(\mathrm{L})$.
+
+-   We define $(1-\rho\mathrm{L})^{-1}$ by $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+-   per the formula for the [geometric series](https://en.wikipedia.org/wiki/Geometric_series), if $|\rho|<1, then$
+
+$$
+(1-\rho\mathrm{L})^{-1} = \sum_{i=0}^\infty\rho^i\mathrm{L}^i
+$$
+
+-   EXERCISE: check that $(1-\rho\mathrm{L})(1-\rho\mathrm{L})^{-1}\equiv1$ holds on both sides of the equation above.
+
+-   If the sum is to converge, then we need $|\rho|<1$
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+::: {style="font-size: x-large"}
+For the AR(1) process, using the lag operator we can write:
+
+$$
+\begin{align*}
+y_t & = \phi_1 y_{t-1}+\epsilon_t\\
+(1-\phi L)y_t & =  \epsilon_t\\
+y_t & = (1-\phi L)^{-1} \epsilon_t\\
+  & = (\sum_{i=0}^\infty\phi^i\mathrm{L}^i)\epsilon_t\\
+  & = \sum_{j=1}^t\phi_1^{t-j}\epsilon_j
+\end{align*}
+$$ - EXERCISE: check that the last equality holds.
+:::
+
+## Time series - processes
+
+### Autoregressive Processes
+
+AR(p) processes can be written as AR(1) vector processes, e.g. for AR(2)
+
+$$
+\left(\begin{array}{c}
+y_{t}\\
+y_{t-1}
+\end{array}\right)=\left(\begin{array}{cc}
+\phi_{1} & \phi_{2}\\
+1 & 0
+\end{array}\right)\left(\begin{array}{c}
+y_{t-1}\\
+y_{t-2}
+\end{array}\right)+\left(\begin{array}{c}
+\epsilon_{t}\\
+0
+\end{array}\right)
+$$ where the matrix $A$ here is (i.e. AR(2)):
+
+$$A=\left(\begin{array}{cc}
+\phi_{1} & \phi_{2}\\
+1 & 0
+\end{array}\right)
+$$
+
+## Time series - processes
+
+### Autoregressive Processes
+
+Repeating the argument for AR(1) processes
+
+$$
+\begin{align*}
+\vec{y}_t & = (1-A L)^{-1} \vec{\epsilon}_t\\
+  & = (\sum_{i=0}^\infty A^i\mathrm{L}^i)\vec{\epsilon}_t\\
+\end{align*}
+$$
+
+And we only converge if $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$, i.e. all eigenvalues are \< 1.
+
+## Time series - processes
+
+### Autoregressive Processes
+
+-   In general if an $n\times n$ matrix $A$ has $n$ distinct eigenvalues, then all eigenvalues must have magnitude $<1$ for $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$.
+-   In this case we have $A=X\Lambda X^{-1}$ where the columns of $x$ are the eigenvectors of $A$ and $\Lambda$ is a diagonal matrix with the eigenvalues on the diagonal.
+-   $A^i=X\Lambda^i X^{-1}$ so $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$
+
+## Time series - processes
+
+### Computing determinants
+
+::: {style="font-size: m"}
+**Definitions**
+
+1.  **Minor**:
+    -   The minor $M_{ij}$ of an element $a_{ij}$ in an $n \times n$ matrix $A$ is the determinant of the $(n-1) \times (n-1)$ matrix that results from removing the $i$-th row and $j$-th column from $A$.
+2.  **Cofactor**:
+    -   The cofactor $C_{ij}$ of an element $a_{ij}$ is given by: $C_{ij} = (-1)^{i+j} M_{ij}$
+    -   The sign factor $(-1)^{i+j}$ alternates according to the position of the element in the matrix.
+
+**Cofactor Expansion**
+
+The determinant of an $n \times n$ matrix $A$ can be computed by expanding along any row or column. The cofactor expansion along the $i$-th row is given by:
+
+$$
+\det(A) = \sum_{j=1}^n a_{ij} C_{ij}
+$$ Similarly, the cofactor expansion along the $j$-th column is: $\det(A) = \sum_{i=1}^n a_{ij} C_{ij}$
+:::
+
+## Time series - processes
+
+### Computing determinants
+
+The structure of the AR(1) vector process makes it easy to compute the polynomial for the determinant in therms of the coefficients of the process.
+
+The roots of the polynomial can be computed using `polyroot`, passing in a vector of polynomial coefficients in increasing order. The magnitudes of the eigenvalues can using the base function `Mod`.
+
+``` r
+polyroot(c(1,.2,3,.6)) |> Mod()
+```
+
+## Time series - processes
+
+### Moving Average Processes
+
+::: {style="font-size: 80%"}
+-   In an MA(q) process the present value is a weighted sum on the current and previous errors. $$y_t= \epsilon_t +\theta_1\epsilon_{t-1};\;\text(MA(1))$$
+-   MA(q) models describe processes where it takes a bit of time for the error (or "shock") to dissipate
+-   This type of expression may be used to describe a wide variety of stationary time series processes
+:::
+
+## Time series - processes
+
+### Moving Average Processes
+
+::: {style="font-size: x-large"}
+-   There is a duality of AR() and MA() processes.
+
+-   We have already seen how AR processes can be expressed as MA() processes:
+
+$$
+\vec{y}_t = (1-A L)^{-1} \vec{\epsilon}_t = (\sum_{i=0}^\infty A^i\mathrm{L}^i)\vec{\epsilon}_t\\
+$$
+
+and MA() processes can be expressed as AR processes by a similar argument.
+:::
+
+## Time series - processes
+
+### ARMA Processes
+
+::: {style="font-size: 80%"}
+-   A combination of an AR(1) and a MA(1) process is termed an ARMA(1,1) observation. $$y_t=\phi y_{t-1}+\epsilon_t+\theta\epsilon_{t-1}$$
+-   AN ARMA(p,q) process takes the form $$y_t=\sum_{j=1}^p\phi_jy_{t-j}+\epsilon_t+\sum_{i=1}^q\theta_i\epsilon_{t-i}$$
+-   This model was popularized by Box & Jenkins, who developed a methodology that may be used to identify the terms that should be included in the model
+:::
+
+## Time series - processes
+
+### Long memory & fractional differencing
+
+### 
+
+::: {style="font-size: 80%"}
+-   Most AR(p), MA(q) and ARMA(p,q) processes are termed short-memory process because the coefficients in the representation are dominated by exponential decay
+-   Long-memory (or persistent) time series are considered intermediate compromises between the short-memory models and integrated nonstationary processes
+:::
+
 ## Time series - processes
 
 ### ARIMA
@@ -585,6 +646,86 @@ autoplot(stats::pacf(X, plot = FALSE)) + labs(title = "Partial Autocorrelation o
 -   **MA (Moving Average)**: captures the relationship between an observation and a residual error from a moving average model.
 -   An ARIMA model is denoted as ARIMA(p, d, q), where: - p is the number of lag observations in the model (AR part), - d is the number of times that the raw observations are differenced (I part), - q is the size of the moving average window (MA part).
 :::
+
+## Time series - exponential smoothing
+
+Exponential smoothing or exponential moving average (EMA) is a rule of thumb technique for smoothing time series data using the exponential window function.
+
+For a raw data series $\{x_t\}$ the output of the exponential smoothing process is $\{y_t\}$, where, for $0\le\alpha\le1$ and $t>0$
+
+$$
+\begin{align*}
+y_0 & = x_0 \\
+y_t & = \alpha x_t + (1-\alpha)y_{t-1}
+\end{align*}
+$$
+
+$\alpha$ is called the **smoothing factor**.
+
+## Time series - exponential smoothing
+
+The time constant $\tau$ is the amount of time for the smoothed response of a unit step function to reach $1-1/e\approx 63.2\%$ of the original signal.
+
+$$
+\begin{align*}
+\alpha & = 1-e^{-\Delta T/\tau}\\
+\tau & = -\frac{\Delta T}{ln(1-\alpha)}
+\end{align*}
+$$
+
+where $\Delta T$ is the time interval.
+
+## Time series - exponential smoothing
+
+We can also include a trend term
+
+$$
+\begin{align*}
+y_0 & = x_0 \\
+b_0 & = x_1 - x_0\\
+\end{align*}
+$$
+
+and for $t>0$, $0\le\alpha\le1$ and $0\le\beta\le1$
+
+$$
+\begin{align*}
+y_t & = \alpha x_t + (1-\alpha)(y_{t-1} + b_{t-1})\\
+b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}
+\end{align*}
+$$
+
+## Time series - exponential smoothing
+
+Finally we can also include a seasonality term, with a cycle length of $K$ time intervals.
+
+and for $t>0$, $0\le\alpha\le1$, $0\le\beta\le1$ and $0\le\gamma\le1$
+
+$$
+\begin{align*}
+y_t & = \alpha \frac{x_t}{c_{t-L}} + (1-\alpha)(y_{t-1} + b_{t-1})\\
+b_t & = \beta(y_t-y_{t-1}) + (1-\beta)b_{t-1}\\
+c_t & = \gamma\frac{x_t}{y_t} + (1-\gamma)c_{t-L}
+\end{align*}
+$$
+
+## Time series - ETS models
+
+::: {style="font-size: 80%"}
+ETS stands for Error-Trend-Seasonality, and the exponential smoothing model is clearly in this class, with each component additive. The more general taxonomy is:
+
+-   **Error**: "Additive" (A), or "Multiplicative" (M);
+-   **Trend**: "None" (N), "Additive" (A), "Additive damped" (Ad), "Multiplicative" (M), or "Multiplicative damped" (Md);
+-   **Seasonality**: "None" (N), or "Additive" (A), or "Multiplicative" (M).
+
+In this taxonomy, the exponential smoothing model is denoted as ETS(A,A,A).
+:::
+
+## Time series - ETS models
+
+The additive ETS models are shown below, and more detailed discussion can be found [here](https://openforecast.org/adam/ETSConventional.html)
+
+![](images/ETSTaxonomyAdditive-1.png){fig-align="center"}
 
 # The Timetk package
 
@@ -745,7 +886,7 @@ timetk::bike_sharing_daily %>%
 tibble::tibble(
   date = 
     timetk::tk_make_timeseries(
-      start_date = "2023"
+      start_date = "2024"
       , length_out = 100
       , by = "month"
     )
@@ -1141,6 +1282,6 @@ refit_tbl %>%
 
 ## Recap
 
--   In this section we have worked with the `tidymodels` package to build a workflow that facilitates building and evaluating multiple models.
+-   In this section we have worked with the `tidymodels` and `timetk` packages to build a workflow that facilitates building and evaluating multiple models.
 
 -   Combined with the recipes package we now have a complete data modeling framework.
