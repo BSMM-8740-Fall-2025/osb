@@ -386,10 +386,10 @@
     }
   </style>
 <meta property="og:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="Classification &amp; clustering methods – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 6]">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 6]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -400,7 +400,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Classification &amp; clustering methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 6]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 6]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -427,28 +427,143 @@ L.L. Odette
 <section id="classification" class="slide level2">
 <h2>Classification</h2>
 <ul>
-<li>Classification is a supervised machine learning method where the model tries to predict the correct class label for a given input data.</li>
-<li>In classification, the model is fully trained using the training data, and then it is evaluated on test data before being used to perform prediction on new unseen data.</li>
+<li>Classification is a supervised machine learning method where the model tries to predict a categorical outcome for given input data.</li>
+<li>These models are essential in various business applications, such as credit scoring, customer segmentation, fraud detection, and more. Classification methods can broadly be categorized into two types: eager learners and lazy (instance-based) learners.</li>
 </ul>
 </section>
-<section id="classification-1" class="slide level2">
-<h2>Classification</h2>
+<section id="eager-learners" class="slide level2">
+<h2>Eager Learners</h2>
 <p><strong>Eager learners</strong> are machine learning algorithms that first build a model from the training dataset before making any prediction on future datasets. They spend more time on the training process to better generalize from the data.</p>
-<p>They usually require less time to make predictions. Example eager learners are:</p>
-<ul>
-<li>Logistic Regression.</li>
-<li>Support Vector Machine.</li>
-<li>Decision Trees.</li>
-<li>Artificial Neural Networks.</li>
-</ul>
+<p>They usually require less time to make predictions.</p>
 </section>
-<section id="classification-2" class="slide level2">
-<h2>Classification</h2>
-<p><strong>Lazy learners or instance-based learners</strong>, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they search for the nearest neighbor from the whole training data. Examples are:</p>
+<section id="eager-learners-1" class="slide level2">
+<h2>Eager Learners</h2>
+<h3 id="example-eager-learners-are">Example eager learners are:</h3>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">LR</a></li><li><a href="#tabset-1-2">DT</a></li><li><a href="#tabset-1-3">RF</a></li><li><a href="#tabset-1-4">SVM</a></li><li><a href="#tabset-1-5">ANN</a></li><li><a href="#tabset-1-6">GMB</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div style="font-size: xx-large">
+<p><strong>Logistic Regression</strong>:</p>
 <ul>
-<li>K-Nearest Neighbor.</li>
-<li>Case-based reasoning.</li>
+<li><strong>Overview</strong>: A statistical method for binary classification that models the probability of a binary outcome based on one or more predictor variables.</li>
+<li><strong>Advantages</strong>: Simple, interpretable, and works well with linear decision boundaries.</li>
+<li><strong>Disadvantages</strong>: Assumes linearity between predictors and the log-odds of the outcome.</li>
 </ul>
+</div>
+</div>
+<div id="tabset-1-2">
+<div style="font-size: xx-large">
+<p><strong>Decision Trees</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: A model that splits the data into subsets based on feature values, resulting in a tree structure where each leaf node represents a class label.</li>
+<li><strong>Advantages</strong>: Easy to interpret and visualize, handles both numerical and categorical data.</li>
+<li><strong>Disadvantages</strong>: Prone to overfitting, especially with deep trees.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-1-3">
+<div style="font-size: xx-large">
+<p><strong>Random Forests</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: An ensemble method that builds multiple decision trees and aggregates their predictions to improve accuracy and reduce overfitting.</li>
+<li><strong>Advantages</strong>: Robust to overfitting, handles large datasets well.</li>
+<li><strong>Disadvantages</strong>: Less interpretable than single decision trees.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-1-4">
+<div style="font-size: xx-large">
+<p><strong>Support Vector Machines (SVM)</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: A model that finds the hyperplane that best separates the classes in the feature space.</li>
+<li><strong>Advantages</strong>: Effective in high-dimensional spaces, works well with a clear margin of separation.</li>
+<li><strong>Disadvantages</strong>: Computationally intensive, less effective with noisy data or overlapping classes.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-1-5">
+<div style="font-size: xx-large">
+<p><strong>Neural Networks</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: Models inspired by the human brain, consisting of layers of interconnected neurons that learn to map inputs to outputs.</li>
+<li><strong>Advantages</strong>: Capable of capturing complex patterns and relationships.</li>
+<li><strong>Disadvantages</strong>: Requires large amounts of data and computational power, less interpretable.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-1-6">
+<div style="font-size: xx-large">
+<p><strong>Gradient Boosting Machines (GBM)</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: An ensemble technique that builds trees sequentially, where each new tree corrects errors made by the previous ones.</li>
+<li><strong>Advantages</strong>: High accuracy, effective at handling various data types.</li>
+<li><strong>Disadvantages</strong>: Computationally intensive, requires careful tuning.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="lazy-learners" class="slide level2">
+<h2>Lazy Learners</h2>
+<p><strong>Lazy learners or instance-based learners</strong>, do not create any model immediately from the training data, and this where the lazy aspect comes from. They just memorize the training data, and each time there is a need to make a prediction, they predict based on similarity between the query instance and stored instances.</p>
+</section>
+<section id="lazy-learners-1" class="slide level2">
+<h2>Lazy Learners</h2>
+<p>Example lazy learners are:</p>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">KNN</a></li><li><a href="#tabset-2-2">Case-based</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div style="font-size: xx-large">
+<p><strong>k-Nearest Neighbors (k-NN)</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: Predicts the class of a query instance based on the majority class among its k nearest neighbors in the training data.</li>
+<li><strong>Advantages</strong>: Simple, intuitive, and effective for small datasets.</li>
+<li><strong>Disadvantages</strong>: Computationally intensive during prediction, performance degrades with high-dimensional data.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-2-2">
+<div style="font-size: xx-large">
+<p><strong>Case-based Learning</strong>:</p>
+<ul>
+<li><strong>Overview</strong>: Makes predictions by fitting simple models (like linear regression) to localized regions of the data.</li>
+<li><strong>Advantages</strong>: Flexible, can adapt to complex patterns locally.</li>
+<li><strong>Disadvantages</strong>: Computationally expensive, sensitive to the choice of kernel and bandwidth parameters.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-eager-and-lazy-learners" class="slide level2">
+<h2>Comparing Eager and Lazy Learners</h2>
+<div style="font-size: x-large">
+<ul>
+<li><strong>Training vs.&nbsp;Prediction Time</strong>:
+<ul>
+<li>Eager learners invest time in building the model during training, resulting in faster predictions.</li>
+<li>Lazy learners have negligible training time but are computationally intensive during prediction.</li>
+</ul></li>
+<li><strong>Model Interpretability</strong>:
+<ul>
+<li>Eager learners like decision trees and logistic regression are generally more interpretable.</li>
+<li>Lazy learners like k-NN are less interpretable as they rely on instance-based comparisons.</li>
+</ul></li>
+<li><strong>Handling of High-Dimensional Data</strong>:
+<ul>
+<li>Eager learners like SVMs and neural networks can handle high-dimensional data effectively.</li>
+<li>Lazy learners like k-NN can struggle with the curse of dimensionality.</li>
+</ul></li>
+<li><strong>Flexibility and Complexity</strong>:
+<ul>
+<li>Eager learners can capture complex relationships and interactions through models like neural networks and gradient boosting.</li>
+<li>Lazy learners are simpler but can be flexible in capturing local patterns.</li>
+</ul></li>
+</ul>
+</div>
 </section>
 <section id="types-of-classification" class="slide level2">
 <h2>Types of classification</h2>
@@ -470,14 +585,14 @@ L.L. Odette
 </section>
 <section id="binary-logistic-regression" class="slide level2">
 <h2>Binary Logistic Regression</h2>
-<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> takes values in <span class="math inline">\(\{0,1\}\)</span>. This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
+<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> takes values in <span class="math inline">\(\{0,1\}\)</span> (e.g., yes/no, success/failure). This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
 <p>Logistic regression is an example of supervised learning.</p>
 </section>
 <section id="binary-logistic-regression-1" class="slide level2">
 <h2>Binary Logistic Regression</h2>
 <p>For the logistic GLM:</p>
 <ul>
-<li>the distribution of the observations is Binomial with parameter <span class="math inline">\(\pi\)</span></li>
+<li>the distribution of the observations is Binomial with parameter <span class="math inline">\(\pi\equiv\mathbb{P}(Y=1|\eta)\)</span></li>
 <li>the explanatory variables are linear in the parameters: <span class="math inline">\(\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n\)</span></li>
 <li>the link function is the logit: <span class="math inline">\(\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})\)</span></li>
 </ul>
@@ -512,7 +627,7 @@ L.L. Odette
 <section id="binary-classifier-metrics" class="slide level2">
 <h2>Binary Classifier metrics</h2>
 <h3 id="confusion-matrix">Confusion matrix</h3>
-<p>The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary):</p>
+<p>The confusion matrix is a 2x2 table summarizing the number of correct predictions of the model (a function of the decision boundary): <em>It is the foundation for understanding other evaluation metrics.</em></p>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -537,18 +652,89 @@ L.L. Odette
 <aside><ol class="aside-footnotes"><li id="fn1"><p>Type II error</p></li><li id="fn2"><p>Type I error</p></li></ol></aside></section>
 <section id="binary-classifier-metrics-1" class="slide level2">
 <h2>Binary Classifier metrics</h2>
-<h3 id="accuracy">Accuracy</h3>
-<p>Accuracy measure the percent of correct predictions:</p>
+<h3 id="accuracy---the-simplest-metric">Accuracy - the simplest metric:</h3>
+<p>Accuracy measures the percent of correct predictions:</p>
 <p><span class="math display">\[
-\frac{\text{TP}+\text{TN}}{\text{total # observations}}
+\begin{align*}
+\frac{\text{TP}+\text{TN}}{\text{observation count}}
+\end{align*}
 \]</span></p>
+</section>
+<section id="binary-classifier-metrics-2" class="slide level2">
+<h2>Binary Classifier metrics</h2>
+<h3 id="accuracy">Accuracy:</h3>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Usefulness</a></li><li><a href="#tabset-4-2">Limitations</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1">
+<div style="font-size: x-large">
+<p><strong>Accuracy</strong> is a useful metric in evaluating classification models under certain conditions:</p>
+<ol type="1">
+<li><p><strong>Balanced Datasets</strong>: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy will give a good sense of how often the model correctly predicts the classes.</p></li>
+<li><p><strong>General Performance</strong>: When you want a quick, overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure. It tells you the proportion of correct predictions out of all predictions made.</p></li>
+</ol>
+</div>
+</div>
+<div id="tabset-4-2">
+<div style="font-size: x-large">
+<p>Accuracy has several limitations, especially in the context of imbalanced datasets:</p>
+</div>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Imbalance</a></li><li><a href="#tabset-3-2">Importance</a></li><li><a href="#tabset-3-3">Behaviour</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<div style="font-size: x-large">
+<p><strong>Imbalanced Datasets</strong>:</p>
+<ul>
+<li><strong>False Sense of Performance</strong>: In datasets where one class significantly outnumbers the other, accuracy can be misleading. For example, if 95% of the samples belong to class A and only 5% to class B, a model that always predicts class A will have a high accuracy (95%) but will fail to identify any instances of class B correctly.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-3-2">
+<div style="font-size: x-large">
+<p><strong>Ignoring Class Importance</strong>:</p>
+<ul>
+<li><strong>Precision and Recall</strong>: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal. For instance, in medical diagnosis, a false negative might be much more serious than a false positive.</li>
+</ul>
+</div>
+</div>
+<div id="tabset-3-3">
+<div style="font-size: x-large">
+<p><strong>Lack of Insight into Model Behavior</strong>:</p>
+<ul>
+<li><strong>Detailed Performance</strong>: Accuracy does not provide insight into the specific types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes, which is crucial for understanding and improving the model.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="binary-classifier-metrics-3" class="slide level2">
+<h2>Binary Classifier metrics</h2>
+<h3 id="accuracy-limitation-examples">Accuracy: limitation examples</h3>
+<div style="font-size: xx-large">
+<p>Fraud Detection:</p>
+<ul>
+<li>Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99%. However, it fails to identify any fraudulent transactions, making it useless for fraud detection purposes.</li>
+</ul>
+<p>Spam Detection:</p>
+<ul>
+<li>Scenario: Consider an email classification problem where 95% of emails are legitimate and 5% are spam. A model that always predicts “legitimate” will have high accuracy but will not catch any spam emails, which is the primary goal.</li>
+</ul>
+</div>
+</section>
+<section id="binary-classifier-metrics-4" class="slide level2">
+<h2>Binary Classifier metrics</h2>
 <h3 id="precision">Precision</h3>
 <p>Accuracy measure the percent of positive predictions that are correct:</p>
 <p><span class="math display">\[
 \frac{\text{TP}}{\text{TP}+\text{FP}}
 \]</span></p>
 </section>
-<section id="binary-classifier-metrics-2" class="slide level2">
+<section id="binary-classifier-metrics-5" class="slide level2">
 <h2>Binary Classifier metrics</h2>
 <h3 id="recall-sensitivity">Recall / Sensitivity</h3>
 <p>Measures the success at predicting the first class</p>
@@ -561,10 +747,23 @@ L.L. Odette
 \frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
 \]</span></p>
 </section>
-<section id="binary-classifier-metrics-3" class="slide level2">
+<section id="binary-classifier-metrics-6" class="slide level2">
+<h2>Binary Classifier metrics</h2>
+<p>Receiver Operating Characteristic (ROC) curve &amp; the Area Under the Curve (AUC)</p>
+<div style="font-size: xx-large">
+<ul>
+<li><p><strong>ROC Curve</strong>: Plot of the true positive rate (Recall) against the false positive rate (1 - Specificity) at various threshold settings.</p></li>
+<li><p><strong>AUC</strong>: The area under the ROC curve, representing the probability that the model ranks a randomly chosen positive instance higher than a randomly chosen negative instance.</p>
+<ul>
+<li>AUC values range from 0.5 (no discrimination) to 1 (perfect discrimination).</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="binary-classifier-metrics-7" class="slide level2">
 <h2>Binary Classifier metrics</h2>
 <h3 id="roc-curves">ROC Curves</h3>
-<p>Consider plotting the TPR against the FPR (1-TNR) <u><strong>at different classification thresholds</strong></u>. This is the ROC.</p>
+<p>Consider plotting the TPR against the FPR (1-TNR) <u><strong>at different classification thresholds</strong></u>.</p>
 <ul>
 <li>the diagonal (TPR = 1-TNR) describes a process equivalent to tossing a fair coin (i.e.&nbsp;no predictive power)</li>
 <li>our method should have a curve above the diagonal; which shape is better depends on the purpose of our classifier.</li>
@@ -662,6 +861,85 @@ L.L. Odette
 </div>
 </div>
 </div></div>
+</section>
+<section id="binary-classifier" class="slide level2">
+<h2>Binary Classifier</h2>
+<p><strong>Classification Threshold</strong></p>
+<p><strong>Recall</strong>:</p>
+<ul>
+<li>In binary classification, the model predicts the probability of an instance belonging to the positive class. The classification threshold is the probability value above which an instance is classified as positive.</li>
+<li>Commonly, this threshold is set at 0.5, meaning any instance with a predicted probability above 0.5 is classified as positive, and below 0.5 as negative.</li>
+</ul>
+</section>
+<section id="binary-classifier-1" class="slide level2">
+<h2>Binary Classifier</h2>
+<p><strong>Classification Threshold Impact</strong></p>
+<div style="font-size: x-large">
+<p><strong>True Positives (TP) and False Positives (FP)</strong>:</p>
+<ul>
+<li><strong>Lower Threshold</strong>: A lower threshold increases the number of instances classified as positive, which increases both true positives and false positives.</li>
+<li><strong>Higher Threshold</strong>: A higher threshold decreases the number of instances classified as positive, which decreases both true positives and false positives.</li>
+</ul>
+<p><strong>True Negatives (TN) and False Negatives (FN)</strong>:</p>
+<ul>
+<li><strong>Lower Threshold</strong>: A lower threshold decreases the number of instances classified as negative, which decreases both true negatives and increases false negatives.</li>
+<li><strong>Higher Threshold</strong>: A higher threshold increases the number of instances classified as negative, which increases true negatives and decreases false negatives.</li>
+</ul>
+<p><strong>Trade-offs</strong>:</p>
+<ul>
+<li>Adjusting the threshold affects the trade-off between sensitivity (recall) and specificity. A lower threshold improves sensitivity but reduces specificity, and vice versa.</li>
+</ul>
+</div>
+</section>
+<section id="binary-classifier-2" class="slide level2">
+<h2>Binary Classifier</h2>
+<h3 id="roc-curve-and-auc">ROC Curve and AUC</h3>
+<ol type="1">
+<li><strong>ROC Curve</strong>:
+<ul>
+<li>The ROC curve plots the true positive rate (TPR, or recall) against the false positive rate (FPR) at various threshold settings.</li>
+<li>Each point on the ROC curve represents a TPR/FPR pair corresponding to a specific threshold.</li>
+</ul></li>
+<li><strong>AUC (Area Under the Curve)</strong>:
+<ul>
+<li>The AUC represents the model’s ability to discriminate between positive and negative classes across all threshold values.</li>
+<li>A higher AUC indicates better overall performance.</li>
+</ul></li>
+</ol>
+</section>
+<section id="binary-classifier-optimal-threshold" class="slide level2">
+<h2>Binary Classifier: optimal threshold</h2>
+<div style="font-size: x-large">
+<ol type="1">
+<li><strong>Business Context</strong>:
+<ul>
+<li>The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in a medical diagnosis, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).</li>
+</ul></li>
+<li><strong>Maximize Specific Metrics</strong>:
+<ul>
+<li>You can choose a threshold that maximizes a specific metric such as F1 score, which balances precision and recall.</li>
+<li>Alternatively, you might want to maximize precision, recall, or minimize a cost function that accounts for both false positives and false negatives.</li>
+</ul></li>
+<li><strong>Youden’s Index</strong>:
+<ul>
+<li>One method to select an optimal threshold is to maximize Youden’s Index (<span class="math inline">\(J\)</span>), which is defined as: <span class="math inline">\(J=\mathrm{Sensitivity}+\mathrm{Specificity}-1\)</span></li>
+<li>This index helps to find a threshold that maximizes the difference between true positive rate and false positive rate.</li>
+</ul></li>
+<li><strong>Cost-Benefit Analysis</strong>:
+<ul>
+<li>Perform a cost-benefit analysis by assigning costs to false positives and false negatives and choosing the threshold that minimizes the total expected cost.</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="binary-classifier-threshold-examples" class="slide level2">
+<h2>Binary Classifier: threshold examples</h2>
+<div style="font-size: xx-large">
+<h3 id="example-scenario">Example Scenario</h3>
+<p><strong>Fraud Detection</strong>: - In fraud detection, missing a fraudulent transaction (false negative) might be more costly than flagging a legitimate transaction as fraud (false positive). - You might choose a lower threshold to ensure higher sensitivity (recall), even if it means a higher false positive rate, thereby catching more fraudulent transactions.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The choice of classification threshold in computing the ROC curve is crucial for balancing the trade-offs between sensitivity and specificity, and ultimately for optimizing the model’s performance in a way that aligns with business goals and context. Understanding and carefully selecting the appropriate threshold ensures that the model’s predictions are most useful and cost-effective for the specific application.</p>
+</div>
 </section></section>
 <section>
 <section id="other-classification-methods" class="title-slide slide level1 center">
@@ -670,28 +948,39 @@ L.L. Odette
 </section>
 <section id="naive-bayes-classification" class="slide level2">
 <h2>Naive Bayes Classification</h2>
-<p>This method starts with Bayes rule: for <span class="math inline">\(K\)</span> classes and <span class="math inline">\(N\)</span> features, since <span class="math inline">\(\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]\)</span> is equal to <span class="math inline">\(\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]\)</span>, we can write</p>
+<p>Bayes Rule - using the rules of conditional probability:</p>
+<p><span class="math display">\[
+\mathbb{P}(A,B) = \mathbb{P}(A|B)\mathbb{P}(B) = \mathbb{P}(B|A)\mathbb{P}(A)
+\]</span> We can write:</p>
+<p><span class="math display">\[
+\mathbb{P}(B|A) = \frac{\mathbb{P}(A|B)\mathbb{P}(B)}{\mathbb{P}(A)}
+\]</span></p>
+</section>
+<section id="naive-bayes-classification-1" class="slide level2">
+<h2>Naive Bayes Classification</h2>
+<p>This method starts with Bayes rule:</p>
+<p>for <span class="math inline">\(K\)</span> classes and <span class="math inline">\(N\)</span> features, since <span class="math inline">\(\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]\)</span> is equal to <span class="math inline">\(\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]\)</span>, we can write</p>
 <p><span class="math display">\[
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
 \]</span></p>
 </section>
-<section id="naive-bayes-classification-1" class="slide level2">
+<section id="naive-bayes-classification-2" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>If we assume that the features are all independent we can write Bayes rule as</p>
 <p><span class="math display">\[
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[C_{k}\right]\times\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}
 \]</span></p>
-<p>and our classifier is</p>
+<p>and since the denominator is independent of <span class="math inline">\(C_{k}\)</span>, our classifier is</p>
 <p><span class="math display">\[
 C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]
 \]</span></p>
 </section>
-<section id="naive-bayes-classification-2" class="slide level2">
+<section id="naive-bayes-classification-3" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>So it remains to calculate the class probability <span class="math inline">\(\mathbb{P}\left[C_{k}\right]\)</span> and the conditional probabilities <span class="math inline">\(\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]\)</span></p>
 <p>The different naive Bayes classifiers differ mainly by the assumptions they make regarding the conditional probabilities.</p>
 </section>
-<section id="naive-bayes-classification-3" class="slide level2">
+<section id="naive-bayes-classification-4" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>If our features are all ordinal, then</p>
 <ul>
@@ -699,11 +988,11 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <li><p>The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of instances with that class value.</p></li>
 </ul>
 </section>
-<section id="naive-bayes-classification-4" class="slide level2">
+<section id="naive-bayes-classification-5" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>If any features are numeric, we can estimate conditional probabilities by assuming that the numeric features have a Gaussian distribution for each class</p>
 </section>
-<section id="naive-bayes-classification-5" class="slide level2">
+<section id="naive-bayes-classification-6" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
@@ -734,12 +1023,12 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </details>
 </div>
 </section>
-<section id="naive-bayes-classification-6" class="slide level2">
+<section id="naive-bayes-classification-7" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">AUC</a></li><li><a href="#tabset-1-2">ROC</a></li></ul>
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">AUC</a></li><li><a href="#tabset-5-2">ROC</a></li></ul>
 <div class="tab-content">
-<div id="tabset-1-1">
+<div id="tabset-5-1">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> training_results_nb <span class="sc">%&gt;%</span> </span>
 <span id="cb8-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(.pred_No, <span class="at">truth =</span> default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -751,7 +1040,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </div>
 </div>
 </div>
-<div id="tabset-1-2">
+<div id="tabset-5-2">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -763,6 +1052,92 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </div>
 </div>
 </div>
+</div>
+</section>
+<section id="naive-bayes-classification-uses" class="slide level2">
+<h2>Naive Bayes Classification: uses</h2>
+<div style="font-size: large">
+<ol type="1">
+<li><strong>Text Classification</strong>:
+<ul>
+<li><strong>Sentiment Analysis</strong>: It can classify text data into categories such as positive, negative, or neutral sentiment.</li>
+</ul></li>
+<li><strong>Document Categorization</strong>:
+<ul>
+<li>Useful in classifying news articles, blog posts, or any document into predefined categories based on content.</li>
+</ul></li>
+<li><strong>Medical Diagnosis</strong>:
+<ul>
+<li>Can be used to predict the likelihood of a disease based on patient symptoms and medical history, assuming independence between symptoms.</li>
+</ul></li>
+<li><strong>Recommender Systems</strong>:
+<ul>
+<li>Helps in predicting user preferences and recommending items such as movies, books, or products based on previous user behavior.</li>
+</ul></li>
+<li><strong>Real-time Prediction</strong>:
+<ul>
+<li>Due to its simplicity and speed, Naive Bayes is suitable for real-time prediction tasks where quick decisions are essential.</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="naive-bayes-classification-abuses" class="slide level2">
+<h2>Naive Bayes Classification: abuses</h2>
+<div style="font-size: large">
+<ol type="1">
+<li><strong>Assumption of Feature Independence</strong>:
+<ul>
+<li><strong>Misuse</strong>: The model assumes that all features are independent given the class.</li>
+<li><strong>Impact</strong>: Poor performance if features are highly correlated.</li>
+</ul></li>
+<li><strong>Imbalanced Data</strong>:
+<ul>
+<li><strong>Misuse</strong>: Naive Bayes can struggle with imbalanced class datasets.</li>
+<li><strong>Impact</strong>: Bias towards the majority class, leads to high accuracy but poor minority recall.</li>
+</ul></li>
+<li><strong>Zero Probability Problem</strong>:
+<ul>
+<li><strong>Misuse</strong>: If a feature <span class="math inline">\(x_j\)</span> missing for class <span class="math inline">\(k\)</span>, then <span class="math inline">\(\mathbb{P}\left[\left.x_{j}\right|C_{k}\right]=0\)</span>, which can skew results.</li>
+<li><strong>Solution</strong>: Use techniques like Laplace Smoothing to handle zero probabilities.</li>
+</ul></li>
+<li><strong>Overfitting on Small Datasets</strong>:
+<ul>
+<li><strong>Misuse</strong>: Naive Bayes may overfit if trained on a small dataset with noise or outliers.</li>
+<li><strong>Impact</strong>: This can result in poor generalization to new data.</li>
+</ul></li>
+<li><strong>Ignoring Feature Scaling</strong>:
+<ul>
+<li><strong>Misuse</strong>: The model does not inherently handle features with different scales or units.</li>
+<li><strong>Impact</strong>: Features with larger scales can disproportionately influence the model</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="naive-bayes-best-practices" class="slide level2">
+<h2>Naive Bayes Best Practices</h2>
+<div style="font-size: large">
+<ol type="1">
+<li><strong>Feature Engineering</strong>:
+<ul>
+<li>Proper feature selection and engineering can help mitigate some of the independence assumption issues. For instance, combining related features can improve performance.</li>
+</ul></li>
+<li><strong>Handling Correlated Features</strong>:
+<ul>
+<li>While Naive Bayes assumes independence, it can still perform well with moderately correlated features. In cases of strong correlation, consider using other models.</li>
+</ul></li>
+<li><strong>Evaluation Metrics</strong>:
+<ul>
+<li>Use appropriate metrics such as precision, recall, and ROC-AUC, especially for imbalanced datasets, to get a comprehensive understanding of model performance.</li>
+</ul></li>
+<li><strong>Cross-Validation</strong>:
+<ul>
+<li>Employ cross-validation techniques to ensure that the model generalizes well to unseen data and to avoid overfitting.</li>
+</ul></li>
+<li><strong>Comparative Analysis</strong>:
+<ul>
+<li>Compare Naive Bayes with other classifiers (e.g., logistic regression, SVM, random forest) to ensure that it is the best choice for your specific problem.</li>
+</ul></li>
+</ol>
 </div>
 </section>
 <section id="nearest-neighbour-classification" class="slide level2">
@@ -831,6 +1206,106 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <li><p><strong>Choice of k (Number of Neighbors):</strong> The value of k affects the performance of a kNN model. Testing the model with various values of k and evaluating the performance using standard metrics (like accuracy, F1 score) can to select the best k.</p></li>
 <li><p><strong>Feature Scaling Sensitivity:</strong> kNN is sensitive to the scale of the features because it relies on calculating distances. Evaluate the model’s performance before and after feature scaling (like Min-Max scaling or Z-score normalization)</p></li>
 <li><p><strong>Curse of Dimensionality:</strong> kNN can perform poorly with high-dimensional data (many features). Evaluating the model’s performance in relation to the number of features (dimensionality) can be important. Dimensionality reduction techniques like PCA might be used with kNN.</p></li>
+</ol>
+</div>
+</section>
+<section id="knn-classification-uses" class="slide level2">
+<h2>KNN Classification: uses</h2>
+<div style="font-size: large">
+<ol type="1">
+<li><strong>Pattern Recognition</strong>:
+<ul>
+<li><strong>Handwriting Recognition</strong>: kNN can classify handwritten digits or letters using their features.</li>
+<li><strong>Image Classification</strong>: Categorize by comparing pixels/features with known images.</li>
+</ul></li>
+<li><strong>Recommender Systems</strong>:
+<ul>
+<li><strong>Content-Based Filtering</strong>: kNN can recommend items using similarities between user preferences and the attributes of items.</li>
+<li><strong>Collaborative Filtering</strong>: Can also recommend items based on preferences of similar users.</li>
+</ul></li>
+<li><strong>Medical Diagnosis</strong>:
+<ul>
+<li><strong>Disease Prediction</strong>: kNN can predict likelihood of diseases by comparing patient data to historical patient data with known diagnoses.</li>
+</ul></li>
+<li><strong>Anomaly Detection</strong>:
+<ul>
+<li><strong>Fraud Detection</strong>: kNN can identify unusual transactions by comparing to known legitimate and fraudulent transactions.</li>
+</ul></li>
+<li><strong>Customer Segmentation</strong>:
+<ul>
+<li><strong>Market Analysis</strong>: It can segment customers based on purchasing behavior, demographics, or other attributes.</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="knn-classification-abuses" class="slide level2">
+<h2>KNN Classification: abuses</h2>
+<div style="font-size: large">
+<ul>
+<li><strong>High Dimensionality</strong>:
+<ul>
+<li><strong>Misuse</strong>: kNN can struggle with high-dimensional data as distances become less meaningful (curse of dimensionality).</li>
+<li><strong>Impact</strong>: Performance degrades as irrelevant or noisy features overshadow important ones.</li>
+<li><strong>Solution</strong>: Use dimensionality reduction (e.g., PCA, t-SNE) or feature selection before using kNN.</li>
+</ul></li>
+<li><strong>Large Datasets</strong>:
+<ul>
+<li><strong>Misuse</strong>: kNN stores all training data and calculates all distances during prediction, &amp; can be computationally expensive.</li>
+<li><strong>Impact</strong>: It becomes slow and impractical for large datasets.</li>
+<li><strong>Solution</strong>: Use approximate kNN techniques or consider other algorithms better suited for large datasets.</li>
+</ul></li>
+<li><strong>Imbalanced Datasets</strong>:
+<ul>
+<li><strong>Misuse</strong>: kNN can be biased towards the majority class in imbalanced datasets because the majority class neighbors dominate.</li>
+<li><strong>Impact</strong>: Low recall for minority class, &amp; to poor performance in e.g.&nbsp;fraud detection or rare disease diagnosis.</li>
+<li><strong>Solution</strong>: Use resampling, synthetic data generation (SMOTE), or adjusting the decision rule to account for class imbalance.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="knn-classification-abuses-1" class="slide level2">
+<h2>KNN Classification: abuses</h2>
+<div style="font-size: large">
+<ul>
+<li><strong>Choice of k and Distance Metric</strong>:
+<ul>
+<li><strong>Misuse</strong>: An inappropriate choice of ( k ) (too small or too large) or an unsuitable distance metric can lead to poor classification performance.</li>
+<li><strong>Impact</strong>: A small ( k ) can make the model sensitive to noise (overfitting), while a large ( k ) can oversmooth the decision boundary (underfitting).</li>
+<li><strong>Solution</strong>: Use cross-validation to choose the optimal ( k ) and experiment with different distance metrics (e.g., Euclidean, Manhattan).</li>
+</ul></li>
+<li><strong>Scalability</strong>:
+<ul>
+<li><strong>Misuse</strong>: kNN does not scale well to datasets with a large number of features or samples without optimization.</li>
+<li><strong>Impact</strong>: Slow predictions and high memory usage.</li>
+<li><strong>Solution</strong>: Use k-d trees, ball trees, or locality-sensitive hashing to speed up nearest neighbor searches.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="knn-classification-best-practices" class="slide level2">
+<h2>KNN Classification Best Practices</h2>
+<div style="font-size: large">
+<ol type="1">
+<li><strong>Normalization and Scaling</strong>:
+<ul>
+<li><strong>Importance</strong>: Features should be on a similar scale for kNN to perform well, as distance calculations are sensitive to feature scales.</li>
+<li><strong>Practice</strong>: Apply normalization (e.g., Min-Max scaling) or standardization (mean=0, variance=1) to the features.</li>
+</ul></li>
+<li><strong>Handling Missing Data</strong>:
+<ul>
+<li><strong>Importance</strong>: kNN cannot handle missing values directly.</li>
+<li><strong>Practice</strong>: Impute missing values before applying kNN, using mean/mode imputation or kNN-based imputation.</li>
+</ul></li>
+<li><strong>Choosing k</strong>:
+<ul>
+<li><strong>Importance</strong>: The choice of <span class="math inline">\(k\)</span> can significantly affect model performance.</li>
+<li><strong>Practice</strong>: Use cross-validation to determine the optimal value of <span class="math inline">\(k\)</span>.</li>
+</ul></li>
+<li><strong>Evaluating Model Performance</strong>:
+<ul>
+<li><strong>Importance</strong>: Use appropriate metrics to evaluate the model, especially with imbalanced data.</li>
+<li><strong>Practice</strong>: Evaluate using precision, recall, and ROC-AUC, not just accuracy.</li>
+</ul></li>
 </ol>
 </div>
 </section>
@@ -957,6 +1432,174 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <span id="cb11-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="svm-classification-variants" class="slide level2">
+<h2>SVM Classification: variants</h2>
+<p>The <strong>linear SVM</strong> constructs a linear decision boundary (hyperplane) to separate classes in the feature space. It aims to find the hyperplane that maximizes the margin between the closest points (support vectors) of the classes. The decision function is <span class="math inline">\(f(x) = w \cdot x + b\)</span>, where <span class="math inline">\(w\)</span> is the weight vector and <span class="math inline">\(b\)</span> is the bias term.</p>
+<p>There are similar SVM methods that are adapted to more complex boundaries.</p>
+</section>
+<section id="svm-classification-polynomial" class="slide level2">
+<h2>SVM Classification: polynomial</h2>
+<p><strong>Polynomial SVM</strong> uses a polynomial kernel to create a non-linear decision boundary. It transforms the input features into higher-dimensional space where a linear separation is possible.</p>
+<p>The polynomial kernel is <span class="math inline">\(K(x, x') = (w \cdot x + b)^d\)</span>, where <span class="math inline">\(d\)</span> is the degree of the polynomial. This kernel is implemented though <code>parsnip::svm_poly</code> and engine <strong>kernlab</strong>.</p>
+</section>
+<section id="svm-classification-radial-basis" class="slide level2">
+<h2>SVM Classification: radial basis</h2>
+<p><strong>RBF SVM</strong> uses the Radial Basis Function (Gaussian) kernel to handle non-linear classification problems. It maps the input space into an infinite-dimensional space where a linear separation is possible.</p>
+<p>The RBF kernel is <span class="math inline">\(K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)\)</span>, where <span class="math inline">\(\gamma\)</span> controls the width of the Gaussian function. This kernel is implemented though <code>parsnip::svm_rbf</code> and engine <strong>kernlab</strong>.</p>
+</section>
+<section id="svm-classification-comparisons" class="slide level2">
+<h2>SVM Classification: Comparisons</h2>
+<div style="font-size: large">
+<table class="caption-top">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 31%">
+<col style="width: 24%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Linear SVM</th>
+<th>Polynomial SVM</th>
+<th>RBF SVM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Kernel Function</strong></td>
+<td>Linear</td>
+<td>Polynomial</td>
+<td>Radial Basis Function</td>
+</tr>
+<tr class="even">
+<td><strong>Equation</strong></td>
+<td><span class="math inline">\(w \cdot x + b\)</span></td>
+<td><span class="math inline">\((w \cdot x + b)^d\)</span></td>
+<td><span class="math inline">\(\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)\)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Complexity</strong></td>
+<td>Low</td>
+<td>Medium to High (depending on <span class="math inline">\(d\)</span>)</td>
+<td>High</td>
+</tr>
+<tr class="even">
+<td><strong>Interpretability</strong></td>
+<td>High</td>
+<td>Medium</td>
+<td>Low</td>
+</tr>
+<tr class="odd">
+<td><strong>Computational Cost</strong></td>
+<td>Low</td>
+<td>Medium to High (higher with increasing <span class="math inline">\(d\)</span>)</td>
+<td>High</td>
+</tr>
+<tr class="even">
+<td><strong>Flexibility</strong></td>
+<td>Low</td>
+<td>Medium to High</td>
+<td>High</td>
+</tr>
+<tr class="odd">
+<td><strong>Risk of Overfitting</strong></td>
+<td>Low</td>
+<td>Medium to High (higher with increasing <span class="math inline">\(d\)</span>)</td>
+<td>Medium to High (depends on <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(C\)</span>)</td>
+</tr>
+<tr class="even">
+<td><strong>Typical Use Cases</strong></td>
+<td>Linearly separable, high-dimensional spaces (e.g., text)</td>
+<td>Data with polynomial relationships</td>
+<td>Highly non-linear data, complex patterns</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="svm-classification-best-practices" class="slide level2">
+<h2>SVM Classification Best Practices</h2>
+<div style="font-size: small">
+<h3 id="data-preparation">1. <strong>Data Preparation</strong></h3>
+<h4 id="a.-feature-scaling">a. <strong>Feature Scaling</strong></h4>
+<ul>
+<li><strong>Importance</strong>: SVM is sensitive to the scale of the features. Features with larger ranges can dominate the distance calculations, leading to suboptimal boundaries.</li>
+<li><strong>Best Practice</strong>: Standardize or normalize the features so that they have similar scales. Common techniques include Min-Max scaling (to a [0, 1] range) and StandardScaler (to zero mean and unit variance).</li>
+</ul>
+<h4 id="b.-handling-missing-data">b. <strong>Handling Missing Data</strong></h4>
+<ul>
+<li><strong>Importance</strong>: SVM cannot handle missing values directly.</li>
+<li><strong>Best Practice</strong>: Impute missing values using methods like mean/mode/median imputation or more sophisticated techniques such as k-NN imputation or using models to predict missing values.</li>
+</ul>
+<h3 id="choosing-the-kernel">2. <strong>Choosing the Kernel</strong></h3>
+<h4 id="a.-linear-kernel">a. <strong>Linear Kernel</strong></h4>
+<ul>
+<li><strong>When to Use</strong>: If the data is approximately linearly separable or when the number of features is very large compared to the number of samples.</li>
+<li><strong>Best Practice</strong>: Start with a linear kernel as a baseline, especially for high-dimensional data like text classification.</li>
+</ul>
+<h4 id="b.-non-linear-kernels-polynomial-rbf">b. <strong>Non-linear Kernels (Polynomial, RBF)</strong></h4>
+<ul>
+<li><strong>When to Use</strong>: If the data is not linearly separable. The RBF kernel is generally a good first choice for non-linear problems.</li>
+<li><strong>Best Practice</strong>: Experiment with different kernels. Use cross-validation to compare performance and select the most appropriate kernel.</li>
+</ul>
+</div>
+</section>
+<section id="svm-classification-best-practices-1" class="slide level2">
+<h2>SVM Classification Best Practices</h2>
+<div style="font-size: small">
+<h3 id="hyperparameter-tuning">3. <strong>Hyperparameter Tuning</strong></h3>
+<h4 id="a.-regularization-parameter-cost-c">a. <strong>Regularization Parameter (cost</strong> <span class="math inline">\(C\)</span>)</h4>
+<ul>
+<li><strong>Importance</strong>: Controls the trade-off between achieving a low training error and a low testing error.</li>
+<li><strong>Best Practice</strong>: Use cross-validation to find the optimal value of cost <span class="math inline">\(C\)</span>. Start with a wide range and then narrow down.</li>
+</ul>
+<h4 id="b.-kernel-specific-parameters">b. <strong>Kernel-specific Parameters</strong></h4>
+<ul>
+<li><strong>For RBF Kernel</strong>: Tune the <span class="math inline">\(\sigma\)</span> parameter, which defines the influence of individual data points.</li>
+<li><strong>For Polynomial Kernel</strong>: Tune the degree <span class="math inline">\(d\)</span>, the margin coefficient <span class="math inline">\(r\)</span>, and the <code>scale_factor</code>.</li>
+<li><strong>Best Practice</strong>: Use grid search or random search for hyperparameter tuning. Cross-validation is crucial to avoid overfitting and to find the best combination of parameters.</li>
+</ul>
+<h3 id="handling-imbalanced-data">4. <strong>Handling Imbalanced Data</strong></h3>
+<h4 id="a.-class-weights">a. <strong>Class Weights</strong></h4>
+<ul>
+<li><strong>Importance</strong>: Imbalanced classes can bias the SVM towards the majority class.</li>
+<li><strong>Best Practice</strong>: Adjust the class weights to give more importance to the minority class. Most SVM implementations allow setting the <code>class_weight</code> parameter to ‘balanced’ or manually specifying weights.</li>
+</ul>
+<h4 id="b.-resampling-techniques">b. <strong>Resampling Techniques</strong></h4>
+<ul>
+<li><strong>Importance</strong>: Can further help in dealing with imbalanced datasets.</li>
+<li><strong>Best Practice</strong>: Use oversampling (e.g., <code>themis::step_smote()</code>) or undersampling techniques to balance the class distribution before training the model.</li>
+</ul>
+</div>
+</section>
+<section id="svm-classification-best-practices-2" class="slide level2">
+<h2>SVM Classification Best Practices</h2>
+<div style="font-size: small">
+<h3 id="model-evaluation">5. <strong>Model Evaluation</strong></h3>
+<h4 id="a.-performance-metrics">a. <strong>Performance Metrics</strong></h4>
+<ul>
+<li><strong>Importance</strong>: Accuracy alone may not be sufficient, especially for imbalanced datasets.</li>
+<li><strong>Best Practice</strong>: Evaluate using metrics like precision, recall,and ROC-AUC to get a comprehensive understanding of model performance.</li>
+</ul>
+<h4 id="b.-cross-validation">b. <strong>Cross-validation</strong></h4>
+<ul>
+<li><strong>Importance</strong>: Ensures that the model generalizes well to unseen data.</li>
+<li><strong>Best Practice</strong>: Use k-fold cross-validation to assess the model’s performance and robustness. This helps in reducing the variance in performance estimates.</li>
+</ul>
+<h3 id="implementation-considerations">6. <strong>Implementation Considerations</strong></h3>
+<h4 id="a.-choosing-the-right-softwarelibrary">a. <strong>Choosing the Right Software/Library</strong></h4>
+<ul>
+<li><strong>Importance</strong>: Efficient and reliable implementation is crucial for performance.</li>
+<li><strong>Best Practice</strong>: Use well-established libraries like those in parsnip.</li>
+</ul>
+<h4 id="b.-handling-large-datasets">b. <strong>Handling Large Datasets</strong></h4>
+<ul>
+<li><strong>Importance</strong>: SVM can be computationally intensive for large datasets.</li>
+<li><strong>Best Practice</strong>: Use linear SVMs for very large datasets or use dimensionality reduction techniques (e.g., PCA) to reduce the feature space.</li>
+</ul>
+</div>
 </section></section>
 <section>
 <section id="clustering-methods" class="title-slide slide level1 center">
@@ -964,6 +1607,11 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 
 </section>
 <section id="clustering" class="slide level2">
+<h2>Clustering</h2>
+<p><em>Classification</em> and <em>clustering</em> serve different purposes in machine learning. <em>Classification</em> is a supervised learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.</p>
+<p><em>Clustering</em>, on the other hand, is an unsupervised learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.</p>
+</section>
+<section id="clustering-1" class="slide level2">
 <h2>Clustering</h2>
 <p><strong><em>Cluster analysis</em></strong> refers to algorithms that group similar objects into groups called <em>clusters</em>. The endpoint of cluster analysis is a set of clusters<em>,</em> where each cluster is distinct from each other cluster, and the objects within each cluster are broadly similar to each other.</p>
 <p>The purpose of cluster analysis is to help reveal patterns and structures within a dataset that may provide insights into underlying relationships and associations.</p>
@@ -988,6 +1636,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <section id="k-means-clustering-1" class="slide level2">
 <h2>K-means Clustering</h2>
 <p>In <em>k-means</em> clustering, observed variables (columns) are considered to be locations on axes in multidimensional space.</p>
+<div style="font-size: x-large">
 <p>The basic k-means algorithm has the following steps.</p>
 <ol type="1">
 <li>pick the number of clusters k</li>
@@ -996,6 +1645,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <li>Compute the new <strong>centroids</strong> of each cluster.</li>
 <li>Repeat steps 3 and 4 until the <strong>centroids</strong> do not change.</li>
 </ol>
+</div>
 </section>
 <section id="k-means-clustering-2" class="slide level2">
 <h2>K-means Clustering</h2>
@@ -1076,7 +1726,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p><a href="https://bsmm-8740-fall-2023.github.io/osb/">bsmm-8740-fall-2023.github.io/osb</a></p>
+<p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
 </section></section>
