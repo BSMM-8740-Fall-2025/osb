@@ -178,8 +178,8 @@ ipw_results |>
 
 # ========================
 outcome_model <- glm(
-  malaria_risk ~ net + income + health + temperature,
-  data = causalworkshop::net_data
+  malaria_risk ~ net + income + health + temperature + insecticide_resistance,
+  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 )
 
 outcome_model |> broom::tidy()
@@ -189,7 +189,9 @@ fit_reg <- function(split, ...) {
   .df <- rsample::analysis(split)
 
   # fit outcome model
-  glm(malaria_risk ~ net + income + health + temperature, data = .df)|>
+  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
+      , data = .df
+    )|>
     broom::tidy()
 }
 
@@ -197,7 +199,7 @@ both_results <- ipw_results |>
   dplyr::mutate(
     reg_fits = purrr::map(splits, fit_reg))
 
-both_results |>
+both_results_dat <- both_results |>
   dplyr::mutate(
     reg_estimate = purrr::map_dbl(
       reg_fits,
@@ -213,16 +215,57 @@ both_results |>
         dplyr::filter(term == "netTRUE") |>
         dplyr::pull(estimate)
     )
-  ) |> dplyr::summarize(ipw = mean(ipw_estimate), reg = mean(reg_estimate))
+  )
+
+both_results_dat |>
+  dplyr::summarize(
+    ipw = mean(ipw_estimate), ipw_sd = sd(ipw_estimate), ipw_med = median(ipw_estimate)
+    , reg = mean(reg_estimate), reg_sd = sd(reg_estimate), reg_med = median(reg_estimate)
+  )
+
+dat <- both_results_dat |>
+  dplyr::select(reg_estimate, ipw_estimate) |>
+  tidyr::pivot_longer(cols=everything(), names_to = "method")
+
+# dat |>
+#   ggplot(aes(value)) +
+#   geom_histogram(data=subset(dat, name == 'reg_estimate'),color = "#DFFE00FF", fill = "white", alpha = 0.5) +
+#   geom_histogram(data=subset(dat, name == 'ipw_estimate'),color = "#D55E00FF", fill = "white", alpha = 0.5)
+
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot(aes(value,colour = method), bins = 50, alpha = .5) +
+  geom_histogram(fill = "white", alpha = 0.2)
+
+# dat |>
+#   ggplot(aes(value)) +
+#   halfmoon::geom_mirror_histogram(data=subset(dat, name == 'reg_estimate'),fill = "red", alpha = 0.2) +
+#   halfmoon::geom_mirror_histogram(data=subset(dat, name == 'reg_estimate'),fill = "blue", alpha = 0.2)
+#
+# |>
+#   ggplot(aes(estimate)) +
+#   geom_histogram(fill = "#DFFE00FF", color = "white", alpha = 0.8)
+
+dat |>
+  dplyr::group_by(method) |>
+  dplyr::summarise(
+    mean.est = mean(`effect estimate`, na.rm = TRUE)
+    , sd.est = sd(`effect estimate`, na.rm = TRUE)
+    , n.est = 2 #dplyr::n()
+  ) |>
+  dplyr::mutate(se.est = sd.est / sqrt(n.est),
+          lower.ci.est = mean.est - qt(1 - (0.05 / 2), n.est - 1) * se.est,
+          upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
 
 
-
-|>
-  ggplot(aes(estimate)) +
-  geom_histogram(fill = "#DFFE00FF", color = "white", alpha = 0.8)
-
-
-
+mtcars %>%
+  group_by(vs) %>%
+  summarise(mean.mpg = mean(mpg, na.rm = TRUE),
+            sd.mpg = sd(mpg, na.rm = TRUE),
+            n.mpg = n()) %>%
+  mutate(se.mpg = sd.mpg / sqrt(n.mpg),
+         lower.ci.mpg = mean.mpg - qt(1 - (0.05 / 2), n.mpg - 1) * se.mpg,
+         upper.ci.mpg = mean.mpg + qt(1 - (0.05 / 2), n.mpg - 1) * se.mpg)
 
 
 

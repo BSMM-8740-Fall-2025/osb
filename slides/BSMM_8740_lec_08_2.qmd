@@ -37,13 +37,315 @@ execute:
 
 ## Inverse Probability Weighting
 
-Last we we used IPW to create a pseudopopulation where, for every confounder level, the numbers of treated and untreated were balanced.
+Last week we used IPW to create a pseudopopulation where, for every confounder level, the numbers of treated and untreated were balanced.
 
 IPW requires us to build a model to predict the treatment, depending on the confounders (assuming we have data for all the confounders).
 
+## Inverse Probability Weighting
+
+Repeating our prior process, first we calculate the ipw weights
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: ipw model
+net_data_wts <- propensity_model |>
+  broom::augment(newdata = causalworkshop::net_data, type.predict = "response") |>
+  # .fitted is the value predicted by the model
+  # for a given observation
+  dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
+
+net_data_wts |>
+  lm(malaria_risk ~ net, data = _, weights = wts) |>
+  broom::tidy(conf.int = TRUE)
+```
+
+## Inverse Probability Weighting
+
+Next we use bootstrapping to generate proper confidence intervals, first by creating a function to run the generate ipw estimates for each bootstrap split:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: ipw bootstrap function
+
+fit_ipw <- function(split, ...) {
+  # get bootstrapped data sample with `rsample::analysis()`
+  .df <- rsample::analysis(split)
+
+  # fit propensity score model
+  propensity_model <- glm(
+    net ~ income + health + temperature,
+    data = .df,
+    family = binomial()
+  )
+
+  # calculate inverse probability weights
+  .df <- propensity_model |>
+    broom::augment(type.predict = "response", data = .df) |>
+    dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
+
+  # fit correctly bootstrapped ipw model
+  lm(malaria_risk ~ net, data = .df, weights = wts) |>
+    broom::tidy()
+}
+
+```
+
+## Inverse Probability Weighting
+
+Next we use bootstrapping to generate proper confidence intervals:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: ipw bootstrap process
+# create bootstrap samples
+bootstrapped_net_data <- rsample::bootstraps(
+  causalworkshop::net_data,
+  times = 1000,
+  # required to calculate CIs later
+  apparent = TRUE
+)
+
+# create ipw and fit each bootstrap sample
+results <- bootstrapped_net_data |>
+  dplyr::mutate(
+    ipw_fits = purrr::map(splits, fit_ipw))
+```
+
 ## Regression Adjustment
 
-We know that we can also predict the effect of treatment by building a model to predict the outcome by using, for example, a regression model
+We know that we can also predict the effect of treatment by building a model to predict the outcome using a regression model for example.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: regression model
+outcome_model <- glm(
+  malaria_risk ~ net + income + health + temperature + insecticide_resistance,
+  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+)
+
+outcome_model |> broom::tidy(conf.int = TRUE)
+```
+
+## Regression Adjustment
+
+And we can also bootstrap the regression adjustment estimates to get CIs, first by creating the estimation function, then generating bootstrapped estimates:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: reg bootstrap function
+fit_reg <- function(split, ...) {
+  # get bootstrapped data sample with `rsample::analysis()`
+  .df <- rsample::analysis(split)
+
+  # fit outcome model
+  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
+      , data = .df
+    )|>
+    broom::tidy()
+}
+
+both_results <- results |>
+  dplyr::mutate(
+    reg_fits = purrr::map(splits, fit_reg))
+```
+
+## IPW vs Regression Adjustment
+
+We can compare the results:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| label: combine reg & ipw bootstraps
+both_results_dat <- both_results |>
+  dplyr::mutate(
+    reg_estimate = purrr::map_dbl(
+      reg_fits,
+      # pull the `estimate` for `netTRUE` for each fit
+      \(.fit) .fit |>
+        dplyr::filter(term == "netTRUE") |>
+        dplyr::pull(estimate)
+    )
+    , ipw_estimate = purrr::map_dbl(
+      ipw_fits,
+      # pull the `estimate` for `netTRUE` for each fit
+      \(.fit) .fit |>
+        dplyr::filter(term == "netTRUE") |>
+        dplyr::pull(estimate)
+    )
+  ) 
+```
+
+## IPW vs Regression Adjustment
+
+We can plot the results:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: combined reg & ipw plot
+dat <- both_results_dat |> 
+  dplyr::select(reg_estimate, ipw_estimate) |> 
+  tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
+
+dat |> 
+  dplyr::mutate(method=factor(method)) |> 
+  ggplot(aes(`effect estimate`,colour = method), bins = 50, alpha = .5) +
+  geom_histogram(fill = "white", alpha = 0.2)
+```
+
+## IPW vs Regression Adjustment
+
+We can compare the means and the confidence intervals:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: reg & ipw CIs
+
+dat |> 
+  dplyr::group_by(method) |> 
+  dplyr::summarise(
+    mean.est = mean(`effect estimate`, na.rm = TRUE)
+    , sd.est = sd(`effect estimate`, na.rm = TRUE)
+    , n.est = 2 #dplyr::n()
+  ) |> 
+  dplyr::mutate(se.est = sd.est / sqrt(n.est),
+          lower.ci.est = mean.est - qt(1 - (0.05 / 2), n.est - 1) * se.est,
+          upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
+
+```
+
+## Doubly Robust Estimation
+
+#### Don’t Put All your Eggs in One Basket
+
+We’ve learned how to use linear regression and propensity score weighting to estimate $E[Y|D=1] - E[Y|D=0] | X$. But which one should we use and when?
+
+When in doubt, just use both! Doubly Robust Estimation is a way of combining propensity score and linear regression in a way you don’t have to rely on either of them.
+
+## Doubly Robust Estimation
+
+The estimator is as follows.
+
+$$
+\hat{ATE} = \frac{1}{N}\sum \bigg( \dfrac{D_i(Y_i - \hat{\mu_1}(X_i))}{\hat{P}(X_i)} + \hat{\mu_1}(X_i) \bigg) - \frac{1}{N}\sum \bigg( \dfrac{(1-D_i)(Y_i - \hat{\mu_0}(X_i))}{1-\hat{P}(X_i)} + \hat{\mu_0}(X_i) \bigg)
+$$
+
+where $\hat{P}(x)$ is an estimation of the propensity score (using logistic regression, for example), $\hat{\mu_1}(x)$ is an estimation of (using linear regression, for example), and is an estimation of $E[Y|X, D=1]$. As you might have already guessed, the first part of the doubly robust estimator estimates $E[Y^1]$ and the second part estimates $E[Y^0]$. Let’s examine the first part, as all the intuition will also apply to the second part by analogy.
+
+## Doubly Robust Estimation
+
+First let's examine the code
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: doubly robust estimation
+D <- "net"
+Y <- "malaria_risk"
+X <- c('income', 'health', 'temperature')
+
+doubly_robust <- function(df, X, D, Y){
+  ps <- # propensity score
+    as.formula(paste(D, " ~ ", paste(X, collapse= "+"))) |>
+    stats::glm( data = df, family = binomial() ) |>
+    broom::augment(type.predict = "response", data = df) |>
+    dplyr::pull(.fitted)
+  
+  lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
+  
+  idx <- df[,D] %>% dplyr::pull(1) == 0
+  mu0 <- # mean response D == 0
+    lm(lin_frml, data = df[idx,]) %>% 
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+  
+  idx <- df[,D] %>% dplyr::pull(1) == 1
+  mu1 <- # mean response D == 1
+    lm(lin_frml, data = df[idx,]) |>  
+    broom::augment(type.predict = "response", newdata = df[,X]) |> 
+    dplyr::pull(.fitted)
+  
+  # convert treatment factor to integer | recast as vectors
+  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] %>% dplyr::pull(1)
+  
+  mean( d*(y - mu1)/ps + mu1 ) -
+    mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
+}
+
+causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net)) |> 
+  doubly_robust(X, D, Y)
+```
+
+## Doubly Robust Estimation
+
+Once again, we can use bootstrap to construct confidence intervals.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: dre bootstrap
+
+all_results_dat <- both_results_dat |>
+  dplyr::mutate(
+    dre_fits = 
+      purrr::map_dbl(
+        splits
+        , (\(x){
+          rsample::analysis(x) |> 
+            dplyr::mutate(net = as.numeric(net)) |> 
+            doubly_robust(X, D, Y)
+        })
+      )
+  )
+
+all_results_dat
+```
+
+## Doubly Robust Estimation
+
+Once again, we can use bootstrap to construct confidence intervals.
+
+```{r}
+dat <- all_results_dat |> 
+  dplyr::select(reg_estimate, ipw_estimate, dre_fits) |> 
+  tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
+
+dat |> 
+  dplyr::mutate(method=factor(method)) |> 
+  ggplot(aes(`effect estimate`,colour = method), bins = 50, alpha = .5) +
+  geom_histogram(fill = "white", alpha = 0.2)
+```
+
+```{r}
+dat |> 
+  dplyr::group_by(method) |> 
+  dplyr::summarise(
+    mean.est = mean(`effect estimate`, na.rm = TRUE)
+    , sd.est = sd(`effect estimate`, na.rm = TRUE)
+    , n.est = 2 #dplyr::n()
+  ) |> 
+  dplyr::mutate(se.est = sd.est / sqrt(n.est),
+          lower.ci.est = mean.est - qt(1 - (0.05 / 2), n.est - 1) * se.est,
+          upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
+```
+
+# == OLD ==
 
 ## Treatment allocation
 
