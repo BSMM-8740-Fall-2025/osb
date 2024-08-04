@@ -131,7 +131,11 @@ estimates
 
 fit_ipw <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
-  .df <- rsample::analysis(split)
+  if("rsplit" %in% class(split)){
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
 
   # fit propensity score model
   propensity_model <- glm(
@@ -152,7 +156,7 @@ fit_ipw <- function(split, ...) {
 
 # create bootstrap samples
 bootstrapped_net_data <- rsample::bootstraps(
-  causalworkshop::net_data,
+  causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net)),
   times = 1000,
   # required to calculate CIs later
   apparent = TRUE
@@ -169,7 +173,7 @@ ipw_results |>
       boot_fits,
       # pull the `estimate` for `netTRUE` for each fit
       \(.fit) .fit |>
-        dplyr::filter(term == "netTRUE") |>
+        dplyr::filter(term == "net") |>
         dplyr::pull(estimate)
     )
   ) |>
@@ -185,14 +189,20 @@ outcome_model <- glm(
 outcome_model |> broom::tidy()
 
 fit_reg <- function(split, ...) {
+  # print(class(split))
   # get bootstrapped data sample with `rsample::analysis()`
-  .df <- rsample::analysis(split)
-
+  if("rsplit" %in% class(split)){
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
+  # print(.df |> dplyr::slice_head(n=5))
+  # print(.df |> dim())
   # fit outcome model
   glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
       , data = .df
     )|>
-    broom::tidy()
+    broom::tidy() # %T>% print()
 }
 
 both_results <- ipw_results |>
@@ -203,25 +213,25 @@ both_results_dat <- both_results |>
   dplyr::mutate(
     reg_estimate = purrr::map_dbl(
       reg_fits,
-      # pull the `estimate` for `netTRUE` for each fit
+      # pull the `estimate` for `net` for each fit
       \(.fit) .fit |>
-        dplyr::filter(term == "netTRUE") |>
+        dplyr::filter(term == "net") |>
         dplyr::pull(estimate)
     )
     , ipw_estimate = purrr::map_dbl(
       boot_fits,
-      # pull the `estimate` for `netTRUE` for each fit
+      # pull the `estimate` for `net` for each fit
       \(.fit) .fit |>
-        dplyr::filter(term == "netTRUE") |>
+        dplyr::filter(term == "net") |>
         dplyr::pull(estimate)
     )
   )
 
-both_results_dat |>
-  dplyr::summarize(
-    ipw = mean(ipw_estimate), ipw_sd = sd(ipw_estimate), ipw_med = median(ipw_estimate)
-    , reg = mean(reg_estimate), reg_sd = sd(reg_estimate), reg_med = median(reg_estimate)
-  )
+# both_results_dat |>
+#   dplyr::summarize(
+#     ipw = mean(ipw_estimate), ipw_sd = sd(ipw_estimate), ipw_med = median(ipw_estimate)
+#     , reg = mean(reg_estimate), reg_sd = sd(reg_estimate), reg_med = median(reg_estimate)
+#   )
 
 dat <- both_results_dat |>
   dplyr::select(reg_estimate, ipw_estimate) |>
@@ -288,6 +298,123 @@ both_results |>
 
 both_results
 
+# using the boot package
+# from https://www.r-bloggers.com/2019/09/understanding-bootstrap-confidence-interval-output-from-the-r-boot-package/
+reg_fn <-
+  (\(x){
+  fit_reg(x) |>
+    dplyr::filter(term == "netTRUE") |>
+    dplyr::pull(estimate)
+})
+
+# boot_out_reg
+boot_out_reg <- boot::boot(
+  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+  , R = 1000
+  , sim = "ordinary"
+  , statistic =
+    (\(x,y){
+      fit_reg(x[y,]) |>
+        dplyr::filter(term == "net") |>
+        dplyr::pull(estimate)
+    })
+)
+
+boot_out_reg |>
+  boot::boot.ci(L = boot::empinf(boot_out_reg, index=1L, type="jack"))
+
+# BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+# Based on 1000 bootstrap replicates
+#
+# CALL :
+#   boot::boot.ci(boot.out = boot_out_reg, L = boot::empinf(boot_out_reg,
+#                                                           index = 1, type = "jack"))
+#
+# Intervals :
+#   Level      Normal              Basic
+# 95%   (-12.74, -11.56 )   (-12.73, -11.55 )
+#
+# Level     Percentile            BCa
+# 95%   (-12.75, -11.56 )   (-12.75, -11.56 )
+# Calculations and Intervals on Original Scale
+
+boot_out_ipw <- boot::boot(
+  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+  , R = 1000
+  , sim = "ordinary"
+  , statistic =
+    (\(x,y){
+      fit_ipw(x[y,]) |>
+        dplyr::filter(term == "net") |>
+        dplyr::pull(estimate)
+    })
+)
+
+boot_out_ipw |>
+  boot::boot.ci(L = boot::empinf(boot_out_ipw, index=1L, type="jack"))
+
+# BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+# Based on 1000 bootstrap replicates
+#
+# CALL :
+#   boot::boot.ci(boot.out = boot_out_ipw, L = boot::empinf(boot_out_ipw,
+#                                                           index = 1, type = "jack"))
+#
+# Intervals :
+#   Level      Normal              Basic
+# 95%   (-13.40, -11.72 )   (-13.43, -11.75 )
+#
+# Level     Percentile            BCa
+# 95%   (-13.34, -11.66 )   (-13.34, -11.67 )
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+table(dat_$net)
+# 0    1
+# 1298  454
+
+dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+
+risk_model <- glm(malaria_risk ~ income + health + temperature, data = dat_)
+
+rmr <- risk_model$residuals
+
+net_model <- glm(net ~ income + health + temperature , data = dat_, family=binomial)
+
+# see https://stats.stackexchange.com/questions/1432/what-do-the-residuals-in-a-logistic-regression-mean
+lp = predict(net_model)
+mu = exp(lp)/(1+exp(lp))
+
+# manually calculating the 1st response residual
+nmr <- resid(net_model, "response")
+# dat_$net[1] - mu[1]
+
+
+nmr <- net_model$residuals
+
+cov(rmr,nmr) / var(nmr)
+
+# manually calculating the 1st pearson residual
+resid(net_model, type="pearson")[1]
+(dat_$net[1]-mu[1]) / sqrt(mu[1]*(1-mu[1]))
+var(resid(net_model, type="pearson"))
+
+# manually calculating the 1st deviance residual
+resid(net_model, type="deviance")[1]
+sqrt(-2*log(1-mu[1]))*sign(dat_$net[1]-mu[1])  # shortcut, since y_1=0
+var(resid(net_model, type="deviance"))
+
+# manually calculating the 1st working residual
+resid(net_model, type="working")[1]
+(dat_$net[1]-mu[1]) / (mu[1]*(1-mu[1]))
+var(resid(net_model, type="working"))
+
+
+
+
+
+
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 #| label: doubly robust estimation
@@ -329,3 +456,26 @@ doubly_robust(
   , c('income', 'health', 'temperature'), "net", "malaria_risk")
 
 # -12.71
+
+
+# +++++++++++++++++++++++++ STACKING +++++++++++++++++++++++++++++++++++++++
+dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+
+# model fitting the outcome
+risk_model_net_fit <- glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance, data = dat_)
+
+dat_stacked <-
+  dplyr::bind_rows(
+    dat_ |> dplyr::mutate(net=1)
+    , dat_ |> dplyr::mutate(net=0)
+  )
+
+predictions <-
+  risk_model_net_fit |>
+  broom::augment(newdata = dat_stacked, type.predict = "response")
+
+predictions |>
+  dplyr::group_by(net) |>
+  dplyr::summarize(mean_response = mean(.fitted)) |>
+  dplyr::mutate(diff = mean_response - dplyr::lag(mean_response))
+
