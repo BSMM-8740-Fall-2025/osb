@@ -49,14 +49,15 @@ Repeating our prior process, first we calculate the ipw weights
 #| echo: true
 #| code-fold: true
 #| label: ipw model
+dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+
 propensity_model <- glm(
-  net ~ income + health + temperature,
-  data = causalworkshop::net_data,
-  family = binomial()
+  net ~ income + health + temperature
+  , data = dat_, family = binomial()
 )
 
 net_data_wts <- propensity_model |>
-  broom::augment(newdata = causalworkshop::net_data, type.predict = "response") |>
+  broom::augment(newdata = dat_, type.predict = "response") |>
   # .fitted is the value predicted by the model
   # for a given observation
   dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
@@ -77,7 +78,11 @@ Next we use bootstrapping to generate proper confidence intervals, first by crea
 
 fit_ipw <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
-  .df <- rsample::analysis(split)
+  if("rsplit" %in% class(split)){
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
 
   # fit propensity score model
   propensity_model <- glm(
@@ -108,7 +113,7 @@ Next we use bootstrapping to generate proper confidence intervals:
 #| label: ipw bootstrap process
 # create bootstrap samples
 bootstrapped_net_data <- rsample::bootstraps(
-  causalworkshop::net_data,
+  dat_,
   times = 1000,
   # required to calculate CIs later
   apparent = TRUE
@@ -130,7 +135,7 @@ We know that we can also predict the effect of treatment by building a model to 
 #| label: regression model
 outcome_model <- glm(
   malaria_risk ~ net + income + health + temperature + insecticide_resistance,
-  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+  data = dat_
 )
 
 outcome_model |> broom::tidy(conf.int = TRUE)
@@ -146,7 +151,11 @@ And we can also bootstrap the regression adjustment estimates to get CIs, first 
 #| label: reg bootstrap function
 fit_reg <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
-  .df <- rsample::analysis(split)
+  if("rsplit" %in% class(split)){
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
 
   # fit outcome model
   glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
@@ -172,16 +181,16 @@ both_results_dat <- both_results |>
   dplyr::mutate(
     reg_estimate = purrr::map_dbl(
       reg_fits,
-      # pull the `estimate` for `netTRUE` for each fit
+      # pull the `estimate` for net for each fit
       \(.fit) .fit |>
-        dplyr::filter(term == "netTRUE") |>
+        dplyr::filter(term == "net") |>
         dplyr::pull(estimate)
     )
     , ipw_estimate = purrr::map_dbl(
       ipw_fits,
-      # pull the `estimate` for `netTRUE` for each fit
+      # pull the `estimate` for net for each fit
       \(.fit) .fit |>
-        dplyr::filter(term == "netTRUE") |>
+        dplyr::filter(term == "net") |>
         dplyr::pull(estimate)
     )
   ) 
@@ -201,10 +210,15 @@ dat <- both_results_dat |>
   dplyr::select(reg_estimate, ipw_estimate) |> 
   tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
 
-dat |> 
-  dplyr::mutate(method=factor(method)) |> 
-  ggplot(aes(`effect estimate`,colour = method), bins = 50, alpha = .5) +
-  geom_histogram(fill = "white", alpha = 0.2)
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot( bins = 50, alpha = .5
+    , aes(
+      `effect estimate`, after_stat(density) , colour = method, fill = method
+      )
+  ) +
+  geom_histogram(alpha = 0.2, position = 'identity') +
+  geom_density(alpha = 0.2)
 ```
 
 ## IPW vs Regression Adjustment
@@ -221,13 +235,44 @@ We can compare the means and the confidence intervals:
 dat |> 
   dplyr::group_by(method) |> 
   dplyr::summarise(
-    mean.est = mean(`effect estimate`, na.rm = TRUE)
-    , sd.est = sd(`effect estimate`, na.rm = TRUE)
-    , n.est = 2 #dplyr::n()
-  ) |> 
-  dplyr::mutate(se.est = sd.est / sqrt(n.est),
-          lower.ci.est = mean.est - qt(1 - (0.05 / 2), n.est - 1) * se.est,
-          upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
+  mean = mean(`effect estimate`)
+  , lower_ci = quantile(`effect estimate`, 0.025)
+  , upper_ci = quantile(`effect estimate`, 0.975)
+)
+
+```
+
+Where each mean ate estimate is within the CIs of the other ate mean estimate.
+
+## IPW vs Regression Adjustment
+
+There is a package (`boot`) that performs cross-validation and CI estimation at the same time:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| warning: false
+#| error: false
+#| label: boot package use
+# bootstrap (1000 times) using the fit_reg function
+boot_out_reg <- boot::boot(
+  data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+  , R = 1000
+  , sim = "ordinary"
+  , statistic =
+    (\(x,y){ # x is the data, y is a vector of row numbers for the bootstrap sample
+      fit_reg(x[y,]) |>
+        dplyr::filter(term == "net") |>
+        dplyr::pull(estimate)
+    })
+)
+# calculate the CIs
+CIs <- boot_out_reg |>
+  boot::boot.ci(L = boot::empinf(boot_out_reg, index=1L, type="jack"))
+
+tibble::tibble(CI = c("lower", "upper"), normal = CIs$normal[-1], basic = CIs$basic[-(1:3)]
+               , percent = CIs$percent[-(1:3)])
 
 ```
 
@@ -244,7 +289,6 @@ When in doubt, just use both! Doubly Robust Estimation is a way of combining pro
 The estimator is as follows.
 
 ::: {style="font-size: x-large"}
-
 $$
 \hat{ATE} = \frac{1}{N}\sum \bigg( \dfrac{D_i(Y_i - \hat{\mu_1}(X_i))}{\hat{P}(X_i)} + \hat{\mu_1}(X_i) \bigg) - \frac{1}{N}\sum \bigg( \dfrac{(1-D_i)(Y_i - \hat{\mu_0}(X_i))}{1-\hat{P}(X_i)} + \hat{\mu_0}(X_i) \bigg)
 $$
@@ -312,7 +356,7 @@ Once again, we can use bootstrap to construct confidence intervals.
 
 all_results_dat <- both_results_dat |>
   dplyr::mutate(
-    dre_fits = 
+    dre_estimate = 
       purrr::map_dbl(
         splits
         , (\(x){
@@ -328,34 +372,46 @@ all_results_dat
 
 ## Doubly Robust Estimation
 
-Once again, we can use bootstrap to construct confidence intervals.
+Looking at the distribution of the estimates
 
 ```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: dre reg ipw plot
 dat <- all_results_dat |> 
-  dplyr::select(reg_estimate, ipw_estimate, dre_fits) |> 
+  dplyr::select(reg_estimate, ipw_estimate, dre_estimate) |> 
   tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
 
-dat |> 
-  dplyr::mutate(method=factor(method)) |> 
-  ggplot(aes(`effect estimate`,colour = method), bins = 50, alpha = .5) +
-  geom_histogram(fill = "white", alpha = 0.2)
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot( bins = 50, alpha = .5
+    , aes(
+      `effect estimate`, after_stat(density) , colour = method, fill = method
+      )
+  ) +
+  geom_histogram(alpha = 0.2, position = 'identity') +
+  geom_density(alpha = 0.2)
 ```
 
 ## Doubly Robust Estimation
 
-CIs 
+Confidence intervals, including the dre:
 
 ```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: dre reg ipw CIs
 dat |> 
   dplyr::group_by(method) |> 
   dplyr::summarise(
-    mean.est = mean(`effect estimate`, na.rm = TRUE)
-    , sd.est = sd(`effect estimate`, na.rm = TRUE)
-    , n.est = 2 #dplyr::n()
-  ) |> 
-  dplyr::mutate(se.est = sd.est / sqrt(n.est),
-          lower.ci.est = mean.est - qt(1 - (0.05 / 2), n.est - 1) * se.est,
-          upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
+  mean = mean(`effect estimate`)
+  , lower_ci = quantile(`effect estimate`, 0.025)
+  , upper_ci = quantile(`effect estimate`, 0.975)
+)
 ```
 
 ## Doubly Robust Estimation
@@ -369,6 +425,114 @@ $$
 
 Assume that $\hat{\mu_1}(x)$ is correct. If the propensity score model is wrong, we wouldn’t need to worry. Because if $\hat{\mu_1}(x)$ is correct, then $E[D_i(Y_i - \hat{\mu_1}(X_i))]=0$. That is because the multiplication by $T_i$ selects only the treated and the residual of $\hat{\mu_1}$ on the treated have, by definition, mean zero. This causes the whole thing to reduce to $\hat{\mu_1}(X_i)$, which is correctly estimated $E[Y^1]$ by assumption. So, you see, that by being correct, $\hat{\mu_1}(X_i)$ wipes out the relevance of the propensity score model. We can apply the same reasoning to understand the estimator of $E[Y^0]$.
 :::
+
+## Doubly Robust Estimation
+
+::: {style="font-size: x-large"}
+Replace the propensity score by a random uniform variable that goes from 0.1 to 0.9 (we don’t want very small weights to blow up the propensity score variance). Since this is random, there is no way it is a good propensity score model, but the doubly robust estimator still manages to produce an estimation that is very close to when the propensity score was estimated with logistic regression.
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: bad ipw doubly robust
+doubly_robust_bad_ipw <- function(df, X, D, Y){
+  ps <- runif(dim(df)[1], 0.1, 0.9) # wrong propensity score 
+  
+  lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
+  
+  idx <- df[,D] %>% dplyr::pull(1) == 0
+  mu0 <- # mean response D == 0
+    lm(lin_frml, data = df[idx,]) %>%
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+  
+  idx <- df[,D] %>% dplyr::pull(1) == 1
+  mu1 <- # mean response D == 1
+    lm(lin_frml, data = df[idx,]) |>
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+  
+  # convert treatment factor to integer | recast as vectors
+  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] %>% dplyr::pull(1)
+  
+  mean( d*(y - mu1)/ps + mu1 ) -
+    mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
+}
+```
+
+
+## Doubly Robust Estimation
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: bad ipw estimate plot
+all_results_dat <- all_results_dat |>
+  dplyr::mutate(
+    bad_ipw_estimate = 
+      purrr::map_dbl(
+        splits
+        , (\(x){
+          rsample::analysis(x) |> 
+            dplyr::mutate(net = as.numeric(net)) |> # not needed
+            doubly_robust_bad_ipw(X, D, Y)
+        })
+      )
+  )
+
+dat <- all_results_dat |> 
+  dplyr::select(reg_estimate, ipw_estimate, dre_estimate, bad_ipw_estimate) |> 
+  tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
+
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot( bins = 50, alpha = .5
+    , aes(
+      `effect estimate`, after_stat(density) , colour = method, fill = method
+      )
+  ) +
+  geom_histogram(alpha = 0.2, position = 'identity') +
+  geom_density(alpha = 0.2)
+```
+
+## Doubly Robust Estimation
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: bad ipw estimate plot CIs
+dat |> 
+  dplyr::group_by(method) |> 
+  dplyr::summarise(
+  mean = mean(`effect estimate`)
+  , lower_ci = quantile(`effect estimate`, 0.025)
+  , upper_ci = quantile(`effect estimate`, 0.975)
+)
+```
+
+## Doubly Robust Estimation
+::: {style="font-size: x-large"}
+As we can see, messing up the propensity score yields slightly different ATEs, but not by much. This covers the case that the propensity model is wrong but the outcome model is correct. What about the other situation? Let’s again take a good look at the first part of the estimator, but let’s rearrange some terms
+
+$$
+\begin{align*}
+\hat{E}[Y^{1}] & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}(Y_{i}-\hat{\mu_{1}}(X_{i}))}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\dfrac{D_{i}\hat{\mu_{1}}(X_{i})}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}}{\hat{P}(X_{i})}-1\bigg)\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}-\hat{P}(X_{i})}{\hat{P}(X_{i})}\bigg)\hat{\mu_{1}}(X_{i})\bigg)
+\end{align*}
+$$
+
+Now, assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This makes the doubly robust estimator reduce to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption. So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
+:::
+
 
 ## More
 

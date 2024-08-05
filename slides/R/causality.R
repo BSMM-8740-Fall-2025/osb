@@ -235,7 +235,7 @@ both_results_dat <- both_results |>
 
 dat <- both_results_dat |>
   dplyr::select(reg_estimate, ipw_estimate) |>
-  tidyr::pivot_longer(cols=everything(), names_to = "method")
+  tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
 
 # dat |>
 #   ggplot(aes(value)) +
@@ -244,8 +244,14 @@ dat <- both_results_dat |>
 
 dat |>
   dplyr::mutate(method=factor(method)) |>
-  ggplot(aes(value,colour = method), bins = 50, alpha = .5) +
+  ggplot(aes(`effect estimate`,colour = method,), bins = 50, alpha = .5) +
   geom_histogram(fill = "white", alpha = 0.2)
+
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot(aes(`effect estimate`, after_stat(density), colour = method, fill = method), bins = 50, alpha = .5) +
+  geom_histogram(alpha = 0.2, position = 'identity') +
+  geom_density(alpha = 0.2)
 
 # dat |>
 #   ggplot(aes(value)) +
@@ -268,15 +274,13 @@ dat |>
           upper.ci.est = mean.est + qt(1 - (0.05 / 2), n.est - 1) * se.est)
 
 
-mtcars %>%
-  group_by(vs) %>%
-  summarise(mean.mpg = mean(mpg, na.rm = TRUE),
-            sd.mpg = sd(mpg, na.rm = TRUE),
-            n.mpg = n()) %>%
-  mutate(se.mpg = sd.mpg / sqrt(n.mpg),
-         lower.ci.mpg = mean.mpg - qt(1 - (0.05 / 2), n.mpg - 1) * se.mpg,
-         upper.ci.mpg = mean.mpg + qt(1 - (0.05 / 2), n.mpg - 1) * se.mpg)
-
+dat |>
+  dplyr::group_by(method) |>
+  dplyr::summarise(
+  ate_est = mean(`effect estimate`)
+  , lower_ci = quantile(`effect estimate`, 0.025)
+  , upper_ci = quantile(`effect estimate`, 0.975)
+)
 
 
 both_results |>
@@ -351,7 +355,7 @@ boot_out_ipw <- boot::boot(
 )
 
 boot_out_ipw |>
-  boot::boot.ci(L = boot::empinf(boot_out_ipw, index=1L, type="jack"))
+  boot::boot.ci(L = boot::empinf(boot_out_ipw, index=1L, type="jack")) -> edc
 
 # BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
 # Based on 1000 bootstrap replicates
@@ -414,7 +418,7 @@ var(resid(net_model, type="working"))
 
 
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# +++++++++++++++++++DOUBLE ROBUST++++++++++++++++++++++++++++++++++
 
 
 #| label: doubly robust estimation
@@ -456,6 +460,36 @@ doubly_robust(
   , c('income', 'health', 'temperature'), "net", "malaria_risk")
 
 # -12.71
+
+
+doubly_robust_bad_ipw <- function(df, X, D, Y){
+  ps <- ps <- runif(dim(df)[1], 0.1, 0.9) # wrong propensity score
+
+  lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
+
+  idx <- df[,D] %>% dplyr::pull(1) == 0
+  mu0 <- # mean response D == 0
+    lm(lin_frml, data = df[idx,]) %>%
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+
+  idx <- df[,D] %>% dplyr::pull(1) == 1
+  mu1 <- # mean response D == 1
+    lm(lin_frml, data = df[idx,]) |>
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+
+  # convert treatment factor to integer | recast as vectors
+  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] %>% dplyr::pull(1)
+
+  mean( d*(y - mu1)/ps + mu1 ) -
+    mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
+}
+
+doubly_robust_bad_ipw(
+  causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+  , c('income', 'health', 'temperature'), "net", "malaria_risk")
 
 
 # +++++++++++++++++++++++++ STACKING +++++++++++++++++++++++++++++++++++++++
