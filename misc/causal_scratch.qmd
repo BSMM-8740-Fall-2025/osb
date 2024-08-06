@@ -1,0 +1,168 @@
+---
+title: "causal_scratch"
+---
+
+```{r}
+#| echo: false
+#| message: false
+require(magrittr)
+require(ggplot2)
+```
+
+## RCTs to Regression
+
+### Gold standard: RCT
+
+Treatment indicator: $D_i\in {0,1}$
+
+> example: eligibility for expanded Medicaid
+
+Outcome: $Y_{i}$
+
+> example: number of doctor visits in past 6 months
+
+Potential outcomes $Y_{i}^{0},Y_{i}^{1}$
+
+Individual-level treatment effect $\Delta_i^Y=Y_i^1-Y_i^0$ (can never know this).
+
+Unbiased estimate of average treatment effect:
+
+$$
+\Delta^{Y}=\mathbb{E}\left[Y_{i}^{1}-Y_{i}^{0}\right]
+$$
+
+or OLS coefficient on 𝐷𝑖 from this regression:
+
+$$Y_{i}=\alpha+\delta D_{i}+\epsilon_{i}$$
+
+```{r}
+#| message: false
+url_str  <- 
+  'https://github.com/Mixtape-Sessions/Machine-Learning/blob/main/Labs/data/'
+file_str <- 
+  'oregon_hie_table5.csv?raw=true'
+  
+dat <- readr::read_csv(
+  paste0(url_str, file_str, show_col_types = FALSE)
+) %>% 
+  dplyr::select(doc_num, treatment, weight, dplyr::starts_with("ddd")) %>% 
+  tidyr::drop_na()
+```
+
+```{r}
+#| echo: true
+fit <- lm(doc_num ~ treatment, data = dat, weights = dat$weight)
+
+effect <- fit %>% 
+  broom::tidy() %>% 
+  dplyr::filter(term == 'treatment') %>% 
+  dplyr::pull(estimate)
+
+stringr::str_glue(
+  "Estimated effect of Medicaid eligibility on 
+  number of doctor visits: {scales::number(effect, accuracy = 0.001)}"
+)
+```
+
+### Aluminium standard: Regression
+
+The bivariate regression above leans heavily on random assignment of treatment:
+
+$$D_{i}\perp\!\!\!\!\perp Y_{i}^{0},Y_{i}^{1}$$
+
+Sometimes, even in an RCT, treatment is assigned randomly only conditional on some set of covariates $X_i$.
+
+> *example:* in the Oregon HIE, eligibility for Medicaid was granted via lottery, but households with more members could have more lottery entries. So the lottery outcome is random only conditional on household size.
+
+So what happens if we don't have random assignment? In terms of our regression model above, it means $\epsilon_i$ may be correlated with $D_i$. For example, perhaps household size, $X_i$, which increases the probability of treatment, is also associated with more doctor visits. If $X_i$ is omitted from the model, it is buried in the error term:
+
+$$
+\epsilon_{i}=\beta X_{i}+\eta_{i}
+$$ We'll assume for now that everything else related to doctor visits ($\eta_i$) is unrelated to treatment. What does our bivariate regression coefficient deliver in this case?
+
+$$\hat{\delta}^{\text{OLS}}=\frac{Cov\left(Y_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}=\delta+\beta\frac{Cov\left(X_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}
+$$ {#eq-OVB}
+
+Simple regression gives us what we want ($\delta$) plus an **omitted variables bias** term. The form of this term tells us what kinds of $X_i$ variables we should take care to control for in our regressions.
+
+According to the *ommitted variable bias* (OVB) formula (@eq-OVB), what kinds of variables should you be be sure to control for in regressions?
+
+Careful investigators will find a set of regressors $X_i$ for which they are willing to assume treatment is as good as randomly assigned:
+
+$$
+D_i\perp\!\!\!\!\perp\left( Y_{i}\left( 0\right) ,Y_{i}\left( 1\right) \right) |X_{i}
+\text{.}
+$$ This combined with a linear model for the conditional expectation of $Y_{i}^0$ and $Y_{i}^1$ given $X_{i}$ means we can estimate the average treatment via OLS on the following regression equation:
+
+$$
+Y_{i}=\delta D_{i}+X_{i}^{\prime }\beta +\varepsilon _{i}.
+$$
+
+```{r}
+# Add the household size indicators to our regressor set and run regression:
+fit <- lm(doc_num ~ ., data = dat %>% dplyr::select(-weight), weights = dat$weight)
+effect <- fit %>% 
+  broom::tidy() %>% 
+  dplyr::filter(term == 'treatment') %>% 
+  dplyr::pull(estimate)
+stringr::str_glue(
+  "Estimated effect of Medicaid eligibility on 
+  number of doctor visits (with controls): {scales::number(effect, accuracy = 0.001)}"
+)
+```
+
+How did the estimate of the effect of Medicaid eligiblity change? What does that tell us about the relationship between the included regressors and the outcome and treatment?
+
+### Connection to ML
+
+Where does machine learning fit into this? It might be tempting to treat this regression as a prediction exercise where we are predicting $Y_{i}$ given $D_{i}$ and $X_{i}$. Don't give in to this temptation. We are not after a prediction for $Y_{i}$, we are after a coefficient on $D_{i}$.
+
+Modern machine learning algorithms are finely tuned for producing predictions, but along the way they compromise coefficients. So how can we deploy machine learning in the service of estimating the causal coefficient $\delta$?
+
+To see where ML fits in, first remember that an equivalent way to estimate $\delta$ is the following three-step procedure:
+
+1.  Regress $Y_{i}$ on $X_{i}$ and compute the residuals, $\tilde{Y}_{i}=Y_{i}-\hat{Y}_{i}^{OLS}$, where $\hat{Y}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }Y$
+2.  Regress $D_{i}$ on $X_{i}$ and compute the residuals, $\tilde{D}_{i}=D_{i}-\hat{D}_{i}^{OLS}$, where $\hat{D}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }D$
+3.  Regress $\tilde{Y}_{i}$ on $\tilde{D}_{i}$.
+
+Let's try it!
+
+```{r}
+# Regress outcome on covariates (not treatment)
+yreg <- lm(
+  doc_num ~ .
+  , data = dat %>% dplyr::select(doc_num, dplyr::starts_with("ddd"))
+  , weights = dat$weight
+)
+# Calculate residuals
+ytilde = yreg$residuals
+
+# regress treatment on covariates (not outcome)
+dreg <- lm(
+  treatment ~ .
+  , data = dat %>% dplyr::select(treatment, dplyr::starts_with("ddd"))
+  , weights = dat$weight
+)
+# Calculate residuals
+dtilde = dreg$residuals
+
+# regress ytilde on dtilde
+fit <- lm(
+  ytilde ~ dtilde
+  , data = tibble::tibble(ytilde = ytilde, dtilde = dtilde)
+  , weights = dat$weight)
+
+effect <- fit %>% 
+  broom::tidy() %>% 
+  dplyr::filter(term == 'dtilde') %>% 
+  dplyr::pull(estimate)
+
+stringr::str_glue(
+  "Estimated effect of Medicaid eligibility on 
+  number of doctor visits (partialled out): {scales::number(effect, accuracy = 0.001)}"
+)
+```
+
+ML enters the picture by providing an alternate way to generate $\hat{Y}_i$ and $\hat{D}_i$ when OLS is not the best tool for the job. The first two steps are really just prediction exercises, and in principle any supervised machine learning algorithm can step in here.
+
+Back to the whiteboard!

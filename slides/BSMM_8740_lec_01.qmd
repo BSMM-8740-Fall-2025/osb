@@ -39,7 +39,8 @@ library(tidymodels)      # for modeling
 library(fivethirtyeight) # for the fandango dataset
 
 # set default theme and larger font size for ggplot2
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+# ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+ggplot2::theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 # set default figure parameters for knitr
 knitr::opts_chunk$set(

@@ -1,0 +1,47 @@
+---
+title: "Standardized Mean Differences (SMD)"
+---
+
+Standardized Mean Differences (SMD) are used in propensity score analysis to assess the balance of covariates between treatment and control groups. They provide a way to measure how similar the groups are in terms of observed characteristics, which is crucial for ensuring valid causal inference in observational studies.
+
+## Definition and Purpose:
+
+**Standardized Mean Difference:**
+
+-   **Standardized Mean Difference:** a measure of effect size, used to compare the difference in means of a covariate between two groups (e.g., treatment and control groups) relative to the standard deviation of that covariate.
+-   **Purpose**: SMD is used to assess the balance of covariates in observational studies. Unlike p-values, SMD is not influenced by sample size, making it a more reliable measure of balance.
+
+## Calculation
+
+$$
+\text{SMD}=\frac{\bar{X_t}-\bar{X_c}}{\text{SD}_\text{pooled}}
+$$ where:
+
+-   $\bar{X_t}$ is the mean of the covariate in the treatment group
+-   $\bar{X_c}$ is the mean of the covariate in the non-treatment (control) group
+-   $\text{SD}_\text{pooled}$ is the pooled standard deviation of the covariate across both groups.
+
+The pooled standard deviation is calculated as
+
+$$
+\text{SD}_\text{pooled} = \sqrt{\frac{(n_t -1)\text{SD}_t^2 + (n_c -1)\text{SD}_c^2}{n_t + n_c -2}}
+$$ where
+
+-   $n_t$ and $n_c$ are the sample sizes of the treatment and control groups, respectively.
+-   $\text{SD}_t$ and $\text{SD}_c$ are the standard deviations of the covariate in the treatment and control groups, respectively.
+
+**Interpretation**:
+
+-   **SMD = 0**: Perfect balance. The covariate has the same mean in both groups.
+-   **SMD \< 0.1**: Generally considered a small and acceptable difference.
+-   **SMD ≥ 0.1**: Indicates a meaningful imbalance in the covariate between the groups. The threshold for what constitutes a "meaningful" imbalance can vary by context.
+
+**Usage in Propensity Score Analysis**:
+
+1.  Before Matching: Calculate SMD for each covariate to assess initial imbalances between treatment and control groups.
+2.  After Matching: Recalculate SMDs to ensure that the propensity score matching has adequately balanced the covariates. The goal is to achieve SMDs below a certain threshold (commonly 0.1).
+
+**Advantages**:
+
+-   **Not Sample Size Dependent**: Unlike statistical significance tests, SMD is not influenced by the size of the sample, making it particularly useful in large datasets.
+-   **Easy Comparison**: Provides a straightforward way to compare balance across multiple covariates.

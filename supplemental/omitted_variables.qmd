@@ -1,0 +1,284 @@
+---
+title: "Omitted variable bias, FWL"
+---
+
+```{r opts, include = FALSE}
+options(width = 95)
+library(knitr)
+opts_chunk$set(comment="", 
+               digits = 3, 
+               tidy = FALSE, 
+               prompt = TRUE,
+               fig.align = 'center')
+require(magrittr, quietly = TRUE)
+require(ggplot2, quietly = TRUE)
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+This fact will about covariance estimation be useful for the following discussion:
+
+$$
+\begin{align*}
+\sum_{i}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}-\sum_{i}\left(x_{i}-\bar{x}\right)\bar{y}\\
+ & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}-\bar{y}\sum_{i}\left(x_{i}-\bar{x}\right)\\
+ & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}
+\end{align*}
+$$ and by the same argument $\sum_{i}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right)=\sum_{i}\left(y_{i}-\bar{y}\right)x_{i}$ and $\sum_{i}\left(x_{i}-\bar{x}\right)\left(x_{i}-\bar{x}\right)=\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}$
+
+------------------------------------------------------------------------
+
+## OLR
+
+Per our population model
+
+$$
+y = \beta_0 + \beta_1x + u
+$$ and so our sample regression is
+
+$$
+y_i = \beta_0 + \beta_1x_i + u_i
+$$ {#eq-population_reg} where the index $i$ identifies each sample, and our prediction is $\hat{y_i}=\hat{\beta_0}+\hat{\beta_1}x_i$. with residuals $u_i=y_i-\hat{y_i}$.
+
+We know that the OLS formula for the regression coefficient $\beta_1$ is
+
+$$
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\text{Cov}\left(x_{i},y_{i}\right)}{\text{Var}\left(x_{i}\right)}\\
+ & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)\left(x_{i}-\bar{x}\right)}\\
+ & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+$$
+
+but per our model @eq-population_reg we can write
+
+$$
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(\beta_{0}+\beta_{1}x_{i}+u_{i}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}\\
+ & =\frac{\beta_{0}\sum_{i}\left(x_{i}-\bar{x}\right)+\beta_{1}\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}+\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}=\\
+ & =\beta_{1}+\frac{\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+$$
+
+and so, our estimate $\hat{\beta_1}$ is equal to the population parameter $\beta$ [**IF**]{.underline} the noise (i.e. residuals) is uncorrelated with our predictor.
+
+The assumption that the residual term is uncorrelated with our predictor is one of the assumptions we used in setting up ordinary linear regression.
+
+## Omitted variable bias (OVB)
+
+But what if the residuals are not uncorrelated with the predictor? For example what if our population model was really
+
+$$
+y = \beta_0 + \beta_1x + \beta_2z + u
+$$ with unobserved variable $z$, but our estimates are $\hat{y_i}=\hat{\beta_0}+\hat{\beta_1}x_i$, then
+
+$$
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(\beta_{0}+\beta_{1}x_{i}+\beta_2z_{i}+u_{i}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}\\
+ & =\frac{\beta_{0}\sum_{i}\left(x_{i}-\bar{x}\right)+\beta_{1}\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}+\beta_{2}\sum_{i}\left(x_{i}-\bar{x}\right)z_{i}+\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}=\\
+ \mathbb{E}[\hat{\beta_{1}}|x] &=\beta_{1}+\beta_{2}\frac{\sum_{i}\left(x_{i}-\bar{x}\right)z_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+$$ and the bias in our estimate of $\beta_1$ is $\frac{\sum_{i}\left(x_{i}-\bar{x}\right)z_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}$
+
+## OVB in action:
+
+In this example we will simulate what happens with linearly dependent predictors.
+
+We have seen the data below in lab-4, where
+
+-   $y = \text{demand1}$
+-   $x = \text{price1},\;\beta_1=-0.5$
+-   $z = \text{unobserved1},\;\beta_2=-1$
+
+```{r}
+#| echo: true
+set.seed(1966)
+
+dat1 <- tibble::tibble(
+  unobserved1 = rnorm(500)
+  , price1 = 10 + unobserved1 + rnorm(500)
+  , demand1 = 23 -(0.5*price1 + unobserved1 + rnorm(500))
+)
+```
+
+Without including the unobserved variable, the fit is
+
+```{r}
+fit1 <- lm(demand1 ~ price1, data = dat1)
+broom::tidy(fit1)
+```
+
+and this fit estimates $\hat{\beta_1}=-0.99<-0.5$ so it is incorrect & biased. Checking using the covariance formula:
+
+```{r}
+cov(dat1$demand1, dat1$price1)/var(dat1$price1)
+```
+
+But we know we have an unobserved variable (and we know $\beta_2=-1$) so we can correct the bias.
+
+```{r}
+# biased estimate
+biased_est <- broom::tidy(fit1) %>% 
+  dplyr::filter(term == 'price1') %>% 
+  dplyr::pull(estimate)
+
+# bias
+bias <- -cov(dat1$unobserved1, dat1$price1)/var(dat1$price1)
+
+#corrected estimate
+biased_est - bias
+```
+
+```{r}
+lm(demand1 ~ price1 + unobserved1, data = dat1) %>% 
+  broom::tidy()
+```
+
+------------------------------------------------------------------------
+
+## **Frisch--Waugh--Lovell theorem**
+
+### FWL or decomposition theorem:
+
+When estimating a model of the form
+
+$$
+y = \beta_0 + \beta_1x_1 + \beta_1x_2 + u
+$$
+
+then the following estimators of $\beta_1$ are equivalent
+
+-   the OLS estimator obtained by regressing $y$ on $x_1$ and $x_2$
+-   the OLS estimator obtained by regressing $y$ on $\check{x}_1$
+    -   where $\check{x}_1$ is the residual from the regression of $x_1$ on $x_2$
+-   the OLS estimator obtained by regressing $\check{y}$ on $\check{x}_1$
+    -   where $\check{y}$ is the residual from the regression of $y$ on $x_2$
+
+### Interpretation:
+
+The **Frisch-Waugh-Lowell** theorem is telling us that there are multiple ways to estimate a single regression coefficient. One possibility is to run the full regression of $y$ on $x$, as usual.
+
+However, we can also regress $x_1$ on $x_2$, take the residuals, and regress $y$ only those residuals. The first part of this process is sometimes referred to as **partialling-out** (or *orthogonalization*, or *residualization*) of $x_1$ with respect to $x_2$. The idea is that we are isolating the variation in $x_1$ that is independent of (*orthogonal* to) $x_2$. Note that $x_2$ can be also be multi-dimensional (i.e. include multiple variables and not just one).
+
+Why would one ever do that?
+
+This seems like a way more complicated procedure. Instead of simply doing the regression in 1 step, now we need to do 2 or even 3 steps. It's not intuitive at all. The main advantage comes from the fact that we have reduced a multivariate regression to a univariate one, making more tractable and more intuitive.
+
+### Example1
+
+Using the data from OVB example:
+
+```{r}
+# partial out unobserved1 (predictor) from price1 (predictor)
+fit_price <- lm(price1 ~ unobserved1, data = dat1)
+
+# regress demand1 (outcome) on price residuals
+lm(
+  demand1 ~ price_resid
+  , data = tibble::tibble(demand1 = dat1$demand1, price_resid = fit_price$residuals)
+) %>% 
+  broom::tidy()
+```
+
+```{r}
+# partial out unobserved1 (predictor) from demand1 (outcome)
+fit_demand <- lm(demand1 ~ unobserved1, data = dat1)
+
+# regress demand residuals on price residuals
+lm(
+  demand_resid ~ price_resid
+  , data = tibble::tibble(demand_resid = fit_demand$residuals, price_resid = fit_price$residuals)
+) %>% 
+  broom::tidy()
+```
+
+------------------------------------------------------------------------
+
+## Partial Identification
+
+In our linear regression models we include errors (aka noise) in the model of the outcome
+
+$$
+y_i = \beta_0 + \beta_1x_i + u_i
+$$
+
+where each sample $u_i$ is drawn from a Gaussian distributions with zero mean and variance $\sigma^2$.
+
+What if we are also uncertain about $x_i$? In particular what if instead of $x_i$ we can only use $\tilde{x}_i=x_i + w_i$ where
+
+$$
+\text{Cov}\left(w,x\right)=\text{Cov}\left(w,u\right)=\mathbb{E}\left[w\right]=0
+$$
+
+i.e. $\tilde{x}_i$ reflects measurement error in the predictor $x_i$, where the measurement error has zero mean and is independent of $x$ and $u$ (e.g. the measurement error is an independent Gaussian).
+
+In this case $\mathbb{E}\left[\tilde{x}\right]=\mathbb{E}\left[x+w\right]=\mathbb{E}\left[x\right]$ and
+
+$$
+\begin{align*}
+\text{Cov}\left(\tilde{x},y\right) & =\text{Cov}\left(x+w,y\right)=\text{Cov}\left(x,y\right)+\text{Cov}\left(w,y\right)\\
+ & =\text{Cov}\left(x,y\right)+\text{Cov}\left(w,\beta_{0}+\beta_{1}x+u\right)\\
+ & =\text{Cov}\left(x,y\right)+\text{Cov}\left(w,u\right)+\beta_{1}\text{Cov}\left(w,x\right)\\
+ & =\text{Cov}\left(x,y\right)
+\end{align*}
+$$
+
+however $\text{Var}\left(\tilde{x}\right)=\text{Var}\left(x+w\right)\ge\text{Var}\left(x\right)$ so
+
+$$
+\begin{align*}
+\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)} & =\frac{\text{Cov}\left(x,y\right)}{\text{Var}\left(x\right)+\text{Var}\left(w\right)}\\
+ & =\frac{\text{Cov}\left(x,y\right)/\text{Var}\left(x\right)}{1+\text{Var}\left(w\right)/\text{Var}\left(x\right)}\\
+ & =\frac{\beta_{1}}{1+\text{Var}\left(w\right)/\text{Var}\left(x\right)}
+\end{align*}
+$$ and since $\text{Var}\left(w\right)/\text{Var}\left(x\right)$ is non-negative $\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}$ has the same sign as $\beta_1$ and our data gives us a lower bound for $\beta_1$:
+
+$$
+\left|\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|\le\left|\beta_{1}\right|
+$$
+
+If we reverse the regression (regress $\tilde{x}$ on $y$)
+
+$$
+\begin{align*}
+\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(y\right)} & =\frac{\text{Cov}\left(x,y\right)}{\beta_{1}^{2}\text{Var}\left(x\right)+\text{Var}\left(u\right)}\\
+ & =\frac{\beta_{1}\text{Var}\left(x\right)}{\beta_{1}^{2}\text{Var}\left(x\right)+\text{Var}\left(u\right)}
+\end{align*}
+$$ and taking the reciprocal:
+
+$$
+\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}=\beta_{1}+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}\text{Var}\left(x\right)}}=\beta_{1}\left[1+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}^{2}\text{Var}\left(x\right)}}\right]
+$$ and the factor in the brackets is greater than 1 and as bofore $\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}$ has the same sign as $\beta_1$ so
+
+$$
+\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|\ge\left|\beta_{1}\right|
+$$
+
+Some terminology:
+
+-   a bound is **sharp** if it cannot be improved (under our assumptions)
+-   a bound is **tight** if it is short enough to be useful in practice
+
+We have **sharp bounds** for $\beta_1$ under measurement error:
+
+$$
+\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|\ge\left|\beta_{1}\right|\ge\left|\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|
+$$ {#eq-bounds}
+
+With respect to how tight the bounds are, let $r$ denote the correlation between $\tilde{x}$ and $y$, then
+
+$$
+\begin{align*}
+r^{2} & =\frac{\text{Cov}\left(\tilde{x},y\right)^{2}}{\text{Var}\left(\tilde{x}\right)\text{Var}\left(y\right)}=\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\times\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(y\right)}\\
+r^{2}\times\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)} & =\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}
+\end{align*}
+$$
+
+and the the width of the bounds in @eq-bounds is
+
+$$
+\text{width}=\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}-\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|=\left(1-r^{2}\right)\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|
+$$
+
+So the bounds for $\beta_1$ are tighter when $\tilde{x}$ and $y$ are strongly correlated.
+
+see [ovb](https://en.wikipedia.org/wiki/Omitted-variable_bias)

@@ -15,6 +15,5 @@ librarian::shelf(
 source("R/ggdag-mask.R")
 source("R/setup.R")
 
-
-
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```

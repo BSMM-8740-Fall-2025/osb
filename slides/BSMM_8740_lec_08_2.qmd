@@ -43,7 +43,7 @@ IPW requires us to build a model to predict the treatment, depending on the conf
 
 ## Inverse Probability Weighting
 
-Repeating our prior process, first we calculate the ipw weights
+Repeating our prior process, first we calculate the ipw weights and estimate the ate using the weights.
 
 ```{r}
 #| echo: true
@@ -66,6 +66,41 @@ net_data_wts |>
   lm(malaria_risk ~ net, data = _, weights = wts) |>
   broom::tidy(conf.int = TRUE)
 ```
+
+## Inverse Probability Weighting
+
+We know that IPW weighting should create a pseudo-population that make the covariates more balanced by treatment. Let's check this:
+
+::: panel-tabset
+## unweighted
+
+```{r}
+gtsummary::tbl_summary(
+  net_data_wts 
+  , by = net
+  , include = c(net,income,health,temperature,malaria_risk)
+) |>
+  # add an overall column to the table
+  gtsummary::add_overall(last = TRUE)
+```
+
+## weighted
+
+```{r}
+net_svy <- survey::svydesign(
+  ids = ~1,
+  data = net_data_wts,
+  weights = ~wts
+)
+
+gtsummary::tbl_svysummary(
+  net_svy,
+  by = net,
+  include = c(net,income,health,temperature,malaria_risk)
+) |>
+  gtsummary::add_overall(last = TRUE)
+```
+:::
 
 ## Inverse Probability Weighting
 
@@ -464,7 +499,6 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
 }
 ```
 
-
 ## Doubly Robust Estimation
 
 ```{r}
@@ -502,6 +536,7 @@ dat |>
 ```
 
 ## Doubly Robust Estimation
+
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -518,6 +553,7 @@ dat |>
 ```
 
 ## Doubly Robust Estimation
+
 ::: {style="font-size: x-large"}
 As we can see, messing up the propensity score yields slightly different ATEs, but not by much. This covers the case that the propensity model is wrong but the outcome model is correct. What about the other situation? Let’s again take a good look at the first part of the estimator, but let’s rearrange some terms
 
@@ -533,6 +569,133 @@ $$
 Now, assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This makes the doubly robust estimator reduce to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption. So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
 :::
 
+## Finite Sample Bias
+
+1.  We know that not accounting for confounders can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate in finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
+
+$$
+\begin{align*}
+X &\sim \mathscr{N}(0,1)\\
+X & = \mathrm{ifelse}(0.5+Z>0,1,0)\\
+Y & = Z +  \mathscr{N}(0,1)
+\end{align*}
+$$
+
+## Finite Sample Bias
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: finite sample
+set.seed(928)
+n <- 100
+finite_sample <- tibble::tibble(
+  # z is normally distributed with a mean: 0 and sd: 1
+  z = rnorm(n),
+  # x is defined from a probit selection model with normally distributed errors
+  x = dplyr::case_when(
+    0.5 + z + rnorm(n) > 0 ~ 1,
+    TRUE ~ 0
+  ),
+  # y is continuous, dependent only on z with normally distrbuted errors
+  y = z + rnorm(n)
+)
+```
+
+## Finite Sample Bias
+
+If we fit a propensity score model using the one confounder $Z$ and calculate the weighted estimator, we should get an unbiased result (which in this case would be $0$).
+
+```{r}
+## fit the propensity score model
+finite_sample_wts <- glm(
+  x ~ z,
+  data = finite_sample,
+  family = binomial("probit")
+) |>
+  broom::augment(newdata = finite_sample, type.predict = "response") |>
+  dplyr::mutate(wts = propensity::wt_ate(.fitted, x))
+
+finite_sample_wts |>
+  dplyr::summarize(
+    effect = sum(y * x * wts) / sum(x * wts) -
+      sum(y * (1 - x) * wts) / sum((1 - x) * wts)
+  )
+```
+
+## Finite Sample Bias
+
+Our effect of is pretty far from 0, although it’s hard to know if this is really bias, or something we are just seeing by chance in this particular simulated sample. To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:
+
+```{r}
+sim <- function(n) {
+  ## create a simulated dataset
+  finite_sample <- tibble::tibble(
+    z = rnorm(n),
+    x = dplyr::case_when(
+      0.5 + z + rnorm(n) > 0 ~ 1,
+      TRUE ~ 0
+    ),
+    y = z + rnorm(n)
+  )
+  finite_sample_wts <- glm(
+    x ~ z,
+    data = finite_sample,
+    family = binomial("probit")
+  ) |>
+    broom::augment(newdata = finite_sample, type.predict = "response") |>
+    dplyr::mutate(wts = propensity::wt_ate(.fitted, x))
+  bias <- finite_sample_wts |>
+    dplyr::summarize(
+      effect = sum(y * x * wts) / sum(x * wts) -
+        sum(y * (1 - x) * wts) / sum((1 - x) * wts)
+    ) |>
+    dplyr::pull()
+  tibble::tibble(
+    n = n,
+    bias = bias
+  )
+}
+
+## Examine 5 different sample sizes, simulate each 1000 times
+set.seed(1)
+finite_sample_sims <- purrr::map_df(
+  rep(
+    c(50, 100, 500, 1000, 5000, 10000),
+    each = 1000
+  ),
+  sim
+)
+
+bias <- finite_sample_sims %>%
+  dplyr::group_by(n) %>%
+  dplyr::summarise(bias = mean(bias))
+```
+
+## Finite Sample Bias
+
+Ploting the results:
+
+```{r}
+#| fig-cap: "Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000"
+ggplot(bias, aes(x = n, y = bias)) +
+  geom_point() +
+  geom_line() +
+  geom_hline(yintercept = 0, lty = 2)
+```
+
+## Finite Sample Bias
+::: {style="font-size: x-large"}
+This is an example of finite sample bias. Notice here, even when the sample size is quite large (5,000) we still see some bias away from the “true” effect of 0. It isn’t until a sample size larger than 10,000 that we see this bias disappear.
+
+Estimands that utilize weights that are unbounded (i.e. that theoretically can be infinitely large) are more likely to suffer from finite sample bias. The likelihood of falling into finite sample bias depends on:
+
+1.  the estimand you have chosen (i.e. are the weights bounded?)
+2.  the distribution of the covariates in the exposed and unexposed groups (i.e. is there good overlap? Potential positivity violations, when there is poor overlap, are the regions where weights can become too large)
+3.  the sample size.
+:::
 
 ## More
 
