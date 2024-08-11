@@ -1,0 +1,193 @@
+---
+title: "Kalman"
+---
+
+Sure, here is an example of how you might use the Kalman filter to predict customer churn in a banking context using R and the tidyverse package. Note that this is a simplified illustration and assumes you have a dataset with relevant variables.
+
+### Sample Data
+
+Let's assume we have a dataset `customer_data` with the following columns: - `customer_id`: Unique identifier for each customer. - `transaction_freq`: Frequency of transactions in the current month. - `avg_balance`: Average account balance in the current month. - `cust_service_calls`: Number of customer service interactions in the current month. - `churn`: Whether the customer churned (1) or not (0).
+
+### Sample Code
+
+``` r
+# Load necessary libraries
+library(tidyverse)
+library(dplyr)
+library(KFAS)
+
+# Generate sample data
+set.seed(123)
+customer_data <- tibble(
+  customer_id = 1:100,
+  transaction_freq = rnorm(100, mean = 10, sd = 2),
+  avg_balance = rnorm(100, mean = 5000, sd = 1000),
+  cust_service_calls = rpois(100, lambda = 2),
+  churn = sample(c(0, 1), 100, replace = TRUE)
+)
+
+# Define the state space model
+# For simplicity, we'll use a local level model for each state variable
+# Assume normal distribution for observations
+
+# Build a state space model
+build_model <- function(data) {
+  ssmodel <- SSModel(
+    H = matrix(NA, 3, 3),
+    Q = diag(NA, 3),
+    Z = diag(3),
+    T = diag(3),
+    R = diag(3),
+    a1 = c(mean(data$transaction_freq), mean(data$avg_balance), mean(data$cust_service_calls)),
+    P1 = diag(NA, 3)
+  )
+  
+  ssmodel$y <- t(as.matrix(data %>% select(transaction_freq, avg_balance, cust_service_calls)))
+  return(ssmodel)
+}
+
+# Fit the model
+fit_model <- function(ssmodel) {
+  fit <- fitSSM(ssmodel, inits = rep(0, 6), method = "BFGS")
+  return(fit$model)
+}
+
+# Kalman filter application
+apply_kalman_filter <- function(model) {
+  kf <- KFS(model, filtering = "mean", smoothing = "mean")
+  return(kf)
+}
+
+# Predict churn probabilities based on filtered states
+predict_churn <- function(kf, threshold = 0.5) {
+  smoothed_states <- kf$a
+  churn_prob <- 1 / (1 + exp(-rowMeans(smoothed_states))) # Logistic function for churn probability
+  churn_pred <- ifelse(churn_prob > threshold, 1, 0)
+  return(churn_pred)
+}
+
+# Build, fit, and apply the Kalman filter model
+ssmodel <- build_model(customer_data)
+fitted_model <- fit_model(ssmodel)
+kf_results <- apply_kalman_filter(fitted_model)
+
+# Predict churn
+customer_data <- customer_data %>%
+  mutate(predicted_churn = predict_churn(kf_results))
+
+# Display results
+print(customer_data)
+
+# Evaluate the model
+confusion_matrix <- table(customer_data$churn, customer_data$predicted_churn)
+print(confusion_matrix)
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+print(paste("Accuracy:", accuracy))
+```
+
+### Explanation:
+
+1.  **Data Generation**: Simulate customer data for the example.
+2.  **State Space Model Definition**: Define a simple state space model where each state variable is modeled independently.
+3.  **Model Fitting**: Fit the state space model using the Kalman filter.
+4.  **Filtering and Smoothing**: Apply the Kalman filter and smoother to estimate the hidden states.
+5.  **Churn Prediction**: Use the smoothed states to predict churn probabilities, applying a logistic function.
+6.  **Evaluation**: Compare the predicted churn with the actual churn to evaluate model performance.
+
+This code provides a simplified illustration. In a real-world application, you would need to preprocess the data, handle missing values, and potentially use more complex state space models to capture the dynamics of customer behavior more accurately.
+
+::: callout-note
+```         
+Please cite KFAS in publications by using: 
+
+Jouni Helske (2017). KFAS: Exponential Family State Space Models in R. Journal of Statistical Software, 78(10), 1-39. doi:10.18637/jss.v078.i10.
+```
+:::
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(KFAS)
+
+# Generate sample data
+set.seed(123)
+customer_data <- tibble(
+  customer_id = 1:100,
+  transaction_freq = rnorm(100, mean = 10, sd = 2),
+  avg_balance = rnorm(100, mean = 5000, sd = 1000),
+  cust_service_calls = rpois(100, lambda = 2),
+  churn = sample(c(0, 1), 100, replace = TRUE)
+)
+
+customer_data
+```
+
+```{r}
+# Define the state space model
+# For simplicity, we'll use a local level model for each state variable
+# Assume normal distribution for observations
+
+# Build a state space model
+# build_model <- function(data) {
+#   ssmodel <- KFAS::SSModel(
+#     H = matrix(NA, 3, 3),
+#     Q = diag(NA, 3),
+#     Z = diag(3),
+#     T = diag(3),
+#     R = diag(3),
+#     a1 = c(mean(data$transaction_freq), mean(data$avg_balance), mean(data$cust_service_calls)),
+#     P1 = diag(NA, 3)
+#   )
+#   
+#   ssmodel$y <- t(as.matrix(data %>% select(transaction_freq, avg_balance, cust_service_calls)))
+#   return(ssmodel)
+# }
+
+build_model <- function(data) {
+  # Define the state space model using a formula
+  model <- SSModel(
+    transaction_freq + avg_balance + cust_service_calls ~ 
+      SSMtrend(1, Q = list(NA)),  # Local level model for each variable
+    H = matrix(NA, 3, 3),  # Observation noise covariance matrix
+    data = data
+  )
+  
+  # Assign observed data to the model
+  model$y <- t(as.matrix(data %>% select(transaction_freq, avg_balance, cust_service_calls)))
+  
+  return(model)
+}
+
+# Fit the model
+fit_model <- function(ssmodel) {
+  fit <- fitSSM(ssmodel, inits = rep(0, 6), method = "BFGS")
+  return(fit$model)
+}
+
+# Kalman filter application
+apply_kalman_filter <- function(model) {
+  kf <- KFS(model, filtering = "mean", smoothing = "mean")
+  return(kf)
+}
+
+# Predict churn probabilities based on filtered states
+predict_churn <- function(kf, threshold = 0.5) {
+  smoothed_states <- kf$a
+  churn_prob <- 1 / (1 + exp(-rowMeans(smoothed_states))) # Logistic function for churn probability
+  churn_pred <- ifelse(churn_prob > threshold, 1, 0)
+  return(churn_pred)
+}
+
+```
+
+```{r}
+# Build, fit, and apply the Kalman filter model
+ssmodel <- build_model(customer_data)
+fitted_model <- fit_model(ssmodel)
+kf_results <- apply_kalman_filter(fitted_model)
+
+# Predict churn
+customer_data <- customer_data %>%
+  mutate(predicted_churn = predict_churn(kf_results))
+
+```
