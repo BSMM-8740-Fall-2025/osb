@@ -9,8 +9,8 @@ staging/
 .Rhistory
 .RData
 .Ruserdata
-
 /.quarto/
 _site/
 *.key
 *speaker.html
+.DS_Store

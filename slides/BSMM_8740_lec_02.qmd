@@ -1,9 +1,13 @@
 ---
-title: "EDA and feature engineering"
+title: "The recipes package"
 subtitle: "BSMM8740-2-R-2024F [WEEK - 2]"
-author: "L.L. Odette"
+author: "derived from Max Kuhn (RStudio)"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
 format: 
   revealjs: 
     theme: slides.scss
@@ -27,453 +31,675 @@ opts_chunk$set(comment="",
                fig.align = 'center')
 require(magrittr)
 require(ggplot2)
-theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+require(mlbench)
+data("PimaIndiansDiabetes")
+# data(Sacramento)
+library(caret)
+library(recipes)
+library(lattice)
+theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 
-## Announcements
+## Recap of last lecture
 
--   For this week (September 25 - 29), office hours will be on **Friday, from 2:00pm - 4:00pm**.
-
--   Regular Thursday office hours resume the week of October 02.
+-   Last time we worked with exploratory data analysis and then used the tidyverse verbs to engineer features into our datasets.
 
 ## Today's Outline
 
-1.  Complete last week's lab
-2.  Review this week's material
-    -   Introduction to exploratory data analysis (EDA), and
-    -   Feature engineering in the tidyverse
-3.  Start (and finish?) this week's lab
+-   We'll review the R model formula approach to model specification,
+-   We'll introducte data pre-processing and design/model matrix generation with the `recipes` package, and
+-   We'll show how using recipes will facilitate developing feature engineering workflows that can be applied to multiple datasets (e.g. train and test as well as cross-validation[^1] datasets)
 
-::: callout-note
-The first two labs are designed to give you practice with the `Tidyverse` tools for manipulating data.
-:::
+[^1]: Cross-validation is a resampling method that uses different portions of the data to test and train a model on different iterations.
 
-# Exploratory Data Analysis (EDA)
+## R Model Formulas
 
-## Exploratory Data Analysis (EDA)
+A simple formula in a linear model to predict house prices (using the dataset Sacremento from the package `modeldata`):
 
-Exploratory data analysis is the process of understanding a new dataset by looking at the data, constructing graphs, tables, and models. We want to understand three aspects:
-
-1.  each individual variable by itself;
-
-2.  each individual variable in the context of other, relevant, variables; and
-
-3.  the data that are not there.
-
-## Exploratory Data Analysis (EDA)
-
-During EDA we want to come to understand the issues and features of the dataset and how this may affect analysis decisions.
-
-We are especially concerned about missing values and outliers.
-
-## Exploratory Data Analysis (EDA)
-
-We are going to perform two broad categories of EDA:
-
--   Descriptive Statistics, which includes mean, median, mode, inter-quartile range, and so on.
--   Graphical Methods, which includes histogram, density estimation, box plots, and so on.
-
-## Exploratory Data Analysis (EDA)
-
-Descriptive statistics and graphical methods support the following process:
-
--   Understand the distribution and properties of individual variables.
-
--   Understand relationships between variables.
-
--   Understand what is not there.
-
-## EDA: example
-
-Our first dataset is a sample of categorical variables from the [General Social Survey](https://gss.norc.org/Documents/other/2021%20XSEC%20R1%20Methodological%20Primer.pdf), a long-running US survey conducted by the independent research organization NORC at the University of Chicago.
-
-::: aside
-execute ?forcats::gss_cat to see the data dictionary
-:::
-
-::: {style="font-size: 32px"}
-```{r}
+```{r sac}
 #| echo: true
-#| warning: false
 #| message: false
+#| results: false
 #| code-fold: true
-#| code-line-numbers: "1|2"
-dat <- forcats::gss_cat
-dat %>% utils::head()
+#| code-line-numbers: "1|2|3|4"
+Sacramento <- modeldata::Sacramento
+mod1 <- stats::lm(
+  log(price) ~ type + sqft
+  , data = Sacramento
+  , subset = beds > 2
+  )
 ```
+
+::: {style="font-size: 60%"}
+The purpose of this code chunk:
+
+1.  subset some of the observations (`subset`)
+2.  create a design matrix for 2 predictor variable (but 3 model terms)
+3.  log transform the outcome variable
+4.  fit a linear regression model
+
+The first two steps create the *design-* or *model- matrix*.
 :::
 
-## EDA: example
+## Example
 
-Use `dplyr::glimpse()` to see every column in a data.frame
-
-::: {style="font-size: 32px"}
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-dat %>% dplyr::slice_head(n=10) %>% dplyr::glimpse()
-```
-:::
-
-## EDA: example
-
-Use `dplyr::slice_sample()` to see a random selection of rows in a data.frame
-
-::: {style="font-size: 32px"}
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-dat %>% dplyr::slice_sample(n=10)
-```
-:::
-
-## EDA: example
-
-Most of the columns here are `factors` (categories). Use `forcats::fct_count()` to count the factor entries.
-
-::: {style="font-size: 32px"}
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-forcats::fct_count(dat$relig) %>% dplyr::arrange(desc(n))
-```
-:::
-
-## EDA: example
-
-The base R function `summary()` can be used for key summary statistics of the data.
-
-::: {style="font-size: 32px"}
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-dat %>% summary()
-```
-:::
-
-## EDA: packages for EDA
-
--   The function `skimr::skim()` gives an enhanced version of base R's `summary()` .
-
--   Other packages, such as `DataExplorer::` rely more on graphing.
-
-    -   We'll look at a few of the `DataExplorer::` functions next.
-
-## `DataExplorer::introduce`
-
-The function `DataExplorer::introduce` produces a basic description of the data in a `data.frame`.
+The dataset Sacramento has three categorical variables:
 
 ```{r}
 #| echo: true
-#| warning: false
-#| message: false
-#| code-fold: true
-dat %>% DataExplorer::introduce() %>% dplyr::glimpse()
-```
-
-## `DataExplorer::plot_intro`
-
-The function `DataExplorer::plot_intro` is a visual version of `DataExplorer::introduce`.
-
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-#| code-fold: true
-dat %>% DataExplorer::plot_intro()
-```
-
-## `DataExplorer::plot_missing`
-
-The function `DataExplorer::plot_missing` shows information on missing data visually.
-
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-#| code-fold: true
-dat %>% DataExplorer::plot_missing()
-```
-
-## `D_Explorer::profile_missing`
-
-```{r}
-#| echo: true
-#| warning: false
 #| message: false
 #| code-fold: true
 #| code-line-numbers: "1|2|3|4|5"
-dat %>% DataExplorer::profile_missing() %>% 
-  gt::gt('feature') %>% 
-  gtExtras::gt_theme_espn() %>% 
-  gt::tab_options( table.font.size = gt::px(28) ) %>% 
+skimr::skim(Sacramento) %>% 
+  dplyr::select(c(skim_variable,contains('factor')) ) %>% 
+  tidyr::drop_na() %>% 
+  gt::gt() %>% 
+  gtExtras:::gt_theme_espn() %>% 
+  gt::tab_options( table.font.size = gt::px(20) ) %>% 
   gt::as_raw_html()
 ```
 
-## `DataExplorer::plot_density`
+## Example design matrix
 
 ```{r}
 #| echo: true
-#| warning: false
+#| message: false
+#| results: false
+#| code-line-numbers: "1|2|3"
+ mm <- model.matrix(
+   log(price) ~ type + sqft
+   , data = Sacramento
+)
+```
+
+```{r}
+#| echo: false
+mm %>% head(14)
+```
+
+## Summary: Model Formula Method
+
+-   Model formulas are very expressive in that they can represent model terms easily
+-   The formula/terms framework does some elegant functional programming
+-   Functions can be embedded inline to do fairly complex things (on single variables) and these can be applied to new data sets.
+
+## Model formula examples
+
+::: panel-tabset
+## leave out
+
+```{r}
+#| echo: true
+model.matrix(log(price) ~ -1 + type + sqft, data = Sacramento) %>% head()
+```
+
+## interaction
+
+```{r}
+#| echo: true
+model.matrix(log(price) ~ type : sqft, data = Sacramento) %>% head()
+```
+
+## crossing
+
+```{r}
+#| echo: true
+model.matrix(log(price) ~ type * sqft, data = Sacramento) %>% head()
+```
+
+## nesting
+
+```{r}
+#| echo: true
+model.matrix(log(price) ~ type %in% sqft, data = Sacramento) %>% head()
+```
+
+## as-is
+
+```{r}
+#| echo: true
+model.matrix(log(price) ~ type + sqft + I(sqft^2), data = Sacramento) %>% head()
+```
+
+contrast with log(price) \~ type + sqft + sqft\^2
+:::
+
+## Summary: Model Formula Method
+
+There are significant limitations to what this framework can do and, in some cases, it can be very inefficient.
+
+This is mostly due to being written well before large scale modeling and machine learning were commonplace.
+
+## Limitations of the Current System
+
+-   Formulas are not very extensible especially with nested or sequential operations (e.g. `y ~ scale(center(knn_impute(x)))`).
+-   When used in modeling functions, you cannot recycle the previous computations.
+-   For wide data sets with lots of columns, the formula method can be very inefficient and consume a significant proportion of the total execution time.
+
+## Limitations of the Current System
+
+-   Multivariate outcomes are kludgy by requiring `cbind` .
+-   Formulas have a limited set of roles for measurements (just `predictor` and `outcome`). We'll look further at roles in the next two slides.
+
+A more in-depth discussion of these issues can be found in [this blog post](https://rviews.rstudio.com/2017/03/01/the-r-formula-method-the-bad-parts/) (recommended to read).
+
+## Variable Roles
+
+Formulas have been re-implemented in different packages for a variety of different reasons:
+
+```{r roles_1}
+#| echo: true
+#| message: false
+#| results: false
+#| eval: false
+#| code-line-numbers: "3|8-10|14-16"
+# ?lme4::lmer
+# Subjects need to be in the data but are not part of the model
+lme4::lmer(Reaction ~ Days + (Days | Subject), data = lme4::sleepstudy)
+
+# BradleyTerry2
+# We want to make the outcomes to be a function of a 
+# competitor-specific function of reach 
+BradleyTerry2::BTm(outcome = 1, player1 = winner, player2 = loser,
+    formula = ~ reach[..] + (1|..), 
+    data = boxers)
+
+# modeltools::ModelEnvFormula (using the modeltools package for formulas)
+# mob
+data(PimaIndiansDiabetes, package = 'mlbench')
+modeltools::ModelEnvFormula(diabetes ~ glucose | pregnant + mass +  age,
+    data = PimaIndiansDiabetes)
+
+```
+
+## Variable Roles
+
+A general list of possible variable roles could be:
+
+::: {style="font-size: 75%"}
+-   outcomes
+-   predictors
+-   stratification
+-   model performance data (e.g. loan amount to compute expected loss)
+-   conditioning or faceting variables (e.g. [`lattice`](https://cran.r-project.org/package=lattice) or [`ggplot2`](https://cran.r-project.org/package=ggplot2))
+-   random effects or hierarchical model ID variables
+-   case weights (\*)
+-   offsets (\*)
+-   error terms (limited to `Error` in the `aov` function)(\*)
+
+(\*) Can be handled in formulas but are hard-coded into functions.
+:::
+
+# The Recipes package
+
+## Recipes
+
+We can approach the design matrix and preprocessing steps by first specifying a **sequence of steps**.
+
+1.  `price` is an outcome
+2.  `type` and `sqft` are predictors
+3.  log transform `price`
+4.  convert `type` to dummy variables
+
+## Recipes
+
+A recipe is a specification of *intent*.
+
+One issue with the formula method is that it couples the specification for your predictors along with the implementation.
+
+Recipes separate the *planning* from the *doing*.
+
+::: callout-note
+The Recipes website is found at: [`https://topepo.github.io/recipes`](https://topepo.github.io/recipes)
+:::
+
+## Recipes
+
+Once created, a *recipe* can be `prep`ped on training data then `bake`d with any other data.
+
+::: {style="font-size: smaller"}
+-   the `prep` step calculates and stores variables related to the steps (e.g. (min,max) for scaling), using the training data
+-   the `bake` step applies the steps to new data
+:::
+
+```{r rec_basic}
+#| echo: true
+#| message: false
+#| code-line-numbers: "2|4-6|9|11"
+## Create an initial recipe with only predictors and outcome
+rec <- recipes::recipe(price ~ type + sqft, data = Sacramento)
+
+rec <- rec %>% 
+  recipes::step_log(price) %>%
+  recipes::step_dummy(type)
+
+# estimate any parameters
+rec_trained <- recipes::prep(rec, training = Sacramento, retain = TRUE)
+# apply the computations to new_data
+design_mat  <- recipes::bake(rec_trained, new_data = Sacramento)
+```
+
+## Selecting Variables
+
+In the last slide, we used `dplyr`-like syntax for selecting variables such as `step_dummy(type)`.
+
+In some cases, the names of the predictors may not be known at the time when you construct a recipe (or model formula). For example:
+
+-   dummy variable columns
+-   PCA feature extraction when you keep components that capture $\mathrm{X}\%$ of the variability.
+-   discretized predictors with dynamic bins
+
+## Example
+
+Using the `airquality` dataset in the `datasets` package
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "1|3-4|5-8"
+dat <- datasets::airquality
+
+dat %>% skimr::skim() %>% 
+  dplyr::select(skim_variable:numeric.sd) %>% 
+  gt::gt() %>% 
+  gtExtras:::gt_theme_espn() %>% 
+  gt::tab_options( table.font.size = gt::px(20) ) %>% 
+  gt::as_raw_html()
+```
+
+## Example: create basic recipe
+
+```{r}
+#| echo: false
+#| message: false
+aq_df <- dat %>% rsample::initial_split(prop = 0.8)
+aq_df_train <- aq_df %>% rsample::training()
+aq_df_test <- aq_df %>% rsample::training()
+```
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "2|4"
+# create recipe
+aq_recipe <- recipes::recipe(Ozone ~ ., data = aq_df_train)
+
+summary(aq_recipe)
+```
+
+## Example: summary of basic recipe
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "2-3"
+# update roles for variables with missing data
+aq_recipe <- aq_recipe %>% 
+  recipes::update_role(Ozone, Solar.R, new_role = 'NA_Variable')
+
+summary(aq_recipe)
+```
+
+## Example: add recipe steps
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "1|2-3|4-5|6-7|8-9"
+aq_recipe <- aq_recipe %>% 
+  # impute Ozone missing values using the mean
+  step_impute_mean(has_role('NA_Variable'), -Solar.R) %>%
+  # impute Solar.R missing values using knn
+  step_impute_knn(contains('.R'), neighbors = 3) %>%
+  # center all variable except the NA_Variable
+  step_center(all_numeric(), -has_role('NA_Variable')) %>%
+  # scale all variable except the NA_Variable
+  step_scale(all_numeric(), -has_role('NA_Variable'))
+```
+
+## Example: recipe prep and bake
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "1-2|4-5"
+# prep with training data
+aq_prep_train <- aq_recipe %>% prep(aq_df_train)
+
+# bake with testing data
+aq_bake <- aq_prep_train %>% bake(aq_df_test)
+```
+
+## Example: recipe prep values
+
+The prepped recipe is a data structure that contains any computed values.
+
+```{r}
+#| echo: true
+aq_prep_train |> recipes::tidy()
+```
+
+## Example: recipe prep values
+
+We can examine any computed values by using the step number as an argument to `recipes::tidy`.
+
+```{r}
+#| echo: true
+aq_prep_train |> recipes::tidy(3)
+```
+
+## Example: change roles again
+
+Here we update the original recipe to set the required roles.
+
+```{r}
+#| echo: true
+#| message: false
+#| code-line-numbers: "1-2|4-5"
+aq_recipe <- aq_recipe %>% 
+  recipes::update_role(Ozone, new_role = 'outcome') %>% 
+  recipes::update_role(Solar.R, new_role = 'predictor')
+```
+
+## Recommended Baseline Steps
+
+Baseline preprocessing methods can be categorized as:
+
+::: {style="font-size: xx-large"}
+-   **dummy**: Do qualitative predictors require a numeric encoding (e.g., via dummy variables or other methods)?
+-   **zv**: Should columns with a single unique value be removed?
+-   **impute**: If some predictors are missing, should they be estimated via imputation?
+-   **decorrelate**: If there are correlated predictors, should this correlation be mitigated? This might mean filtering out predictors, using principal component analysis, or a model-based technique (e.g., regularization).
+-   **normalize**: Should predictors be centered and scaled?
+-   **transform**: Is it helpful to transform predictors to be more symmetric?
+:::
+
+See [recommended preprocessing](https://www.tmwr.org/pre-proc-table) for recipe steps.
+
+## Available Steps
+
+-   **Basic**: [logs](https://recipes.tidymodels.org/reference/step_log.html), [roots](https://recipes.tidymodels.org/reference/step_sqrt.html), [polynomials](https://recipes.tidymodels.org/reference/step_poly.html), [logits](https://recipes.tidymodels.org/reference/step_logit.html), [hyperbolics](https://recipes.tidymodels.org/reference/step_hyperbolic.html)
+-   **Encodings**: [dummy variables](https://recipes.tidymodels.org/reference/step_dummy.html), ["other"](https://recipes.tidymodels.org/reference/step_other.html) factor level collapsing, [discretization](https://recipes.tidymodels.org/reference/discretize.html)
+-   **Date Features**: Encodings for [day/doy/month](https://recipes.tidymodels.org/reference/step_date.html) etc, [holiday indicators](https://recipes.tidymodels.org/reference/step_holiday.html)
+-   **Filters**: [correlation](https://recipes.tidymodels.org/reference/step_corr.html), [near-zero variables](https://recipes.tidymodels.org/reference/step_nzv.html), [linear dependencies](https://recipes.tidymodels.org/reference/step_lincomb.html)
+-   **Imputation**: [*K*-nearest neighbors](https://recipes.tidymodels.org/reference/step_knnimpute.html), [bagged trees](https://recipes.tidymodels.org/reference/step_bagimpute.html), [mean](https://recipes.tidymodels.org/reference/step_meanimpute.html)/[mode](https://recipes.tidymodels.org/reference/step_modeimpute.html) imputation
+
+## Available Steps
+
+-   **Normalization/Transformations**: [center](https://recipes.tidymodels.org/reference/step_center.html), [scale](https://recipes.tidymodels.org/reference/step_scale.html), [range](https://recipes.tidymodels.org/reference/step_range.html), [Box-Cox](https://recipes.tidymodels.org/reference/step_BoxCox.html), [Yeo-Johnson](https://recipes.tidymodels.org/reference/step_YeoJohnson.html)
+-   **Dimension Reduction**: [PCA](https://recipes.tidymodels.org/reference/step_pca.html), [kernel PCA](https://recipes.tidymodels.org/reference/step_kpca.html), [ICA](https://recipes.tidymodels.org/reference/step_ica.html), [Isomap](https://recipes.tidymodels.org/reference/step_isomap.html), [data depth](https://recipes.tidymodels.org/reference/step_depth.html) features, [class distances](https://recipes.tidymodels.org/reference/step_classdist.html)
+-   **Others**: [spline basis functions](https://recipes.tidymodels.org/reference/step_ns.html), [interactions](https://recipes.tidymodels.org/reference/step_interact.html), [spatial sign](https://recipes.tidymodels.org/reference/step_spatialsign.html)
+
+More on the way (i.e. autoencoders, more imputation methods, etc.)
+
+One of the [package vignettes](https://www.tidymodels.org/learn/develop/recipes/) shows how to write your own step functions.
+
+## Extending
+
+Need to add more pre-processing or other operations?
+
+```{r rec_add}
+#| echo: true
+#| message: false
+#| results: false
+standardized <- rec_trained %>%
+  recipes::step_center(recipes::all_numeric()) %>%
+  recipes::step_scale(recipes::all_numeric()) %>%
+  recipes::step_pca(recipes::all_numeric())
+          
+## Only estimate the new parts:
+standardized <- recipes::prep(standardized)
+```
+
+If an initial step is computationally expensive, you don't have to redo those operations to add more.
+
+## Extending
+
+Recipes can also be created with different roles manually (note: no formula)
+
+```{r rec_man, eval = FALSE}
+#| echo: true
+#| message: false
+#| code-line-numbers: "2|3|4|5"
+rec <- 
+  recipes::recipe(data = Sacramento) %>%
+  recipes::update_role(price, new_role = "outcome") %>%
+  recipes::update_role(type, sqft, new_role = "predictor") %>%
+  recipes::update_role(zip, new_role = "strata")
+```
+
+Also, the sequential nature of steps means that steps don't have to be R operations and could call other compute engines (e.g. Weka, scikit-learn, Tensorflow, etc. )
+
+## Extending
+
+We can create wrappers to work with recipes too:
+
+```{r lm}
+#| echo: true
+#| message: false
+#| code-line-numbers: "2|3-6"
+lin_reg.recipe <- function(rec, data, ...) {
+  trained <- recipes::prep(rec, training = data)
+  lm.fit(
+    x = recipes::bake(trained, newdata = data, all_predictors())
+    , y = recipes::bake(trained, newdata = data, all_outcomes())
+    , ...
+  )
+}
+```
+
+## An Example
+
+[Kuhn and Johnson](http://appliedpredictivemodeling.com) (2013) analyze a data set where thousands of cells are determined to be well-segmented (WS) or poorly segmented (PS) based on 58 image features. We would like to make predictions of the segmentation quality based on these features.
+
+::: {.callout-note style="font-size: smaller"}
+The dataset `segmentationData` is in the package `caret` and represents the results of automated microscopy to collect images of cultured cells. The images are subjected to segmentation algorithms to identify cellular structures and quantitate their morphology, for hundreds to millions of individual cells.
+:::
+
+## An Example
+
+The `segmentationData` dataset has 61 columns
+
+```{r image_load}
+#| echo: true
+#| message: false
+#| code-line-numbers: "1|3-5|7-9"
+data(segmentationData, package = "caret")
+
+seg_train <- segmentationData %>% 
+  dplyr::filter(Case == "Train") %>% 
+  dplyr::select(-Case)
+
+seg_test  <- segmentationData %>% 
+  dplyr::filter(Case == "Test")  %>% 
+  dplyr::select(-Case)
+```
+
+## A Simple Recipe
+
+```{r image_rec}
+#| echo: true
 #| message: false
 #| code-fold: true
-#| code-line-numbers: "2|3"
-dat %>% 
-  DataExplorer::plot_density(
-    ggtheme = theme_bw(base_size = 18) + theme(legend.position = "top")
+#| code-line-numbers: "1|3-7|8-10|12-19"
+rec <- recipes::recipe(Class  ~ ., data = seg_train)
+
+basic <- rec %>%
+  # the column Cell contains identifiers
+  recipes::update_role(Cell, new_role = 'ID') %>%
+  # Correct some predictors for skewness
+  recipes::step_YeoJohnson(recipes::all_predictors()) %>%
+  # Standardize the values
+  recipes::step_center(recipes::all_predictors()) %>%
+  recipes::step_scale(recipes::all_predictors())
+
+# Estimate the transformation and standardization parameters 
+basic <- 
+  recipes::prep(
+    basic
+    , training = seg_train
+    , verbose = FALSE
+    , retain = TRUE
+  )  
+```
+
+::: {.callout-note style="font-size: smaller"}
+The Yeo-Johnson is similar to the Box-Cox method, however it allows for the transformation of nonpositive data as well. A Box Cox transformation is a transformation of non-normal dependent variables into a normal shape. Both transformations have a single parameter $\lambda$.
+:::
+
+## A Simple Recipe
+
+We can examine the center, scale, and Yeo Johnson parameters computed for each continuous measurement.
+
+::: panel-tabset
+## Yeo Johnson
+
+```{r}
+#| echo: true
+basic |> recipes::tidy(1)
+```
+
+## means
+
+```{r}
+#| echo: true
+basic |> recipes::tidy(2)
+```
+
+## std deviations
+
+```{r}
+#| echo: true
+basic |> recipes::tidy(3)
+```
+:::
+
+## More sophisticated steps: PCA
+
+Principal Component Analysis (PCA) is a technique used in data analysis to simplify a large dataset (many measurements/columns) by reducing its number of dimensions (columns) while still retaining as much important information as possible.
+
+A pretty good description of PCA can be found [here](https://towardsdatascience.com/singular-value-decomposition-and-its-applications-in-principal-component-analysis-5b7a5f08d0bd).
+
+## More sophisticated steps: PCA
+
+PCA step-by-step:
+
+::: {style="font-size: 65%"}
+1.  **Standardize the Data**:
+    -   Before applying PCA, we often standardize the data, which means adjusting all variables to have the same scale. This is important because PCA is sensitive to the scale of the data.
+2.  **Find the Principal Components**:
+    -   PCA identifies the directions (principal components) in which the data varies the most. Think of these as new axes in a new coordinate system that best capture the variation in the data.
+    -   The first principal component captures the most variation. The second principal component is orthogonal (at a right angle) to the first and captures the next most variation, and so on.
+3.  **Transform the Data**:
+    -   We then transform the original data into this new set of principal components. Each data point can now be represented in terms of these principal components rather than the original variables.
+:::
+
+## More sophisticated steps: PCA
+
+::: {style="font-size: 65%"}
+You have test scores in Math, Science, and English. You want to find a way to understand overall performance without looking at all three subjects separately.
+
+1.  **Original Data**: You have three scores for each student: Math, Science, and English.
+
+2.  **Standardize the Data**: You adjust the scores so that Math, Science, and English scores are on the same scale.
+
+3.  **Find Principal Components**:
+
+    -   PCA finds that the first principal component might be a combination of Math and Science scores, capturing the overall academic ability in quantitative subjects.
+    -   The second principal component might represent the difference between scores in English and the average of Math and Science scores, capturing a different aspect of performance.
+
+4.  **Transform the Data**:
+
+    -   Each student’s performance can now be described using these new principal components instead of the original scores. For example, a student might have a high score on the first principal component (strong in Math and Science) but a lower score on the second (relatively weaker in English).
+:::
+
+## More sophisticated steps: PCA
+
+::: {style="font-size: 75%"}
+**Benefits of PCA**
+
+-   **Simplification**: Reduces the number of variables, making it easier to analyze and visualize the data.
+-   **Noise Reduction**: Helps to remove noise from the data by focusing on the main components that capture the most variation.
+-   **Feature Extraction**: Identifies the most important variables (principal components) that explain the majority of the variance in the data.
+
+PCA is like finding the most important "directions" in your data, where most of the interesting stuff happens. It helps you see the big picture by reducing complexity while keeping the essential information. This makes it a powerful tool for data analysis, especially when dealing with high-dimensional datasets.
+:::
+
+## Principal Component Analysis
+
+```{r image_pca}
+#| echo: true
+#| message: false
+#| code-fold: true
+#| code-line-numbers: "1|2|3-4"
+pca <- basic %>% 
+  recipes::step_pca(
+    recipes::all_predictors()
+    , num_comp = 5
   )
 ```
 
-## `D_Explorer::plot_histogram`
+```{r}
+#| echo: false
+summary(pca)
+```
+
+## Principal Component Analysis
+
+```{r image_pca_train}
+#| echo: true
+#| message: false
+pca %<>% recipes::prep() 
+```
+
+::: panel-tabset
+## summary
 
 ```{r}
 #| echo: true
-#| warning: false
+pca %>% summary()
+```
+
+## components
+
+```{r}
+#| echo: true
+pca %>% recipes::tidy(4)
+```
+:::
+
+## Principal Component Analysis
+
+```{r}
+#| echo: true
 #| message: false
-#| code-fold: true
-#| code-line-numbers: "2|3"
-dat %>% 
-  DataExplorer::plot_histogram(
-    ggtheme = theme_bw(base_size = 18) + theme(legend.position = "top")
+#| code-line-numbers: "2|3|4"
+pca %<>% 
+  recipes::bake(
+    new_data = seg_test
+    , everything()
   )
+pca[1:8, 1:7]
 ```
 
-## `DataExplorer::plot_bar`
+## Principal Component Analysis
 
-```{r}
+```{r image_pca_plot}
 #| echo: true
-#| warning: false
 #| message: false
 #| code-fold: true
-dat %>% DataExplorer::plot_bar()
-
+#| code-summary: "PCs are predictive"
+#| width: "80%"
+pca %>% ggplot(aes(x = PC1, y = PC2, color = Class)) + 
+  geom_point(alpha = .4) +
+  theme_bw(base_size = 25)
 ```
-
-## EDA: additional `DataExplorer` functions
-
-When the data has more numerical values consider looking at the relationships with the following functions:
-
--   `DataExplorer::plot_correlation()` creates a correlation heatmap.
-
-```{r}
-#| echo: true
-#| eval: false
-iris %>% DataExplorer::plot_correlation(type = "c")
-```
-
-## EDA: additional `DataExplorer` functions
-
-When the data has more numerical values consider looking at the relationships with the following functions:
-
--   `DataExplorer::plot_scatterplot()` creates a scatterplot for all measurements.
-
-```{r}
-#| echo: true
-#| eval: false
-iris %>% DataExplorer::plot_scatterplot(by = "Species")
-```
-
-## EDA: additional `DataExplorer` functions
-
-When the data has more numerical values consider looking at the relationships with the following functions:
-
--   `DataExplorer::plot_qq()` creates a quantile-quantile plot for each continuous feature.
-
-```{r}
-#| echo: true
-#| eval: false
-iris %>% DataExplorer::plot_qq(by = "Species", ncol = 2L)
-```
-
-::: {.callout-note style="font-size: smaller"}
-A **Q--Q plot** (**quantile-quantile plot**) is a probability plot, a graphical method for comparing two probability distributions by plotting their *quantiles* against each other.
-:::
-
-## EDA: classifying missing data
-
-There are three main categories of missing data
-
-1.  Missing Completely At Random (MCAR);
-    -   missing but independent of other measurements
-2.  Missing at Random (MAR);
-    -   missing in a way related to other measurements
-3.  Missing Not At Random (MNAR).
-    -   missing as a property of the variable or some other unmeasured variable
-
-## EDA: handling missing data
-
-We can think of a few options for dealing with missing data
-
-1.  Drop observations with missing data.
-
-2.  Impute the mean of observations without missing data.
-
-3.  Use multiple imputation.
-
-::: {.callout-note style="font-size: smaller"}
-Multiple imputation involves generating several estimates for the missing values and then averaging the outcomes.
-:::
-
-## Example: MCAR or MAR?
-
-```{r}
-#| echo: true
-#| warning: false
-#| message: false
-#| code-fold: true
-#| code-line-numbers: "1|2|3-4|5|7"
-dat %>% dplyr::select(partyid) %>% table() %>% tibble::as_tibble() %>% 
-  dplyr::left_join(
-    dat %>% dplyr::filter(is.na(age)) %>% 
-      dplyr::select(na_partyid = partyid) %>% table() %>% tibble::as_tibble()
-    , by = c("partyid" = "na_partyid")
-  ) %>% 
-  dplyr::mutate(pct_na = n.y / n.x)
-```
-
-## EDA: missing data
-
-Finally, be aware that how missing data is encoded depends on the dataset
-
--   R defaults to NA when reading data, in joins, etc.
--   The creator(s) of the dataset may use a different encoding.
--   Missing data can have multiple representations according to semantics of the measurement.
--   Remember that entire measurements can be missing (i.e. from all observations, not just some).
-
-## EDA: summary
-
--   Understand what the measurements represent and confirm constraints (if any) and suitability of encoding.
--   Make a decision on how to deal with missing data.
--   Understand shape of measurements (may identify an issue or suggest a data transformation)
-
-## EDA: bad data $\rightarrow$ bad results
-
-![](/images/category_fail.png)
-
-# Feature engineering
-
-Feature engineering is the act of converting raw observations into desired features using statistical, mathematical, or machine learning approaches.
-
-## Feature engineering: transformation
-
-for continuous variables (usually the independent variables or covariates):
-
--   **normalization** (scale values to $[0,1]$)
-    -   $X_\text{norm} = \frac{X-X_\text{min}}{X_\text{max}-X_\text{min}}$
--   **standardization** (subtract mean and scale by stdev)
-    -   $X_\text{std} = \frac{X-\mu_X}{\sigma_X}$
--   **scaling** (multiply / divide by a constant)
-    -   $X_\text{scaled} = K\times X$
-
-## Feature engineering: transformation
-
-Other common transformations:
-
--   Box-cox: with $\tilde{x}$ the geometric mean of the (**positive**) predictor data ($\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}$)
-
-$$
-x_i(\lambda) = \left\{ 
-\begin{array}{cc}
-\frac{x_i^{\lambda}-1}{\lambda\tilde{x}^{\lambda-1}} & \lambda\ne 0\\
-\tilde{x}\log x_i & \lambda=0
-\end{array}
-\right .  
-$$
-
-::: {.callout-note style="font-size: smaller"}
-Box-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like.
-:::
-
-## Feature engineering: transformation
-
-One last common transformation:
-
--   logit transformation for bounded target variables (scaled to lie in $[0,1]$)
-
-$$
-\text{logit}\left(p\right)=\log\frac{p}{1-p},\;p\in [0,1]
-$$
-
-::: {.callout-note style="font-size: small"}
-The Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range $\left(-\infty,\infty\right)$, where p is the proportion of each sample that is 1 (or 0)
-:::
-
-## Feature engineering: transformation
-
-Why normalize or standardize?
-
--   variation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.
-    -   e.g. income and age
--   reduce the impact of outliers
--   make results more explainable
-
-## Feature engineering: transformation
-
-for continuous variables (usually the target variables):
-
--   **transformation** (arithmetic, basis functions, polynomials, splines, differencing)
-    -   $y = \log(y),\sqrt{y},\frac{1}{y}$, etc.
-    -   $y = \sum_i \beta_i\text{f}_i(x)\;\text{s.t.}\;0=\int\text{f}_i(x)\text{f}_j(x)\; \forall i\ne j$
-    -   $y = \beta_0+\beta_1 x+\beta_2 x^2+\beta_3 x^3+\ldots$
-    -   $y = \beta_0+\beta_1 x_1+\beta_2 x_2+\beta_3 x_1 x_2+\ldots$
-    -   $y'_i = y_i-y_{i-1}$
-
-## Feature engineering: transformation
-
-for categorical variables (either target or explanatory variables):
-
--   binning / bucketing
-    -   represent a numerical value as a categorical value
--   categorical$\rightarrow$ordinal and ordinal$\rightarrow$categorical
-
-for date variables:
-
--   timestamp$\rightarrow$date or date part
-
-## Feature engineering: transformation
-
-Why transform?
-
--   it can make your model perform better
-
-    -   e.g. $\log$ transform makes exponential data linear, and log-Normal data Gaussian
-    -   $\log$ transforms also make multiplicative models additive
-    -   e.g. polynomials, basis functions and splines help model non-linearities in data
-
-## Feature engineering: creation
-
--   outliers (due to data entry, measurement/experiment, intentional errors)
-    -   outliers can be identified by quantile methods (Gaussian data)
-    -   outliers can be removed, treated as missing, or capped
--   lag variables (either target or explanatory variables)
-    -   useful in time series models, e.g. $y_t,y_{t-1},\ldots y_{t-n}$
-
-## Feature engineering: creation
-
--   binning / bucketing
-    -   represent numerical as categorical and vice versa
--   interval and ratio levels
-
-## Feature engineering fails
-
-![](/images/category_fail.png)
-
-## Feature engineering: summary
-
--   requires an advanced technical skill set
-
--   requires domain expertise
-
--   is time-consuming and resource intensive
-
--   different analytics algorithms require different feature engineering
 
 ## Recap
 
--   Today we reviewed key elements of exploratory data analysis, the process that helps us understand the data we have and evaluate how it can help us solve the business problems we are interested in.
+-   We've used the Recipes package to create a workflow for data pre-processing and feature engineering
+-   The `recipe` verbs define the pre-processing and feature engineering steps
+-   using the recipe object, the verb `prep` prepares the data on a training set, storing the meta-parameters.
+-   the verb `bake` applies the prepped recipe to new data, using the meta-parameters.
 
--   We also reviewed feature engineering - methods to we can use to facilitate our analysis and make our results more interpretable.
+------------------------------------------------------------------------
