@@ -10,8 +10,8 @@
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.54">
 
-  <meta name="author" content="L.L. Odette">
-  <title>BSMM-8740 - Fall 2024 – EDA and feature engineering</title>
+  <meta name="author" content="derived from Max Kuhn (RStudio)">
+  <title>BSMM-8740 - Fall 2024 – The recipes package</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -385,10 +385,10 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="EDA and feature engineering – BSMM-8740 - Fall 2024">
+<meta property="og:title" content="The recipes package – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 2]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="EDA and feature engineering – BSMM-8740 - Fall 2024">
+<meta name="twitter:title" content="The recipes package – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 2]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -399,347 +399,102 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">EDA and feature engineering</h1>
+  <h1 class="title">The recipes package</h1>
   <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 2]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-L.L. Odette 
+derived from Max Kuhn (RStudio) 
 </div>
 </div>
 </div>
 
 </section>
-<section id="announcements" class="slide level2">
-<h2>Announcements</h2>
+<section id="recap-of-last-lecture" class="slide level2">
+<h2>Recap of last lecture</h2>
 <ul>
-<li><p>For this week (September 25 - 29), office hours will be on <strong>Friday, from 2:00pm - 4:00pm</strong>.</p></li>
-<li><p>Regular Thursday office hours resume the week of October 02.</p></li>
+<li>Last time we worked with exploratory data analysis and then used the tidyverse verbs to engineer features into our datasets.</li>
 </ul>
 </section>
 <section id="todays-outline" class="slide level2">
 <h2>Today’s Outline</h2>
+<ul>
+<li>We’ll review the R model formula approach to model specification,</li>
+<li>We’ll introducte data pre-processing and design/model matrix generation with the <code>recipes</code> package, and</li>
+<li>We’ll show how using recipes will facilitate developing feature engineering workflows that can be applied to multiple datasets (e.g.&nbsp;train and test as well as cross-validation<sup>1</sup> datasets)</li>
+</ul>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Cross-validation is a resampling method that uses different portions of the data to test and train a model on different iterations.</p></li></ol></aside></section>
+<section id="r-model-formulas" class="slide level2">
+<h2>R Model Formulas</h2>
+<p>A simple formula in a linear model to predict house prices (using the dataset Sacremento from the package <code>modeldata</code>):</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" data-code-line-numbers="1|2|3|4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="sc">&gt;</span> Sacramento <span class="ot">&lt;-</span> modeldata<span class="sc">::</span>Sacramento</span>
+<span id="cb1-2"><a></a><span class="sc">&gt;</span> mod1 <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">lm</span>(</span>
+<span id="cb1-3"><a></a><span class="sc">+</span>   <span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">+</span> sqft</span>
+<span id="cb1-4"><a></a><span class="sc">+</span>   , <span class="at">data =</span> Sacramento</span>
+<span id="cb1-5"><a></a><span class="sc">+</span>   , <span class="at">subset =</span> beds <span class="sc">&gt;</span> <span class="dv">2</span></span>
+<span id="cb1-6"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div style="font-size: 60%">
+<p>The purpose of this code chunk:</p>
 <ol type="1">
-<li>Complete last week’s lab</li>
-<li>Review this week’s material
-<ul>
-<li>Introduction to exploratory data analysis (EDA), and</li>
-<li>Feature engineering in the tidyverse</li>
-</ul></li>
-<li>Start (and finish?) this week’s lab</li>
+<li>subset some of the observations (<code>subset</code>)</li>
+<li>create a design matrix for 2 predictor variable (but 3 model terms)</li>
+<li>log transform the outcome variable</li>
+<li>fit a linear regression model</li>
 </ol>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>The first two labs are designed to give you practice with the <code>Tidyverse</code> tools for manipulating data.</p>
-</div>
-</div>
+<p>The first two steps create the <em>design-</em> or <em>model- matrix</em>.</p>
 </div>
 </section>
-<section>
-<section id="exploratory-data-analysis-eda" class="title-slide slide level1 center">
-<h1>Exploratory Data Analysis (EDA)</h1>
-
-</section>
-<section id="exploratory-data-analysis-eda-1" class="slide level2">
-<h2>Exploratory Data Analysis (EDA)</h2>
-<p>Exploratory data analysis is the process of understanding a new dataset by looking at the data, constructing graphs, tables, and models. We want to understand three aspects:</p>
-<ol type="1">
-<li><p>each individual variable by itself;</p></li>
-<li><p>each individual variable in the context of other, relevant, variables; and</p></li>
-<li><p>the data that are not there.</p></li>
-</ol>
-</section>
-<section id="exploratory-data-analysis-eda-2" class="slide level2">
-<h2>Exploratory Data Analysis (EDA)</h2>
-<p>During EDA we want to come to understand the issues and features of the dataset and how this may affect analysis decisions.</p>
-<p>We are especially concerned about missing values and outliers.</p>
-</section>
-<section id="exploratory-data-analysis-eda-3" class="slide level2">
-<h2>Exploratory Data Analysis (EDA)</h2>
-<p>We are going to perform two broad categories of EDA:</p>
-<ul>
-<li>Descriptive Statistics, which includes mean, median, mode, inter-quartile range, and so on.</li>
-<li>Graphical Methods, which includes histogram, density estimation, box plots, and so on.</li>
-</ul>
-</section>
-<section id="exploratory-data-analysis-eda-4" class="slide level2">
-<h2>Exploratory Data Analysis (EDA)</h2>
-<p>Descriptive statistics and graphical methods support the following process:</p>
-<ul>
-<li><p>Understand the distribution and properties of individual variables.</p></li>
-<li><p>Understand relationships between variables.</p></li>
-<li><p>Understand what is not there.</p></li>
-</ul>
-</section>
-<section id="eda-example" class="slide level2">
-<h2>EDA: example</h2>
-<p>Our first dataset is a sample of categorical variables from the <a href="https://gss.norc.org/Documents/other/2021%20XSEC%20R1%20Methodological%20Primer.pdf">General Social Survey</a>, a long-running US survey conducted by the independent research organization NORC at the University of Chicago.</p>
-
-<div style="font-size: 32px">
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<p>The dataset Sacramento has three categorical variables:</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" data-code-line-numbers="1|2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="sc">&gt;</span> dat <span class="ot">&lt;-</span> forcats<span class="sc">::</span>gss_cat</span>
-<span id="cb1-2"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> utils<span class="sc">::</span><span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 9
-   year marital         age race  rincome        partyid            relig    denom tvhours
-  &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;              &lt;fct&gt;    &lt;fct&gt;   &lt;int&gt;
-1  2000 Never married    26 White $8000 to 9999  Ind,near rep       Protest… Sout…      12
-2  2000 Divorced         48 White $8000 to 9999  Not str republican Protest… Bapt…      NA
-3  2000 Widowed          67 White Not applicable Independent        Protest… No d…       2
-4  2000 Never married    39 White Not applicable Ind,near rep       Orthodo… Not …       4
-5  2000 Divorced         25 White Not applicable Not str democrat   None     Not …       1
-6  2000 Married          25 White $20000 - 24999 Strong democrat    Protest… Sout…      NA</code></pre>
-</div>
-</div>
-</div>
-<aside><div>
-<p>execute ?forcats::gss_cat to see the data dictionary</p>
-</div></aside></section>
-<section id="eda-example-1" class="slide level2">
-<h2>EDA: example</h2>
-<p>Use <code>dplyr::glimpse()</code> to see every column in a data.frame</p>
-<div style="font-size: 32px">
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">10</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 10
-Columns: 9
-$ year    &lt;int&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000
-$ marital &lt;fct&gt; Never married, Divorced, Widowed, Never married, Divorced, Married, Neve…
-$ age     &lt;int&gt; 26, 48, 67, 39, 25, 25, 36, 44, 44, 47
-$ race    &lt;fct&gt; White, White, White, White, White, White, White, White, White, White
-$ rincome &lt;fct&gt; $8000 to 9999, $8000 to 9999, Not applicable, Not applicable, Not applic…
-$ partyid &lt;fct&gt; "Ind,near rep", "Not str republican", "Independent", "Ind,near rep", "No…
-$ relig   &lt;fct&gt; Protestant, Protestant, Protestant, Orthodox-christian, None, Protestant…
-$ denom   &lt;fct&gt; "Southern baptist", "Baptist-dk which", "No denomination", "Not applicab…
-$ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
-</div>
-</div>
-</div>
-</section>
-<section id="eda-example-2" class="slide level2">
-<h2>EDA: example</h2>
-<p>Use <code>dplyr::slice_sample()</code> to see a random selection of rows in a data.frame</p>
-<div style="font-size: 32px">
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_sample</span>(<span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 9
-    year marital         age race  rincome        partyid            relig   denom tvhours
-   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;              &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;
- 1  2010 Divorced         56 White $5000 to 5999  Independent        Protes… Other       3
- 2  2000 Divorced         65 White Not applicable Independent        Protes… Othe…       6
- 3  2006 Married          20 White $10000 - 14999 Independent        Protes… Bapt…      NA
- 4  2006 Widowed          87 White Not applicable Strong republican  Protes… Other      NA
- 5  2006 Never married    26 Other $6000 to 6999  Independent        None    Not …       2
- 6  2012 Divorced         63 White Not applicable Strong republican  Protes… Epis…      NA
- 7  2002 Married          55 White $25000 or more Independent        Cathol… Not …       4
- 8  2004 Married          30 White $25000 or more Independent        Cathol… Not …       3
- 9  2006 Married          53 White $25000 or more Not str republican Protes… Epis…       2
-10  2010 Divorced         44 White $25000 or more Independent        Cathol… Not …       3</code></pre>
-</div>
-</div>
-</div>
-</section>
-<section id="eda-example-3" class="slide level2">
-<h2>EDA: example</h2>
-<p>Most of the columns here are <code>factors</code> (categories). Use <code>forcats::fct_count()</code> to count the factor entries.</p>
-<div style="font-size: 32px">
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="sc">&gt;</span> forcats<span class="sc">::</span><span class="fu">fct_count</span>(dat<span class="sc">$</span>relig) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 16 × 2
-   f                           n
-   &lt;fct&gt;                   &lt;int&gt;
- 1 Protestant              10846
- 2 Catholic                 5124
- 3 None                     3523
- 4 Christian                 689
- 5 Jewish                    388
- 6 Other                     224
- 7 Buddhism                  147
- 8 Inter-nondenominational   109
- 9 Moslem/islam              104
-10 Orthodox-christian         95
-11 No answer                  93
-12 Hinduism                   71
-13 Other eastern              32
-14 Native american            23
-15 Don't know                 15
-16 Not applicable              0</code></pre>
-</div>
-</div>
-</div>
-</section>
-<section id="eda-example-4" class="slide level2">
-<h2>EDA: example</h2>
-<p>The base R function <code>summary()</code> can be used for key summary statistics of the data.</p>
-<div style="font-size: 32px">
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      year               marital           age                    race      
- Min.   :2000   No answer    :   17   Min.   :18.00   Other         : 1959  
- 1st Qu.:2002   Never married: 5416   1st Qu.:33.00   Black         : 3129  
- Median :2006   Separated    :  743   Median :46.00   White         :16395  
- Mean   :2007   Divorced     : 3383   Mean   :47.18   Not applicable:    0  
- 3rd Qu.:2010   Widowed      : 1807   3rd Qu.:59.00                         
- Max.   :2014   Married      :10117   Max.   :89.00                         
-                                      NA's   :76                            
-           rincome                   partyid            relig      
- $25000 or more:7363   Independent       :4119   Protestant:10846  
- Not applicable:7043   Not str democrat  :3690   Catholic  : 5124  
- $20000 - 24999:1283   Strong democrat   :3490   None      : 3523  
- $10000 - 14999:1168   Not str republican:3032   Christian :  689  
- $15000 - 19999:1048   Ind,near dem      :2499   Jewish    :  388  
- Refused       : 975   Strong republican :2314   Other     :  224  
- (Other)       :2603   (Other)           :2339   (Other)   :  689  
-              denom          tvhours      
- Not applicable  :10072   Min.   : 0.000  
- Other           : 2534   1st Qu.: 1.000  
- No denomination : 1683   Median : 2.000  
- Southern baptist: 1536   Mean   : 2.981  
- Baptist-dk which: 1457   3rd Qu.: 4.000  
- United methodist: 1067   Max.   :24.000  
- (Other)         : 3134   NA's   :10146   </code></pre>
-</div>
-</div>
-</div>
-</section>
-<section id="eda-packages-for-eda" class="slide level2">
-<h2>EDA: packages for EDA</h2>
-<ul>
-<li><p>The function <code>skimr::skim()</code> gives an enhanced version of base R’s <code>summary()</code> .</p></li>
-<li><p>Other packages, such as <code>DataExplorer::</code> rely more on graphing.</p>
-<ul>
-<li>We’ll look at a few of the <code>DataExplorer::</code> functions next.</li>
-</ul></li>
-</ul>
-</section>
-<section id="dataexplorerintroduce" class="slide level2">
-<h2><code>DataExplorer::introduce</code></h2>
-<p>The function <code>DataExplorer::introduce</code> produces a basic description of the data in a <code>data.frame</code>.</p>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">introduce</span>() <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows: 1
-Columns: 9
-$ rows                 &lt;int&gt; 21483
-$ columns              &lt;int&gt; 9
-$ discrete_columns     &lt;int&gt; 6
-$ continuous_columns   &lt;int&gt; 3
-$ all_missing_columns  &lt;int&gt; 0
-$ total_missing_values &lt;int&gt; 10222
-$ complete_rows        &lt;int&gt; 11299
-$ total_observations   &lt;int&gt; 193347
-$ memory_usage         &lt;dbl&gt; 784776</code></pre>
-</div>
-</div>
-</section>
-<section id="dataexplorerplot_intro" class="slide level2">
-<h2><code>DataExplorer::plot_intro</code></h2>
-<p>The function <code>DataExplorer::plot_intro</code> is a visual version of <code>DataExplorer::introduce</code>.</p>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_intro</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="BSMM_8740_lec_02_files/figure-revealjs/unnamed-chunk-7-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="dataexplorerplot_missing" class="slide level2">
-<h2><code>DataExplorer::plot_missing</code></h2>
-<p>The function <code>DataExplorer::plot_missing</code> shows information on missing data visually.</p>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="BSMM_8740_lec_02_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="d_explorerprofile_missing" class="slide level2">
-<h2><code>D_Explorer::profile_missing</code></h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15" data-code-line-numbers="1|2|3|4|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">profile_missing</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb15-2"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">gt</span>(<span class="st">'feature'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-3"><a></a><span class="sc">+</span>   gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb15-4"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">28</span>) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb15-5"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="1|2|3|4|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="sc">&gt;</span> skimr<span class="sc">::</span><span class="fu">skim</span>(Sacramento) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(skim_variable,<span class="fu">contains</span>(<span class="st">'factor'</span>)) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">drop_na</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a></a><span class="sc">+</span>   gtExtras<span class="sc">:::</span><span class="fu">gt_theme_espn</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="psrmhlzoum" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="krmunflick" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
-<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 28px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
 <thead style="border-style: none;">
 <tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
-<th class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom"></th>
-<th id="num_missing" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">num_missing</th>
-<th id="pct_missing" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">pct_missing</th>
+<th id="skim_variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">skim_variable</th>
+<th id="factor.ordered" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col" style="text-align: center; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">factor.ordered</th>
+<th id="factor.n_unique" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">factor.n_unique</th>
+<th id="factor.top_counts" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">factor.top_counts</th>
 </tr>
 </thead>
 <tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
 <tr class="odd" style="border-style: none;">
-<td id="stub_1_1" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">year</td>
-<td class="gt_row gt_right" headers="stub_1_1 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="stub_1_1 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.000000000</td>
+<td class="gt_row gt_left" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">city</td>
+<td class="gt_row gt_center" headers="factor.ordered" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">37</td>
+<td class="gt_row gt_left" headers="factor.top_counts" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">SAC: 438, ELK: 114, ROS: 48, CIT: 35</td>
 </tr>
 <tr class="even" style="border-style: none;">
-<td id="stub_1_2" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">marital</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_2 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0.000000000</td>
+<td class="gt_row gt_left gt_striped" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">zip</td>
+<td class="gt_row gt_center gt_striped" headers="factor.ordered" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">FALSE</td>
+<td class="gt_row gt_right gt_striped" headers="factor.n_unique" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">68</td>
+<td class="gt_row gt_left gt_striped" headers="factor.top_counts" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">z95: 61, z95: 45, z95: 44, z95: 37</td>
 </tr>
 <tr class="odd" style="border-style: none;">
-<td id="stub_1_3" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">age</td>
-<td class="gt_row gt_right" headers="stub_1_3 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">76</td>
-<td class="gt_row gt_right" headers="stub_1_3 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.003537681</td>
-</tr>
-<tr class="even" style="border-style: none;">
-<td id="stub_1_4" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">race</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_4 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_4 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0.000000000</td>
-</tr>
-<tr class="odd" style="border-style: none;">
-<td id="stub_1_5" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">rincome</td>
-<td class="gt_row gt_right" headers="stub_1_5 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="stub_1_5 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.000000000</td>
-</tr>
-<tr class="even" style="border-style: none;">
-<td id="stub_1_6" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">partyid</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_6 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_6 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0.000000000</td>
-</tr>
-<tr class="odd" style="border-style: none;">
-<td id="stub_1_7" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">relig</td>
-<td class="gt_row gt_right" headers="stub_1_7 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0</td>
-<td class="gt_row gt_right" headers="stub_1_7 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.000000000</td>
-</tr>
-<tr class="even" style="border-style: none;">
-<td id="stub_1_8" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">denom</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_8 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
-<td class="gt_row gt_right gt_striped" headers="stub_1_8 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0.000000000</td>
-</tr>
-<tr class="odd" style="border-style: none;">
-<td id="stub_1_9" class="gt_row gt_center gt_stub" data-quarto-table-cell-role="th" scope="row" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px;" data-valign="middle" data-bgcolor="#FFFFFF">tvhours</td>
-<td class="gt_row gt_right" headers="stub_1_9 num_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">10146</td>
-<td class="gt_row gt_right" headers="stub_1_9 pct_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.472280408</td>
+<td class="gt_row gt_left" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">type</td>
+<td class="gt_row gt_center" headers="factor.ordered" style="text-align: center; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">FALSE</td>
+<td class="gt_row gt_right" headers="factor.n_unique" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">3</td>
+<td class="gt_row gt_left" headers="factor.top_counts" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Res: 866, Con: 53, Mul: 13</td>
 </tr>
 </tbody>
 </table>
@@ -748,218 +503,516 @@ $ memory_usage         &lt;dbl&gt; 784776</code></pre>
 </div>
 </div>
 </section>
-<section id="dataexplorerplot_density" class="slide level2">
-<h2><code>DataExplorer::plot_density</code></h2>
+<section id="example-design-matrix" class="slide level2">
+<h2>Example design matrix</h2>
 <div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16" data-code-line-numbers="2|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> </span>
-<span id="cb16-2"><a></a><span class="sc">+</span>   DataExplorer<span class="sc">::</span><span class="fu">plot_density</span>(</span>
-<span id="cb16-3"><a></a><span class="sc">+</span>     <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
-<span id="cb16-4"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
+<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="1|2|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="sc">&gt;</span>  mm <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(</span>
+<span id="cb3-2"><a></a><span class="sc">+</span>    <span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">+</span> sqft</span>
+<span id="cb3-3"><a></a><span class="sc">+</span>    , <span class="at">data =</span> Sacramento</span>
+<span id="cb3-4"><a></a><span class="sc">+</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<img data-src="BSMM_8740_lec_02_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="d_explorerplot_histogram" class="slide level2">
-<h2><code>D_Explorer::plot_histogram</code></h2>
 <div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17" data-code-line-numbers="2|3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> </span>
-<span id="cb17-2"><a></a><span class="sc">+</span>   DataExplorer<span class="sc">::</span><span class="fu">plot_histogram</span>(</span>
-<span id="cb17-3"><a></a><span class="sc">+</span>     <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span>
-<span id="cb17-4"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="BSMM_8740_lec_02_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="dataexplorerplot_bar" class="slide level2">
-<h2><code>DataExplorer::plot_bar</code></h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="BSMM_8740_lec_02_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="eda-additional-dataexplorer-functions" class="slide level2">
-<h2>EDA: additional <code>DataExplorer</code> functions</h2>
-<p>When the data has more numerical values consider looking at the relationships with the following functions:</p>
-<ul>
-<li><code>DataExplorer::plot_correlation()</code> creates a correlation heatmap.</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="sc">&gt;</span> iris <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_correlation</span>(<span class="at">type =</span> <span class="st">"c"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="eda-additional-dataexplorer-functions-1" class="slide level2">
-<h2>EDA: additional <code>DataExplorer</code> functions</h2>
-<p>When the data has more numerical values consider looking at the relationships with the following functions:</p>
-<ul>
-<li><code>DataExplorer::plot_scatterplot()</code> creates a scatterplot for all measurements.</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> iris <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_scatterplot</span>(<span class="at">by =</span> <span class="st">"Species"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="eda-additional-dataexplorer-functions-2" class="slide level2">
-<h2>EDA: additional <code>DataExplorer</code> functions</h2>
-<p>When the data has more numerical values consider looking at the relationships with the following functions:</p>
-<ul>
-<li><code>DataExplorer::plot_qq()</code> creates a quantile-quantile plot for each continuous feature.</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="sc">&gt;</span> iris <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_qq</span>(<span class="at">by =</span> <span class="st">"Species"</span>, <span class="at">ncol =</span> <span class="dv">2</span>L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div style="font-size: smaller">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>A <strong>Q–Q plot</strong> (<strong>quantile-quantile plot</strong>) is a probability plot, a graphical method for comparing two probability distributions by plotting their <em>quantiles</em> against each other.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="eda-classifying-missing-data" class="slide level2">
-<h2>EDA: classifying missing data</h2>
-<p>There are three main categories of missing data</p>
-<ol type="1">
-<li>Missing Completely At Random (MCAR);
-<ul>
-<li>missing but independent of other measurements</li>
-</ul></li>
-<li>Missing at Random (MAR);
-<ul>
-<li>missing in a way related to other measurements</li>
-</ul></li>
-<li>Missing Not At Random (MNAR).
-<ul>
-<li>missing as a property of the variable or some other unmeasured variable</li>
-</ul></li>
-</ol>
-</section>
-<section id="eda-handling-missing-data" class="slide level2">
-<h2>EDA: handling missing data</h2>
-<p>We can think of a few options for dealing with missing data</p>
-<ol type="1">
-<li><p>Drop observations with missing data.</p></li>
-<li><p>Impute the mean of observations without missing data.</p></li>
-<li><p>Use multiple imputation.</p></li>
-</ol>
-<div style="font-size: smaller">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Multiple imputation involves generating several estimates for the missing values and then averaging the outcomes.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="example-mcar-or-mar" class="slide level2">
-<h2>Example: MCAR or MAR?</h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22" data-code-line-numbers="1|2|3-4|5|7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(partyid) <span class="sc">%&gt;%</span> <span class="fu">table</span>() <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb22-2"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
-<span id="cb22-3"><a></a><span class="sc">+</span>     dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.na</span>(age)) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-4"><a></a><span class="sc">+</span>       dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">na_partyid =</span> partyid) <span class="sc">%&gt;%</span> <span class="fu">table</span>() <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
-<span id="cb22-5"><a></a><span class="sc">+</span>     , <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"partyid"</span> <span class="ot">=</span> <span class="st">"na_partyid"</span>)</span>
-<span id="cb22-6"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-7"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct_na =</span> n.y <span class="sc">/</span> n.x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 4
-   partyid              n.x   n.y   pct_na
-   &lt;chr&gt;              &lt;int&gt; &lt;int&gt;    &lt;dbl&gt;
- 1 No answer            154     9 0.0584  
- 2 Don't know             1     0 0       
- 3 Other party          393     3 0.00763 
- 4 Strong republican   2314     8 0.00346 
- 5 Not str republican  3032     8 0.00264 
- 6 Ind,near rep        1791     2 0.00112 
- 7 Independent         4119    18 0.00437 
- 8 Ind,near dem        2499     2 0.000800
- 9 Not str democrat    3690    11 0.00298 
-10 Strong democrat     3490    15 0.00430 </code></pre>
+<pre><code>   (Intercept) typeMulti_Family typeResidential sqft
+1            1                0               1  836
+2            1                0               1 1167
+3            1                0               1  796
+4            1                0               1  852
+5            1                0               1  797
+6            1                0               0 1122
+7            1                0               1 1104
+8            1                0               1 1177
+9            1                0               0  941
+10           1                0               1 1146
+11           1                0               1  909
+12           1                0               1 1289
+13           1                0               1  871
+14           1                0               1 1020</code></pre>
 </div>
 </div>
 </section>
-<section id="eda-missing-data" class="slide level2">
-<h2>EDA: missing data</h2>
-<p>Finally, be aware that how missing data is encoded depends on the dataset</p>
+<section id="summary-model-formula-method" class="slide level2">
+<h2>Summary: Model Formula Method</h2>
 <ul>
-<li>R defaults to NA when reading data, in joins, etc.</li>
-<li>The creator(s) of the dataset may use a different encoding.</li>
-<li>Missing data can have multiple representations according to semantics of the measurement.</li>
-<li>Remember that entire measurements can be missing (i.e.&nbsp;from all observations, not just some).</li>
+<li>Model formulas are very expressive in that they can represent model terms easily</li>
+<li>The formula/terms framework does some elegant functional programming</li>
+<li>Functions can be embedded inline to do fairly complex things (on single variables) and these can be applied to new data sets.</li>
 </ul>
 </section>
-<section id="eda-summary" class="slide level2">
-<h2>EDA: summary</h2>
+<section id="model-formula-examples" class="slide level2">
+<h2>Model formula examples</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">leave out</a></li><li><a href="#tabset-1-2">interaction</a></li><li><a href="#tabset-1-3">crossing</a></li><li><a href="#tabset-1-4">nesting</a></li><li><a href="#tabset-1-5">as-is</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> <span class="fu">model.matrix</span>(<span class="fu">log</span>(price) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> type <span class="sc">+</span> sqft, <span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  typeCondo typeMulti_Family typeResidential sqft
+1         0                0               1  836
+2         0                0               1 1167
+3         0                0               1  796
+4         0                0               1  852
+5         0                0               1  797
+6         1                0               0 1122</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="sc">&gt;</span> <span class="fu">model.matrix</span>(<span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">:</span> sqft, <span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) typeCondo:sqft typeMulti_Family:sqft typeResidential:sqft
+1           1              0                     0                  836
+2           1              0                     0                 1167
+3           1              0                     0                  796
+4           1              0                     0                  852
+5           1              0                     0                  797
+6           1           1122                     0                    0</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-3">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="sc">&gt;</span> <span class="fu">model.matrix</span>(<span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">*</span> sqft, <span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) typeMulti_Family typeResidential sqft typeMulti_Family:sqft
+1           1                0               1  836                     0
+2           1                0               1 1167                     0
+3           1                0               1  796                     0
+4           1                0               1  852                     0
+5           1                0               1  797                     0
+6           1                0               0 1122                     0
+  typeResidential:sqft
+1                  836
+2                 1167
+3                  796
+4                  852
+5                  797
+6                    0</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-4">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="sc">&gt;</span> <span class="fu">model.matrix</span>(<span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">%in%</span> sqft, <span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) typeCondo:sqft typeMulti_Family:sqft typeResidential:sqft
+1           1              0                     0                  836
+2           1              0                     0                 1167
+3           1              0                     0                  796
+4           1              0                     0                  852
+5           1              0                     0                  797
+6           1           1122                     0                    0</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-5">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> <span class="fu">model.matrix</span>(<span class="fu">log</span>(price) <span class="sc">~</span> type <span class="sc">+</span> sqft <span class="sc">+</span> <span class="fu">I</span>(sqft<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) typeMulti_Family typeResidential sqft I(sqft^2)
+1           1                0               1  836    698896
+2           1                0               1 1167   1361889
+3           1                0               1  796    633616
+4           1                0               1  852    725904
+5           1                0               1  797    635209
+6           1                0               0 1122   1258884</code></pre>
+</div>
+</div>
+<p>contrast with log(price) ~ type + sqft + sqft^2</p>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-model-formula-method-1" class="slide level2">
+<h2>Summary: Model Formula Method</h2>
+<p>There are significant limitations to what this framework can do and, in some cases, it can be very inefficient.</p>
+<p>This is mostly due to being written well before large scale modeling and machine learning were commonplace.</p>
+</section>
+<section id="limitations-of-the-current-system" class="slide level2">
+<h2>Limitations of the Current System</h2>
 <ul>
-<li>Understand what the measurements represent and confirm constraints (if any) and suitability of encoding.</li>
-<li>Make a decision on how to deal with missing data.</li>
-<li>Understand shape of measurements (may identify an issue or suggest a data transformation)</li>
+<li>Formulas are not very extensible especially with nested or sequential operations (e.g.&nbsp;<code>y ~ scale(center(knn_impute(x)))</code>).</li>
+<li>When used in modeling functions, you cannot recycle the previous computations.</li>
+<li>For wide data sets with lots of columns, the formula method can be very inefficient and consume a significant proportion of the total execution time.</li>
 </ul>
 </section>
-<section id="eda-bad-data-rightarrow-bad-results" class="slide level2">
-<h2>EDA: bad data <span class="math inline">\(\rightarrow\)</span> bad results</h2>
-
-<img data-src="../images/category_fail.png" class="r-stretch"></section></section>
+<section id="limitations-of-the-current-system-1" class="slide level2">
+<h2>Limitations of the Current System</h2>
+<ul>
+<li>Multivariate outcomes are kludgy by requiring <code>cbind</code> .</li>
+<li>Formulas have a limited set of roles for measurements (just <code>predictor</code> and <code>outcome</code>). We’ll look further at roles in the next two slides.</li>
+</ul>
+<p>A more in-depth discussion of these issues can be found in <a href="https://rviews.rstudio.com/2017/03/01/the-r-formula-method-the-bad-parts/">this blog post</a> (recommended to read).</p>
+</section>
+<section id="variable-roles" class="slide level2">
+<h2>Variable Roles</h2>
+<p>Formulas have been re-implemented in different packages for a variety of different reasons:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15" data-code-line-numbers="3|8-10|14-16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> <span class="co"># ?lme4::lmer</span></span>
+<span id="cb15-2"><a></a><span class="er">&gt;</span> <span class="co"># Subjects need to be in the data but are not part of the model</span></span>
+<span id="cb15-3"><a></a><span class="er">&gt;</span> lme4<span class="sc">::</span><span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days <span class="sc">|</span> Subject), <span class="at">data =</span> lme4<span class="sc">::</span>sleepstudy)</span>
+<span id="cb15-4"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb15-5"><a></a><span class="er">&gt;</span> <span class="co"># BradleyTerry2</span></span>
+<span id="cb15-6"><a></a><span class="er">&gt;</span> <span class="co"># We want to make the outcomes to be a function of a </span></span>
+<span id="cb15-7"><a></a><span class="er">&gt;</span> <span class="co"># competitor-specific function of reach </span></span>
+<span id="cb15-8"><a></a><span class="er">&gt;</span> BradleyTerry2<span class="sc">::</span><span class="fu">BTm</span>(<span class="at">outcome =</span> <span class="dv">1</span>, <span class="at">player1 =</span> winner, <span class="at">player2 =</span> loser,</span>
+<span id="cb15-9"><a></a><span class="sc">+</span>     <span class="at">formula =</span> <span class="sc">~</span> reach[..] <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>..), </span>
+<span id="cb15-10"><a></a><span class="sc">+</span>     <span class="at">data =</span> boxers)</span>
+<span id="cb15-11"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb15-12"><a></a><span class="er">&gt;</span> <span class="co"># modeltools::ModelEnvFormula (using the modeltools package for formulas)</span></span>
+<span id="cb15-13"><a></a><span class="er">&gt;</span> <span class="co"># mob</span></span>
+<span id="cb15-14"><a></a><span class="er">&gt;</span> <span class="fu">data</span>(PimaIndiansDiabetes, <span class="at">package =</span> <span class="st">'mlbench'</span>)</span>
+<span id="cb15-15"><a></a><span class="sc">&gt;</span> modeltools<span class="sc">::</span><span class="fu">ModelEnvFormula</span>(diabetes <span class="sc">~</span> glucose <span class="sc">|</span> pregnant <span class="sc">+</span> mass <span class="sc">+</span>  age,</span>
+<span id="cb15-16"><a></a><span class="sc">+</span>     <span class="at">data =</span> PimaIndiansDiabetes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="variable-roles-1" class="slide level2">
+<h2>Variable Roles</h2>
+<p>A general list of possible variable roles could be:</p>
+<div style="font-size: 75%">
+<ul>
+<li>outcomes</li>
+<li>predictors</li>
+<li>stratification</li>
+<li>model performance data (e.g.&nbsp;loan amount to compute expected loss)</li>
+<li>conditioning or faceting variables (e.g.&nbsp;<a href="https://cran.r-project.org/package=lattice"><code>lattice</code></a> or <a href="https://cran.r-project.org/package=ggplot2"><code>ggplot2</code></a>)</li>
+<li>random effects or hierarchical model ID variables</li>
+<li>case weights (*)</li>
+<li>offsets (*)</li>
+<li>error terms (limited to <code>Error</code> in the <code>aov</code> function)(*)</li>
+</ul>
+<p>(*) Can be handled in formulas but are hard-coded into functions.</p>
+</div>
+</section>
 <section>
-<section id="feature-engineering" class="title-slide slide level1 center">
-<h1>Feature engineering</h1>
-<p>Feature engineering is the act of converting raw observations into desired features using statistical, mathematical, or machine learning approaches.</p>
+<section id="the-recipes-package" class="title-slide slide level1 center">
+<h1>The Recipes package</h1>
+
 </section>
-<section id="feature-engineering-transformation" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>for continuous variables (usually the independent variables or covariates):</p>
+<section id="recipes" class="slide level2">
+<h2>Recipes</h2>
+<p>We can approach the design matrix and preprocessing steps by first specifying a <strong>sequence of steps</strong>.</p>
+<ol type="1">
+<li><code>price</code> is an outcome</li>
+<li><code>type</code> and <code>sqft</code> are predictors</li>
+<li>log transform <code>price</code></li>
+<li>convert <code>type</code> to dummy variables</li>
+</ol>
+</section>
+<section id="recipes-1" class="slide level2">
+<h2>Recipes</h2>
+<p>A recipe is a specification of <em>intent</em>.</p>
+<p>One issue with the formula method is that it couples the specification for your predictors along with the implementation.</p>
+<p>Recipes separate the <em>planning</em> from the <em>doing</em>.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>The Recipes website is found at: <a href="https://topepo.github.io/recipes"><code>https://topepo.github.io/recipes</code></a></p>
+</div>
+</div>
+</div>
+</section>
+<section id="recipes-2" class="slide level2">
+<h2>Recipes</h2>
+<p>Once created, a <em>recipe</em> can be <code>prep</code>ped on training data then <code>bake</code>d with any other data.</p>
+<div style="font-size: smaller">
 <ul>
-<li><strong>normalization</strong> (scale values to <span class="math inline">\([0,1]\)</span>)
+<li>the <code>prep</code> step calculates and stores variables related to the steps (e.g.&nbsp;(min,max) for scaling), using the training data</li>
+<li>the <code>bake</code> step applies the steps to new data</li>
+</ul>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16" data-code-line-numbers="2|4-6|9|11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="sc">&gt;</span> <span class="do">## Create an initial recipe with only predictors and outcome</span></span>
+<span id="cb16-2"><a></a><span class="er">&gt;</span> rec <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">recipe</span>(price <span class="sc">~</span> type <span class="sc">+</span> sqft, <span class="at">data =</span> Sacramento)</span>
+<span id="cb16-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb16-4"><a></a><span class="er">&gt;</span> rec <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span> </span>
+<span id="cb16-5"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_log</span>(price) <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_dummy</span>(type)</span>
+<span id="cb16-7"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb16-8"><a></a><span class="er">&gt;</span> <span class="co"># estimate any parameters</span></span>
+<span id="cb16-9"><a></a><span class="er">&gt;</span> rec_trained <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">prep</span>(rec, <span class="at">training =</span> Sacramento, <span class="at">retain =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-10"><a></a><span class="sc">&gt;</span> <span class="co"># apply the computations to new_data</span></span>
+<span id="cb16-11"><a></a><span class="er">&gt;</span> design_mat  <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">bake</span>(rec_trained, <span class="at">new_data =</span> Sacramento)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="selecting-variables" class="slide level2">
+<h2>Selecting Variables</h2>
+<p>In the last slide, we used <code>dplyr</code>-like syntax for selecting variables such as <code>step_dummy(type)</code>.</p>
+<p>In some cases, the names of the predictors may not be known at the time when you construct a recipe (or model formula). For example:</p>
 <ul>
-<li><span class="math inline">\(X_\text{norm} = \frac{X-X_\text{min}}{X_\text{max}-X_\text{min}}\)</span></li>
-</ul></li>
-<li><strong>standardization</strong> (subtract mean and scale by stdev)
-<ul>
-<li><span class="math inline">\(X_\text{std} = \frac{X-\mu_X}{\sigma_X}\)</span></li>
-</ul></li>
-<li><strong>scaling</strong> (multiply / divide by a constant)
-<ul>
-<li><span class="math inline">\(X_\text{scaled} = K\times X\)</span></li>
-</ul></li>
+<li>dummy variable columns</li>
+<li>PCA feature extraction when you keep components that capture <span class="math inline">\(\mathrm{X}\%\)</span> of the variability.</li>
+<li>discretized predictors with dynamic bins</li>
 </ul>
 </section>
-<section id="feature-engineering-transformation-1" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>Other common transformations:</p>
+<section id="example-1" class="slide level2">
+<h2>Example</h2>
+<p>Using the <code>airquality</code> dataset in the <code>datasets</code> package</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17" data-code-line-numbers="1|3-4|5-8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> dat <span class="ot">&lt;-</span> datasets<span class="sc">::</span>airquality</span>
+<span id="cb17-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb17-3"><a></a><span class="er">&gt;</span> dat <span class="sc">%&gt;%</span> skimr<span class="sc">::</span><span class="fu">skim</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb17-4"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(skim_variable<span class="sc">:</span>numeric.sd) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-5"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb17-6"><a></a><span class="sc">+</span>   gtExtras<span class="sc">:::</span><span class="fu">gt_theme_espn</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb17-7"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-8"><a></a><span class="sc">+</span>   gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="dqorcidgdq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<thead style="border-style: none;">
+<tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+<th id="skim_variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col" style="text-align: left; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden;" data-bgcolor="#FFFFFF" data-valign="bottom">skim_variable</th>
+<th id="n_missing" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">n_missing</th>
+<th id="complete_rate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">complete_rate</th>
+<th id="numeric.mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">numeric.mean</th>
+<th id="numeric.sd" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 80%; font-weight: bolder; text-transform: uppercase; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">numeric.sd</th>
+</tr>
+</thead>
+<tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+<tr class="odd" style="border-style: none;">
+<td class="gt_row gt_left" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Ozone</td>
+<td class="gt_row gt_right" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">37</td>
+<td class="gt_row gt_right" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.7581699</td>
+<td class="gt_row gt_right" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">42.129310</td>
+<td class="gt_row gt_right" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">32.987885</td>
+</tr>
+<tr class="even" style="border-style: none;">
+<td class="gt_row gt_left gt_striped" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Solar.R</td>
+<td class="gt_row gt_right gt_striped" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">7</td>
+<td class="gt_row gt_right gt_striped" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0.9542484</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">185.931507</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">90.058422</td>
+</tr>
+<tr class="odd" style="border-style: none;">
+<td class="gt_row gt_left" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Wind</td>
+<td class="gt_row gt_right" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">1.0000000</td>
+<td class="gt_row gt_right" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">9.957516</td>
+<td class="gt_row gt_right" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">3.523001</td>
+</tr>
+<tr class="even" style="border-style: none;">
+<td class="gt_row gt_left gt_striped" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Temp</td>
+<td class="gt_row gt_right gt_striped" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
+<td class="gt_row gt_right gt_striped" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">1.0000000</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">77.882353</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">9.465270</td>
+</tr>
+<tr class="odd" style="border-style: none;">
+<td class="gt_row gt_left" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden;" data-valign="middle">Month</td>
+<td class="gt_row gt_right" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0</td>
+<td class="gt_row gt_right" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">1.0000000</td>
+<td class="gt_row gt_right" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">6.993464</td>
+<td class="gt_row gt_right" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">1.416522</td>
+</tr>
+<tr class="even" style="border-style: none;">
+<td class="gt_row gt_left gt_striped" headers="skim_variable" style="text-align: left; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA;" data-valign="middle" data-bgcolor="#FAFAFA">Day</td>
+<td class="gt_row gt_right gt_striped" headers="n_missing" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">0</td>
+<td class="gt_row gt_right gt_striped" headers="complete_rate" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">1.0000000</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.mean" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">15.803922</td>
+<td class="gt_row gt_right gt_striped" headers="numeric.sd" style="text-align: right; border-style: none; padding-top: 7px; padding-bottom: 7px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #F6F7F7; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: #FAFAFA; font-variant-numeric: tabular-nums;" data-valign="middle" data-bgcolor="#FAFAFA">8.864520</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="example-create-basic-recipe" class="slide level2">
+<h2>Example: create basic recipe</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18" data-code-line-numbers="2|4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe</span></span>
+<span id="cb18-2"><a></a><span class="er">&gt;</span> aq_recipe <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">recipe</span>(Ozone <span class="sc">~</span> ., <span class="at">data =</span> aq_df_train)</span>
+<span id="cb18-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb18-4"><a></a><span class="er">&gt;</span> <span class="fu">summary</span>(aq_recipe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  variable type      role      source  
+  &lt;chr&gt;    &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   
+1 Solar.R  &lt;chr [2]&gt; predictor original
+2 Wind     &lt;chr [2]&gt; predictor original
+3 Temp     &lt;chr [2]&gt; predictor original
+4 Month    &lt;chr [2]&gt; predictor original
+5 Day      &lt;chr [2]&gt; predictor original
+6 Ozone    &lt;chr [2]&gt; outcome   original</code></pre>
+</div>
+</div>
+</section>
+<section id="example-summary-of-basic-recipe" class="slide level2">
+<h2>Example: summary of basic recipe</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20" data-code-line-numbers="2-3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> <span class="co"># update roles for variables with missing data</span></span>
+<span id="cb20-2"><a></a><span class="er">&gt;</span> aq_recipe <span class="ot">&lt;-</span> aq_recipe <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Ozone, Solar.R, <span class="at">new_role =</span> <span class="st">'NA_Variable'</span>)</span>
+<span id="cb20-4"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb20-5"><a></a><span class="er">&gt;</span> <span class="fu">summary</span>(aq_recipe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  variable type      role        source  
+  &lt;chr&gt;    &lt;list&gt;    &lt;chr&gt;       &lt;chr&gt;   
+1 Solar.R  &lt;chr [2]&gt; NA_Variable original
+2 Wind     &lt;chr [2]&gt; predictor   original
+3 Temp     &lt;chr [2]&gt; predictor   original
+4 Month    &lt;chr [2]&gt; predictor   original
+5 Day      &lt;chr [2]&gt; predictor   original
+6 Ozone    &lt;chr [2]&gt; NA_Variable original</code></pre>
+</div>
+</div>
+</section>
+<section id="example-add-recipe-steps" class="slide level2">
+<h2>Example: add recipe steps</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22" data-code-line-numbers="1|2-3|4-5|6-7|8-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> aq_recipe <span class="ot">&lt;-</span> aq_recipe <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a></a><span class="sc">+</span>   <span class="co"># impute Ozone missing values using the mean</span></span>
+<span id="cb22-3"><a></a><span class="sc">+</span>   <span class="fu">step_impute_mean</span>(<span class="fu">has_role</span>(<span class="st">'NA_Variable'</span>), <span class="sc">-</span>Solar.R) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a></a><span class="sc">+</span>   <span class="co"># impute Solar.R missing values using knn</span></span>
+<span id="cb22-5"><a></a><span class="sc">+</span>   <span class="fu">step_impute_knn</span>(<span class="fu">contains</span>(<span class="st">'.R'</span>), <span class="at">neighbors =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-6"><a></a><span class="sc">+</span>   <span class="co"># center all variable except the NA_Variable</span></span>
+<span id="cb22-7"><a></a><span class="sc">+</span>   <span class="fu">step_center</span>(<span class="fu">all_numeric</span>(), <span class="sc">-</span><span class="fu">has_role</span>(<span class="st">'NA_Variable'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a></a><span class="sc">+</span>   <span class="co"># scale all variable except the NA_Variable</span></span>
+<span id="cb22-9"><a></a><span class="sc">+</span>   <span class="fu">step_scale</span>(<span class="fu">all_numeric</span>(), <span class="sc">-</span><span class="fu">has_role</span>(<span class="st">'NA_Variable'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-recipe-prep-and-bake" class="slide level2">
+<h2>Example: recipe prep and bake</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23" data-code-line-numbers="1-2|4-5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="sc">&gt;</span> <span class="co"># prep with training data</span></span>
+<span id="cb23-2"><a></a><span class="er">&gt;</span> aq_prep_train <span class="ot">&lt;-</span> aq_recipe <span class="sc">%&gt;%</span> <span class="fu">prep</span>(aq_df_train)</span>
+<span id="cb23-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb23-4"><a></a><span class="er">&gt;</span> <span class="co"># bake with testing data</span></span>
+<span id="cb23-5"><a></a><span class="er">&gt;</span> aq_bake <span class="ot">&lt;-</span> aq_prep_train <span class="sc">%&gt;%</span> <span class="fu">bake</span>(aq_df_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-recipe-prep-values" class="slide level2">
+<h2>Example: recipe prep values</h2>
+<p>The prepped recipe is a data structure that contains any computed values.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> aq_prep_train <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  number operation type        trained skip  id               
+   &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;       &lt;lgl&gt;   &lt;lgl&gt; &lt;chr&gt;            
+1      1 step      impute_mean TRUE    FALSE impute_mean_fUMcx
+2      2 step      impute_knn  TRUE    FALSE impute_knn_MditY 
+3      3 step      center      TRUE    FALSE center_kVIWf     
+4      4 step      scale       TRUE    FALSE scale_xkaDX      </code></pre>
+</div>
+</div>
+</section>
+<section id="example-recipe-prep-values-1" class="slide level2">
+<h2>Example: recipe prep values</h2>
+<p>We can examine any computed values by using the step number as an argument to <code>recipes::tidy</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="sc">&gt;</span> aq_prep_train <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">tidy</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  terms value id          
+  &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;       
+1 Wind  10.0  center_kVIWf
+2 Temp  78.4  center_kVIWf
+3 Month  7.03 center_kVIWf
+4 Day   15.3  center_kVIWf</code></pre>
+</div>
+</div>
+</section>
+<section id="example-change-roles-again" class="slide level2">
+<h2>Example: change roles again</h2>
+<p>Here we update the original recipe to set the required roles.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28" data-code-line-numbers="1-2|4-5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="sc">&gt;</span> aq_recipe <span class="ot">&lt;-</span> aq_recipe <span class="sc">%&gt;%</span> </span>
+<span id="cb28-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Ozone, <span class="at">new_role =</span> <span class="st">'outcome'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Solar.R, <span class="at">new_role =</span> <span class="st">'predictor'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="recommended-baseline-steps" class="slide level2">
+<h2>Recommended Baseline Steps</h2>
+<p>Baseline preprocessing methods can be categorized as:</p>
+<div style="font-size: xx-large">
 <ul>
-<li>Box-cox: with <span class="math inline">\(\tilde{x}\)</span> the geometric mean of the (<strong>positive</strong>) predictor data (<span class="math inline">\(\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}\)</span>)</li>
+<li><strong>dummy</strong>: Do qualitative predictors require a numeric encoding (e.g., via dummy variables or other methods)?</li>
+<li><strong>zv</strong>: Should columns with a single unique value be removed?</li>
+<li><strong>impute</strong>: If some predictors are missing, should they be estimated via imputation?</li>
+<li><strong>decorrelate</strong>: If there are correlated predictors, should this correlation be mitigated? This might mean filtering out predictors, using principal component analysis, or a model-based technique (e.g., regularization).</li>
+<li><strong>normalize</strong>: Should predictors be centered and scaled?</li>
+<li><strong>transform</strong>: Is it helpful to transform predictors to be more symmetric?</li>
 </ul>
-<p><span class="math display">\[
-x_i(\lambda) = \left\{
-\begin{array}{cc}
-\frac{x_i^{\lambda}-1}{\lambda\tilde{x}^{\lambda-1}} &amp; \lambda\ne 0\\
-\tilde{x}\log x_i &amp; \lambda=0
-\end{array}
-\right .  
-\]</span></p>
+</div>
+<p>See <a href="https://www.tmwr.org/pre-proc-table">recommended preprocessing</a> for recipe steps.</p>
+</section>
+<section id="available-steps" class="slide level2">
+<h2>Available Steps</h2>
+<ul>
+<li><strong>Basic</strong>: <a href="https://recipes.tidymodels.org/reference/step_log.html">logs</a>, <a href="https://recipes.tidymodels.org/reference/step_sqrt.html">roots</a>, <a href="https://recipes.tidymodels.org/reference/step_poly.html">polynomials</a>, <a href="https://recipes.tidymodels.org/reference/step_logit.html">logits</a>, <a href="https://recipes.tidymodels.org/reference/step_hyperbolic.html">hyperbolics</a></li>
+<li><strong>Encodings</strong>: <a href="https://recipes.tidymodels.org/reference/step_dummy.html">dummy variables</a>, <a href="https://recipes.tidymodels.org/reference/step_other.html">“other”</a> factor level collapsing, <a href="https://recipes.tidymodels.org/reference/discretize.html">discretization</a></li>
+<li><strong>Date Features</strong>: Encodings for <a href="https://recipes.tidymodels.org/reference/step_date.html">day/doy/month</a> etc, <a href="https://recipes.tidymodels.org/reference/step_holiday.html">holiday indicators</a></li>
+<li><strong>Filters</strong>: <a href="https://recipes.tidymodels.org/reference/step_corr.html">correlation</a>, <a href="https://recipes.tidymodels.org/reference/step_nzv.html">near-zero variables</a>, <a href="https://recipes.tidymodels.org/reference/step_lincomb.html">linear dependencies</a></li>
+<li><strong>Imputation</strong>: <a href="https://recipes.tidymodels.org/reference/step_knnimpute.html"><em>K</em>-nearest neighbors</a>, <a href="https://recipes.tidymodels.org/reference/step_bagimpute.html">bagged trees</a>, <a href="https://recipes.tidymodels.org/reference/step_meanimpute.html">mean</a>/<a href="https://recipes.tidymodels.org/reference/step_modeimpute.html">mode</a> imputation</li>
+</ul>
+</section>
+<section id="available-steps-1" class="slide level2">
+<h2>Available Steps</h2>
+<ul>
+<li><strong>Normalization/Transformations</strong>: <a href="https://recipes.tidymodels.org/reference/step_center.html">center</a>, <a href="https://recipes.tidymodels.org/reference/step_scale.html">scale</a>, <a href="https://recipes.tidymodels.org/reference/step_range.html">range</a>, <a href="https://recipes.tidymodels.org/reference/step_BoxCox.html">Box-Cox</a>, <a href="https://recipes.tidymodels.org/reference/step_YeoJohnson.html">Yeo-Johnson</a></li>
+<li><strong>Dimension Reduction</strong>: <a href="https://recipes.tidymodels.org/reference/step_pca.html">PCA</a>, <a href="https://recipes.tidymodels.org/reference/step_kpca.html">kernel PCA</a>, <a href="https://recipes.tidymodels.org/reference/step_ica.html">ICA</a>, <a href="https://recipes.tidymodels.org/reference/step_isomap.html">Isomap</a>, <a href="https://recipes.tidymodels.org/reference/step_depth.html">data depth</a> features, <a href="https://recipes.tidymodels.org/reference/step_classdist.html">class distances</a></li>
+<li><strong>Others</strong>: <a href="https://recipes.tidymodels.org/reference/step_ns.html">spline basis functions</a>, <a href="https://recipes.tidymodels.org/reference/step_interact.html">interactions</a>, <a href="https://recipes.tidymodels.org/reference/step_spatialsign.html">spatial sign</a></li>
+</ul>
+<p>More on the way (i.e.&nbsp;autoencoders, more imputation methods, etc.)</p>
+<p>One of the <a href="https://www.tidymodels.org/learn/develop/recipes/">package vignettes</a> shows how to write your own step functions.</p>
+</section>
+<section id="extending" class="slide level2">
+<h2>Extending</h2>
+<p>Need to add more pre-processing or other operations?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="sc">&gt;</span> standardized <span class="ot">&lt;-</span> rec_trained <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_center</span>(recipes<span class="sc">::</span><span class="fu">all_numeric</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_scale</span>(recipes<span class="sc">::</span><span class="fu">all_numeric</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_pca</span>(recipes<span class="sc">::</span><span class="fu">all_numeric</span>())</span>
+<span id="cb29-5"><a></a><span class="sc">&gt;</span>           </span>
+<span id="cb29-6"><a></a><span class="er">&gt;</span> <span class="do">## Only estimate the new parts:</span></span>
+<span id="cb29-7"><a></a><span class="er">&gt;</span> standardized <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">prep</span>(standardized)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If an initial step is computationally expensive, you don’t have to redo those operations to add more.</p>
+</section>
+<section id="extending-1" class="slide level2">
+<h2>Extending</h2>
+<p>Recipes can also be created with different roles manually (note: no formula)</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30" data-code-line-numbers="2|3|4|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="sc">&gt;</span> rec <span class="ot">&lt;-</span> </span>
+<span id="cb30-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="at">data =</span> Sacramento) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(price, <span class="at">new_role =</span> <span class="st">"outcome"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(type, sqft, <span class="at">new_role =</span> <span class="st">"predictor"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-5"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(zip, <span class="at">new_role =</span> <span class="st">"strata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Also, the sequential nature of steps means that steps don’t have to be R operations and could call other compute engines (e.g.&nbsp;Weka, scikit-learn, Tensorflow, etc. )</p>
+</section>
+<section id="extending-2" class="slide level2">
+<h2>Extending</h2>
+<p>We can create wrappers to work with recipes too:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb31" data-code-line-numbers="2|3-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="sc">&gt;</span> lin_reg.recipe <span class="ot">&lt;-</span> <span class="cf">function</span>(rec, data, ...) {</span>
+<span id="cb31-2"><a></a><span class="sc">+</span>   trained <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">prep</span>(rec, <span class="at">training =</span> data)</span>
+<span id="cb31-3"><a></a><span class="sc">+</span>   <span class="fu">lm.fit</span>(</span>
+<span id="cb31-4"><a></a><span class="sc">+</span>     <span class="at">x =</span> recipes<span class="sc">::</span><span class="fu">bake</span>(trained, <span class="at">newdata =</span> data, <span class="fu">all_predictors</span>())</span>
+<span id="cb31-5"><a></a><span class="sc">+</span>     , <span class="at">y =</span> recipes<span class="sc">::</span><span class="fu">bake</span>(trained, <span class="at">newdata =</span> data, <span class="fu">all_outcomes</span>())</span>
+<span id="cb31-6"><a></a><span class="sc">+</span>     , ...</span>
+<span id="cb31-7"><a></a><span class="sc">+</span>   )</span>
+<span id="cb31-8"><a></a><span class="sc">+</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="an-example" class="slide level2">
+<h2>An Example</h2>
+<p><a href="http://appliedpredictivemodeling.com">Kuhn and Johnson</a> (2013) analyze a data set where thousands of cells are determined to be well-segmented (WS) or poorly segmented (PS) based on 58 image features. We would like to make predictions of the segmentation quality based on these features.</p>
 <div style="font-size: smaller">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -970,22 +1023,54 @@ x_i(\lambda) = \left\{
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Box-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like.</p>
+<p>The dataset <code>segmentationData</code> is in the package <code>caret</code> and represents the results of automated microscopy to collect images of cultured cells. The images are subjected to segmentation algorithms to identify cellular structures and quantitate their morphology, for hundreds to millions of individual cells.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="feature-engineering-transformation-2" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>One last common transformation:</p>
-<ul>
-<li>logit transformation for bounded target variables (scaled to lie in <span class="math inline">\([0,1]\)</span>)</li>
-</ul>
-<p><span class="math display">\[
-\text{logit}\left(p\right)=\log\frac{p}{1-p},\;p\in [0,1]
-\]</span></p>
-<div style="font-size: small">
+<section id="an-example-1" class="slide level2">
+<h2>An Example</h2>
+<p>The <code>segmentationData</code> dataset has 61 columns</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32" data-code-line-numbers="1|3-5|7-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="sc">&gt;</span> <span class="fu">data</span>(segmentationData, <span class="at">package =</span> <span class="st">"caret"</span>)</span>
+<span id="cb32-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb32-3"><a></a><span class="er">&gt;</span> seg_train <span class="ot">&lt;-</span> segmentationData <span class="sc">%&gt;%</span> </span>
+<span id="cb32-4"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(Case <span class="sc">==</span> <span class="st">"Train"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Case)</span>
+<span id="cb32-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb32-7"><a></a><span class="er">&gt;</span> seg_test  <span class="ot">&lt;-</span> segmentationData <span class="sc">%&gt;%</span> </span>
+<span id="cb32-8"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(Case <span class="sc">==</span> <span class="st">"Test"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb32-9"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Case)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="a-simple-recipe" class="slide level2">
+<h2>A Simple Recipe</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33" data-code-line-numbers="1|3-7|8-10|12-19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="sc">&gt;</span> rec <span class="ot">&lt;-</span> recipes<span class="sc">::</span><span class="fu">recipe</span>(Class  <span class="sc">~</span> ., <span class="at">data =</span> seg_train)</span>
+<span id="cb33-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb33-3"><a></a><span class="er">&gt;</span> basic <span class="ot">&lt;-</span> rec <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a></a><span class="sc">+</span>   <span class="co"># the column Cell contains identifiers</span></span>
+<span id="cb33-5"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">update_role</span>(Cell, <span class="at">new_role =</span> <span class="st">'ID'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-6"><a></a><span class="sc">+</span>   <span class="co"># Correct some predictors for skewness</span></span>
+<span id="cb33-7"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_YeoJohnson</span>(recipes<span class="sc">::</span><span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb33-8"><a></a><span class="sc">+</span>   <span class="co"># Standardize the values</span></span>
+<span id="cb33-9"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_center</span>(recipes<span class="sc">::</span><span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb33-10"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_scale</span>(recipes<span class="sc">::</span><span class="fu">all_predictors</span>())</span>
+<span id="cb33-11"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb33-12"><a></a><span class="er">&gt;</span> <span class="co"># Estimate the transformation and standardization parameters </span></span>
+<span id="cb33-13"><a></a><span class="er">&gt;</span> basic <span class="ot">&lt;-</span> </span>
+<span id="cb33-14"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">prep</span>(</span>
+<span id="cb33-15"><a></a><span class="sc">+</span>     basic</span>
+<span id="cb33-16"><a></a><span class="sc">+</span>     , <span class="at">training =</span> seg_train</span>
+<span id="cb33-17"><a></a><span class="sc">+</span>     , <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb33-18"><a></a><span class="sc">+</span>     , <span class="at">retain =</span> <span class="cn">TRUE</span></span>
+<span id="cb33-19"><a></a><span class="sc">+</span>   )  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div style="font-size: smaller">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -995,108 +1080,268 @@ x_i(\lambda) = \left\{
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>The Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range <span class="math inline">\(\left(-\infty,\infty\right)\)</span>, where p is the proportion of each sample that is 1 (or 0)</p>
+<p>The Yeo-Johnson is similar to the Box-Cox method, however it allows for the transformation of nonpositive data as well. A Box Cox transformation is a transformation of non-normal dependent variables into a normal shape. Both transformations have a single parameter <span class="math inline">\(\lambda\)</span>.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="feature-engineering-transformation-3" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>Why normalize or standardize?</p>
-<ul>
-<li>variation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.
-<ul>
-<li>e.g.&nbsp;income and age</li>
-</ul></li>
-<li>reduce the impact of outliers</li>
-<li>make results more explainable</li>
-</ul>
+<section id="a-simple-recipe-1" class="slide level2">
+<h2>A Simple Recipe</h2>
+<p>We can examine the center, scale, and Yeo Johnson parameters computed for each continuous measurement.</p>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Yeo Johnson</a></li><li><a href="#tabset-2-2">means</a></li><li><a href="#tabset-2-3">std deviations</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="sc">&gt;</span> basic <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">tidy</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 3
+   terms                value id              
+   &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;           
+ 1 AngleCh1             0.806 YeoJohnson_XCO2z
+ 2 AreaCh1             -0.861 YeoJohnson_XCO2z
+ 3 AvgIntenCh1         -0.340 YeoJohnson_XCO2z
+ 4 AvgIntenCh2          0.434 YeoJohnson_XCO2z
+ 5 AvgIntenCh3          0.219 YeoJohnson_XCO2z
+ 6 AvgIntenCh4          0.213 YeoJohnson_XCO2z
+ 7 DiffIntenDensityCh1 -0.929 YeoJohnson_XCO2z
+ 8 DiffIntenDensityCh3  0.116 YeoJohnson_XCO2z
+ 9 DiffIntenDensityCh4  0.112 YeoJohnson_XCO2z
+10 EntropyIntenCh1     -0.440 YeoJohnson_XCO2z
+# ℹ 44 more rows</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="sc">&gt;</span> basic <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">tidy</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 58 × 3
+   terms                    value id          
+   &lt;chr&gt;                    &lt;dbl&gt; &lt;chr&gt;       
+ 1 AngleCh1                45.0   center_vl8S9
+ 2 AreaCh1                  1.15  center_vl8S9
+ 3 AvgIntenCh1              2.24  center_vl8S9
+ 4 AvgIntenCh2             17.4   center_vl8S9
+ 5 AvgIntenCh3              6.99  center_vl8S9
+ 6 AvgIntenCh4              7.56  center_vl8S9
+ 7 ConvexHullAreaRatioCh1   1.21  center_vl8S9
+ 8 ConvexHullPerimRatioCh1  0.893 center_vl8S9
+ 9 DiffIntenDensityCh1      1.05  center_vl8S9
+10 DiffIntenDensityCh3      5.15  center_vl8S9
+# ℹ 48 more rows</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-3">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="sc">&gt;</span> basic <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">tidy</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 58 × 3
+   terms                      value id         
+   &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt;      
+ 1 AngleCh1                21.1     scale_jOQQ9
+ 2 AreaCh1                  0.00334 scale_jOQQ9
+ 3 AvgIntenCh1              0.204   scale_jOQQ9
+ 4 AvgIntenCh2              9.42    scale_jOQQ9
+ 5 AvgIntenCh3              2.50    scale_jOQQ9
+ 6 AvgIntenCh4              3.04    scale_jOQQ9
+ 7 ConvexHullAreaRatioCh1   0.210   scale_jOQQ9
+ 8 ConvexHullPerimRatioCh1  0.0777  scale_jOQQ9
+ 9 DiffIntenDensityCh1      0.00929 scale_jOQQ9
+10 DiffIntenDensityCh3      1.37    scale_jOQQ9
+# ℹ 48 more rows</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
-<section id="feature-engineering-transformation-4" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>for continuous variables (usually the target variables):</p>
-<ul>
-<li><strong>transformation</strong> (arithmetic, basis functions, polynomials, splines, differencing)
-<ul>
-<li><span class="math inline">\(y = \log(y),\sqrt{y},\frac{1}{y}\)</span>, etc.</li>
-<li><span class="math inline">\(y = \sum_i \beta_i\text{f}_i(x)\;\text{s.t.}\;0=\int\text{f}_i(x)\text{f}_j(x)\; \forall i\ne j\)</span></li>
-<li><span class="math inline">\(y = \beta_0+\beta_1 x+\beta_2 x^2+\beta_3 x^3+\ldots\)</span></li>
-<li><span class="math inline">\(y = \beta_0+\beta_1 x_1+\beta_2 x_2+\beta_3 x_1 x_2+\ldots\)</span></li>
-<li><span class="math inline">\(y'_i = y_i-y_{i-1}\)</span></li>
-</ul></li>
-</ul>
+<section id="more-sophisticated-steps-pca" class="slide level2">
+<h2>More sophisticated steps: PCA</h2>
+<p>Principal Component Analysis (PCA) is a technique used in data analysis to simplify a large dataset (many measurements/columns) by reducing its number of dimensions (columns) while still retaining as much important information as possible.</p>
+<p>A pretty good description of PCA can be found <a href="https://towardsdatascience.com/singular-value-decomposition-and-its-applications-in-principal-component-analysis-5b7a5f08d0bd">here</a>.</p>
 </section>
-<section id="feature-engineering-transformation-5" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>for categorical variables (either target or explanatory variables):</p>
+<section id="more-sophisticated-steps-pca-1" class="slide level2">
+<h2>More sophisticated steps: PCA</h2>
+<p>PCA step-by-step:</p>
+<div style="font-size: 65%">
+<ol type="1">
+<li><strong>Standardize the Data</strong>:
 <ul>
-<li>binning / bucketing
-<ul>
-<li>represent a numerical value as a categorical value</li>
+<li>Before applying PCA, we often standardize the data, which means adjusting all variables to have the same scale. This is important because PCA is sensitive to the scale of the data.</li>
 </ul></li>
-<li>categorical<span class="math inline">\(\rightarrow\)</span>ordinal and ordinal<span class="math inline">\(\rightarrow\)</span>categorical</li>
-</ul>
-<p>for date variables:</p>
+<li><strong>Find the Principal Components</strong>:
 <ul>
-<li>timestamp<span class="math inline">\(\rightarrow\)</span>date or date part</li>
-</ul>
+<li>PCA identifies the directions (principal components) in which the data varies the most. Think of these as new axes in a new coordinate system that best capture the variation in the data.</li>
+<li>The first principal component captures the most variation. The second principal component is orthogonal (at a right angle) to the first and captures the next most variation, and so on.</li>
+</ul></li>
+<li><strong>Transform the Data</strong>:
+<ul>
+<li>We then transform the original data into this new set of principal components. Each data point can now be represented in terms of these principal components rather than the original variables.</li>
+</ul></li>
+</ol>
+</div>
 </section>
-<section id="feature-engineering-transformation-6" class="slide level2">
-<h2>Feature engineering: transformation</h2>
-<p>Why transform?</p>
+<section id="more-sophisticated-steps-pca-2" class="slide level2">
+<h2>More sophisticated steps: PCA</h2>
+<div style="font-size: 65%">
+<p>You have test scores in Math, Science, and English. You want to find a way to understand overall performance without looking at all three subjects separately.</p>
+<ol type="1">
+<li><p><strong>Original Data</strong>: You have three scores for each student: Math, Science, and English.</p></li>
+<li><p><strong>Standardize the Data</strong>: You adjust the scores so that Math, Science, and English scores are on the same scale.</p></li>
+<li><p><strong>Find Principal Components</strong>:</p>
 <ul>
-<li><p>it can make your model perform better</p>
-<ul>
-<li>e.g.&nbsp;<span class="math inline">\(\log\)</span> transform makes exponential data linear, and log-Normal data Gaussian</li>
-<li><span class="math inline">\(\log\)</span> transforms also make multiplicative models additive</li>
-<li>e.g.&nbsp;polynomials, basis functions and splines help model non-linearities in data</li>
+<li>PCA finds that the first principal component might be a combination of Math and Science scores, capturing the overall academic ability in quantitative subjects.</li>
+<li>The second principal component might represent the difference between scores in English and the average of Math and Science scores, capturing a different aspect of performance.</li>
 </ul></li>
-</ul>
+<li><p><strong>Transform the Data</strong>:</p>
+<ul>
+<li>Each student’s performance can now be described using these new principal components instead of the original scores. For example, a student might have a high score on the first principal component (strong in Math and Science) but a lower score on the second (relatively weaker in English).</li>
+</ul></li>
+</ol>
+</div>
 </section>
-<section id="feature-engineering-creation" class="slide level2">
-<h2>Feature engineering: creation</h2>
+<section id="more-sophisticated-steps-pca-3" class="slide level2">
+<h2>More sophisticated steps: PCA</h2>
+<div style="font-size: 75%">
+<p><strong>Benefits of PCA</strong></p>
 <ul>
-<li>outliers (due to data entry, measurement/experiment, intentional errors)
-<ul>
-<li>outliers can be identified by quantile methods (Gaussian data)</li>
-<li>outliers can be removed, treated as missing, or capped</li>
-</ul></li>
-<li>lag variables (either target or explanatory variables)
-<ul>
-<li>useful in time series models, e.g.&nbsp;<span class="math inline">\(y_t,y_{t-1},\ldots y_{t-n}\)</span></li>
-</ul></li>
+<li><strong>Simplification</strong>: Reduces the number of variables, making it easier to analyze and visualize the data.</li>
+<li><strong>Noise Reduction</strong>: Helps to remove noise from the data by focusing on the main components that capture the most variation.</li>
+<li><strong>Feature Extraction</strong>: Identifies the most important variables (principal components) that explain the majority of the variance in the data.</li>
 </ul>
+<p>PCA is like finding the most important “directions” in your data, where most of the interesting stuff happens. It helps you see the big picture by reducing complexity while keeping the essential information. This makes it a powerful tool for data analysis, especially when dealing with high-dimensional datasets.</p>
+</div>
 </section>
-<section id="feature-engineering-creation-1" class="slide level2">
-<h2>Feature engineering: creation</h2>
-<ul>
-<li>binning / bucketing
-<ul>
-<li>represent numerical as categorical and vice versa</li>
-</ul></li>
-<li>interval and ratio levels</li>
-</ul>
+<section id="principal-component-analysis" class="slide level2">
+<h2>Principal Component Analysis</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40" data-code-line-numbers="1|2|3-4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="sc">&gt;</span> pca <span class="ot">&lt;-</span> basic <span class="sc">%&gt;%</span> </span>
+<span id="cb40-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_pca</span>(</span>
+<span id="cb40-3"><a></a><span class="sc">+</span>     recipes<span class="sc">::</span><span class="fu">all_predictors</span>()</span>
+<span id="cb40-4"><a></a><span class="sc">+</span>     , <span class="at">num_comp =</span> <span class="dv">5</span></span>
+<span id="cb40-5"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 4
+   variable                type      role      source  
+   &lt;chr&gt;                   &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   
+ 1 Cell                    &lt;chr [2]&gt; ID        original
+ 2 AngleCh1                &lt;chr [2]&gt; predictor original
+ 3 AreaCh1                 &lt;chr [2]&gt; predictor original
+ 4 AvgIntenCh1             &lt;chr [2]&gt; predictor original
+ 5 AvgIntenCh2             &lt;chr [2]&gt; predictor original
+ 6 AvgIntenCh3             &lt;chr [2]&gt; predictor original
+ 7 AvgIntenCh4             &lt;chr [2]&gt; predictor original
+ 8 ConvexHullAreaRatioCh1  &lt;chr [2]&gt; predictor original
+ 9 ConvexHullPerimRatioCh1 &lt;chr [2]&gt; predictor original
+10 DiffIntenDensityCh1     &lt;chr [2]&gt; predictor original
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
 </section>
-<section id="feature-engineering-fails" class="slide level2">
-<h2>Feature engineering fails</h2>
+<section id="principal-component-analysis-1" class="slide level2">
+<h2>Principal Component Analysis</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a><span class="sc">&gt;</span> pca <span class="sc">%&lt;&gt;%</span> recipes<span class="sc">::</span><span class="fu">prep</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">summary</a></li><li><a href="#tabset-3-2">components</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="sc">&gt;</span> pca <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 4
+  variable type      role      source  
+  &lt;chr&gt;    &lt;list&gt;    &lt;chr&gt;     &lt;chr&gt;   
+1 Cell     &lt;chr [2]&gt; ID        original
+2 Class    &lt;chr [3]&gt; outcome   original
+3 PC1      &lt;chr [2]&gt; predictor derived 
+4 PC2      &lt;chr [2]&gt; predictor derived 
+5 PC3      &lt;chr [2]&gt; predictor derived 
+6 PC4      &lt;chr [2]&gt; predictor derived 
+7 PC5      &lt;chr [2]&gt; predictor derived </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a><span class="sc">&gt;</span> pca <span class="sc">%&gt;%</span> recipes<span class="sc">::</span><span class="fu">tidy</span>(<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,364 × 4
+   terms                      value component id       
+   &lt;chr&gt;                      &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    
+ 1 AngleCh1                 0.00521 PC1       pca_XHvDR
+ 2 AreaCh1                  0.0823  PC1       pca_XHvDR
+ 3 AvgIntenCh1             -0.204   PC1       pca_XHvDR
+ 4 AvgIntenCh2             -0.209   PC1       pca_XHvDR
+ 5 AvgIntenCh3             -0.0873  PC1       pca_XHvDR
+ 6 AvgIntenCh4             -0.203   PC1       pca_XHvDR
+ 7 ConvexHullAreaRatioCh1   0.191   PC1       pca_XHvDR
+ 8 ConvexHullPerimRatioCh1 -0.181   PC1       pca_XHvDR
+ 9 DiffIntenDensityCh1     -0.185   PC1       pca_XHvDR
+10 DiffIntenDensityCh3     -0.0760  PC1       pca_XHvDR
+# ℹ 3,354 more rows</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="principal-component-analysis-2" class="slide level2">
+<h2>Principal Component Analysis</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb47" data-code-line-numbers="2|3|4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a><span class="sc">&gt;</span> pca <span class="sc">%&lt;&gt;%</span> </span>
+<span id="cb47-2"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">bake</span>(</span>
+<span id="cb47-3"><a></a><span class="sc">+</span>     <span class="at">new_data =</span> seg_test</span>
+<span id="cb47-4"><a></a><span class="sc">+</span>     , <span class="fu">everything</span>()</span>
+<span id="cb47-5"><a></a><span class="sc">+</span>   )</span>
+<span id="cb47-6"><a></a><span class="sc">&gt;</span> pca[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 7
+       Cell Class   PC1    PC2    PC3    PC4   PC5
+      &lt;int&gt; &lt;fct&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+1 207827637 PS     4.86 -5.85  -0.891 -4.13  1.84 
+2 207932455 PS     3.28 -1.51   0.353 -2.24  0.441
+3 207827656 WS    -7.03 -1.77  -2.42  -0.652 3.22 
+4 207827659 WS    -6.96 -2.08  -2.89  -1.79  3.20 
+5 207827661 PS     6.52 -3.77  -0.924 -2.61  2.49 
+6 207932479 WS     2.87  1.66   1.75  -5.41  0.324
+7 207932480 WS     2.72  0.433 -1.05  -5.45  1.18 
+8 207827711 WS    -3.01  1.94   2.68  -0.409 3.55 </code></pre>
+</div>
+</div>
+</section>
+<section id="principal-component-analysis-3" class="slide level2">
+<h2>Principal Component Analysis</h2>
+<div class="cell" data-layout-align="center" width="80%">
+<details class="code-fold">
+<summary>PCs are predictive</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a><span class="sc">&gt;</span> pca <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">color =</span> Class)) <span class="sc">+</span> </span>
+<span id="cb49-2"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb49-3"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
-<img data-src="../images/category_fail.png" class="r-stretch"></section>
-<section id="feature-engineering-summary" class="slide level2">
-<h2>Feature engineering: summary</h2>
-<ul>
-<li><p>requires an advanced technical skill set</p></li>
-<li><p>requires domain expertise</p></li>
-<li><p>is time-consuming and resource intensive</p></li>
-<li><p>different analytics algorithms require different feature engineering</p></li>
-</ul>
-</section>
+</div>
+<img data-src="BSMM_8740_lec_02_files/figure-revealjs/image_pca_plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
 <ul>
-<li><p>Today we reviewed key elements of exploratory data analysis, the process that helps us understand the data we have and evaluate how it can help us solve the business problems we are interested in.</p></li>
-<li><p>We also reviewed feature engineering - methods to we can use to facilitate our analysis and make our results more interpretable.</p></li>
+<li>We’ve used the Recipes package to create a workflow for data pre-processing and feature engineering</li>
+<li>The <code>recipe</code> verbs define the pre-processing and feature engineering steps</li>
+<li>using the recipe object, the verb <code>prep</code> prepares the data on a training set, storing the meta-parameters.</li>
+<li>the verb <code>bake</code> applies the prepped recipe to new data, using the meta-parameters.</li>
 </ul>
+</section>
+<section class="slide level2">
+
 
 <div class="quarto-auto-generated-content">
 <p><img src="images/logo.png" class="slide-logo"></p>
@@ -1105,6 +1350,7 @@ x_i(\lambda) = \left\{
 </div>
 </div>
 </section></section>
+
     </div>
   </div>
 
@@ -1138,7 +1384,7 @@ x_i(\lambda) = \left\{
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true},
-'multiplex': {"secret":null,"id":"718bdbec33df9929","url":"https://reveal-multiplex.glitch.me/"},
+'multiplex': {"secret":null,"id":"c975d9a18c0ae235","url":"https://reveal-multiplex.glitch.me/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
