@@ -60,12 +60,54 @@ net_data_wts <- propensity_model |>
   broom::augment(newdata = dat_, type.predict = "response") |>
   # .fitted is the value predicted by the model
   # for a given observation
-  dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
+  dplyr::mutate(wts = propensity::wt_ate(.fitted, .exposure = net))
 
 net_data_wts |>
   lm(malaria_risk ~ net, data = _, weights = wts) |>
   broom::tidy(conf.int = TRUE)
 ```
+
+```{r}
+#| echo: false
+#| eval: false
+ip_wts <- propensity_model |>
+  broom::augment(newdata = dat_, type.predict = "response") |> 
+  dplyr::mutate(
+    ipw = dplyr::case_when(n == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
+    , ipw_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
+    , mean_exposure = mean(net)
+  )
+  # dplyr::select(id, net, ipw = .fitted) |> 
+  # dplyr::mutate('_ipw' = 1/(1-ipw), ipw = 1/ipw)
+
+hist(ip_wts$ipw, breaks = 50)
+hist(net_data_wts$wts, breaks = 50)
+
+net_data_wts$wts
+
+ip_wts |> dplyr::summarize(max = max(ipw))
+
+
+  
+```
+
+## Inverse Probability Weighting
+
+### Stabilized weights
+
+The IP weights (given covariate set $L$) are $W^A=1/\mathbb{E}[D|L]$. Because the denominator can be very close to $0$ or $1$ the estimates using these weights can be unstable.
+
+Stabilized weights will are often used to address this, e.g. the function `propensity::wt_ate` multiplies the weights by the mean of the treatment so $SW^A=\mathbb{E}[D]/\mathbb{E}[D|L]$.
+
+## Inverse Probability Weighting
+
+### V-Stabilized weights
+
+Baseline covariates $V\subset L$) are also used to stabilize IP weights: $SW^A(V)=\mathbb{E}[D|V]/\mathbb{E}[D|L]$.
+
+Note the the variables $V$ need to be included in the numerator and the denominator (as part of $L$)
+
+V-stabilization results in IP weights that are more stabilized than the ones without V.
 
 ## Inverse Probability Weighting
 
@@ -169,7 +211,8 @@ We know that we can also predict the effect of treatment by building a model to 
 #| code-fold: true
 #| label: regression model
 outcome_model <- glm(
-  malaria_risk ~ net + income + health + temperature + insecticide_resistance,
+  malaria_risk ~ net + income + health + temperature + insecticide_resistance +
+    I(health^2) + I(temperature^2) + I(income^2),
   data = dat_
 )
 
@@ -193,8 +236,8 @@ fit_reg <- function(split, ...) {
   }
 
   # fit outcome model
-  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
-      , data = .df
+  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance +
+      I(health^2) + I(temperature^2) + I(income^2), data = .df
     )|>
     broom::tidy()
 }
@@ -343,7 +386,7 @@ First let's examine the code
 #| label: doubly robust estimation
 D <- "net"
 Y <- "malaria_risk"
-X <- c('income', 'health', 'temperature')
+X <- paste0(c('income', 'health', 'temperature'),c(rep('_poly_1',3),rep('_poly_2',3)))
 
 doubly_robust <- function(df, X, D, Y){
   ps <- # propensity score
@@ -374,8 +417,17 @@ doubly_robust <- function(df, X, D, Y){
     mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
 }
 
-causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net)) |> 
+doubly_robust_rec <- causalworkshop::net_data |> 
+  dplyr::mutate(net = as.numeric(net)) |> 
+  recipes::recipe(malaria_risk ~ net + income + health + temperature) |> 
+  recipes::step_poly(income, health, temperature) |> 
+  recipes::prep() 
+
+doubly_robust_dat <- doubly_robust_rec |> recipes::bake(new_data=NULL)
+  
+doubly_robust_dat |> 
   doubly_robust(X, D, Y)
+  
 ```
 
 ## Doubly Robust Estimation
@@ -395,8 +447,12 @@ all_results_dat <- both_results_dat |>
       purrr::map_dbl(
         splits
         , (\(x){
-          rsample::analysis(x) |> 
-            dplyr::mutate(net = as.numeric(net)) |> 
+          # rsample::analysis(x) |> 
+          #   dplyr::mutate(net = as.numeric(net)) |> 
+          #   doubly_robust(X, D, Y)
+
+          doubly_robust_rec |> 
+            recipes::bake(new_data = rsample::analysis(x)) |> 
             doubly_robust(X, D, Y)
         })
       )
@@ -687,6 +743,7 @@ ggplot(bias, aes(x = n, y = bias)) +
 ```
 
 ## Finite Sample Bias
+
 ::: {style="font-size: x-large"}
 This is an example of finite sample bias. Notice here, even when the sample size is quite large (5,000) we still see some bias away from the “true” effect of 0. It isn’t until a sample size larger than 10,000 that we see this bias disappear.
 

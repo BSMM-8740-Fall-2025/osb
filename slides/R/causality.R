@@ -182,7 +182,8 @@ ipw_results |>
 
 # ========================
 outcome_model <- glm(
-  malaria_risk ~ net + income + health + temperature + insecticide_resistance,
+  malaria_risk ~ net + income + health + temperature + insecticide_resistance +
+    I(health^2) + I(temperature^2) + I(income^2) + I(insecticide_resistance^2),
   data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 )
 
@@ -199,7 +200,7 @@ fit_reg <- function(split, ...) {
   # print(.df |> dplyr::slice_head(n=5))
   # print(.df |> dim())
   # fit outcome model
-  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance
+  glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance +
       , data = .df
     )|>
     broom::tidy() # %T>% print()

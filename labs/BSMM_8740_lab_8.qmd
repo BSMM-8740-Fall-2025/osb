@@ -41,16 +41,28 @@ Remember to (create a PAT and set your git credentials)
 
 ```{r}
 #| message: false
-library(tidyverse)
-library(broom)
-library(rsample)
-library(ggdag)
-library(causaldata)
-library(halfmoon)
-library(propensity)
-library(ggokabeito)
-library(magrittr)   # the pipe
-library(ggplot2)    # for plotting
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito, magrittr, ggplot2,
+  r-causal/propensity
+)
+
+# library(tidyverse)
+# library(broom)
+# library(rsample)
+# library(ggdag)
+# library(causaldata)
+# library(halfmoon)
+# library(propensity)
+# library(ggokabeito)
+# library(magrittr)   # the pipe
+# library(ggplot2)    # for plotting
 # set the efault theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
