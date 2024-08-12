@@ -17,7 +17,7 @@ website:
     image: "images/twitter-card.png"
 
   page-footer:
-    right: "This design is modified from [a course](https://sta210-s22.github.io/website/) at Duke."
+    right: "This design is modified from [a course at Duke](https://sta210-s22.github.io/website/)."
     left: "&copy; Copyright 2022, Mine Çetinkaya-Rundel used under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)"
     background: "#D9E3E4"
 

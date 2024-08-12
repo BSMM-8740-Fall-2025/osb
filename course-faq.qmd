@@ -2,19 +2,11 @@
 title: "FAQ"
 ---
 
-## How do I export my assignment HTML from RStudio to upload to Brightspace?
+## Can I use generative AI for class assignments?
 
-In RStudio, go to your *Files* tab, and open the **.qmd** file for the current lab assignment. In addition to your answers, make sure you have edited the author and date field in the YAML at the top of the document to include your name and the current date.
+Generative Artificial Intelligence (AI) models, such as ChatGPT, Google Gemini, Claude, Jenni, Github Co-pilot, DaLL- E, and Midjourney, may be used for any lab assignment in this course with appropriate acknowledgement and citation. Examples of citing AI language models are available [here](http://libguides.umn.edu/chatgpt). You are responsible for fact-checking statements and code composed by AI language models. Failure to acknowledge or cite GAI use will constitute academic misconduct and may be subject to discipline under Bylaw 31: Academic Integrity.
 
-If you have made any edits, first save your document and then press *Render* in the bar just below the document tab. If there are no errors, the rendered document will appear in the *Viewer* tab. The rendered file will be found in the *Files* tab, with the same name as the **.qmd** file but with extension **.html**.
-
-If you now select *More -\> Show Folder* *in New Window*, you will be able to select your .htlm file for upload to Brightspace.
-
-## How can I submit my assignment to Brightspace?
-
-The instructions for submitting your assignment to Brightspace can be accessed during UWindsor's IT Service Desk [hours](https://www.uwindsor.ca/itservices/support), [click here to chat with a University representative](https://chat.socialintents.com/c/uwindsorits). After 8 p.m. Monday to Friday, and 4:30 p.m. Saturday and Sunday, please ask your questions of the D2L Virtual Assistant found on the Brightspace page.
-
-In a nutshell, you'll upload your **.html** file via the Assignments tab in Brightspace..
+Use of Generative Artificial Intelligence (AI) models will not be permitted for quizzes, or exams.
 
 ## Can I use a local install of R and RStudio instead of using the Lab?
 

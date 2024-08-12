@@ -2,7 +2,7 @@
 output: Causal via Prediction
 ---
 
-# Where ML Fits into Causal Inference (review) 
+# Where ML Fits into Causal Inference (review)
 
 The traditional go-to tool for causal inference is multiple regression: $$
 Y_i = \delta D_i + X_i'\beta+\varepsilon_i,

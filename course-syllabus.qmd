@@ -11,7 +11,7 @@ require(magrittr, quietly = TRUE)
 tbl_0 <- tibble::tribble(
 ~w,~x,
 "Class section"	  ,"002", 
-"Class meetings"	,"Mondays, 1:00 PM to 4:00 PM - Odette Building 507", 
+"Class meetings"	,"Wednesdays, 11:30 AM to 2:20 PM - Odette Building 507", 
 "Instructor"	    ,"Dr. Lou Odette",
 "Course Website"	,"https://brightspace.uwindsor.ca",
 "Textbook"	      ,"The Elements of Statistical Learning - Data Mining, Inference, and Prediction. Second Edition by Hastie, Tibshirani, and Firedman.  \nAvailable for free at https://web.stanford.edu/~hastie/ElemStatLearn/" 
@@ -26,8 +26,7 @@ tbl_0 <- tibble::tribble(
     x ~ px(600),
   ) %>% 
   gt::tab_options(column_labels.hidden = TRUE, table.align = 'left') %>% 
-  gtExtras::gt_theme_espn() %>% 
-  gt::as_raw_html()
+  gtExtras::gt_theme_espn()
 
 tbl_1 <- tibble::tribble(
 ~w,~x,~y,~z,
@@ -45,26 +44,9 @@ tbl_1 <- tibble::tribble(
     , locations = gt::cells_body( columns = c(w,y) )
   ) %>% 
   gt::tab_options(column_labels.hidden = TRUE, table.align = 'left') %>% 
-  gtExtras::gt_theme_espn() %>% 
-  gt::as_raw_html()
+  gtExtras::gt_theme_espn()
 
-data.frame("combo" = c(tbl_0, tbl_1)) %>%
-  gt::gt() %>%
-  gt::fmt_markdown(columns = everything()) %>% 
-  gt::tab_options(column_labels.hidden = TRUE, table.border.bottom.color = "white") %>% 
-  gt::cols_align(align = "left", columns = everything() ) %>% 
-  gt::tab_style(
-    style = gt::cell_borders(
-      sides = c("top", "bottom", "left", "right"),
-      color = "white",
-      weight = gt::px(0.1),
-      style = "solid"
-    ),
-    locations = gt::cells_body()
-  ) # %>% gtExtras::gt_theme_espn()
-
-
-
+gt::gt_group(tbl_0,tbl_1)
 ```
 
 ::: callout-note
@@ -91,7 +73,7 @@ The general objectives of this course are to:
 ## Master of Management Competencies
 
 | **Program Competencies**                                                                                                                                       | **Course Competencies**                                                                                                                                        | Tested by                                           |
-|---------------------------|---------------------------|------------------|
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
 | Apply an evidence-based decision model to evaluate and recommend the best available alternative to resolve an international business problem.                  | Apply an evidence-based decision model to evaluate and recommend the best available alternative to resolve an international business problem.                  | Lab Assessments                                     |
 | Analyze both qualitative and quantitative data and findings, distinguishing and evaluating their relevance to the resolution of international business issues. | Analyze both qualitative and quantitative data and findings, distinguishing and evaluating their relevance to the resolution of international business issues. | Quizzes, Midterm Examination, and Final Examination |
 
@@ -111,20 +93,20 @@ While there is no official textbook for the course, we will be assigning reading
 
 ## Course Content
 
-| Date           | Topic                       |
-|----------------|-----------------------------|
-| *Sep 11, 2023* | The tidyverse & Git         |
-| *Sep 18, 2023* | EDA and Feature engineering |
-| *Sep 25, 2023* | The Recipes package         |
-| *Oct 02, 2023* | Regression methods          |
-| *Oct 16, 2023* | The Models package          |
-| *Oct 23, 2023* | Classification methods      |
-| *Oct 30, 2023* | Time Series methods         |
-| *Nov 06, 2023* | Causality: DAGs             |
-| *Nov 13, 2023* | Causality: Effects          |
-| *Nov 20, 2023* | Monte Carlo methods         |
-| *Nov 27, 2023* | Bayesian methods            |
-| *Dec 04, 2023* | Advanced topics             |
+| Date           | Topic                               |
+|----------------|-------------------------------------|
+| *Sep 11, 2024* | The Tidyverse, EDA & Git            |
+| *Sep 18, 2024* | The Recipes Package                 |
+| *Sep 25, 2024* | Regression Methods                  |
+| *Oct 02, 2024* | The TidyModels Package              |
+| *Oct 16, 2024* | Classification & Clustering Methods |
+| *Oct 23, 2024* | Time Series Methods                 |
+| *Oct 30, 2024* | Causality: DAGs                     |
+| *Nov 06, 2024* | Causality: Methods                  |
+| *Nov 13, 2024* | Monte Carlo Methods                 |
+| *Nov 20, 2024* | Bayesian Methods                    |
+| *Nov 27, 2024* | Advanced Topics                     |
+| *Dec 04, 2024* | Final Exam                          |
 
 ## Key Dates For Exams/Assignments[^1]
 
@@ -132,10 +114,10 @@ While there is no official textbook for the course, we will be assigning reading
 
 | Date           | Exam/Assignment     |
 |----------------|---------------------|
-| *Oct 02, 2023* | Quiz1               |
-| *Oct 30, 2023* | Midterm Examination |
-| *Nov 20, 2023* | Quiz 2              |
-| *Dec 04, 2023* | Final Examination   |
+| *Oct 09, 2024* | Quiz1               |
+| *Nov 06, 2024* | Midterm Examination |
+| *Nov 20, 2024* | Quiz 2              |
+| *Dec 04, 2024* | Final Examination   |
 
 ## Grading
 
@@ -277,20 +259,19 @@ In the event of inclement weather or other connectivity-related events that proh
 
 ## Important Academic Dates
 
-| FALL 2023                |                                            |
-|--------------------------|--------------------------------------------|
-| September 4              | Labour Day (University closed)             |
-| September 7              | all 2023 classes begin                     |
-| September 20             | Add/Drop Date                              |
-| October 4                | Financial Drop Date                        |
-| October 9                | Thanksgiving Day (University closed)       |
-| October 7 - 15           | Reading Week (no classes)                  |
-| November 15              | Voluntary Withdrawal Date                  |
-| Week of November 21      | Student Evaluation of Teaching Distributed |
-| December 6               | Classes end                                |
-| December 9               | Final Exams Begin                          |
-| December 20              | Final Exams End                            |
-| December 21              | Alternate Final Exam Day                   |
-| December 23 -- January 2 | University closed -- Winter holiday        |
+| FALL 2024                |                                      |
+|--------------------------|--------------------------------------|
+| September 2              | Labour Day (University closed)       |
+| September 5              | all 2024 classes begin               |
+| September 18             | Add/Drop Date                        |
+| October 3                | Financial Drop Date                  |
+| October 14               | Thanksgiving Day (University closed) |
+| October 12 - 20          | Reading Week (no classes)            |
+| November 13              | Voluntary Withdrawal Date            |
+| December 4               | Classes end                          |
+| December 7               | Final Exams Begin                    |
+| December 18              | Final Exams End                      |
+| December 19              | Alternate Final Exam Day             |
+| December 23 -- January 1 | University closed -- Winter holiday  |
 
 ## 
