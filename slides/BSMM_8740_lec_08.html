@@ -451,7 +451,7 @@ L.L. Odette
 <span id="cb1-9"><a></a>  broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">newdata =</span> dat_, <span class="at">type.predict =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-10"><a></a>  <span class="co"># .fitted is the value predicted by the model</span></span>
 <span id="cb1-11"><a></a>  <span class="co"># for a given observation</span></span>
-<span id="cb1-12"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, net))</span>
+<span id="cb1-12"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, <span class="at">.exposure =</span> net))</span>
 <span id="cb1-13"><a></a></span>
 <span id="cb1-14"><a></a>net_data_wts <span class="sc">|&gt;</span></span>
 <span id="cb1-15"><a></a>  <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> _, <span class="at">weights =</span> wts) <span class="sc">|&gt;</span></span>
@@ -469,30 +469,50 @@ L.L. Odette
 </section>
 <section id="inverse-probability-weighting-2" class="slide level2">
 <h2>Inverse Probability Weighting</h2>
+<h3 id="stabilized-weights">Stabilized weights</h3>
+<p>The IP weights (given covariate set <span class="math inline">\(L\)</span>) are <span class="math inline">\(W^A=1/\mathbb{E}[D|L]\)</span>. Because the denominator can be very close to <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span> the estimates using these weights can be unstable.</p>
+<p>Stabilized weights will are often used to address this, e.g.&nbsp;the function <code>propensity::wt_ate</code> multiplies the weights by the mean of the treatment so <span class="math inline">\(SW^A=\mathbb{E}[D]/\mathbb{E}[D|L]\)</span>.</p>
+</section>
+<section id="inverse-probability-weighting-3" class="slide level2">
+<h2>Inverse Probability Weighting</h2>
+<h3 id="v-stabilized-weights">V-Stabilized weights</h3>
+<p>Baseline covariates <span class="math inline">\(V\subset L\)</span>) are also used to stabilize IP weights: <span class="math inline">\(SW^A(V)=\mathbb{E}[D|V]/\mathbb{E}[D|L]\)</span>.</p>
+<p>Note the the variables <span class="math inline">\(V\)</span> need to be included in the numerator and the denominator (as part of <span class="math inline">\(L\)</span>)</p>
+<p>V-stabilization results in IP weights that are more stabilized than the ones without V.</p>
+</section>
+<section id="inverse-probability-weighting-4" class="slide level2">
+<h2>Inverse Probability Weighting</h2>
 <p>We know that IPW weighting should create a pseudo-population that make the covariates more balanced by treatment. Let’s check this:</p>
 <div class="panel-tabset">
 <ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">unweighted</a></li><li><a href="#tabset-1-2">weighted</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
 <div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>gtsummary<span class="sc">::</span><span class="fu">tbl_summary</span>(</span>
+<span id="cb3-2"><a></a>  net_data_wts </span>
+<span id="cb3-3"><a></a>  , <span class="at">by =</span> net</span>
+<span id="cb3-4"><a></a>  , <span class="at">include =</span> <span class="fu">c</span>(net,income,health,temperature,malaria_risk)</span>
+<span id="cb3-5"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a></a>  <span class="co"># add an overall column to the table</span></span>
+<span id="cb3-7"><a></a>  gtsummary<span class="sc">::</span><span class="fu">add_overall</span>(<span class="at">last =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="rvpcqubwsh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#rvpcqubwsh table {
+<div id="rxfglcbjmt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rxfglcbjmt table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#rvpcqubwsh thead, #rvpcqubwsh tbody, #rvpcqubwsh tfoot, #rvpcqubwsh tr, #rvpcqubwsh td, #rvpcqubwsh th {
+#rxfglcbjmt thead, #rxfglcbjmt tbody, #rxfglcbjmt tfoot, #rxfglcbjmt tr, #rxfglcbjmt td, #rxfglcbjmt th {
   border-style: none;
 }
 
-#rvpcqubwsh p {
+#rxfglcbjmt p {
   margin: 0;
   padding: 0;
 }
 
-#rvpcqubwsh .gt_table {
+#rxfglcbjmt .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -518,12 +538,12 @@ L.L. Odette
   border-left-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_caption {
+#rxfglcbjmt .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#rvpcqubwsh .gt_title {
+#rxfglcbjmt .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -535,7 +555,7 @@ L.L. Odette
   border-bottom-width: 0;
 }
 
-#rvpcqubwsh .gt_subtitle {
+#rxfglcbjmt .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -547,7 +567,7 @@ L.L. Odette
   border-top-width: 0;
 }
 
-#rvpcqubwsh .gt_heading {
+#rxfglcbjmt .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -559,13 +579,13 @@ L.L. Odette
   border-right-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_bottom_border {
+#rxfglcbjmt .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_col_headings {
+#rxfglcbjmt .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -580,7 +600,7 @@ L.L. Odette
   border-right-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_col_heading {
+#rxfglcbjmt .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -600,7 +620,7 @@ L.L. Odette
   overflow-x: hidden;
 }
 
-#rvpcqubwsh .gt_column_spanner_outer {
+#rxfglcbjmt .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -612,15 +632,15 @@ L.L. Odette
   padding-right: 4px;
 }
 
-#rvpcqubwsh .gt_column_spanner_outer:first-child {
+#rxfglcbjmt .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#rvpcqubwsh .gt_column_spanner_outer:last-child {
+#rxfglcbjmt .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#rvpcqubwsh .gt_column_spanner {
+#rxfglcbjmt .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -632,11 +652,11 @@ L.L. Odette
   width: 100%;
 }
 
-#rvpcqubwsh .gt_spanner_row {
+#rxfglcbjmt .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#rvpcqubwsh .gt_group_heading {
+#rxfglcbjmt .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -662,7 +682,7 @@ L.L. Odette
   text-align: left;
 }
 
-#rvpcqubwsh .gt_empty_group_heading {
+#rxfglcbjmt .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -677,15 +697,15 @@ L.L. Odette
   vertical-align: middle;
 }
 
-#rvpcqubwsh .gt_from_md > :first-child {
+#rxfglcbjmt .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#rvpcqubwsh .gt_from_md > :last-child {
+#rxfglcbjmt .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#rvpcqubwsh .gt_row {
+#rxfglcbjmt .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -704,7 +724,7 @@ L.L. Odette
   overflow-x: hidden;
 }
 
-#rvpcqubwsh .gt_stub {
+#rxfglcbjmt .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -717,7 +737,7 @@ L.L. Odette
   padding-right: 5px;
 }
 
-#rvpcqubwsh .gt_stub_row_group {
+#rxfglcbjmt .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -731,15 +751,15 @@ L.L. Odette
   vertical-align: top;
 }
 
-#rvpcqubwsh .gt_row_group_first td {
+#rxfglcbjmt .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#rvpcqubwsh .gt_row_group_first th {
+#rxfglcbjmt .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#rvpcqubwsh .gt_summary_row {
+#rxfglcbjmt .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -749,16 +769,16 @@ L.L. Odette
   padding-right: 5px;
 }
 
-#rvpcqubwsh .gt_first_summary_row {
+#rxfglcbjmt .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_first_summary_row.thick {
+#rxfglcbjmt .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#rvpcqubwsh .gt_last_summary_row {
+#rxfglcbjmt .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -768,7 +788,7 @@ L.L. Odette
   border-bottom-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_grand_summary_row {
+#rxfglcbjmt .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -778,7 +798,7 @@ L.L. Odette
   padding-right: 5px;
 }
 
-#rvpcqubwsh .gt_first_grand_summary_row {
+#rxfglcbjmt .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -788,7 +808,7 @@ L.L. Odette
   border-top-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_last_grand_summary_row_top {
+#rxfglcbjmt .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -798,11 +818,11 @@ L.L. Odette
   border-bottom-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_striped {
+#rxfglcbjmt .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#rvpcqubwsh .gt_table_body {
+#rxfglcbjmt .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -811,7 +831,7 @@ L.L. Odette
   border-bottom-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_footnotes {
+#rxfglcbjmt .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -825,7 +845,7 @@ L.L. Odette
   border-right-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_footnote {
+#rxfglcbjmt .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -834,7 +854,7 @@ L.L. Odette
   padding-right: 5px;
 }
 
-#rvpcqubwsh .gt_sourcenotes {
+#rxfglcbjmt .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -848,7 +868,7 @@ L.L. Odette
   border-right-color: #D3D3D3;
 }
 
-#rvpcqubwsh .gt_sourcenote {
+#rxfglcbjmt .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -856,72 +876,72 @@ L.L. Odette
   padding-right: 5px;
 }
 
-#rvpcqubwsh .gt_left {
+#rxfglcbjmt .gt_left {
   text-align: left;
 }
 
-#rvpcqubwsh .gt_center {
+#rxfglcbjmt .gt_center {
   text-align: center;
 }
 
-#rvpcqubwsh .gt_right {
+#rxfglcbjmt .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#rvpcqubwsh .gt_font_normal {
+#rxfglcbjmt .gt_font_normal {
   font-weight: normal;
 }
 
-#rvpcqubwsh .gt_font_bold {
+#rxfglcbjmt .gt_font_bold {
   font-weight: bold;
 }
 
-#rvpcqubwsh .gt_font_italic {
+#rxfglcbjmt .gt_font_italic {
   font-style: italic;
 }
 
-#rvpcqubwsh .gt_super {
+#rxfglcbjmt .gt_super {
   font-size: 65%;
 }
 
-#rvpcqubwsh .gt_footnote_marks {
+#rxfglcbjmt .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#rvpcqubwsh .gt_asterisk {
+#rxfglcbjmt .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#rvpcqubwsh .gt_indent_1 {
+#rxfglcbjmt .gt_indent_1 {
   text-indent: 5px;
 }
 
-#rvpcqubwsh .gt_indent_2 {
+#rxfglcbjmt .gt_indent_2 {
   text-indent: 10px;
 }
 
-#rvpcqubwsh .gt_indent_3 {
+#rxfglcbjmt .gt_indent_3 {
   text-indent: 15px;
 }
 
-#rvpcqubwsh .gt_indent_4 {
+#rxfglcbjmt .gt_indent_4 {
   text-indent: 20px;
 }
 
-#rvpcqubwsh .gt_indent_5 {
+#rxfglcbjmt .gt_indent_5 {
   text-indent: 25px;
 }
 
-#rvpcqubwsh .katex-display {
+#rxfglcbjmt .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#rvpcqubwsh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#rxfglcbjmt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -994,24 +1014,36 @@ N = 1,752</p>
 </div>
 <div id="tabset-1-2">
 <div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>net_svy <span class="ot">&lt;-</span> survey<span class="sc">::</span><span class="fu">svydesign</span>(</span>
+<span id="cb4-2"><a></a>  <span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>,</span>
+<span id="cb4-3"><a></a>  <span class="at">data =</span> net_data_wts,</span>
+<span id="cb4-4"><a></a>  <span class="at">weights =</span> <span class="sc">~</span>wts</span>
+<span id="cb4-5"><a></a>)</span>
+<span id="cb4-6"><a></a></span>
+<span id="cb4-7"><a></a>gtsummary<span class="sc">::</span><span class="fu">tbl_svysummary</span>(</span>
+<span id="cb4-8"><a></a>  net_svy,</span>
+<span id="cb4-9"><a></a>  <span class="at">by =</span> net,</span>
+<span id="cb4-10"><a></a>  <span class="at">include =</span> <span class="fu">c</span>(net,income,health,temperature,malaria_risk)</span>
+<span id="cb4-11"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a></a>  gtsummary<span class="sc">::</span><span class="fu">add_overall</span>(<span class="at">last =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="ebympujldc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ebympujldc table {
+<div id="yiwzvobqhc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yiwzvobqhc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ebympujldc thead, #ebympujldc tbody, #ebympujldc tfoot, #ebympujldc tr, #ebympujldc td, #ebympujldc th {
+#yiwzvobqhc thead, #yiwzvobqhc tbody, #yiwzvobqhc tfoot, #yiwzvobqhc tr, #yiwzvobqhc td, #yiwzvobqhc th {
   border-style: none;
 }
 
-#ebympujldc p {
+#yiwzvobqhc p {
   margin: 0;
   padding: 0;
 }
 
-#ebympujldc .gt_table {
+#yiwzvobqhc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1037,12 +1069,12 @@ N = 1,752</p>
   border-left-color: #D3D3D3;
 }
 
-#ebympujldc .gt_caption {
+#yiwzvobqhc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ebympujldc .gt_title {
+#yiwzvobqhc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1054,7 +1086,7 @@ N = 1,752</p>
   border-bottom-width: 0;
 }
 
-#ebympujldc .gt_subtitle {
+#yiwzvobqhc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1066,7 +1098,7 @@ N = 1,752</p>
   border-top-width: 0;
 }
 
-#ebympujldc .gt_heading {
+#yiwzvobqhc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1078,13 +1110,13 @@ N = 1,752</p>
   border-right-color: #D3D3D3;
 }
 
-#ebympujldc .gt_bottom_border {
+#yiwzvobqhc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ebympujldc .gt_col_headings {
+#yiwzvobqhc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1099,7 +1131,7 @@ N = 1,752</p>
   border-right-color: #D3D3D3;
 }
 
-#ebympujldc .gt_col_heading {
+#yiwzvobqhc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1119,7 +1151,7 @@ N = 1,752</p>
   overflow-x: hidden;
 }
 
-#ebympujldc .gt_column_spanner_outer {
+#yiwzvobqhc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1131,15 +1163,15 @@ N = 1,752</p>
   padding-right: 4px;
 }
 
-#ebympujldc .gt_column_spanner_outer:first-child {
+#yiwzvobqhc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ebympujldc .gt_column_spanner_outer:last-child {
+#yiwzvobqhc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ebympujldc .gt_column_spanner {
+#yiwzvobqhc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1151,11 +1183,11 @@ N = 1,752</p>
   width: 100%;
 }
 
-#ebympujldc .gt_spanner_row {
+#yiwzvobqhc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ebympujldc .gt_group_heading {
+#yiwzvobqhc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1181,7 +1213,7 @@ N = 1,752</p>
   text-align: left;
 }
 
-#ebympujldc .gt_empty_group_heading {
+#yiwzvobqhc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1196,15 +1228,15 @@ N = 1,752</p>
   vertical-align: middle;
 }
 
-#ebympujldc .gt_from_md > :first-child {
+#yiwzvobqhc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ebympujldc .gt_from_md > :last-child {
+#yiwzvobqhc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ebympujldc .gt_row {
+#yiwzvobqhc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1223,7 +1255,7 @@ N = 1,752</p>
   overflow-x: hidden;
 }
 
-#ebympujldc .gt_stub {
+#yiwzvobqhc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1236,7 +1268,7 @@ N = 1,752</p>
   padding-right: 5px;
 }
 
-#ebympujldc .gt_stub_row_group {
+#yiwzvobqhc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1250,15 +1282,15 @@ N = 1,752</p>
   vertical-align: top;
 }
 
-#ebympujldc .gt_row_group_first td {
+#yiwzvobqhc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ebympujldc .gt_row_group_first th {
+#yiwzvobqhc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ebympujldc .gt_summary_row {
+#yiwzvobqhc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1268,16 +1300,16 @@ N = 1,752</p>
   padding-right: 5px;
 }
 
-#ebympujldc .gt_first_summary_row {
+#yiwzvobqhc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ebympujldc .gt_first_summary_row.thick {
+#yiwzvobqhc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ebympujldc .gt_last_summary_row {
+#yiwzvobqhc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1287,7 +1319,7 @@ N = 1,752</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ebympujldc .gt_grand_summary_row {
+#yiwzvobqhc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1297,7 +1329,7 @@ N = 1,752</p>
   padding-right: 5px;
 }
 
-#ebympujldc .gt_first_grand_summary_row {
+#yiwzvobqhc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1307,7 +1339,7 @@ N = 1,752</p>
   border-top-color: #D3D3D3;
 }
 
-#ebympujldc .gt_last_grand_summary_row_top {
+#yiwzvobqhc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1317,11 +1349,11 @@ N = 1,752</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ebympujldc .gt_striped {
+#yiwzvobqhc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ebympujldc .gt_table_body {
+#yiwzvobqhc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1330,7 +1362,7 @@ N = 1,752</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ebympujldc .gt_footnotes {
+#yiwzvobqhc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1344,7 +1376,7 @@ N = 1,752</p>
   border-right-color: #D3D3D3;
 }
 
-#ebympujldc .gt_footnote {
+#yiwzvobqhc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1353,7 +1385,7 @@ N = 1,752</p>
   padding-right: 5px;
 }
 
-#ebympujldc .gt_sourcenotes {
+#yiwzvobqhc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1367,7 +1399,7 @@ N = 1,752</p>
   border-right-color: #D3D3D3;
 }
 
-#ebympujldc .gt_sourcenote {
+#yiwzvobqhc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1375,72 +1407,72 @@ N = 1,752</p>
   padding-right: 5px;
 }
 
-#ebympujldc .gt_left {
+#yiwzvobqhc .gt_left {
   text-align: left;
 }
 
-#ebympujldc .gt_center {
+#yiwzvobqhc .gt_center {
   text-align: center;
 }
 
-#ebympujldc .gt_right {
+#yiwzvobqhc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ebympujldc .gt_font_normal {
+#yiwzvobqhc .gt_font_normal {
   font-weight: normal;
 }
 
-#ebympujldc .gt_font_bold {
+#yiwzvobqhc .gt_font_bold {
   font-weight: bold;
 }
 
-#ebympujldc .gt_font_italic {
+#yiwzvobqhc .gt_font_italic {
   font-style: italic;
 }
 
-#ebympujldc .gt_super {
+#yiwzvobqhc .gt_super {
   font-size: 65%;
 }
 
-#ebympujldc .gt_footnote_marks {
+#yiwzvobqhc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ebympujldc .gt_asterisk {
+#yiwzvobqhc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ebympujldc .gt_indent_1 {
+#yiwzvobqhc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ebympujldc .gt_indent_2 {
+#yiwzvobqhc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ebympujldc .gt_indent_3 {
+#yiwzvobqhc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ebympujldc .gt_indent_4 {
+#yiwzvobqhc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ebympujldc .gt_indent_5 {
+#yiwzvobqhc .gt_indent_5 {
   text-indent: 25px;
 }
 
-#ebympujldc .katex-display {
+#yiwzvobqhc .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#ebympujldc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yiwzvobqhc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1514,57 +1546,57 @@ N = 3,511</p>
 </div>
 </div>
 </section>
-<section id="inverse-probability-weighting-3" class="slide level2">
+<section id="inverse-probability-weighting-5" class="slide level2">
 <h2>Inverse Probability Weighting</h2>
 <p>Next we use bootstrapping to generate proper confidence intervals, first by creating a function to run the generate ipw estimates for each bootstrap split:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>fit_ipw <span class="ot">&lt;-</span> <span class="cf">function</span>(split, ...) {</span>
-<span id="cb3-2"><a></a>  <span class="co"># get bootstrapped data sample with `rsample::analysis()`</span></span>
-<span id="cb3-3"><a></a>  <span class="cf">if</span>(<span class="st">"rsplit"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
-<span id="cb3-4"><a></a>    .df <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(split)</span>
-<span id="cb3-5"><a></a>  }<span class="cf">else</span> <span class="cf">if</span>(<span class="st">"data.frame"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
-<span id="cb3-6"><a></a>    .df <span class="ot">&lt;-</span> split</span>
-<span id="cb3-7"><a></a>  }</span>
-<span id="cb3-8"><a></a></span>
-<span id="cb3-9"><a></a>  <span class="co"># fit propensity score model</span></span>
-<span id="cb3-10"><a></a>  propensity_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb3-11"><a></a>    net <span class="sc">~</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature,</span>
-<span id="cb3-12"><a></a>    <span class="at">data =</span> .df,</span>
-<span id="cb3-13"><a></a>    <span class="at">family =</span> <span class="fu">binomial</span>()</span>
-<span id="cb3-14"><a></a>  )</span>
-<span id="cb3-15"><a></a></span>
-<span id="cb3-16"><a></a>  <span class="co"># calculate inverse probability weights</span></span>
-<span id="cb3-17"><a></a>  .df <span class="ot">&lt;-</span> propensity_model <span class="sc">|&gt;</span></span>
-<span id="cb3-18"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">data =</span> .df) <span class="sc">|&gt;</span></span>
-<span id="cb3-19"><a></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, net))</span>
-<span id="cb3-20"><a></a></span>
-<span id="cb3-21"><a></a>  <span class="co"># fit correctly bootstrapped ipw model</span></span>
-<span id="cb3-22"><a></a>  <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> .df, <span class="at">weights =</span> wts) <span class="sc">|&gt;</span></span>
-<span id="cb3-23"><a></a>    broom<span class="sc">::</span><span class="fu">tidy</span>()</span>
-<span id="cb3-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>fit_ipw <span class="ot">&lt;-</span> <span class="cf">function</span>(split, ...) {</span>
+<span id="cb5-2"><a></a>  <span class="co"># get bootstrapped data sample with `rsample::analysis()`</span></span>
+<span id="cb5-3"><a></a>  <span class="cf">if</span>(<span class="st">"rsplit"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
+<span id="cb5-4"><a></a>    .df <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(split)</span>
+<span id="cb5-5"><a></a>  }<span class="cf">else</span> <span class="cf">if</span>(<span class="st">"data.frame"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
+<span id="cb5-6"><a></a>    .df <span class="ot">&lt;-</span> split</span>
+<span id="cb5-7"><a></a>  }</span>
+<span id="cb5-8"><a></a></span>
+<span id="cb5-9"><a></a>  <span class="co"># fit propensity score model</span></span>
+<span id="cb5-10"><a></a>  propensity_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb5-11"><a></a>    net <span class="sc">~</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature,</span>
+<span id="cb5-12"><a></a>    <span class="at">data =</span> .df,</span>
+<span id="cb5-13"><a></a>    <span class="at">family =</span> <span class="fu">binomial</span>()</span>
+<span id="cb5-14"><a></a>  )</span>
+<span id="cb5-15"><a></a></span>
+<span id="cb5-16"><a></a>  <span class="co"># calculate inverse probability weights</span></span>
+<span id="cb5-17"><a></a>  .df <span class="ot">&lt;-</span> propensity_model <span class="sc">|&gt;</span></span>
+<span id="cb5-18"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">data =</span> .df) <span class="sc">|&gt;</span></span>
+<span id="cb5-19"><a></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, net))</span>
+<span id="cb5-20"><a></a></span>
+<span id="cb5-21"><a></a>  <span class="co"># fit correctly bootstrapped ipw model</span></span>
+<span id="cb5-22"><a></a>  <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> .df, <span class="at">weights =</span> wts) <span class="sc">|&gt;</span></span>
+<span id="cb5-23"><a></a>    broom<span class="sc">::</span><span class="fu">tidy</span>()</span>
+<span id="cb5-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="inverse-probability-weighting-4" class="slide level2">
+<section id="inverse-probability-weighting-6" class="slide level2">
 <h2>Inverse Probability Weighting</h2>
 <p>Next we use bootstrapping to generate proper confidence intervals:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="co"># create bootstrap samples</span></span>
-<span id="cb4-2"><a></a>bootstrapped_net_data <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(</span>
-<span id="cb4-3"><a></a>  dat_,</span>
-<span id="cb4-4"><a></a>  <span class="at">times =</span> <span class="dv">1000</span>,</span>
-<span id="cb4-5"><a></a>  <span class="co"># required to calculate CIs later</span></span>
-<span id="cb4-6"><a></a>  <span class="at">apparent =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-7"><a></a>)</span>
-<span id="cb4-8"><a></a></span>
-<span id="cb4-9"><a></a><span class="co"># create ipw and fit each bootstrap sample</span></span>
-<span id="cb4-10"><a></a>results <span class="ot">&lt;-</span> bootstrapped_net_data <span class="sc">|&gt;</span></span>
-<span id="cb4-11"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb4-12"><a></a>    <span class="at">ipw_fits =</span> purrr<span class="sc">::</span><span class="fu">map</span>(splits, fit_ipw))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># create bootstrap samples</span></span>
+<span id="cb6-2"><a></a>bootstrapped_net_data <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(</span>
+<span id="cb6-3"><a></a>  dat_,</span>
+<span id="cb6-4"><a></a>  <span class="at">times =</span> <span class="dv">1000</span>,</span>
+<span id="cb6-5"><a></a>  <span class="co"># required to calculate CIs later</span></span>
+<span id="cb6-6"><a></a>  <span class="at">apparent =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-7"><a></a>)</span>
+<span id="cb6-8"><a></a></span>
+<span id="cb6-9"><a></a><span class="co"># create ipw and fit each bootstrap sample</span></span>
+<span id="cb6-10"><a></a>results <span class="ot">&lt;-</span> bootstrapped_net_data <span class="sc">|&gt;</span></span>
+<span id="cb6-11"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb6-12"><a></a>    <span class="at">ipw_fits =</span> purrr<span class="sc">::</span><span class="fu">map</span>(splits, fit_ipw))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1574,23 +1606,27 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>outcome_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb5-2"><a></a>  malaria_risk <span class="sc">~</span> net <span class="sc">+</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature <span class="sc">+</span> insecticide_resistance,</span>
-<span id="cb5-3"><a></a>  <span class="at">data =</span> dat_</span>
-<span id="cb5-4"><a></a>)</span>
-<span id="cb5-5"><a></a></span>
-<span id="cb5-6"><a></a>outcome_model <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>outcome_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb7-2"><a></a>  malaria_risk <span class="sc">~</span> net <span class="sc">+</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature <span class="sc">+</span> insecticide_resistance <span class="sc">+</span></span>
+<span id="cb7-3"><a></a>    <span class="fu">I</span>(health<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(temperature<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(income<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb7-4"><a></a>  <span class="at">data =</span> dat_</span>
+<span id="cb7-5"><a></a>)</span>
+<span id="cb7-6"><a></a></span>
+<span id="cb7-7"><a></a>outcome_model <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 7
+<pre><code># A tibble: 9 × 7
   term  estimate std.error statistic   p.value conf.low
   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-1 (Int…  67.8     0.944         71.8 0          66.0   
-2 net   -12.1     0.263        -46.2 1.95e-305 -12.7   
-3 inco…  -0.0751  0.000986     -76.1 0          -0.0770
-4 heal…   0.135   0.00974       13.9 1.12e- 41   0.116 
-5 temp…   1.04    0.0283        36.6 2.78e-218   0.980 
-6 inse…   0.217   0.00788       27.5 1.61e-138   0.201 
+1 (Int…  1.08e+2   3.55e+0    30.5   1.89e-164  1.01e+2
+2 net   -1.24e+1   2.30e-1   -53.8   0         -1.28e+1
+3 inco… -1.65e-1   4.58e-3   -36.1   3.48e-213 -1.74e-1
+4 heal…  2.01e-1   2.82e-2     7.13  1.44e- 12  1.46e-1
+5 temp…  7.69e-1   2.62e-1     2.93  3.42e-  3  2.55e-1
+6 inse…  2.19e-1   6.89e-3    31.8   4.97e-175  2.05e-1
+7 I(he… -6.60e-4   2.65e-4    -2.49  1.28e-  2 -1.18e-3
+8 I(te…  5.01e-3   5.46e-3     0.919 3.58e-  1 -5.68e-3
+9 I(in…  5.02e-5   2.50e-6    20.1   1.04e- 80  4.53e-5
 # ℹ 1 more variable: conf.high &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -1601,24 +1637,24 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>fit_reg <span class="ot">&lt;-</span> <span class="cf">function</span>(split, ...) {</span>
-<span id="cb7-2"><a></a>  <span class="co"># get bootstrapped data sample with `rsample::analysis()`</span></span>
-<span id="cb7-3"><a></a>  <span class="cf">if</span>(<span class="st">"rsplit"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
-<span id="cb7-4"><a></a>    .df <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(split)</span>
-<span id="cb7-5"><a></a>  }<span class="cf">else</span> <span class="cf">if</span>(<span class="st">"data.frame"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
-<span id="cb7-6"><a></a>    .df <span class="ot">&lt;-</span> split</span>
-<span id="cb7-7"><a></a>  }</span>
-<span id="cb7-8"><a></a></span>
-<span id="cb7-9"><a></a>  <span class="co"># fit outcome model</span></span>
-<span id="cb7-10"><a></a>  <span class="fu">glm</span>(malaria_risk <span class="sc">~</span> net <span class="sc">+</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature <span class="sc">+</span> insecticide_resistance</span>
-<span id="cb7-11"><a></a>      , <span class="at">data =</span> .df</span>
-<span id="cb7-12"><a></a>    )<span class="sc">|&gt;</span></span>
-<span id="cb7-13"><a></a>    broom<span class="sc">::</span><span class="fu">tidy</span>()</span>
-<span id="cb7-14"><a></a>}</span>
-<span id="cb7-15"><a></a></span>
-<span id="cb7-16"><a></a>both_results <span class="ot">&lt;-</span> results <span class="sc">|&gt;</span></span>
-<span id="cb7-17"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb7-18"><a></a>    <span class="at">reg_fits =</span> purrr<span class="sc">::</span><span class="fu">map</span>(splits, fit_reg))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>fit_reg <span class="ot">&lt;-</span> <span class="cf">function</span>(split, ...) {</span>
+<span id="cb9-2"><a></a>  <span class="co"># get bootstrapped data sample with `rsample::analysis()`</span></span>
+<span id="cb9-3"><a></a>  <span class="cf">if</span>(<span class="st">"rsplit"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
+<span id="cb9-4"><a></a>    .df <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(split)</span>
+<span id="cb9-5"><a></a>  }<span class="cf">else</span> <span class="cf">if</span>(<span class="st">"data.frame"</span> <span class="sc">%in%</span> <span class="fu">class</span>(split)){</span>
+<span id="cb9-6"><a></a>    .df <span class="ot">&lt;-</span> split</span>
+<span id="cb9-7"><a></a>  }</span>
+<span id="cb9-8"><a></a></span>
+<span id="cb9-9"><a></a>  <span class="co"># fit outcome model</span></span>
+<span id="cb9-10"><a></a>  <span class="fu">glm</span>(malaria_risk <span class="sc">~</span> net <span class="sc">+</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature <span class="sc">+</span> insecticide_resistance <span class="sc">+</span></span>
+<span id="cb9-11"><a></a>      <span class="fu">I</span>(health<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(temperature<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(income<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> .df</span>
+<span id="cb9-12"><a></a>    )<span class="sc">|&gt;</span></span>
+<span id="cb9-13"><a></a>    broom<span class="sc">::</span><span class="fu">tidy</span>()</span>
+<span id="cb9-14"><a></a>}</span>
+<span id="cb9-15"><a></a></span>
+<span id="cb9-16"><a></a>both_results <span class="ot">&lt;-</span> results <span class="sc">|&gt;</span></span>
+<span id="cb9-17"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb9-18"><a></a>    <span class="at">reg_fits =</span> purrr<span class="sc">::</span><span class="fu">map</span>(splits, fit_reg))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1628,23 +1664,23 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>both_results_dat <span class="ot">&lt;-</span> both_results <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb8-3"><a></a>    <span class="at">reg_estimate =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb8-4"><a></a>      reg_fits,</span>
-<span id="cb8-5"><a></a>      <span class="co"># pull the `estimate` for net for each fit</span></span>
-<span id="cb8-6"><a></a>      \(.fit) .fit <span class="sc">|&gt;</span></span>
-<span id="cb8-7"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-8"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
-<span id="cb8-9"><a></a>    )</span>
-<span id="cb8-10"><a></a>    , <span class="at">ipw_estimate =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb8-11"><a></a>      ipw_fits,</span>
-<span id="cb8-12"><a></a>      <span class="co"># pull the `estimate` for net for each fit</span></span>
-<span id="cb8-13"><a></a>      \(.fit) .fit <span class="sc">|&gt;</span></span>
-<span id="cb8-14"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-15"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
-<span id="cb8-16"><a></a>    )</span>
-<span id="cb8-17"><a></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>both_results_dat <span class="ot">&lt;-</span> both_results <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a></a>    <span class="at">reg_estimate =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb10-4"><a></a>      reg_fits,</span>
+<span id="cb10-5"><a></a>      <span class="co"># pull the `estimate` for net for each fit</span></span>
+<span id="cb10-6"><a></a>      \(.fit) .fit <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
+<span id="cb10-9"><a></a>    )</span>
+<span id="cb10-10"><a></a>    , <span class="at">ipw_estimate =</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb10-11"><a></a>      ipw_fits,</span>
+<span id="cb10-12"><a></a>      <span class="co"># pull the `estimate` for net for each fit</span></span>
+<span id="cb10-13"><a></a>      \(.fit) .fit <span class="sc">|&gt;</span></span>
+<span id="cb10-14"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-15"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
+<span id="cb10-16"><a></a>    )</span>
+<span id="cb10-17"><a></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1654,43 +1690,43 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>dat <span class="ot">&lt;-</span> both_results_dat <span class="sc">|&gt;</span> </span>
-<span id="cb9-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate) <span class="sc">|&gt;</span> </span>
-<span id="cb9-3"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
-<span id="cb9-4"><a></a></span>
-<span id="cb9-5"><a></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb9-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
-<span id="cb9-7"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
-<span id="cb9-8"><a></a>    , <span class="fu">aes</span>(</span>
-<span id="cb9-9"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
-<span id="cb9-10"><a></a>      )</span>
-<span id="cb9-11"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb9-12"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
-<span id="cb9-13"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>dat <span class="ot">&lt;-</span> both_results_dat <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
+<span id="cb11-4"><a></a></span>
+<span id="cb11-5"><a></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
+<span id="cb11-8"><a></a>    , <span class="fu">aes</span>(</span>
+<span id="cb11-9"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
+<span id="cb11-10"><a></a>      )</span>
+<span id="cb11-11"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb11-12"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb11-13"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_08_files/figure-revealjs/combined reg &amp; ipw plot-1.png" width="960" class="r-stretch"></section>
+<img data-src="BSMM_8740_lec_08_files/figure-html/combined reg &amp; ipw plot-1.png" width="672" class="r-stretch"></section>
 <section id="ipw-vs-regression-adjustment-2" class="slide level2">
 <h2>IPW vs Regression Adjustment</h2>
 <p>We can compare the means and the confidence intervals:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>dat <span class="sc">|&gt;</span> </span>
-<span id="cb10-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
-<span id="cb10-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
-<span id="cb10-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
-<span id="cb10-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
-<span id="cb10-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
-<span id="cb10-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb12-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
+<span id="cb12-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
+<span id="cb12-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
+<span id="cb12-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 4
   method        mean lower_ci upper_ci
   &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 ipw_estimate -12.6    -13.4    -11.7
-2 reg_estimate -12.2    -12.7    -11.6</code></pre>
+1 ipw_estimate -12.6    -13.5    -11.7
+2 reg_estimate -12.4    -12.9    -11.9</code></pre>
 </div>
 </div>
 <p>Where each mean ate estimate is within the CIs of the other ate mean estimate.</p>
@@ -1701,31 +1737,31 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="co"># bootstrap (1000 times) using the fit_reg function</span></span>
-<span id="cb12-2"><a></a>boot_out_reg <span class="ot">&lt;-</span> boot<span class="sc">::</span><span class="fu">boot</span>(</span>
-<span id="cb12-3"><a></a>  <span class="at">data =</span> causalworkshop<span class="sc">::</span>net_data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net))</span>
-<span id="cb12-4"><a></a>  , <span class="at">R =</span> <span class="dv">1000</span></span>
-<span id="cb12-5"><a></a>  , <span class="at">sim =</span> <span class="st">"ordinary"</span></span>
-<span id="cb12-6"><a></a>  , <span class="at">statistic =</span></span>
-<span id="cb12-7"><a></a>    (\(x,y){ <span class="co"># x is the data, y is a vector of row numbers for the bootstrap sample</span></span>
-<span id="cb12-8"><a></a>      <span class="fu">fit_reg</span>(x[y,]) <span class="sc">|&gt;</span></span>
-<span id="cb12-9"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-10"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
-<span id="cb12-11"><a></a>    })</span>
-<span id="cb12-12"><a></a>)</span>
-<span id="cb12-13"><a></a><span class="co"># calculate the CIs</span></span>
-<span id="cb12-14"><a></a>CIs <span class="ot">&lt;-</span> boot_out_reg <span class="sc">|&gt;</span></span>
-<span id="cb12-15"><a></a>  boot<span class="sc">::</span><span class="fu">boot.ci</span>(<span class="at">L =</span> boot<span class="sc">::</span><span class="fu">empinf</span>(boot_out_reg, <span class="at">index=</span><span class="dv">1</span>L, <span class="at">type=</span><span class="st">"jack"</span>))</span>
-<span id="cb12-16"><a></a></span>
-<span id="cb12-17"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">CI =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"upper"</span>), <span class="at">normal =</span> CIs<span class="sc">$</span>normal[<span class="sc">-</span><span class="dv">1</span>], <span class="at">basic =</span> CIs<span class="sc">$</span>basic[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)]</span>
-<span id="cb12-18"><a></a>               , <span class="at">percent =</span> CIs<span class="sc">$</span>percent[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="co"># bootstrap (1000 times) using the fit_reg function</span></span>
+<span id="cb14-2"><a></a>boot_out_reg <span class="ot">&lt;-</span> boot<span class="sc">::</span><span class="fu">boot</span>(</span>
+<span id="cb14-3"><a></a>  <span class="at">data =</span> causalworkshop<span class="sc">::</span>net_data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net))</span>
+<span id="cb14-4"><a></a>  , <span class="at">R =</span> <span class="dv">1000</span></span>
+<span id="cb14-5"><a></a>  , <span class="at">sim =</span> <span class="st">"ordinary"</span></span>
+<span id="cb14-6"><a></a>  , <span class="at">statistic =</span></span>
+<span id="cb14-7"><a></a>    (\(x,y){ <span class="co"># x is the data, y is a vector of row numbers for the bootstrap sample</span></span>
+<span id="cb14-8"><a></a>      <span class="fu">fit_reg</span>(x[y,]) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"net"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-10"><a></a>        dplyr<span class="sc">::</span><span class="fu">pull</span>(estimate)</span>
+<span id="cb14-11"><a></a>    })</span>
+<span id="cb14-12"><a></a>)</span>
+<span id="cb14-13"><a></a><span class="co"># calculate the CIs</span></span>
+<span id="cb14-14"><a></a>CIs <span class="ot">&lt;-</span> boot_out_reg <span class="sc">|&gt;</span></span>
+<span id="cb14-15"><a></a>  boot<span class="sc">::</span><span class="fu">boot.ci</span>(<span class="at">L =</span> boot<span class="sc">::</span><span class="fu">empinf</span>(boot_out_reg, <span class="at">index=</span><span class="dv">1</span>L, <span class="at">type=</span><span class="st">"jack"</span>))</span>
+<span id="cb14-16"><a></a></span>
+<span id="cb14-17"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">CI =</span> <span class="fu">c</span>(<span class="st">"lower"</span>, <span class="st">"upper"</span>), <span class="at">normal =</span> CIs<span class="sc">$</span>normal[<span class="sc">-</span><span class="dv">1</span>], <span class="at">basic =</span> CIs<span class="sc">$</span>basic[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)]</span>
+<span id="cb14-18"><a></a>               , <span class="at">percent =</span> CIs<span class="sc">$</span>percent[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 4
   CI    normal basic percent
   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
-1 lower  -12.7 -12.7   -12.8
-2 upper  -11.6 -11.5   -11.6</code></pre>
+1 lower  -12.9 -12.9   -12.9
+2 upper  -11.9 -11.8   -11.9</code></pre>
 </div>
 </div>
 </section>
@@ -1751,44 +1787,52 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>D <span class="ot">&lt;-</span> <span class="st">"net"</span></span>
-<span id="cb14-2"><a></a>Y <span class="ot">&lt;-</span> <span class="st">"malaria_risk"</span></span>
-<span id="cb14-3"><a></a>X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'income'</span>, <span class="st">'health'</span>, <span class="st">'temperature'</span>)</span>
-<span id="cb14-4"><a></a></span>
-<span id="cb14-5"><a></a>doubly_robust <span class="ot">&lt;-</span> <span class="cf">function</span>(df, X, D, Y){</span>
-<span id="cb14-6"><a></a>  ps <span class="ot">&lt;-</span> <span class="co"># propensity score</span></span>
-<span id="cb14-7"><a></a>    <span class="fu">as.formula</span>(<span class="fu">paste</span>(D, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb14-8"><a></a>    stats<span class="sc">::</span><span class="fu">glm</span>( <span class="at">data =</span> df, <span class="at">family =</span> <span class="fu">binomial</span>() ) <span class="sc">|&gt;</span></span>
-<span id="cb14-9"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">data =</span> df) <span class="sc">|&gt;</span></span>
-<span id="cb14-10"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
-<span id="cb14-11"><a></a>  </span>
-<span id="cb14-12"><a></a>  lin_frml <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="fu">paste</span>(Y, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>)))</span>
-<span id="cb14-13"><a></a>  </span>
-<span id="cb14-14"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">0</span></span>
-<span id="cb14-15"><a></a>  mu0 <span class="ot">&lt;-</span> <span class="co"># mean response D == 0</span></span>
-<span id="cb14-16"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-17"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
-<span id="cb14-18"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
-<span id="cb14-19"><a></a>  </span>
-<span id="cb14-20"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">1</span></span>
-<span id="cb14-21"><a></a>  mu1 <span class="ot">&lt;-</span> <span class="co"># mean response D == 1</span></span>
-<span id="cb14-22"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">|&gt;</span>  </span>
-<span id="cb14-23"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span> </span>
-<span id="cb14-24"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
-<span id="cb14-25"><a></a>  </span>
-<span id="cb14-26"><a></a>  <span class="co"># convert treatment factor to integer | recast as vectors</span></span>
-<span id="cb14-27"><a></a>  d <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">as.character</span>() <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
-<span id="cb14-28"><a></a>  y <span class="ot">&lt;-</span> df[,Y] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>)</span>
-<span id="cb14-29"><a></a>  </span>
-<span id="cb14-30"><a></a>  <span class="fu">mean</span>( d<span class="sc">*</span>(y <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 ) <span class="sc">-</span></span>
-<span id="cb14-31"><a></a>    <span class="fu">mean</span>(( <span class="dv">1</span><span class="sc">-</span>d)<span class="sc">*</span>(y <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">+</span> mu0 )</span>
-<span id="cb14-32"><a></a>}</span>
-<span id="cb14-33"><a></a></span>
-<span id="cb14-34"><a></a>causalworkshop<span class="sc">::</span>net_data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net)) <span class="sc">|&gt;</span> </span>
-<span id="cb14-35"><a></a>  <span class="fu">doubly_robust</span>(X, D, Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a>D <span class="ot">&lt;-</span> <span class="st">"net"</span></span>
+<span id="cb16-2"><a></a>Y <span class="ot">&lt;-</span> <span class="st">"malaria_risk"</span></span>
+<span id="cb16-3"><a></a>X <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">c</span>(<span class="st">'income'</span>, <span class="st">'health'</span>, <span class="st">'temperature'</span>),<span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'_poly_1'</span>,<span class="dv">3</span>),<span class="fu">rep</span>(<span class="st">'_poly_2'</span>,<span class="dv">3</span>)))</span>
+<span id="cb16-4"><a></a></span>
+<span id="cb16-5"><a></a>doubly_robust <span class="ot">&lt;-</span> <span class="cf">function</span>(df, X, D, Y){</span>
+<span id="cb16-6"><a></a>  ps <span class="ot">&lt;-</span> <span class="co"># propensity score</span></span>
+<span id="cb16-7"><a></a>    <span class="fu">as.formula</span>(<span class="fu">paste</span>(D, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a></a>    stats<span class="sc">::</span><span class="fu">glm</span>( <span class="at">data =</span> df, <span class="at">family =</span> <span class="fu">binomial</span>() ) <span class="sc">|&gt;</span></span>
+<span id="cb16-9"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">data =</span> df) <span class="sc">|&gt;</span></span>
+<span id="cb16-10"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
+<span id="cb16-11"><a></a>  </span>
+<span id="cb16-12"><a></a>  lin_frml <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="fu">paste</span>(Y, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>)))</span>
+<span id="cb16-13"><a></a>  </span>
+<span id="cb16-14"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">0</span></span>
+<span id="cb16-15"><a></a>  mu0 <span class="ot">&lt;-</span> <span class="co"># mean response D == 0</span></span>
+<span id="cb16-16"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-17"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
+<span id="cb16-18"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
+<span id="cb16-19"><a></a>  </span>
+<span id="cb16-20"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">1</span></span>
+<span id="cb16-21"><a></a>  mu1 <span class="ot">&lt;-</span> <span class="co"># mean response D == 1</span></span>
+<span id="cb16-22"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">|&gt;</span>  </span>
+<span id="cb16-23"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span> </span>
+<span id="cb16-24"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
+<span id="cb16-25"><a></a>  </span>
+<span id="cb16-26"><a></a>  <span class="co"># convert treatment factor to integer | recast as vectors</span></span>
+<span id="cb16-27"><a></a>  d <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">as.character</span>() <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
+<span id="cb16-28"><a></a>  y <span class="ot">&lt;-</span> df[,Y] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>)</span>
+<span id="cb16-29"><a></a>  </span>
+<span id="cb16-30"><a></a>  <span class="fu">mean</span>( d<span class="sc">*</span>(y <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 ) <span class="sc">-</span></span>
+<span id="cb16-31"><a></a>    <span class="fu">mean</span>(( <span class="dv">1</span><span class="sc">-</span>d)<span class="sc">*</span>(y <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">+</span> mu0 )</span>
+<span id="cb16-32"><a></a>}</span>
+<span id="cb16-33"><a></a></span>
+<span id="cb16-34"><a></a>doubly_robust_rec <span class="ot">&lt;-</span> causalworkshop<span class="sc">::</span>net_data <span class="sc">|&gt;</span> </span>
+<span id="cb16-35"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net)) <span class="sc">|&gt;</span> </span>
+<span id="cb16-36"><a></a>  recipes<span class="sc">::</span><span class="fu">recipe</span>(malaria_risk <span class="sc">~</span> net <span class="sc">+</span> income <span class="sc">+</span> health <span class="sc">+</span> temperature) <span class="sc">|&gt;</span> </span>
+<span id="cb16-37"><a></a>  recipes<span class="sc">::</span><span class="fu">step_poly</span>(income, health, temperature) <span class="sc">|&gt;</span> </span>
+<span id="cb16-38"><a></a>  recipes<span class="sc">::</span><span class="fu">prep</span>() </span>
+<span id="cb16-39"><a></a></span>
+<span id="cb16-40"><a></a>doubly_robust_dat <span class="ot">&lt;-</span> doubly_robust_rec <span class="sc">|&gt;</span> recipes<span class="sc">::</span><span class="fu">bake</span>(<span class="at">new_data=</span><span class="cn">NULL</span>)</span>
+<span id="cb16-41"><a></a>  </span>
+<span id="cb16-42"><a></a>doubly_robust_dat <span class="sc">|&gt;</span> </span>
+<span id="cb16-43"><a></a>  <span class="fu">doubly_robust</span>(X, D, Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -12.71</code></pre>
+<pre><code>[1] -12.9</code></pre>
 </div>
 </div>
 </section>
@@ -1798,36 +1842,40 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a>all_results_dat <span class="ot">&lt;-</span> both_results_dat <span class="sc">|&gt;</span></span>
-<span id="cb16-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb16-3"><a></a>    <span class="at">dre_estimate =</span> </span>
-<span id="cb16-4"><a></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb16-5"><a></a>        splits</span>
-<span id="cb16-6"><a></a>        , (\(x){</span>
-<span id="cb16-7"><a></a>          rsample<span class="sc">::</span><span class="fu">analysis</span>(x) <span class="sc">|&gt;</span> </span>
-<span id="cb16-8"><a></a>            dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net)) <span class="sc">|&gt;</span> </span>
-<span id="cb16-9"><a></a>            <span class="fu">doubly_robust</span>(X, D, Y)</span>
-<span id="cb16-10"><a></a>        })</span>
-<span id="cb16-11"><a></a>      )</span>
-<span id="cb16-12"><a></a>  )</span>
-<span id="cb16-13"><a></a></span>
-<span id="cb16-14"><a></a>all_results_dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>all_results_dat <span class="ot">&lt;-</span> both_results_dat <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb18-3"><a></a>    <span class="at">dre_estimate =</span> </span>
+<span id="cb18-4"><a></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb18-5"><a></a>        splits</span>
+<span id="cb18-6"><a></a>        , (\(x){</span>
+<span id="cb18-7"><a></a>          <span class="co"># rsample::analysis(x) |&gt; </span></span>
+<span id="cb18-8"><a></a>          <span class="co">#   dplyr::mutate(net = as.numeric(net)) |&gt; </span></span>
+<span id="cb18-9"><a></a>          <span class="co">#   doubly_robust(X, D, Y)</span></span>
+<span id="cb18-10"><a></a></span>
+<span id="cb18-11"><a></a>          doubly_robust_rec <span class="sc">|&gt;</span> </span>
+<span id="cb18-12"><a></a>            recipes<span class="sc">::</span><span class="fu">bake</span>(<span class="at">new_data =</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(x)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-13"><a></a>            <span class="fu">doubly_robust</span>(X, D, Y)</span>
+<span id="cb18-14"><a></a>        })</span>
+<span id="cb18-15"><a></a>      )</span>
+<span id="cb18-16"><a></a>  )</span>
+<span id="cb18-17"><a></a></span>
+<span id="cb18-18"><a></a>all_results_dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># Bootstrap sampling with apparent sample 
 # A tibble: 1,001 × 7
    splits             id            ipw_fits reg_fits
    &lt;list&gt;             &lt;chr&gt;         &lt;list&gt;   &lt;list&gt;  
- 1 &lt;split [1752/640]&gt; Bootstrap0001 &lt;tibble&gt; &lt;tibble&gt;
- 2 &lt;split [1752/647]&gt; Bootstrap0002 &lt;tibble&gt; &lt;tibble&gt;
- 3 &lt;split [1752/644]&gt; Bootstrap0003 &lt;tibble&gt; &lt;tibble&gt;
- 4 &lt;split [1752/632]&gt; Bootstrap0004 &lt;tibble&gt; &lt;tibble&gt;
- 5 &lt;split [1752/639]&gt; Bootstrap0005 &lt;tibble&gt; &lt;tibble&gt;
- 6 &lt;split [1752/629]&gt; Bootstrap0006 &lt;tibble&gt; &lt;tibble&gt;
- 7 &lt;split [1752/634]&gt; Bootstrap0007 &lt;tibble&gt; &lt;tibble&gt;
- 8 &lt;split [1752/650]&gt; Bootstrap0008 &lt;tibble&gt; &lt;tibble&gt;
- 9 &lt;split [1752/635]&gt; Bootstrap0009 &lt;tibble&gt; &lt;tibble&gt;
-10 &lt;split [1752/658]&gt; Bootstrap0010 &lt;tibble&gt; &lt;tibble&gt;
+ 1 &lt;split [1752/655]&gt; Bootstrap0001 &lt;tibble&gt; &lt;tibble&gt;
+ 2 &lt;split [1752/653]&gt; Bootstrap0002 &lt;tibble&gt; &lt;tibble&gt;
+ 3 &lt;split [1752/639]&gt; Bootstrap0003 &lt;tibble&gt; &lt;tibble&gt;
+ 4 &lt;split [1752/660]&gt; Bootstrap0004 &lt;tibble&gt; &lt;tibble&gt;
+ 5 &lt;split [1752/659]&gt; Bootstrap0005 &lt;tibble&gt; &lt;tibble&gt;
+ 6 &lt;split [1752/639]&gt; Bootstrap0006 &lt;tibble&gt; &lt;tibble&gt;
+ 7 &lt;split [1752/677]&gt; Bootstrap0007 &lt;tibble&gt; &lt;tibble&gt;
+ 8 &lt;split [1752/674]&gt; Bootstrap0008 &lt;tibble&gt; &lt;tibble&gt;
+ 9 &lt;split [1752/621]&gt; Bootstrap0009 &lt;tibble&gt; &lt;tibble&gt;
+10 &lt;split [1752/638]&gt; Bootstrap0010 &lt;tibble&gt; &lt;tibble&gt;
 # ℹ 991 more rows
 # ℹ 3 more variables: reg_estimate &lt;dbl&gt;,
 #   ipw_estimate &lt;dbl&gt;, dre_estimate &lt;dbl&gt;</code></pre>
@@ -1840,44 +1888,44 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span> </span>
-<span id="cb18-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate, dre_estimate) <span class="sc">|&gt;</span> </span>
-<span id="cb18-3"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
-<span id="cb18-4"><a></a></span>
-<span id="cb18-5"><a></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb18-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
-<span id="cb18-7"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
-<span id="cb18-8"><a></a>    , <span class="fu">aes</span>(</span>
-<span id="cb18-9"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
-<span id="cb18-10"><a></a>      )</span>
-<span id="cb18-11"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb18-12"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
-<span id="cb18-13"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate, dre_estimate) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
+<span id="cb20-4"><a></a></span>
+<span id="cb20-5"><a></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
+<span id="cb20-7"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
+<span id="cb20-8"><a></a>    , <span class="fu">aes</span>(</span>
+<span id="cb20-9"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
+<span id="cb20-10"><a></a>      )</span>
+<span id="cb20-11"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-12"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb20-13"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_08_files/figure-revealjs/dre reg ipw plot-1.png" width="960" class="r-stretch"></section>
+<img data-src="BSMM_8740_lec_08_files/figure-html/dre reg ipw plot-1.png" width="672" class="r-stretch"></section>
 <section id="doubly-robust-estimation-5" class="slide level2">
 <h2>Doubly Robust Estimation</h2>
 <p>Confidence intervals, including the dre:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>dat <span class="sc">|&gt;</span> </span>
-<span id="cb19-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
-<span id="cb19-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
-<span id="cb19-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
-<span id="cb19-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
-<span id="cb19-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
-<span id="cb19-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
+<span id="cb21-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb21-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
+<span id="cb21-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
+<span id="cb21-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
+<span id="cb21-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
   method        mean lower_ci upper_ci
   &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 dre_estimate -12.7    -13.4    -12.0
-2 ipw_estimate -12.6    -13.4    -11.7
-3 reg_estimate -12.2    -12.7    -11.6</code></pre>
+1 dre_estimate -12.9    -13.5    -12.3
+2 ipw_estimate -12.6    -13.5    -11.7
+3 reg_estimate -12.4    -12.9    -11.9</code></pre>
 </div>
 </div>
 </section>
@@ -1899,30 +1947,30 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>doubly_robust_bad_ipw <span class="ot">&lt;-</span> <span class="cf">function</span>(df, X, D, Y){</span>
-<span id="cb21-2"><a></a>  ps <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">dim</span>(df)[<span class="dv">1</span>], <span class="fl">0.1</span>, <span class="fl">0.9</span>) <span class="co"># wrong propensity score </span></span>
-<span id="cb21-3"><a></a>  </span>
-<span id="cb21-4"><a></a>  lin_frml <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="fu">paste</span>(Y, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>)))</span>
-<span id="cb21-5"><a></a>  </span>
-<span id="cb21-6"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">0</span></span>
-<span id="cb21-7"><a></a>  mu0 <span class="ot">&lt;-</span> <span class="co"># mean response D == 0</span></span>
-<span id="cb21-8"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">%&gt;%</span></span>
-<span id="cb21-9"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
-<span id="cb21-10"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
-<span id="cb21-11"><a></a>  </span>
-<span id="cb21-12"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">1</span></span>
-<span id="cb21-13"><a></a>  mu1 <span class="ot">&lt;-</span> <span class="co"># mean response D == 1</span></span>
-<span id="cb21-14"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">|&gt;</span></span>
-<span id="cb21-15"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
-<span id="cb21-16"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
-<span id="cb21-17"><a></a>  </span>
-<span id="cb21-18"><a></a>  <span class="co"># convert treatment factor to integer | recast as vectors</span></span>
-<span id="cb21-19"><a></a>  d <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">as.character</span>() <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
-<span id="cb21-20"><a></a>  y <span class="ot">&lt;-</span> df[,Y] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>)</span>
-<span id="cb21-21"><a></a>  </span>
-<span id="cb21-22"><a></a>  <span class="fu">mean</span>( d<span class="sc">*</span>(y <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 ) <span class="sc">-</span></span>
-<span id="cb21-23"><a></a>    <span class="fu">mean</span>(( <span class="dv">1</span><span class="sc">-</span>d)<span class="sc">*</span>(y <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">+</span> mu0 )</span>
-<span id="cb21-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>doubly_robust_bad_ipw <span class="ot">&lt;-</span> <span class="cf">function</span>(df, X, D, Y){</span>
+<span id="cb23-2"><a></a>  ps <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="fu">dim</span>(df)[<span class="dv">1</span>], <span class="fl">0.1</span>, <span class="fl">0.9</span>) <span class="co"># wrong propensity score </span></span>
+<span id="cb23-3"><a></a>  </span>
+<span id="cb23-4"><a></a>  lin_frml <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="fu">paste</span>(Y, <span class="st">" ~ "</span>, <span class="fu">paste</span>(X, <span class="at">collapse=</span> <span class="st">"+"</span>)))</span>
+<span id="cb23-5"><a></a>  </span>
+<span id="cb23-6"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">0</span></span>
+<span id="cb23-7"><a></a>  mu0 <span class="ot">&lt;-</span> <span class="co"># mean response D == 0</span></span>
+<span id="cb23-8"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">%&gt;%</span></span>
+<span id="cb23-9"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
+<span id="cb23-10"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
+<span id="cb23-11"><a></a>  </span>
+<span id="cb23-12"><a></a>  idx <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">==</span> <span class="dv">1</span></span>
+<span id="cb23-13"><a></a>  mu1 <span class="ot">&lt;-</span> <span class="co"># mean response D == 1</span></span>
+<span id="cb23-14"><a></a>    <span class="fu">lm</span>(lin_frml, <span class="at">data =</span> df[idx,]) <span class="sc">|&gt;</span></span>
+<span id="cb23-15"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">type.predict =</span> <span class="st">"response"</span>, <span class="at">newdata =</span> df[,X]) <span class="sc">|&gt;</span></span>
+<span id="cb23-16"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>(.fitted)</span>
+<span id="cb23-17"><a></a>  </span>
+<span id="cb23-18"><a></a>  <span class="co"># convert treatment factor to integer | recast as vectors</span></span>
+<span id="cb23-19"><a></a>  d <span class="ot">&lt;-</span> df[,D] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">as.character</span>() <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span>
+<span id="cb23-20"><a></a>  y <span class="ot">&lt;-</span> df[,Y] <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="dv">1</span>)</span>
+<span id="cb23-21"><a></a>  </span>
+<span id="cb23-22"><a></a>  <span class="fu">mean</span>( d<span class="sc">*</span>(y <span class="sc">-</span> mu1)<span class="sc">/</span>ps <span class="sc">+</span> mu1 ) <span class="sc">-</span></span>
+<span id="cb23-23"><a></a>    <span class="fu">mean</span>(( <span class="dv">1</span><span class="sc">-</span>d)<span class="sc">*</span>(y <span class="sc">-</span> mu0)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps) <span class="sc">+</span> mu0 )</span>
+<span id="cb23-24"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1931,57 +1979,60 @@ N = 3,511</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>all_results_dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span></span>
-<span id="cb22-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb22-3"><a></a>    <span class="at">bad_ipw_estimate =</span> </span>
-<span id="cb22-4"><a></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb22-5"><a></a>        splits</span>
-<span id="cb22-6"><a></a>        , (\(x){</span>
-<span id="cb22-7"><a></a>          rsample<span class="sc">::</span><span class="fu">analysis</span>(x) <span class="sc">|&gt;</span> </span>
-<span id="cb22-8"><a></a>            dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">net =</span> <span class="fu">as.numeric</span>(net)) <span class="sc">|&gt;</span> <span class="co"># not needed</span></span>
-<span id="cb22-9"><a></a>            <span class="fu">doubly_robust_bad_ipw</span>(X, D, Y)</span>
-<span id="cb22-10"><a></a>        })</span>
-<span id="cb22-11"><a></a>      )</span>
-<span id="cb22-12"><a></a>  )</span>
-<span id="cb22-13"><a></a></span>
-<span id="cb22-14"><a></a>dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span> </span>
-<span id="cb22-15"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate, dre_estimate, bad_ipw_estimate) <span class="sc">|&gt;</span> </span>
-<span id="cb22-16"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
-<span id="cb22-17"><a></a></span>
-<span id="cb22-18"><a></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb22-19"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
-<span id="cb22-20"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
-<span id="cb22-21"><a></a>    , <span class="fu">aes</span>(</span>
-<span id="cb22-22"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
-<span id="cb22-23"><a></a>      )</span>
-<span id="cb22-24"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb22-25"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
-<span id="cb22-26"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>all_results_dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb24-3"><a></a>    <span class="at">dre_bad_ipw_estimate =</span> </span>
+<span id="cb24-4"><a></a>      purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb24-5"><a></a>        splits</span>
+<span id="cb24-6"><a></a>        , (\(x){</span>
+<span id="cb24-7"><a></a>          <span class="co"># rsample::analysis(x) |&gt; </span></span>
+<span id="cb24-8"><a></a>          <span class="co">#   # dplyr::mutate(net = as.numeric(net)) |&gt; # not needed</span></span>
+<span id="cb24-9"><a></a>          <span class="co">#   recipes::bake(new_data = rsample::analysis(x)) |&gt; </span></span>
+<span id="cb24-10"><a></a>          doubly_robust_rec <span class="sc">|&gt;</span> </span>
+<span id="cb24-11"><a></a>            recipes<span class="sc">::</span><span class="fu">bake</span>(<span class="at">new_data =</span> rsample<span class="sc">::</span><span class="fu">analysis</span>(x)) <span class="sc">|&gt;</span> </span>
+<span id="cb24-12"><a></a>            <span class="fu">doubly_robust_bad_ipw</span>(X, D, Y)</span>
+<span id="cb24-13"><a></a>        })</span>
+<span id="cb24-14"><a></a>      )</span>
+<span id="cb24-15"><a></a>  )</span>
+<span id="cb24-16"><a></a></span>
+<span id="cb24-17"><a></a>dat <span class="ot">&lt;-</span> all_results_dat <span class="sc">|&gt;</span> </span>
+<span id="cb24-18"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(reg_estimate, ipw_estimate, dre_estimate, dre_bad_ipw_estimate) <span class="sc">|&gt;</span> </span>
+<span id="cb24-19"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"effect estimate"</span>)</span>
+<span id="cb24-20"><a></a></span>
+<span id="cb24-21"><a></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb24-22"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">method=</span><span class="fu">factor</span>(method)) <span class="sc">|&gt;</span></span>
+<span id="cb24-23"><a></a>  <span class="fu">ggplot</span>( <span class="at">bins =</span> <span class="dv">50</span>, <span class="at">alpha =</span> .<span class="dv">5</span></span>
+<span id="cb24-24"><a></a>    , <span class="fu">aes</span>(</span>
+<span id="cb24-25"><a></a>      <span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fu">after_stat</span>(density) , <span class="at">colour =</span> method, <span class="at">fill =</span> method</span>
+<span id="cb24-26"><a></a>      )</span>
+<span id="cb24-27"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-28"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">position =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb24-29"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_08_files/figure-revealjs/bad ipw estimate plot-1.png" width="960" class="r-stretch"></section>
+<img data-src="BSMM_8740_lec_08_files/figure-html/bad ipw estimate plot-1.png" width="672" class="r-stretch"></section>
 <section id="doubly-robust-estimation-9" class="slide level2">
 <h2>Doubly Robust Estimation</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>dat <span class="sc">|&gt;</span> </span>
-<span id="cb23-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
-<span id="cb23-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
-<span id="cb23-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
-<span id="cb23-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
-<span id="cb23-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
-<span id="cb23-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(method) <span class="sc">|&gt;</span> </span>
+<span id="cb25-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb25-4"><a></a>  <span class="at">mean =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>)</span>
+<span id="cb25-5"><a></a>  , <span class="at">lower_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.025</span>)</span>
+<span id="cb25-6"><a></a>  , <span class="at">upper_ci =</span> <span class="fu">quantile</span>(<span class="st">`</span><span class="at">effect estimate</span><span class="st">`</span>, <span class="fl">0.975</span>)</span>
+<span id="cb25-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 4
-  method            mean lower_ci upper_ci
-  &lt;chr&gt;            &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 bad_ipw_estimate -12.9    -13.6    -12.1
-2 dre_estimate     -12.7    -13.4    -12.0
-3 ipw_estimate     -12.6    -13.4    -11.7
-4 reg_estimate     -12.2    -12.7    -11.6</code></pre>
+  method                mean lower_ci upper_ci
+  &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 dre_bad_ipw_estimate -12.9    -13.6    -12.2
+2 dre_estimate         -12.9    -13.5    -12.3
+3 ipw_estimate         -12.6    -13.5    -11.7
+4 reg_estimate         -12.4    -12.9    -11.9</code></pre>
 </div>
 </div>
 </section>
@@ -2018,19 +2069,19 @@ Y &amp; = Z +  \mathscr{N}(0,1)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="fu">set.seed</span>(<span class="dv">928</span>)</span>
-<span id="cb25-2"><a></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb25-3"><a></a>finite_sample <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb25-4"><a></a>  <span class="co"># z is normally distributed with a mean: 0 and sd: 1</span></span>
-<span id="cb25-5"><a></a>  <span class="at">z =</span> <span class="fu">rnorm</span>(n),</span>
-<span id="cb25-6"><a></a>  <span class="co"># x is defined from a probit selection model with normally distributed errors</span></span>
-<span id="cb25-7"><a></a>  <span class="at">x =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb25-8"><a></a>    <span class="fl">0.5</span> <span class="sc">+</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb25-9"><a></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span></span>
-<span id="cb25-10"><a></a>  ),</span>
-<span id="cb25-11"><a></a>  <span class="co"># y is continuous, dependent only on z with normally distrbuted errors</span></span>
-<span id="cb25-12"><a></a>  <span class="at">y =</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb25-13"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">set.seed</span>(<span class="dv">928</span>)</span>
+<span id="cb27-2"><a></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb27-3"><a></a>finite_sample <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb27-4"><a></a>  <span class="co"># z is normally distributed with a mean: 0 and sd: 1</span></span>
+<span id="cb27-5"><a></a>  <span class="at">z =</span> <span class="fu">rnorm</span>(n),</span>
+<span id="cb27-6"><a></a>  <span class="co"># x is defined from a probit selection model with normally distributed errors</span></span>
+<span id="cb27-7"><a></a>  <span class="at">x =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb27-8"><a></a>    <span class="fl">0.5</span> <span class="sc">+</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb27-9"><a></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span></span>
+<span id="cb27-10"><a></a>  ),</span>
+<span id="cb27-11"><a></a>  <span class="co"># y is continuous, dependent only on z with normally distrbuted errors</span></span>
+<span id="cb27-12"><a></a>  <span class="at">y =</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb27-13"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -2038,6 +2089,20 @@ Y &amp; = Z +  \mathscr{N}(0,1)
 <h2>Finite Sample Bias</h2>
 <p>If we fit a propensity score model using the one confounder <span class="math inline">\(Z\)</span> and calculate the weighted estimator, we should get an unbiased result (which in this case would be <span class="math inline">\(0\)</span>).</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="do">## fit the propensity score model</span></span>
+<span id="cb28-2"><a></a>finite_sample_wts <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb28-3"><a></a>  x <span class="sc">~</span> z,</span>
+<span id="cb28-4"><a></a>  <span class="at">data =</span> finite_sample,</span>
+<span id="cb28-5"><a></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="st">"probit"</span>)</span>
+<span id="cb28-6"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb28-7"><a></a>  broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">newdata =</span> finite_sample, <span class="at">type.predict =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-8"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, x))</span>
+<span id="cb28-9"><a></a></span>
+<span id="cb28-10"><a></a>finite_sample_wts <span class="sc">|&gt;</span></span>
+<span id="cb28-11"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb28-12"><a></a>    <span class="at">effect =</span> <span class="fu">sum</span>(y <span class="sc">*</span> x <span class="sc">*</span> wts) <span class="sc">/</span> <span class="fu">sum</span>(x <span class="sc">*</span> wts) <span class="sc">-</span></span>
+<span id="cb28-13"><a></a>      <span class="fu">sum</span>(y <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x) <span class="sc">*</span> wts) <span class="sc">/</span> <span class="fu">sum</span>((<span class="dv">1</span> <span class="sc">-</span> x) <span class="sc">*</span> wts)</span>
+<span id="cb28-14"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 1
   effect
@@ -2049,12 +2114,71 @@ Y &amp; = Z +  \mathscr{N}(0,1)
 <section id="finite-sample-bias-3" class="slide level2">
 <h2>Finite Sample Bias</h2>
 <p>Our effect of is pretty far from 0, although it’s hard to know if this is really bias, or something we are just seeing by chance in this particular simulated sample. To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>sim <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb30-2"><a></a>  <span class="do">## create a simulated dataset</span></span>
+<span id="cb30-3"><a></a>  finite_sample <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb30-4"><a></a>    <span class="at">z =</span> <span class="fu">rnorm</span>(n),</span>
+<span id="cb30-5"><a></a>    <span class="at">x =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb30-6"><a></a>      <span class="fl">0.5</span> <span class="sc">+</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb30-7"><a></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span></span>
+<span id="cb30-8"><a></a>    ),</span>
+<span id="cb30-9"><a></a>    <span class="at">y =</span> z <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb30-10"><a></a>  )</span>
+<span id="cb30-11"><a></a>  finite_sample_wts <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb30-12"><a></a>    x <span class="sc">~</span> z,</span>
+<span id="cb30-13"><a></a>    <span class="at">data =</span> finite_sample,</span>
+<span id="cb30-14"><a></a>    <span class="at">family =</span> <span class="fu">binomial</span>(<span class="st">"probit"</span>)</span>
+<span id="cb30-15"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb30-16"><a></a>    broom<span class="sc">::</span><span class="fu">augment</span>(<span class="at">newdata =</span> finite_sample, <span class="at">type.predict =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-17"><a></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wts =</span> propensity<span class="sc">::</span><span class="fu">wt_ate</span>(.fitted, x))</span>
+<span id="cb30-18"><a></a>  bias <span class="ot">&lt;-</span> finite_sample_wts <span class="sc">|&gt;</span></span>
+<span id="cb30-19"><a></a>    dplyr<span class="sc">::</span><span class="fu">summarize</span>(</span>
+<span id="cb30-20"><a></a>      <span class="at">effect =</span> <span class="fu">sum</span>(y <span class="sc">*</span> x <span class="sc">*</span> wts) <span class="sc">/</span> <span class="fu">sum</span>(x <span class="sc">*</span> wts) <span class="sc">-</span></span>
+<span id="cb30-21"><a></a>        <span class="fu">sum</span>(y <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x) <span class="sc">*</span> wts) <span class="sc">/</span> <span class="fu">sum</span>((<span class="dv">1</span> <span class="sc">-</span> x) <span class="sc">*</span> wts)</span>
+<span id="cb30-22"><a></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb30-23"><a></a>    dplyr<span class="sc">::</span><span class="fu">pull</span>()</span>
+<span id="cb30-24"><a></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb30-25"><a></a>    <span class="at">n =</span> n,</span>
+<span id="cb30-26"><a></a>    <span class="at">bias =</span> bias</span>
+<span id="cb30-27"><a></a>  )</span>
+<span id="cb30-28"><a></a>}</span>
+<span id="cb30-29"><a></a></span>
+<span id="cb30-30"><a></a><span class="do">## Examine 5 different sample sizes, simulate each 1000 times</span></span>
+<span id="cb30-31"><a></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb30-32"><a></a>finite_sample_sims <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_df</span>(</span>
+<span id="cb30-33"><a></a>  <span class="fu">rep</span>(</span>
+<span id="cb30-34"><a></a>    <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">1000</span>, <span class="dv">5000</span>, <span class="dv">10000</span>),</span>
+<span id="cb30-35"><a></a>    <span class="at">each =</span> <span class="dv">1000</span></span>
+<span id="cb30-36"><a></a>  ),</span>
+<span id="cb30-37"><a></a>  sim</span>
+<span id="cb30-38"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0
+or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0
+or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0
+or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0
+or 1 occurred</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>bias <span class="ot">&lt;-</span> finite_sample_sims <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(n) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">bias =</span> <span class="fu">mean</span>(bias))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="finite-sample-bias-4" class="slide level2">
 <h2>Finite Sample Bias</h2>
 <p>Ploting the results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">ggplot</span>(bias, <span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> bias)) <span class="sc">+</span></span>
+<span id="cb33-2"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb33-3"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb33-4"><a></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-<img data-src="BSMM_8740_lec_08_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch quarto-figure-center"><p class="caption">Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000</p></section>
+</div>
+<img data-src="BSMM_8740_lec_08_files/figure-html/unnamed-chunk-24-1.png" width="672" class="r-stretch quarto-figure-center"><p class="caption">Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000</p></section>
 <section id="finite-sample-bias-5" class="slide level2">
 <h2>Finite Sample Bias</h2>
 <div style="font-size: x-large">
@@ -2302,44 +2426,6 @@ Y &amp; = Z +  \mathscr{N}(0,1)
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
