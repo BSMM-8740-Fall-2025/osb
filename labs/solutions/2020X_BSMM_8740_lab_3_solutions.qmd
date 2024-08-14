@@ -1,5 +1,5 @@
 ---
-title: "Lab 4 - Regression"
+title: "Lab 3 - Regression"
 subtitle: "SOLUTIONS"
 editor: visual
 format: html
@@ -23,10 +23,16 @@ We will use the following package in today's lab.
 
 ```{r}
 #| message: false
-require(magrittr)
-library(tidyverse)  # for data wrangling + visualization
-library(tidymodels) # for modeling
-library(knitr)      # for pretty printing of tables
+#| warning: false
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2, knitr,
+  ISLR2, stats, xgboost
+)
 theme_set(theme_bw(base_size = 12))
 ```
 
