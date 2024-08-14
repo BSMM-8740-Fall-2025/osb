@@ -1,5 +1,5 @@
 ---
-title: "Lab 2 - EDA and Feature Engineering"
+title: "Lab 3 - The Recipes package"
 subtitle: "SOLUTIONS"
 editor: visual
 format: html
@@ -9,429 +9,518 @@ reference-location: margin
 
 ## Packages
 
-Here are some of the packages we'll use in this lab.
+We will use the following package in this lab.
 
 ```{r}
 #| message: false
-#| echo: true
-
+#| warning: false
 # check if 'librarian' is installed and if not, install it
 if (! "librarian" %in% rownames(installed.packages()) ){
   install.packages("librarian")
 }
   
 # load packages if not already loaded
-librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer)
+librarian::shelf(
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2
+)
 
-# library(magrittr)     # the pipe
-# library(tidyverse)    # for data wrangling + visualization
-# library(tidymodels)   # for modeling
-# library(gt)           # for making display tables
-# library(gtExtras)     # helper functions for beautiful tables
-# library(DataExplorer) #
+theme_set(theme_bw(base_size = 12))
+boston_cocktails <- readr::read_csv('../data/boston_cocktails.csv', show_col_types = FALSE)
 ```
 
-## Data: The Tate Collection
+::: callout-tip
+I like to use the `gt::` and `gtExtras::` packages to format my tables. The results can be saved as an image and are especially useful for inserting into PowerPoint decks.
 
-Tate is an institution that houses the United Kingdom's national collection of British art, and international modern and contemporary art. It is a network of four art museums: Tate Britain, London (until 2000 known as the Tate Gallery, founded 1897), Tate Liverpool (founded 1988), Tate St Ives, Cornwall (founded 1993) and Tate Modern, London (founded 2000), with a complementary website, Tate Online (created 1998). Tate is not a government institution, but its main sponsor is the UK Department for Culture, Media and Sport.
+You'll see examples thoughout the course and I encourage you to examine the examples and use gt:: and `gtExtras::` in your own work.
+:::
 
-This dataset used here contains the metadata for around 70,000 artworks that Tate owns or jointly owns with the National Galleries of Scotland as part of ARTIST ROOMS. Metadata for around 3,500 associated artists is also included.
+## Data: The Boston Cocktail Recipes
 
-The metadata here is released under the Creative Commons Public Domain CC0 licence. Images are not included and are not part of the dataset.
+The Boston Cocktail Recipes dataset appeared in a TidyTuesday posting. TidyTuesday is a weekly data project in R.
 
-This dataset contains the following information for each artwork:
+The dataset is derived from the [Mr. Boston Bartender's Guide](http://swizzle.ru/uploads/article_file/17/mr_boston.pdf), together with a dataset that was web-scraped as part of a hackathon.
 
-|                  |                    |
-|------------------|--------------------|
-| Id               | acquisitionYear    |
-| accession_number | dimensions         |
-| artist           | width              |
-| artistRole       | height             |
-| artistId         | depth              |
-| title            | units              |
-| dateText         | inscription        |
-| medium           | thumbnailCopyright |
-| creditLine       | thumbnailUr        |
-| year             | url                |
+This dataset contains the following information for each cocktail:
 
-Use the code below to load the Tate Collection data sets, and note the names of the variable referencing each dataset.
-
-```{r}
-#| message: false
-the_tate <- 
-  readr::read_delim(
-    "../data/the-tate-collection.csv"
-    , ";"
-    , escape_double = FALSE
-    , trim_ws = TRUE
-  )
-the_tate_artists <- readr::read_csv("../data/the-tate-artists.csv")
-```
+| variable          | class     | description                      |
+|-------------------|-----------|----------------------------------|
+| name              | character | Name of cocktail                 |
+| category          | character | Category of cocktail             |
+| row_id            | integer   | Drink identifier                 |
+| ingredient_number | integer   | Ingredient number                |
+| ingredient        | character | Ingredient                       |
+| measure           | character | Measurement/volume of ingredient |
+| measure_number    | real      | measure as a number              |
 
 ## Exercises
 
 ### Exercise 1
 
-First of all, let's analyze the entire dataset as it is. We have 69201 observations, each one corresponding to an artwork in Tate collection. For each observation/artwork, we have 20 attributes, including artist, title, date, medium, dimensions and Tate's acquisition year. Generate some general observations about the dataset using `dplyr::summarize`, including the number of *unique artists* represented in the collection, the *period* represented in the collection and the *acquisition period* over which the collection was created.
+First use `skimr::skim` and `DataExplorer::introduce` to assess the quality of the data set.
 
-Next use `DataExplorer::introduce` and `DataExplorer::plot_missing()` to examine the scope of missing data.
+Next prepare a `summary`. What is the median measure number across cocktail recipes?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-the_tate %>% dim()
+#| layout-nrow: 3
+boston_cocktails %>% skimr::skim()
 ```
 
 ```{r}
-tts <- the_tate %>% 
-  dplyr::summarize(
-    num_artists = length(unique(artist))
-    , period_start = min(year, na.rm = T)
-    , period_end = max(year, na.rm = T)
-    , acquisition_start = min(acquisitionYear, na.rm = T)
-    , acquisition_end = max(acquisitionYear, na.rm = T)
-  ) %T>%
-  (\(x) print(x))
+boston_cocktails %>% summary()
 ```
 
-```{r}
-stringr::str_glue(
-  "The works of {tts$num_artists} artists, created between {tts$period_start}-{tts$period_end}, were acquired by the Tate from {tts$acquisition_start} to {tts$acquisition_end}")
-```
-
-```{r}
-#| layout-nrow: 2
-the_tate %>% DataExplorer::introduce() %>% dplyr::glimpse()
-the_tate %>% DataExplorer::plot_missing()
-```
+The median measure is 1.0. Note that the dimensions are identified as ounces (oz) in the `measure` column.
 :::
 
 ### Exercise 2
 
-Roughly 7.8% of the works in the collection have missing dates, How many works have missing dates (i.e. the number)
+From the boston_cocktails dataset select the *name*, *category*, *ingredient*, and *measure_number* columns and then pivot the table to create a column for each ingredient. Fill any missing values with the number zero.
 
-Use the `table()` function to count the number of works missing for each artist. Convert the table in to a tibble using `tibble::as_tibble()`, and then sort the count in descending order.
+Since the names of the new columns may contain spaces, clean them using the `janitor::clean_names()`. Finally drop any rows with NA values and save this new dataset in a variable.
 
-How many artists have works with missing dates?
-
-Mutate the resulting table, adding columns for the percent of the total missing data for each artist, and another for the cumulative percent (just apply `cumsum()` to the percentage for each artist.
-
-If we could identify all the missing dates for each artists, what is the smallest number of arists needed to resolve at least 50% of the missing year data?
-
-Is this missing data MCAR, MAR, or MNAR?
+How much gin is in the cocktail called **Leap Frog Highball**?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-missing_year <- the_tate %>% 
-  dplyr::filter(is.na(year))  # select the rows where the year value is missing
-missing_year %>% dim()
+cocktails_df <- boston_cocktails %>%
+  # select the columns (by de-selecting the ones we don't want)
+  dplyr::select(-ingredient_number, -row_id, -measure) %>%
+  # pivot wider (make more columns); use zeros in place of NA values
+  tidyr::pivot_wider(
+    names_from = ingredient
+    , values_from = measure_number
+    , values_fill = 0
+  ) %>%
+  janitor::clean_names() %>%
+  tidyr::drop_na()
+# show the table in the document
+cocktails_df
 ```
 
 ```{r}
-missing_artist_tbl <- 
-  missing_year$artist %>%         # take the artist column from the table of missing years
-  table() %>%                     # make a table of counts for each artist 
-  tibble::as_tibble() %>%         # convert it to a tibble / data.frame
-  dplyr::rename(artist = 1) %>%   # rename the first column
-  arrange(desc(n)) %>%            # arrange in descending order by count
-  mutate(                         # add or update columns
-    total = sum(n)                # create a temporary column: sum of all counts
-    , pct_of_missing = n/total    # calculate the % missing for each artist
-    , cum_pct = 
-      cumsum(pct_of_missing)      # calculate the cumulative % missing
-  ) %T>% 
-  (\(x) print(dim(x))) %>% 
-  dplyr::select(-total)           # drop the temporary column
+cocktails_df %>% 
+  # filter for the desired cocktail
+  dplyr::filter(name == 'Leap Frog Highball') %>% 
+  dplyr::pull(gin)
 ```
 
-```{r}
-missing_artist_tbl %>% 
-  dplyr::filter(cum_pct <= 0.51) %>% 
-  print(n=100)
-```
-
-There are 5397 works with missing dates, 461 artists with whose works have missing dates, and the works of 11 artists account for almost 50% of the missing dates.
-
-Since most of the missing year data is associated with a handful of artists, the missing data would be classified as MAR.
+Two ounces (oz) of gin are in the *Leap Frog Highball.*
 :::
 
 ### Exercise 3
 
-Prepare a table showing the number of works for each unique artist, ordered from the largest number of works to the smallest. Show the top 10 artists by number of works in the collection.
+Prepare a recipes::recipe object without a target but give name and category as 'id' roles. Add steps to normalize the predictors and perform PCA. Finally `prep` the data and save it in a variable.
+
+How many predictor variables are prepped by the recipe?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-tate_artists_tbl <- 
-  the_tate$artist %>%             # take the artist column from the complete dataset
-  table() %>%                     # make a table of counts for each artist 
-  tibble::as_tibble() %>%         # convert it to a tibble / data.frame
-  dplyr::rename(artist = 1) %>%   # rename the first column
-  arrange(desc(n))                # arrange in descending order by count
-
-tate_artists_tbl
+# create a recipe: y~. with an outcome/target, but here we just use ~.
+pca_rec <- recipes::recipe(~., data = cocktails_df) 
+pca_rec %>% summary()
 ```
+
+```{r}
+pca_rec <- pca_rec %>% 
+  # change the roles of name and category to 'id' from 'predictor'
+  recipes::update_role(name, category, new_role = "id") %>%
+  # normalize the remaining predictors
+  recipes::step_normalize(all_predictors()) %>%
+  # convert the predictors to principle components
+  recipes::step_pca(all_predictors())
+
+# note there are 40 predictors, but that nothing has been calculated yet
+pca_rec %>% summary()
+```
+
+```{r}
+# calculate prepare the data per the steps in the recipe
+pca_prep <- recipes::prep(pca_rec)
+pca_prep %>% summary
+```
+
+-   There are 40 predictors and 2 id variables before the data is prepped.
+-   Once prepped, the PCA returns just 5 components by default, so we have (post-prep) 5 predictors and 2 id variables.
 :::
 
 ### Exercise 4
 
-Modify the table from the last exercise to show the percentage of the total collection that each artist represents. Format the table using `gt::gt` with the percentage column formatted for display as a percentage, to two decimals. Apply a theme from the `gtExtras` package to the formatted table.
+Apply the `recipes::tidy` verb to the prepped recipe in the last exercise. The result is a table identifying the information generated and stored by each step in the recipe from the input data.
+
+To see the values calculated for normalization, apply the `recipes::tidy` verb as before, but with second argument = 1.
+
+What ingredient is the most used, on average?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-tate_artists_tbl %>% 
-  dplyr::mutate(
-    pct_of_collection = n/sum(n, na.rm = T)
-  ) %>% 
-  dplyr::slice_head(n=10) %>% 
-  gt::gt('artist') %>% 
-  gt::fmt_percent(column = pct_of_collection) %>% 
-  gtExtras::gt_theme_538()
+# tidy returns a tibble with the calculations performed by prep
+pca_prep %>% recipes::tidy()
 ```
+
+```{r}
+# if we select the first (normalization) step we get the values calculated:
+# - the mean and standard deviation for each variable
+foo <- pca_prep %>% recipes::tidy(1)
+foo
+```
+
+```{r}
+# we can just filter to find the largest mean value
+# first, isolate the mean values
+foo %>% dplyr::filter(statistic == 'mean') %>% 
+  # once we have just the mean values, filter out the row with the max value 
+  dplyr::filter(value == max(value))
+```
+
+On average, it is gin that is the largest component of the cocktails, with just over 1/4 oz per cocktail.
 :::
 
 ### Exercise 5
 
-Using the tibble `the_tate`, select the columns for artist and title and count the number of rows.
+Now look at the result of the PCA, applying the `recipes::tidy` verb as before, but with second argument = 2. Save the result in a variable and filter for the components PC1 to PC5. Mutate the resulting `component` column so that the values are factors, ordering them in the order they appear using the `forcats::fct_inorder` verb.
 
-Next take the tibble `the_tate`, select the columns for artist and title, and then apply `dplyr::distinct`. Count the distinct artist-title pairs.
+Plot this data using `ggplot2` and the code below
 
-How many are duplicated?
+```{r}
+#| echo: true
+#| eval: false
+ggplot(aes(value, terms, fill = terms)) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~component, nrow = 1) +
+labs(y = NULL) +
+theme(axis.text=element_text(size=7),
+      axis.title=element_text(size=14,face="bold"))
+```
+
+How would you describe the drinks represented by PC1?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-all_data_dim <- 
-the_tate %>% 
-  dplyr::select(artist, title) %T>% 
-  (\(x) print(dim(x))) %>% 
-  dim()
-  
+# the tidy operation shows the weights of each ingredient, 
+# for each principal component.
+# - i.e. PC1 (along with PC2 - PC5) is a weighted sum of ingredients
+bar <- pca_prep %>% recipes::tidy(2)
+bar
 ```
 
 ```{r}
-no_dups_data_dim <- 
-  the_tate %>% 
-  dplyr::select(artist, title) %>% 
-  dplyr::distinct(artist, title) %T>% 
-  (\(x) print(dim(x))) %>% 
-  dim()
+# plot to show the ingredient weights
+bar %>%
+  # since there are only 5 components, this is redundant
+  dplyr::filter(component %in% paste0("PC", 1:5)) %>%
+  # change component from a character to a factor, and give them an order
+  dplyr::mutate(component = forcats::fct_inorder(component)) %>%
+  # plot
+  ggplot(aes(value, terms, fill = terms)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~component, nrow = 1) +
+  labs(y = NULL) +
+  theme(axis.text=element_text(size=7),
+        axis.title=element_text(size=14,face="bold"))
 ```
 
-```{r}
-stringr::str_glue(
-  "The full dataset has {all_data_dim[1]} rows and after removing duplicates we have {no_dups_data_dim[1]} rows, so there are {all_data_dim[1] - no_dups_data_dim[1]} duplicate rows."
-)
-```
+Based on the its largest components (in absolute value) PC1 is a syrupy (not sugary) drink, containing tequila and lime juice but without egg products.
 :::
 
 ### Exercise 6
 
-Similar to exercises 2 and 3, in this exercise take the raw data (`the_tate`) and add a column with the area of each artwork in $\text{cm}^2$. Next select the artist, title and the area and remove NA values using `tidyr::drop_na`, then order the works by area. Use `dplyr::slice_head` and `dplyr::slice_tail` to find the largest and smallest artworks in the collection.
+As in the last exercise, use the variable with the tidied PCA data and use only PCA components PC1 to PC4. Take/slice the top 8 ingedients by component, ordered by their absolute value using the verb `dplyr::slice_max`. Next, generate a grouped table using gt::gt, colouring the cell backgrounds (i.e. fill) with green for values $\ge0$ and red for values $<0$.
+
+What is the characteristic alcoholic beverage of each of the first 4 principle components.
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-#| layout-nrow: 2
-artwork_area_tbl <- 
-  the_tate %>% 
-  dplyr::mutate(                         # from the units column we know
-    area = width * height / 100          # that the width and height are in mm
-  ) %>%                                  # so we divided each by 10 to get cm
-  dplyr::select(artist, title, area) %>% 
-  tidyr::drop_na() %>%                   # drop all rows with any missing values
-  dplyr::arrange(desc(area))             # sort from largest to smallest
-
-artwork_area_tbl %>% 
-  dplyr::slice_head(n=1)                 # select the first row from the top
-
-artwork_area_tbl %>% 
-  dplyr::slice_tail(n=1)                 # select the first row from the bottom
+bar %>%
+  # filter our the rows for PC1 - PC4
+  dplyr::filter(component %in% paste0("PC", 1:4)) %>%
+  # group by component (i.e. principal component) 
+  dplyr::group_by(component) %>%
+  # for each group, take the top 8 ingredients by absolute value
+  dplyr::slice_max(n = 8, order_by = abs(value)) %>% 
+  # now make a nicely formatted table
+  gt::gt() %>% 
+  # make/apply a table style: this one for values < 0
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "red"),
+      gt::cell_text(weight = "bold")
+      ),
+    locations = gt::cells_body(
+      columns = value,
+      rows = value < 0
+    )
+  ) %>% 
+  # make/apply another table style: this one for values >= 0
+    gt::tab_style(
+    style = list(
+      gt::cell_fill(color = "green"),
+      gt::cell_text(weight = "bold")
+      ),
+    locations = gt::cells_body(
+      columns = value,
+      rows = value >= 0
+    )
+  ) %>% 
+  # apply a theme; any theme will do
+  gtExtras::gt_theme_espn()
 ```
+
+**Principal components** and similar methods are very useful in reducing the complexity of our models. In this case we reduced the 40 original predictors to just 5 predictors.
+
+The challenge with using these methods is attaching meaning to the revised predictors, and this is important when we need to explain our models. The computer can compute the new predictors but they can't tell us what they represent. For this we need to look at the structure of the new predictors and see if we can attach some meaning to them; often the solution is to give them names that capture the underlying structure.
+
+In this case, looking at the ingredients that make up the PCA predictors
+
+-   PC1 represents a drink with:
+
+    -   little or no sugar, egg, gin or port; some or a lot of syrup and citrus juice
+    -   most often / mainly **tequila**
+
+-   PC2 represents a drink with:
+
+    -   little or no sugar, syrup, or citrus juice
+    -   most often / mainly **vermouth**
+
+-   PC3 represents a drink with:
+
+    -   little or no egg, whiskey or vodka
+
+    -   most often / mainly **gin**
+
+-   PC4 represents a drink with
+
+    -   little or no syrup; some or a lot of juice and dairy product
+
+    -   most often / mainly **grenadine and vodka**
 :::
 
 ### Exercise 7
 
-Join the tables `the_tate` and `the_tate_artists` using `dplyr::left_join`, assigning the result to the variable `the_tate` . Drop rows with `NA` gender values and then group by gender. Show the resulting table.
+For this exercise, bake the prepped PCA recipe using `recipes::bake` on the original data and plot each cocktail by its PC1, PC2 component, using
+
+```{r}
+#| echo: true
+#| eval: false
+ggplot(aes(PC1, PC2, label = name)) +
+  geom_point(aes(color = category), alpha = 0.7, size = 2) +
+  geom_text(check_overlap = TRUE, hjust = "inward") + 
+  labs(color = NULL)
+```
+
+Can you create an interpretation of the PCA analysis?
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-# the_tate_artists <- readr::read_csv("labs/data/the-tate-artists.csv")
-the_tate %<>% 
-  dplyr::left_join(
-    the_tate_artists
-    , by = c("artistId" = "id")
-  )
-summary(the_tate)
+# bake the dataset cocktails_df, creating a new dataset
+recipes::bake(pca_prep, new_data = cocktails_df) %>%
+  ggplot(aes(PC1, PC2, label = name)) +
+  geom_point(aes(color = category), alpha = 0.7, size = 2) +
+  geom_text(check_overlap = TRUE, hjust = "inward") + 
+  labs(color = NULL)
 ```
 
-```{r}
-tate_gender_tbl <- the_tate %>% 
-  tidyr::drop_na(gender) %>%
-  dplyr::group_by(gender) %T>% 
-  (\(x) print(x)) 
-  
+In this exercise we are plotting the cocktails against the first two principal components and trying to interpret the results.
 
-```
+The interpretation is more difficult now than it was in the last exercise where we found an interpretation for each principal component. Now we are looking at each cocktail in terms of combinations of PC1 and PC2, both positive and negative.
 
-```{r}
-# NOT PART OF THE LAB
-# For this problem assume I don't know how many gender labels 
-# are in the dataset. To proceed, I make a tibble of the labels
-# then I add a column for the counts. Finally, I calculate the
-# counts by mapping a function against the labels in the tibble.
+It appears that the lower left quadrant (negative PC1 and PC2 values) are mainly cocktail classics. If you look at the components of PC1 and PC2 from the last exercise and negate them, you can describe the cocktails in this quadrant: they have egg /egg-white, port, sugar, no vermouth or gin or tequila.
 
-# I use map_int because I know I want an integer result; otherwise
-# purrr::map() will retuurn a nested column
-tibble::tibble( 
-  labels = unique(tate_gender_tbl$gender)            
-) %>% 
-  dplyr::mutate(
-    count =
-      purrr::map_int(
-        labels
-        , (\(x) sum( tate_gender_tbl$gender == x ))
-      )
-  )
+The lower right quadrant is positive PC1 and negative PC2. PC1 contains juice and syrup, while PC2 is negative juice and syrup - so in this quadrant we have cocktails that are like PC1 (juice and syrup) and unlike PC2 (juice and syrup & sugar). The cocktails in this quadrant have citrus juice, are sweet from the use of syrup & sugar and likely have tequila.
 
+The top half of the plot shows cocktails clustered along the PC1=0 axis, so those are mainly tequila cocktails, very much like PC2.
 
-
-```
+Is there an opportunity to create a new cocktail in the upper left or upper right quadrants?
 :::
 
 ### Exercise 8
 
-In the next two exercises we switch to a different dataset, the historical price data for the S&P 500 Index.
+In the following exercise, we'll use the recipes package to prepare time series data. The starting dataset contains monthly house price data for each of the four countries/regions in the UK
 
-Read the historical price data in the file `SPX_HistoricalData_1692322132002.csv` using `readr:: read_csv` and add a column for the year of the transaction and the daily return $r_d$, using the formula
+```{r}
+uk_prices <- readr::read_csv('data/UK_house_prices.csv', show_col_types = FALSE)
+```
 
-$$
-r_d\equiv \log \frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}
-$$You will likely need `dplyr::lead` or `dplyr::lag` functions. Add an additional column for the daily return variance $\text{var}_d = \text{r}_d^2$.
-
-Finally, group by year and use `dplyr::summary` to compute the annual returns and standard deviations. Add the argument `.groups = "drop"` to the `dplyr::summarize` function to drop the grouping after the summary is created.
+Write code to clean the names in the `uk_prices` dataset using `janitor::clean_names()`, and then using `skimr::skim` confirm that the region names are correct and that there are no missing values. Call the resulting analytic data set `df`.
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-# read the dataset 
-spx_data <- 
-  readr::read_csv(
-    "../data/SPX_HistoricalData_1692322132002.csv"
-    , show_col_types = FALSE
-  )
+# PLEASE SHOW YOUR WORK
+df <- uk_prices |> janitor::clean_names()
+unique(df$region_name)
 ```
 
 ```{r}
-# NOT PART OF THE LAB
-# The package gt:: has a nice funcion for EDA.
-# Give it a try!
-# spx_data %>% gtExtras::gt_plt_summary("S&P 500 data")
+skimr::skim(df)
 ```
-
-```{r}
-spx_data %<>% 
-  dplyr::mutate(
-    Date = lubridate::mdy(Date)                   # Date is a character string in the data
-                                                  # so it need to be converted to a date
-    , year = lubridate::year(Date)                # extract the year from the date
-    , return = 
-      log(`Close/Last`/dplyr::lead(`Close/Last`)) # calculate the return
-                                                  # verify whether to use lead or lag by hand
-    , var = return^2                              # calculate the variance
-  ) %T>% 
-  (\(x) print(x))
-  
-```
-
-```{r}
-spx_return_tbl <- 
-  spx_data %>% 
-  dplyr::group_by(year) %>% 
-  dplyr::summarize(
-    return = exp( sum(return, na.rm = TRUE) ) - 1    # the annual return is the 
-                                                     # exponential of the sum of the 
-                                                     # log daily returns, less 1
-    , volatility = sum(var, na.rm = TRUE) %>% sqrt() # the variance of a sum of random returns
-                                                     # is the sum of the variances,
-                                                     # and the volatility is the sqrt()
-                                                     # of the variance  
-    , .groups = "drop"
-  ) %T>% 
-  (\(x) print(x))
-
-```
-
-Note that
-
-$$
-\begin{align*}
-\sum_{i=1}^{n}r_{i} & =\sum_{i=1}^{n}\log\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
- & =\log\prod_{i=1}^{n}\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
- & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=n-1}}\times\cdots\times\frac{\text{Close/Last}_{t=2}}{\text{Close/Last}_{t=1}}\times\frac{\text{Close/Last}_{t=1}}{\text{Close/Last}_{t=0}}\\
- & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}
-\end{align*}
-$$ and $\exp\left(\sum_{i=1}^{n}r_{i}\right)=\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}$, so $\exp\left(\sum_{i=1}^{n}r_{i}\right)-1$ is the annual return. The value of 1 plus the annual return is sometimes called the total return.
 :::
 
 ### Exercise 9
 
-Take the table from the last exercise and use the `gt::` package to format it. Add summary rows for the period return and period volatility (note that variances can be added; volatilities cannot- so you will need to do some calculations).
+We want to use the monthly house price data to predict house prices one month ahead for each region. The basic model will be:
+
+``` r
+SalesVolume ~ .
+```
+
+where the date and region-name are id variables, not predictor variables. Instead we will use the prior-month lagged prices as the only predictor.
+
+The recipe uses the following 5 steps from the `recipes` package: `update_role`(region_name, new_role = "id") \| `recipe`(sales_volume \~ ., data = df \|\> janitor::clean_names()) \| `step_naomit`(lag_1_sales_volume, skip=FALSE) \| `step_lag`(sales_volume, lag=1) \| `step_arrange`(region_name, date)
+
+Use these 5 steps in the proper order to create a recipe to pre-process the time series data for each region. Prep and then bake your recipe using `df`.
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
 ```{r}
-spx_return_tbl %>% 
-  gt::gt('year') %>% 
-  # form the columns as percents
-  gt::fmt_percent(
-    columns = c(return,	volatility)
-    , decimals=1                      # format to one decimal place
-    , force_sign=TRUE                 # force the sign to be printed
-  ) %>% 
-  # add summary rows
-  gt:: grand_summary_rows(
-    columns = return                  # summarize just the returns
-    , fns = 
-      list(
-        id = "ret"
-        , label="period return"       # the return over multiple years is the product
-                                      # of the annual total returns (1 + returns) - 1
-      ) ~ sum(prod(1+.),-1) 
-    , fmt = ~ gt::fmt_percent(., decimals = 1, force_sign=TRUE)
-  ) %>% 
-  gt:: grand_summary_rows(
-    columns = volatility
-    , fns = list(`period volatility` = ~sqrt(sum(.*.)) )
-    , fmt = ~ gt::fmt_percent(., decimals = 1, force_sign=TRUE)
-  ) %>% 
+# PLEASE SHOW YOUR WORK
+df_rec <- df |> recipes::recipe(sales_volume ~ .) |> 
+  recipes::update_role(region_name, new_role = "id") |> 
+  recipes::step_lag(sales_volume, lag=1) |> 
+  recipes::step_naomit(lag_1_sales_volume, skip=FALSE) |> 
+  recipes::step_arrange(region_name, date)
+
+df_rec |> 
+  recipes::prep() |> 
+  recipes::bake(new_data = NULL) |> 
+  dplyr::filter(date <= lubridate::ymd(20050301)) 
+
+```
+:::
+
+The result of the bake step, after filtering for dates $\le$ 2005-03-01, should look like this:
+
+```{r}
+readRDS("data/baked_uk_house_dat.rds") |> 
+  dplyr::filter(date <= lubridate::ymd(20050301)) |> 
+  gt::gt() |> 
+  gt::fmt_currency(columns = -c(date,region_name), decimals = 0) |> 
   gtExtras::gt_theme_espn()
 ```
 
-This matches up with the data from [macrotrends](https://www.macrotrends.net/2526/sp-500-historical-annual-returns). What we've is just calculated based on the stock price only and does not include dividends (so it is not the total return). Note that the data for 2023 and 2018 is incomplete in the dataset.
+### Exercise 10
 
-![](images/Screen%20Shot%202023-09-27%20at%203.22.23%20PM.png){fig-align="center" width="650"}
+#### Recall The Business Problem
 
-The return calculation here follows from the equations in the last exercise: we add one to get back to a ratio, then we multiply all the ratios for the individual period, subtraction one to get back to a return.
-:::
+We're at a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI).
+
+Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than $\$ 1$ as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:
+
+-   Select a sample of existing customers from the same cohort.
+-   Set a test window of 1 month.
+-   Look into the historical data of web visits from the last month. The hypothesis is that web visits are a good proxy for the customer's interest in the product.
+-   For customers with a high number of web visits, send them a discount. There will be a hold out group which will not receive the discount within the potential valuable customers based on the number of web visits. For customers with a low number of web visits, do not send them a discount (the marketing team wants to report a positive ROI, so they do not want to waste money on customers which are not valuable). Still, they want to use them to measure the effect of the discount.
+-   We also want to use the results of the test to tag *loyal* customers. These are customers which got a discount (since they showed potential interest in the product) and customers with exceptional sales numbers even if they did not get a discount. The idea is to use this information to target them in the future if the discount strategy is positive.
+
+In the last lab we did some exploratory data analysis. The next step is to prepare some descriptive statistics.
+
+##### Descriptive Statistics
+
+The first thing the data analytics team did was to split the sales distribution by discount group:
+
+```{r}
+#| label: marketing case
+data <- readr::read_csv('data/sales_dag.csv', show_col_types = FALSE)
+
+data |> dplyr::mutate(discount = factor(discount)) |> 
+  ggplot(aes(x = sales, after_stat(count), fill = discount)) +
+  geom_histogram(alpha = 0.30, position = 'identity', color="#e9ecef", bins = 30)+
+  geom_density(alpha = 0.30) +
+  xlab("Sales") +
+  ylab("Density") +
+  theme_minimal()
+```
+
+It looks customers with a discount have higher sales. Data scientist A is optimistic with this initial result. To quantify this, they computed the difference in means:
 
 ::: callout-note
-Financial return math is not intuitive, so I will give full grades for the right structure of the code, even if the calculation is not quite right.
+## SOLUTION:
+
+difference in means:
+
+```{r}
+mean_sales <- data |> dplyr::group_by(discount) |> 
+  dplyr::summarize("mean sales" = mean(sales)) |> 
+  dplyr::mutate("mean sales difference" = `mean sales` - lag(`mean sales`))
+mean_sales
+```
 :::
 
-## Resources for additional practice (optional)
+Our calculation gives a $\$ 4.8$ mean uplift! This is great news. The discount strategy seems to be working. Data scientist A is happy with the results and decides to get feedback from the rest of the data science team.
 
--   Work/read through the **TTC subway** dataset example in *Telling Stories with Data, Chapter 11.4*: [TTC Subway Delays](https://tellingstorieswithdata.com/11-eda.html#ttc-subway-delays)
-    -   You will need to install the package [`opendatatoronto`](https://CRAN.R-project.org/package=opendatatoronto) ([Gelfand 2022](https://tellingstorieswithdata.com/99-references.html#ref-citeSharla)) to access the data. The details on the package can be found [here](https://sharlagelfand.github.io/opendatatoronto/).
+Data scientist B is not so happy with the results. They think that the uplift is too good to be true (based on domain knowledge and the sales distributions 🤔). When thinking about reasons for such a high uplift, they realized the discount assignment was not at random. It was based on the number of web visits (remember the marketing plan?). This means that the discount group is not comparable to the control group completely! They decide to plot sales against web visits per discount group:
+
+```{r}
+data |> dplyr::mutate(discount = factor(discount)) |> 
+  ggplot(aes(x=visits, y = sales, color = discount)) +
+  geom_point() + 
+  facet_grid(cols = vars(discount))
+```
+
+Indeed, they realize they should probably adjust for the number of web visits. A natural metric is sales per web visit. Let's compute it:
+
+::: callout-note
+## SOLUTION:
+
+```{r}
+mean_sales_pv <- data |> dplyr::group_by(discount) |> 
+  dplyr::summarize("sales_per_visit" = mean(sales_per_visit)) 
+mean_sales_pv
+```
+:::
+
+The mean value is higher for the discount group. As always, they also looked at the distributions:
+
+```{r}
+data |> dplyr::mutate(discount = factor(discount)) |> 
+  ggplot(aes(x = sales_per_visit, after_stat(count), fill = discount)) +
+  geom_histogram(alpha = 0.30, position = 'identity', color="#e9ecef", bins = 30)+
+  # geom_density(alpha = 0.30) +
+  xlab("Sales per Visit") +
+  ylab("Count") +
+  theme_minimal()
+```
+
+For both data scientists A & B the results look much better, but they were unsure about which uplift to report. They thought about the difference in means:
+
+::: callout-note
+## SOLUTION:
+
+```{r}
+mean_sales_per_visit <- data |> dplyr::group_by(discount) |> 
+  dplyr::summarize("mean sales per visit" = mean(sales_per_visit)) |> 
+  dplyr::mutate("mean sales difference" = `mean sales per visit` - dplyr::lag(`mean sales per visit`))
+
+mean_sales_per_visit |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Mean sales per visit") |> 
+  gt::fmt_number(columns = `mean sales difference`, decimals = 5) |> 
+  gtExtras::gt_theme_espn()
+```
+:::
+
+However, how to interpret this value in terms of dollars? To be continued ...
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 10 | 30     |

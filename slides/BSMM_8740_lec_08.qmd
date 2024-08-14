@@ -565,19 +565,22 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
 #| label: bad ipw estimate plot
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
-    bad_ipw_estimate = 
+    dre_bad_ipw_estimate = 
       purrr::map_dbl(
         splits
         , (\(x){
-          rsample::analysis(x) |> 
-            dplyr::mutate(net = as.numeric(net)) |> # not needed
+          # rsample::analysis(x) |> 
+          #   # dplyr::mutate(net = as.numeric(net)) |> # not needed
+          #   recipes::bake(new_data = rsample::analysis(x)) |> 
+          doubly_robust_rec |> 
+            recipes::bake(new_data = rsample::analysis(x)) |> 
             doubly_robust_bad_ipw(X, D, Y)
         })
       )
   )
 
 dat <- all_results_dat |> 
-  dplyr::select(reg_estimate, ipw_estimate, dre_estimate, bad_ipw_estimate) |> 
+  dplyr::select(reg_estimate, ipw_estimate, dre_estimate, dre_bad_ipw_estimate) |> 
   tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
 
 dat |>

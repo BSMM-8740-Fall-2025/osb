@@ -8,6 +8,21 @@ self-contained: true
 # pdf-engine: pdflatex
 ---
 
+```{r}
+#| label: load packages
+#| echo: false
+#| message: false
+#| warning: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(Lahman, magrittr, tidyverse, gt, gtExtras, tidymodels)
+```
+
 ## Data: Yearly statistics and standings for baseball teams
 
 Today's data is all baseball statistics. The data is in the `Lahman` package.
@@ -17,17 +32,6 @@ Today's data is all baseball statistics. The data is in the `Lahman` package.
 Before doing any analysis, you will want to get quick view of the data. This is useful as part of the EDA process.
 
 ```{r}
-
-# check if 'librarian' is installed and if not, install it
-if (! "librarian" %in% rownames(installed.packages()) ){
-  install.packages("librarian")
-}
-  
-# load packages if not already loaded
-librarian::shelf(Lahman, magrittr, tidyverse, gt, gtExtras, tidymodels)
-# 
-# library(magrittr)
-# library(Lahman)
 dim(Teams)
 ```
 
@@ -103,10 +107,18 @@ How many observations are in the `Teams` dataset? How many variables?
 Teams |> dplyr::slice_head(n=3) |> dplyr::glimpse()
 ```
 
+How many character columns/measurements have missing variables?
+
+```{r}
+Teams |> skimr::skim()
+```
+
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION
 
 From the `dim(Teams)` statement used after `library(Lahman)`, there are 3015 observations and 48 variables.
+
+From Teams \|\> skimr::skim() 6 of 10 character variables have missing values
 :::
 
 ### Exercise 2
@@ -284,12 +296,6 @@ In these nine years, the Mets had a combined record of 728 wins and 730 losses, 
 
 ### Exercise 9
 
-::: callout-note
-This question was incomplete and will not be counted.
-:::
-
-### Exercise 10
-
 Discretize the years into three chunks: one for each of the three general managers under whom Ben worked. [Jim Duquette](https://en.wikipedia.org/w/index.php?search=Jim%20Duquette) was the Mets' [*general manager*](https://en.wikipedia.org/w/index.php?search=general%20manager) in 2004, [Omar Minaya](https://en.wikipedia.org/w/index.php?search=Omar%20Minaya) from 2005 to 2010, and [Sandy Alderson](https://en.wikipedia.org/w/index.php?search=Sandy%20Alderson) from 2011 to 2012.
 
 ```{r}
@@ -325,32 +331,99 @@ mets_ben <- mets_ben |>
 mets_ben
 ```
 
-### Exercise 11
+### Exercise 10
 
 Use the `gm` function to define the manager groups with the `group_by()` operator, and run the summaries again, this time across the manager groups.
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
 
-mets_ben
+```{r}
+
+#| label: read the data
+data <- readr::read_csv(here::here("labs/solutions/data", "sales_dag.csv"), show_col_types = FALSE)
+
+data |> dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "sample marketing data") |> 
+  gtExtras::gt_theme_espn()
+```
 
 ```{r}
-mets_ben %>% 
-  # group by managers
-  dplyr::group_by(gm) %>% 
-  # summarize - one row for each manager
-  dplyr::summarize(
-    num_years = dplyr::n(), 
-    total_W = sum(W), 
-    total_L = sum(L), 
-    total_WPct = total_W / (total_W + total_L)
-  ) %>% 
-  # gt:: functions create and format tables
-  gt::gt('gm') %>%          # create the table from the data, 
-                            # and use 'gm' as the rownames
-  gtExtras::gt_theme_espn() # apply a theme to the format
+#| label: run EDA
+data |> skimr::skim()
+
+```
+
+The mean of the sales_per_visit columns/measurement is 0.9183 and there are no grouped observations.
+
+```{r}
+# calculate the % share of customers receiving a discount vs the % not receiving a discount
+data$discount |> table() / length(data$discount)
+```
+
+Similarly for the share of customers which are loyal:
+
+```{r}
+# calculate the % share of customers that are 'loyal' vs not 'loyal'
+data$is_loyal |> table() / length(data$is_loyal)
+```
+
+To understand these features better, they also looked at a cross-tab table:
+
+```{r}
+# build a cross-tab table of 'loyal' customers vs customers getting a discount
+data |> xtabs(~discount + is_loyal, data = _)
+
 ```
 :::
+
+Alternatively:
+
+```{r}
+data |> 
+  dplyr::group_by(discount,is_loyal) |> 
+  dplyr::summarize(n = dplyr::n(), .groups='drop') |> 
+  tidyr::pivot_wider(
+    names_from = is_loyal
+    , values_from = n
+    , names_prefix = 'is_loyal '
+  ) |> gt::gt() |> 
+  gt::tab_header(title = "Cross-tabs", subtitle = "discount vs is_loyal") |> 
+  gtExtras::gt_theme_espn()
+
+data |> dplyr::mutate(id = dplyr::row_number(), .before = 1) |> 
+  dplyr::filter(discount == 0) |> 
+  dplyr::arrange( desc(sales) ) |> 
+  dplyr::slice_head(n=10) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Sales: loyal customers vs others") |> 
+  gtExtras::gt_theme_espn()
+```
+
+The loyal customers are the top ones in terms of sales. This is good news. It means that the definition of loyal customers is consistent with the data.
+
+In order to have orders of magnitude for the sales, the data scientist provided some summary statistics table:
+
+```{r}
+#| warning: false
+#| message: false
+# data["sales"].describe()
+gtExtras::gt_plt_summary(data, title = "Sales data")
+```
+
+To have a better glimpse of the data, the data scientist also provided a histogram of the sales:
+
+```{r}
+#| warning: false
+#| message: false
+data |> 
+  ggplot(aes(x=sales)) +
+  geom_histogram(aes(y = ..density..), bins = 30, colour = 1, fill = "white") +
+  geom_density(lwd = 1, colour = 4, fill = 4, alpha = 0.25) +
+  labs(title = "Sales Distribution") +
+  theme_minimal()
+```
 
 ## Resources for additional practice (optional)
 

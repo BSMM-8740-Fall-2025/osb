@@ -344,7 +344,7 @@ Similarly for the share of customers which are loyal:
 To understand these features better, they also looked at a cross-tab table:
 
 ```{r}
-# build a cross-tab table of 'loyal' custmers vs customers getting a discount
+# build a cross-tab table of 'loyal' customers vs customers getting a discount
 
 ```
 
