@@ -28,11 +28,6 @@ if (! "librarian" %in% rownames(installed.packages()) ){
 # load packages if not already loaded
 librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, ggplot2)
 
-# library(magrittr)   # the pipe
-# library(tidyverse)  # for data wrangling + visualization
-# library(tidymodels) # for modeling
-# library(ggplot2)    # for plotting
-
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
