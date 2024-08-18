@@ -30,7 +30,7 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(
-  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2, knitr, ISLR2, stats, xgboost
+  tidyverse, magrittr, gt, gtExtras, tidymodels, DataExplorer, skimr, janitor, ggplot2, knitr, ISLR2, stats, xgboost, see
 )
 theme_set(theme_bw(base_size = 12))
 ```
@@ -42,7 +42,7 @@ The Boston House Values dataset (usually referred to as the Boston dataset) appe
 This dataset contains the following information for each cocktail:
 
 | variable | description                                                            |
-|--------------|----------------------------------------------------------|
+|-----------------|-------------------------------------------------------|
 | crim     | per capita crime rate by town.                                         |
 | zn       | proportion of residential land zoned for lots over 25,000 sq.ft.       |
 | indus    | proportion of non-retail business acres per town.                      |
