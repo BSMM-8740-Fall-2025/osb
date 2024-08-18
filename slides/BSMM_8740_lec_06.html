@@ -850,7 +850,7 @@ y_t=x_t^\top\beta + \epsilon_t;\;t=1,\ldots,R
 <span id="cb4-24"><a></a><span class="er">&gt;</span> <span class="co">#stats::pacf(X, main = "Partial Autocorrelation of AR(1) Process")</span></span>
 <span id="cb4-25"><a></a><span class="er">&gt;</span> <span class="fu">autoplot</span>(stats<span class="sc">::</span><span class="fu">pacf</span>(X, <span class="at">plot =</span> <span class="cn">FALSE</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Partial Autocorrelation of AR(1) Process"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="3">
+<div class="cell quarto-layout-panel" data-layout-ncol="3" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
@@ -1455,7 +1455,7 @@ $ US_ThanksgivingDay &lt;dbl&gt; 0, 0, 0, 0, 0, 0</code></pre>
 <span id="cb23-8"><a></a><span class="sc">+</span>     , timetk<span class="sc">::</span><span class="fu">box_cox_vec</span>(windspeed, <span class="at">lambda=</span><span class="st">"auto"</span>,  <span class="at">silent =</span> T)</span>
 <span id="cb23-9"><a></a><span class="sc">+</span>     , <span class="at">.title =</span> <span class="st">"Time Series - Box Cox Tranformed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
+<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="plotly html-widget html-fill-item" id="htmlwidget-4cadc5f8c7ab9ff923ac" style="width:960px;height:480px;"></div>
@@ -1511,7 +1511,7 @@ $ US_ThanksgivingDay &lt;dbl&gt; 0, 0, 0, 0, 0, 0</code></pre>
 <span id="cb24-21"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">contains</span>(<span class="st">"trans"</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb24-22"><a></a><span class="sc">+</span>   timetk<span class="sc">::</span><span class="fu">plot_time_series</span>(optin_time,value,name) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
+<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code># A tibble: 609 × 2
@@ -1624,7 +1624,7 @@ $ mday7        &lt;int&gt; 1, 1, 1, 1</code></pre>
 <span id="cb29-16"><a></a><span class="sc">+</span>     , <span class="at">.title =</span> <span class="st">"Cubic spline, 3 knots"</span></span>
 <span id="cb29-17"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
+<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="plotly html-widget html-fill-item" id="htmlwidget-fc9c72093435cc6a0a18" style="width:960px;height:480px;"></div>
@@ -1658,7 +1658,7 @@ $ mday7        &lt;int&gt; 1, 1, 1, 1</code></pre>
 <span id="cb30-15"><a></a><span class="sc">+</span>     , <span class="at">.title =</span> <span class="st">"Monthly seasonality"</span></span>
 <span id="cb30-16"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
+<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="plotly html-widget html-fill-item" id="htmlwidget-38c86864160d6d855a80" style="width:960px;height:480px;"></div>
