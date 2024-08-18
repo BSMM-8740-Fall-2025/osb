@@ -20,7 +20,7 @@ if (! "librarian" %in% rownames(installed.packages()) ){
 }
   
 # load packages if not already loaded
-librarian::shelf(Lahman, magrittr, tidyverse, gt, gtExtras, tidymodels, svglite)
+librarian::shelf(Lahman, magrittr, tidyverse, gt, gtExtras, tidymodels, svglite, palmerpenguins)
 ```
 
 ## Data: Yearly statistics and standings for baseball teams
