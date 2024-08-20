@@ -13,6 +13,10 @@ librarian::shelf(
 
 tibble::tibble(classes = installed.packages()[,1] )
 
+
+
+# ============================
+
 tmp <- installed.packages()[,1]
 length(tmp)
 
@@ -23,13 +27,11 @@ for (idx in seq(1,length(tmp),10)){
   )
 }
 
-# ============================
-
 # Install most recent R version (4.4.1) - https://cran.r-project.org/
 # install most recent RStudio - https://posit.co/download/rstudio-desktop/
 # install git - https://gitforwindows.org/
 
-
+# Finally, open an R session and execute the code that follows:
 install.packages("cmdstanr", repos = c('https://stan-dev.r-universe.dev', getOption("repos")))
 
 if (! "librarian" %in% rownames(installed.packages()) ){
@@ -57,19 +59,19 @@ librarian::shelf(
   mlbench, modelbased, modeldata, modelenv, ModelMetrics, modelr, modeltime, modeltools, munsell, networkD3,
   neuralnet, nlme, nloptr, nnet, numDeriv, openintro, openssl, padr, paletteer, palmerpenguins,
   parallel, parallelly, parameters, parsnip, patchwork, performance, pillar, pkgbuild, pkgconfig, plogr,
-  plotly, plyr, polyclip, posterior, prettyunits, prismatic, pROC, processx, prodlim, profileModel,
-  progress, progressr, promises, prophet, proxy, ps, purrr, quadprog, quantmod, QuickJSR,
-  qvcalc, R6, ragg, ranger, rappdirs, RColorBrewer, Rcpp, RcppArmadillo, RcppEigen, RcppGSL,
-  RcppParallel, RcppRoll, RcppZiggurat, reactable, reactR, readr, readxl, recipes, rematch, rematch2,
-  remotes, repr, reprex, reshape2, Rfast, rlang, rmarkdown, rpart, rprojroot, rsample,
-  RSQLite, rstan, rstantools, rstudioapi, rvest, sass, scales, see, selectr, sensemakr,
-  sfd, shape, skimr, slider, smd, snakecase, spatial, splines, SQUAREM, StanHeaders,
-  stats, stats4, stringi, stringr, survey, survival, svglite, sys, systemfonts, tcltk,
-  tensorA, textshaping, tibble, tidyclust, tidygraph, tidymodels, tidyr, tidyselect, tidysmd, tidyverse,
-  timechange, timeDate, timetk, tinytex, tipr, tools, tseries, tsfeatures, TTR, tune,
-  tweenr, tzdb, urca, usdata, utf8, utils, uuid, V8, vctrs, viridis,
-  viridisLite, vroom, warp, whisker, withr, workflows, workflowsets, xfun, xgboost, xml2,
-  xts, yaml, yardstick
+  plotly, plyr, png, polyclip, posterior, prettyunits, prismatic, pROC, processx, prodlim,
+  profileModel, progress, progressr, promises, prophet, proxy, ps, purrr, quadprog, quantmod,
+  QuickJSR, qvcalc, R6, ragg, ranger, rappdirs, RColorBrewer, Rcpp, RcppArmadillo, RcppEigen,
+  RcppGSL, RcppParallel, RcppRoll, RcppTOML, RcppZiggurat, reactable, reactR, readr, readxl, recipes,
+  rematch, rematch2, remotes, repr, reprex, reshape2, reticulate, Rfast, rlang, rmarkdown,
+  rpart, rprojroot, rsample, RSQLite, rstan, rstantools, rstudioapi, rvest, sass, scales,
+  see, selectr, sensemakr, sfd, shape, skimr, slider, smd, snakecase, spatial,
+  splines, SQUAREM, StanHeaders, stats, stats4, stringi, stringr, survey, survival, svglite,
+  sys, systemfonts, tcltk, tensorA, textshaping, tibble, tidyclust, tidygraph, tidymodels, tidyr,
+  tidyselect, tidysmd, tidyverse, timechange, timeDate, timetk, tinytex, tipr, tools, tseries,
+  tsfeatures, TTR, tune, tweenr, tzdb, urca, usdata, utf8, utils, uuid,
+  V8, vctrs, viridis, viridisLite, vroom, warp, whisker, withr, workflows, workflowsets,
+  xfun, xgboost, xml2, xts, yaml, yardstick, zoo
   , update_all = TRUE
 )
 

@@ -1,5 +1,5 @@
 ---
-title: "Lab 6 - Classification & clustering methods"
+title: "Lab 5 - Classification & clustering methods"
 subtitle: "SOLUTIONS"
 editor: visual
 format: html
@@ -23,11 +23,6 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(tidyverse, magrittr, gt, gtExtras, tidymodels, ggplot2)
-
-# library(magrittr)   # the pipe
-# library(tidyverse)  # for data wrangling + visualization
-# library(tidymodels) # for modeling
-# library(ggplot2)    # for plotting
 
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
@@ -166,6 +161,45 @@ training_results %>%
 
 training_results %>%
   yardstick::roc_curve(.pred_No, truth = churn) %>% autoplot()
+```
+:::
+
+::: callout-note
+## Build your own
+
+You can construct the roc_auc curve directly, as follows:
+
+```{r}
+#| label: construct the roc_auc curve directly
+
+# use the training results, and find points on the curve for a given threshold
+build_roc_auc <- function(threshold, dat = training_results){
+  # threshold on predictions
+  log_preds <- ifelse(dat$.pred_Yes > threshold, 1, 0)
+  # compute predictions and reference/truth | turn both into factors
+  ref <- factor(dat$churn, levels = c('Yes','No'), labels = c('Yes', 'No'))
+  log_preds <- factor(log_preds, levels = c(1,0), labels = c('Yes', 'No'))
+  # create the confusion matrix
+  cm <- caret::confusionMatrix(data = log_preds, reference = ref, positive = 'Yes')
+  # return the results
+  return( 
+    tibble::tibble(
+      threshold = threshold
+      , "1-Specificity" = 1-cm$byClass[['Specificity']]
+      , Sensitivity = cm$byClass[['Sensitivity']]
+    )
+  )
+}
+```
+
+```{r}
+#| label: plot the curve
+#take thesholds in [0,1] and calculate the corresponding x,y points
+((0:100)/100) |> purrr::map(~build_roc_aus(.x)) |> 
+  dplyr::bind_rows() |> 
+    ggplot(aes(x=`1-Specificity`, y=Sensitivity)) +
+    geom_line() + coord_fixed() +
+    geom_abline(intercept=0, slope=1)
 ```
 :::
 
@@ -376,7 +410,7 @@ Load the data for this exercise as below and plot it, and then create an analysi
 ```{r}
 #
 # read the data
-labelled_points <- readr::read_csv("data/lab_6_clusters.csv", show_col_types = FALSE)
+labelled_points <- readr::read_csv("data/lab_5_clusters.csv", show_col_types = FALSE)
 
 # plot the clusters
 labelled_points %>% ggplot(aes(x1, x2, color = cluster)) +
