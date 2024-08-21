@@ -1,5 +1,5 @@
 ---
-title: "Lab 7 - Time series"
+title: "Lab 6 - Time Series Methods"
 subtitle: "SOLUTIONS"
 editor: visual
 format: html
@@ -233,10 +233,6 @@ workflow_fit_lm <- workflows::workflow() %>%
 ```
 :::
 
-::: render-commit-push
-This is a good place to render, commit, and push changes to your remote lab repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message, and push. After you push the changes, the Git pane in RStudio should be empty.
-:::
-
 ## Exercise 7: calibrate
 
 In this exercise we'll use the **testing data** with our fitted models.
@@ -314,14 +310,6 @@ refit_tbl %>%
   )
 
 ```
-:::
-
-## Submission
-
-::: callout-warning
-Before you wrap up the assignment, make sure all documents are saved, staged, committed, and pushed to your repository on the course github site.
-
-Remember -- you do **not** have to turn in an \*.html file. I will be pulling your work directly from your repository on the course website.
 :::
 
 ## Grading

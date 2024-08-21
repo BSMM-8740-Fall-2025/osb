@@ -1,5 +1,5 @@
 ---
-title: "Lab 8 - Causal Inference"
+title: "Lab 7 - Causality: DAGs"
 subtitle: "SOLUTIONS"
 editor: visual
 format: html
@@ -30,18 +30,6 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, ggplot2, r-causal / propensity)
-
-
-# library(tidyverse)
-# library(broom)
-# library(rsample)
-# library(ggdag)
-# library(causaldata)
-# library(halfmoon)
-# library(propensity)
-# library(ggokabeito)
-# library(magrittr)   # the pipe
-# library(ggplot2)    # for plotting
 
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
@@ -272,7 +260,7 @@ ggdag::dagify(
 
 ## Exercise 3: Causal Modeling
 
-In this guided exercise, we'll attempt to answer a causal question: does quitting smoking make you gain weight? Causal modeling has a special place in the history of smoking research: the studies that demonstrated that smoking causes lung cancer were observational. Thanks to other studies, we also know that, if you're already a smoker, quitting smoking reduces your risk of lung cancer. However, some have observed that former smokers tend to gain weight. Is this the result of quitting smoking, or does something else explain this effect? In the book [Causal Inference](https://www.hsph.harvard.edu/miguel-hernan/wp-content/uploads/sites/1268/2023/10/hernanrobins_WhatIf_30sep23.pdf) by Hernán and Robins, the authors analyze this question using several causal inference techniques.
+In this guided exercise, we attempt to answer a causal question: does quitting smoking make you gain weight? Causal modeling has a special place in the history of smoking research: the studies that demonstrated that smoking causes lung cancer were observational. Thanks to other studies, we also know that, if you're already a smoker, quitting smoking reduces your risk of lung cancer. However, some have observed that former smokers tend to gain weight. Is this the result of quitting smoking, or does something else explain this effect? In the book [Causal Inference](https://www.hsph.harvard.edu/miguel-hernan/wp-content/uploads/sites/1268/2023/10/hernanrobins_WhatIf_30sep23.pdf) by Hernán and Robins, the authors analyze this question using several causal inference techniques.
 
 To answer this question, we'll use causal inference methods to examine the relationship between quitting smoking and gaining weight. First, we'll draw our assumptions with a causal diagram (a directed acyclic graph, or DAG), which will guide our model. Then, we'll use a modeling approach called inverse probability weighting--one of many causal modeling techniques--to estimate the causal effect we're interested in.
 

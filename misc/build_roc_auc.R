@@ -59,3 +59,29 @@ build_roc_aus <- function(threshold, dat = training_results){
     geom_line() + coord_fixed() +
     geom_abline(intercept=0, slope=1)
 
+# ========================================
+
+build_roc_aus_REV <- function(threshold, dat = training_results){
+  # threshold on predictions
+  log_preds <- ifelse(dat$.pred_Yes > threshold, 1, 0)
+  # compute predictions and reference/truth
+  log_preds <- factor(log_preds, levels = c(0,1), labels = c('No','Yes'))
+
+  return(
+    tibble::tibble(
+      threshold = threshold
+      , "1-Specificity" =
+        1 - yardstick::specificity_vec(truth = dat$churn, estimate = log_preds)
+      , Sensitivity =
+          yardstick::sensitivity_vec(truth = dat$churn, estimate = log_preds)
+    )
+  )
+}
+
+build_roc_aus_REV( 1/10, training_results)
+
+((0:100)/100) |> purrr::map(~build_roc_aus_REV(.x)) |>
+  dplyr::bind_rows() |>
+  ggplot(aes(x=`1-Specificity`, y=Sensitivity)) +
+  geom_line() + coord_fixed() +
+  geom_abline(intercept=0, slope=1)
