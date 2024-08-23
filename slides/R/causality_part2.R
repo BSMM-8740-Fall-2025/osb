@@ -57,9 +57,10 @@ mosquito_dag |>
   coord_cartesian(clip = "off")
 
 fq_dag <- ggdag::dagify(
-  mq ~ ff + m + c + ci +ct,
-  ff ~ c + ct + ci + fsa,
+  mq ~ ff + m + c + ci + ct,
+  ff ~ c + ct + ci + fsa + fc,
   m ~ ff,
+  es ~ mq + ff,
   #fsa ~ mq,
   exposure = "ff",
   outcome = "mq",
@@ -71,7 +72,8 @@ fq_dag <- ggdag::dagify(
     c = "competition",
     ci = "culture_institutions",
     ct = "complex_technology",
-    fc = "family_circumstances"
+    fc = "family_circumstances",
+    es = "export share"
   )
 )
 
@@ -90,6 +92,9 @@ ggdag::update_dag_data(tidy_dagitty_obj) <-
 
 
 tidy_dagitty_obj |>
+
+  # fq_dag |>
+  # ggdag::tidy_dagitty() |>
   ggdag::node_status() |>
   ggplot(
     aes(x, y, xend = xend, yend = yend, color = status)
@@ -224,11 +229,23 @@ formula3 <- as.formula(paste(y_var, " ~ ",x_var," + ",
 
 ols3 <- fixest::feols(formula3, data=data)
 
-fixest::etable( ols1,ols2,ols3,
+result <- fixest::etable( ols1,ols2,ols3,
         fitstat = c('n','r2'),
         keep = c('Constant',x_var),
         headers = c("'no confounders'", "'with confounders'", "'with confounders interacted'"),
         depvar = F )
+
+result |> tibble::as_tibble(.name_repair = "unique") |>
+  # take the rows with data
+  dplyr::slice(c(1,3,4,6:8)) |>
+  # use the first colun for row names
+  gt::gt("...1") |>
+  # divide the coefficient estimates from statistics estimates
+  gt::tab_style(
+    style = gt::cell_borders(sides = c("bottom"),  weight = px(0.5))
+    ,locations = gt::cells_body(rows = c(3))) |>
+  gtExtras::gt_theme_espn()
+
 
 #stargazer_r(
 #	list_of_models = list(ols1, ols2, ols3),
@@ -243,8 +260,14 @@ fixest::etable( ols1,ols2,ols3,
 Hmisc::describe(data$management)
 data <- data %>%
   mutate(
-    empbin5 = cut(emp_firm, quantile(emp_firm, seq(0,1,1/5)), include.lowest = TRUE, right = FALSE),
-    agecat = (age_young == TRUE) + 2*(age_mid == TRUE) + 3*(age_old == TRUE) + 4*(age_unknown == TRUE))
+    # turn employee number into categories
+    empbin5 = cut(emp_firm, quantile(emp_firm, seq(0,1,1/5)), include.lowest = TRUE, right = FALSE)
+    # turn age into categories
+    , agecat = (age_young == TRUE) + 2*(age_mid == TRUE) + 3*(age_old == TRUE) + 4*(age_unknown == TRUE)
+  )
+
+data |>
+  dplyr::select(emp_firm,age_young,age_mid,age_old,age_unknown,agecat)
 
 data_agg <- data %>%
   group_by(degree_nm_bins, agecat, competition, empbin5, industry, countrycode) %>%
@@ -265,6 +288,13 @@ set.seed(12345)
 data_sample <- data_agg %>%
   sample_n(size = 340) %>%
   dplyr::select(industry, countrycode, degree_nm_bins, competition, agecat, empbin5, n1, n0, n)
+
+# tidy
+set.seed(12345)
+data_sample <- data_agg %>%
+  dplyr::slice_sample(n = 340) %>%
+  dplyr::select(industry, countrycode, degree_nm_bins, competition, agecat, empbin5, n1, n0, n)
+
 
 # examples with founder/family only
 data_sample %>%
@@ -287,6 +317,33 @@ data_agg %>%
   filter(n0>0 & n1>0) %>%
   summarise(ATE = weighted.mean(y1-y0, n), ATET = weighted.mean(y1-y0, n1))
 
+# tidy
+set.seed(12345)
+data_sample <- data_agg %>%
+  dplyr::slice_sample(n = 340) %>%
+  dplyr::select(industry, countrycode, degree_nm_bins, competition, agecat, empbin5, n1, n0, n)
+
+# examples with founder/family only
+data_sample %>%
+  dplyr::slice(1:19) |>
+  dplyr::filter(n1==1 & n0==0)
+
+# examples with other only:
+data_sample |>
+  dplyr::slice(1:19) |>
+  dplyr::filter(n1==0 & n0==1)
+
+# examples of similar firms unmatched
+data_sample %>%
+  dplyr::slice(1:339) |>
+  dplyr::filter(countrycode == "us" & industry == "food" & n == 1) %>%
+  dplyr::arrange(countrycode, industry, degree_nm_bins, competition, agecat, empbin5, n)
+
+# ATE/ATET
+data_agg %>%
+  dplyr::filter(n0>0 & n1>0) %>%
+  dplyr::summarise(ATE = weighted.mean(y1-y0, n), ATET = weighted.mean(y1-y0, n1))
+
 # *****************************************************************
 # * Matching on the propensity score
 # *****************************************************************
@@ -299,20 +356,29 @@ data_pscore <- data %>%
   na.omit() %>% mutate( industry = factor( industry ),
                         countrycode = factor( countrycode ) )
 
+# tidy
+data_pscore <- data %>%
+  dplyr::select(all_of(c(y_var, x_var, control_vars, control_vars_to_interact))) %>%
+  tidyr::drop_na() %>%
+  dplyr::mutate(
+    industry = factor( industry )
+    , countrycode = factor( countrycode )
+  )
+
 # with all control vars -------------------------------------------------------
 
 # Step 1 - Matching
 formula_pscore1 <- as.formula(paste0(x_var, " ~ ",
                                      paste(c(control_vars, control_vars_to_interact), collapse = " + ")))
 
-mod_match <- matchit(formula_pscore1,
+mod_match <- MatchIt::matchit(formula_pscore1,
                      data = data_pscore,
                      method = 'nearest', distance = 'logit', replace=TRUE, estimand="ATT")
 
 summary(mod_match)
 
 # Step 2 - restrict data to matched
-data_match <- match.data(mod_match)
+data_match <- MatchIt::match.data(mod_match)
 
 # Please note that nhe "number of matched observations" calculated by
 # this code varies marginally from the one on p607 in the textbook.
@@ -321,7 +387,7 @@ dim(data_match)
 # Step 3 - Estimate treatment effects
 # NOTE: We use weights here,to account for control observations that were matchet to multiple treated osb
 #       This is different from weights used to estimate ATE!
-reg_match <- feols(management ~ foundfam_owned,
+reg_match <- fixest::feols(management ~ foundfam_owned,
                    data = data_match,
                    weights = data_match$weights
 )
@@ -340,14 +406,14 @@ formula_pscore2 <- as.formula(paste(x_var, " ~ " ,
                                     " + (", paste(control_vars, collapse = "+"),")*(",
                                     paste(control_vars_to_interact, collapse = "+"),")",sep=""))
 
-mod_match2 <- matchit(formula_pscore2,
+mod_match2 <- MatchIt::matchit(formula_pscore2,
                       data = data_pscore,
                       method = 'nearest', distance = 'logit', replace=TRUE, estimand="ATT")
 
 summary(mod_match2)
 
 # Step 2 - restrict data to matched
-data_match2 <- match.data(mod_match2)
+data_match2 <- MatchIt::match.data(mod_match2)
 
 # Please note that nhe "number of matched observations" calculated by
 # this code varies marginally from the one on p607 in the textbook.
@@ -356,7 +422,7 @@ dim(data_match2)
 # Step 3 - Estimate treatment effects
 # NOTE: We use weights here,to account for control observations that were matchet to multiple treated osb
 #       This is different from weights used to estimate ATE!
-reg_match2 <- feols(management ~ foundfam_owned,
+reg_match2 <- fixest::feols(management ~ foundfam_owned,
                     data = data_match2, weights = data_match2$weights)
 
 out2 <- summary(reg_match2)
@@ -370,11 +436,11 @@ ATET_PSME2_SE <- out2$se[2]
 # *****************************************************************
 
 # Country, cometition, industry
-c1 <- CrossTable(data$foundfam_owned, data$compet_moder, na.rm=T )
-c2 <- CrossTable(data$foundfam_owned, data$compet_strong, na.rm=T)
+c1 <- gmodels::CrossTable(data$foundfam_owned, data$compet_moder, na.rm=T )
+c2 <- gmodels::CrossTable(data$foundfam_owned, data$compet_strong, na.rm=T)
 
-i <- CrossTable(data$foundfam_owned, data$industry, na.rm=T)
-c <- CrossTable(data$foundfam_owned, data$countrycode, na.rm=T)
+i <- gmodels::CrossTable(data$foundfam_owned, data$industry, na.rm=T)
+c <- gmodels::CrossTable(data$foundfam_owned, data$countrycode, na.rm=T)
 
 
 cbind(c1$prop.row, c2$prop.row, i$prop.row, c$prop.row)

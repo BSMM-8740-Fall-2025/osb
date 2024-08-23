@@ -33,6 +33,27 @@ execute:
 
 -   We will look at other methods used to estimate causal effects, along with methods used for special situations.
 
+## Packages
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, ggplot2, r-causal/propensity, r-causal/causalworkshop, survey, cardx, gtsummary)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## 
+
 # Causal Effect Estimation
 
 ## Inverse Probability Weighting
@@ -48,7 +69,11 @@ Repeating our prior process, first we calculate the ipw weights and estimate the
 ```{r}
 #| echo: true
 #| code-fold: true
+#| message: false
+#| warning: false
 #| label: ipw model
+#| code-fold: true
+#| code-summary: ATE estimate by IPW
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
 propensity_model <- glm(
@@ -61,35 +86,34 @@ net_data_wts <- propensity_model |>
   # .fitted is the value predicted by the model
   # for a given observation
   dplyr::mutate(wts = propensity::wt_ate(.fitted, .exposure = net))
+  # alternatively:
+  # dplyr::mutate(
+  #   ipw = dplyr::case_when(net == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
+  #   , wts_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
+  # )
 
 net_data_wts |>
   lm(malaria_risk ~ net, data = _, weights = wts) |>
   broom::tidy(conf.int = TRUE)
 ```
 
+## Inverse Probability Weighting
+
+Using `propensity::wt_ate` calculates **unstabilized** weights by default. In the last lecture we looked at the distribution of weights and decided they were stable enough, because none of the weights were too big or too small.
+
 ```{r}
-#| echo: false
-#| eval: false
-ip_wts <- propensity_model |>
-  broom::augment(newdata = dat_, type.predict = "response") |> 
-  dplyr::mutate(
-    ipw = dplyr::case_when(n == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
-    , ipw_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
-    , mean_exposure = mean(net)
-  )
-  # dplyr::select(id, net, ipw = .fitted) |> 
-  # dplyr::mutate('_ipw' = 1/(1-ipw), ipw = 1/ipw)
-
-hist(ip_wts$ipw, breaks = 50)
-hist(net_data_wts$wts, breaks = 50)
-
-net_data_wts$wts
-
-ip_wts |> dplyr::summarize(max = max(ipw))
-
-
-  
+#| label: fig-ate-density-net-data
+#| code-fold: true
+#| fig.width: 5
+#| fig.height: 4
+#| fig.cap: >
+#|   A density plot of the average treatment effect (ATE) weights. The plot is skewed, with higher values towards 8. This may indicate a problem with the model, but the weights aren't so extreme to destabilize the variance of the estimate.
+net_data_wts |>
+  ggplot(aes(wts)) +
+  geom_density(fill = "#CC79A7", color = NA, alpha = 0.8)
 ```
+
+Let's explore the question of IPW stabilization a bit more.
 
 ## Inverse Probability Weighting
 
@@ -97,13 +121,13 @@ ip_wts |> dplyr::summarize(max = max(ipw))
 
 The IP weights (given covariate set $L$) are $W^A=1/\mathbb{E}[D|L]$. Because the denominator can be very close to $0$ or $1$ the estimates using these weights can be unstable.
 
-Stabilized weights will are often used to address this, e.g. the function `propensity::wt_ate` multiplies the weights by the mean of the treatment so $SW^A=\mathbb{E}[D]/\mathbb{E}[D|L]$.
+Stabilized weights are often used to address this, e.g. the function `propensity::wt_ate` with stabilize = TRUE multiplies the weights by the mean of the treatment so in this case $SW^A=\mathbb{E}[D]/\mathbb{E}[D|L]$.
 
 ## Inverse Probability Weighting
 
 ### V-Stabilized weights
 
-Baseline covariates $V\subset L$) are also used to stabilize IP weights: $SW^A(V)=\mathbb{E}[D|V]/\mathbb{E}[D|L]$.
+Baseline covariates ($V\subset L$) are also used to stabilize IP weights: $SW^A(V)=\mathbb{E}[D|V]/\mathbb{E}[D|L]$.
 
 Note the the variables $V$ need to be included in the numerator and the denominator (as part of $L$)
 
@@ -111,7 +135,7 @@ V-stabilization results in IP weights that are more stabilized than the ones wit
 
 ## Inverse Probability Weighting
 
-We know that IPW weighting should create a pseudo-population that make the covariates more balanced by treatment. Let's check this:
+We know that IPW weighting should create a pseudo-population that make the covariates more balanced by treatment. In the last lecture we checked this using histograms. Here we check this via the statistics of the data:
 
 ::: panel-tabset
 ## unweighted
@@ -146,7 +170,7 @@ gtsummary::tbl_svysummary(
 
 ## Inverse Probability Weighting
 
-Next we use bootstrapping to generate proper confidence intervals, first by creating a function to run the generate ipw estimates for each bootstrap split:
+Next we use bootstrapping to generate proper confidence intervals for the effect, first by creating a function to generate (unstabilized) ipw effect estimates for each bootstrap split:
 
 ```{r}
 #| echo: true
@@ -182,10 +206,13 @@ fit_ipw <- function(split, ...) {
 
 ## Inverse Probability Weighting
 
-Next we use bootstrapping to generate proper confidence intervals:
+Next we use our function to bootstrap proper confidence intervals:
 
 ```{r}
 #| echo: true
+#| message: false
+#| warning: false
+#| error: false
 #| code-fold: true
 #| label: ipw bootstrap process
 # create bootstrap samples
@@ -204,7 +231,7 @@ results <- bootstrapped_net_data |>
 
 ## Regression Adjustment
 
-We know that we can also predict the effect of treatment by building a model to predict the outcome using a regression model for example.
+IPW estimates rely on a model to predict the treatment using covariate/confounder values. We know that we can also predict the effect of treatment by building a model to predict the outcome using a regression model, regressing the effect on the treatment and covariate/confounder values.
 
 ```{r}
 #| echo: true
@@ -221,7 +248,7 @@ outcome_model |> broom::tidy(conf.int = TRUE)
 
 ## Regression Adjustment
 
-And we can also bootstrap the regression adjustment estimates to get CIs, first by creating the estimation function, then generating bootstrapped estimates:
+And we can also bootstrap the regression adjustment estimates to get confidence intervals, first by creating the estimation function, then generating bootstrapped estimates, like we did with IPWs:
 
 ```{r}
 #| echo: true
@@ -296,12 +323,13 @@ dat |>
       )
   ) +
   geom_histogram(alpha = 0.2, position = 'identity') +
-  geom_density(alpha = 0.2)
+  geom_density(alpha = 0.2) +
+  theme(legend.text=element_text(size=10), legend.title = element_blank())
 ```
 
 ## IPW vs Regression Adjustment
 
-We can compare the means and the confidence intervals:
+We can compare the means and the confidence intervals of the regression adjustment and IPW effect estimates:
 
 ```{r}
 #| echo: true
@@ -320,7 +348,7 @@ dat |>
 
 ```
 
-Where each mean ate estimate is within the CIs of the other ate mean estimate.
+Note that each mean ate estimate is within the CIs of the other ate mean estimate.
 
 ## IPW vs Regression Adjustment
 
@@ -376,7 +404,7 @@ where $\hat{P}(x)$ is an estimation of the propensity score (using logistic regr
 
 ## Doubly Robust Estimation
 
-First let's examine the code
+First let's examine the code. Note we use a recipe with the regression to add the polynomial confounders for each
 
 ```{r}
 #| echo: true
@@ -463,7 +491,7 @@ all_results_dat
 
 ## Doubly Robust Estimation
 
-Looking at the distribution of the estimates
+Looking at the histogram/distributions of all the estimates:
 
 ```{r}
 #| echo: true
@@ -483,12 +511,13 @@ dat |>
       )
   ) +
   geom_histogram(alpha = 0.2, position = 'identity') +
-  geom_density(alpha = 0.2)
+  geom_density(alpha = 0.2) +
+  theme(legend.text=element_text(size=10), legend.title = element_blank())
 ```
 
 ## Doubly Robust Estimation
 
-Confidence intervals, including the dre:
+Confidence intervals, including the dre are:
 
 ```{r}
 #| echo: true
@@ -504,6 +533,8 @@ dat |>
   , upper_ci = quantile(`effect estimate`, 0.975)
 )
 ```
+
+All methods are consistent.
 
 ## Doubly Robust Estimation
 
@@ -591,7 +622,9 @@ dat |>
       )
   ) +
   geom_histogram(alpha = 0.2, position = 'identity') +
-  geom_density(alpha = 0.2)
+  geom_density(alpha = 0.2) +
+  theme(legend.text=element_text(size=10), legend.title = element_blank())
+
 ```
 
 ## Doubly Robust Estimation
@@ -627,6 +660,96 @@ $$
 
 Now, assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This makes the doubly robust estimator reduce to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption. So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
 :::
+
+## Doubly Robust Estimation
+
+```{r}
+#| label: (wrong outcome model) doubly robust estimation
+
+doubly_robust_bad_reg <- function(df, X, D, Y){
+  ps <- # propensity score
+    as.formula(paste(D, " ~ ", paste(X, collapse= "+"))) |>
+    stats::glm( data = df, family = binomial() ) |>
+    broom::augment(type.predict = "response", data = df) |>
+    dplyr::pull(.fitted)
+  
+  mu0 <- rnorm(dim(df)[1], 0, 1) # wrong mean response D == 0
+  mu1 <- rnorm(dim(df)[1], 0, 1) # wrong mean response D == 1
+  
+  # convert treatment factor to integer | recast as vectors
+  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] %>% dplyr::pull(1)
+  
+  mean( d*(y - mu1)/ps + mu1 ) -
+    mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
+}
+```
+
+## Doubly Robust Estimation
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: bad reg estimate plot
+all_results_dat <- all_results_dat |>
+  dplyr::mutate(
+    dre_bad_reg_estimate = 
+      purrr::map_dbl(
+        splits
+        , (\(x){
+          # rsample::analysis(x) |> 
+          #   # dplyr::mutate(net = as.numeric(net)) |> # not needed
+          #   recipes::bake(new_data = rsample::analysis(x)) |> 
+          doubly_robust_rec |> 
+            recipes::bake(new_data = rsample::analysis(x)) |> 
+            doubly_robust_bad_reg(X, D, Y)
+        })
+      )
+  )
+
+dat <- all_results_dat |> 
+  dplyr::select(
+    reg_estimate, ipw_estimate, dre_estimate, dre_bad_ipw_estimate, dre_bad_reg_estimate
+  ) |> 
+  tidyr::pivot_longer(cols=everything(), names_to = "method", values_to = "effect estimate")
+
+dat |>
+  dplyr::mutate(method=factor(method)) |>
+  ggplot( bins = 50, alpha = .5
+    , aes(
+      `effect estimate`, after_stat(density) , colour = method, fill = method
+      )
+  ) +
+  geom_histogram(alpha = 0.2, position = 'identity') +
+  geom_density(alpha = 0.2)
+```
+
+## Doubly Robust Estimation
+
+Once again, we can use bootstrap and see that the variance is just slightly higher.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| error: false
+#| label: bad ipw estimate plot CIs
+dat |> 
+  dplyr::group_by(method) |> 
+  dplyr::summarise(
+  mean = mean(`effect estimate`)
+  , lower_ci = quantile(`effect estimate`, 0.025)
+  , upper_ci = quantile(`effect estimate`, 0.975)
+)
+```
+
+## Doubly Robust Estimation
+
+Once more, messing up the conditional mean model alone yields only slightly different ATE. The magic of doubly robust estimation happens because in causal inference, there are two ways to remove bias from our causal estimates: you either model the treatment mechanism or the outcome mechanism. If either of these models are correct, you are good to go.
+
+One caveat is that, in practice, it’s very hard to model precisely either of those. More often, what ends up happening is that neither the propensity score nor the outcome model are 100% correct. They are both wrong, but in different ways. When this happens, it is not exactly settled [\[1\]](https://www.stat.cmu.edu/~ryantibs/journalclub/kang_2007.pdf) [\[2\]](https://arxiv.org/pdf/0804.2969.pdf) [\[3\]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2798744/) if it’s better to use a single model or doubly robust estimation. I still like using them because at least it gives me two possibilities of being correct.
 
 ## Finite Sample Bias
 
@@ -756,6 +879,512 @@ Estimands that utilize weights that are unbounded (i.e. that theoretically can b
 2.  the distribution of the covariates in the exposed and unexposed groups (i.e. is there good overlap? Potential positivity violations, when there is poor overlap, are the regions where weights can become too large)
 3.  the sample size.
 :::
+
+## Matching
+
+Regression does an amazing job at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for X.
+
+To get some intuition about controlling for X, let’s remember the case when all variables X are dummy variables.
+
+If that is the case, regression partitions the data into the dummy cells and computes the mean difference between test and control. Effectively we are calculating doing $E[Y|D=1] - E[Y|D=0] | X=x]$, where $x$ is a dummy cell (all dummies set to 1, for example).
+
+Regression then combines the estimate in each of the cells to produce a final ATE. The way it does this is by applying weights to the cell proportional to the variance of the treatment on that group.
+
+## Matching
+
+To give an example, suppose we try to estimate the effect of a drug and I have 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
+
+To make matters more interesting, men are much more affected by this illness and stay longer at the hospital. They also get much more of the drug. Only 1 out of the 6 men does not get the drug. On the other hand, women are more resistant to this illness, so they stay less at the hospital. 50% of the women get the drug.
+
+```{r}
+data_drug <- tibble::tibble(
+  sex= c("M","M","M","M","M","M", "W","W","W","W"),
+    drug=c(1,1,1,1,1,0,  1,0,1,0),
+    days=c(5,5,5,5,5,8,  2,4,2,4)
+) 
+
+data_drug %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching
+
+Note that simple comparison of treatment and control yields a negatively biased effect, that is, the drug seems less effective than it truly is. This is expected, since we’ve omitted the sex confounder. In this case, the estimated ATE is smaller than the true one because men get more of the drug and are more affected by the illness.
+
+```{r}
+data_drug %>% 
+  dplyr::group_by(drug) %>% 
+  dplyr::summarize(mean_effect = mean(days)) %>% 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching
+
+Since the true effect for men is -3 and the true effect for women is -2, the ATE should be
+
+$$
+ATE=\dfrac{(-3*6) + (-2*4)}{10}=-2.6
+$$
+
+This estimate is done by
+
+1.  partitioning the data into confounder cells, in this case, men and women,
+2.  estimating the effect on each cell and
+3.  combining the estimate with a weighted average, where the weight is the sample size of the cell or covariate group.
+
+## Matching
+
+If we had exactly the same number of men and women in the data, the ATE estimate would be right in the middle of the ATE of the 2 groups, -2.5. Since there are more men than women in our dataset, the ATE estimate is a little bit closer to the men’s ATE. This is called a non-parametric estimate, since it places no assumption on how the data was generated.
+
+If we control for sex using regression, we will add the assumption of linearity. Regression will also partition the data into men and women and estimate the effect on both of these groups. So far, so good. However, when it comes to combining the effect on each group, it does not weigh them by the sample size.
+
+## Matching
+
+Instead, regression uses weights that are proportional to the variance of the treatment in that group. In our case, the variance of the treatment in men is smaller than in women, since only one man is in the control group. To be exact, the variance of D for men is $0.139=1/6*(1 - 1/6)$ and for women is $0.25=2/4*(1 - 2/4)$. So regression will give a higher weight to women in our example and the ATE will be a bit closer to the women’s ATE of -2.
+
+```{r}
+lm(days ~ drug + sex, data=data_drug) %>% 
+  broom::tidy() %>% 
+  gt::gt() %>% 
+  gt::tab_header(
+    title = "Regression summary (ATE)"
+    , subtitle = "days ~ drug + sex"
+  ) %>% 
+  gt::fmt_number(columns = -c(term,estimate), decimals = 3) %>%
+  gt::fmt_number(columns = estimate, decimals = 4) %>%
+  gtExtras::gt_theme_espn()
+```
+
+## Matching
+
+The result is more intuitive with dummy variables, but regression also keeps continuous variables constant while estimating the effect. Also with continuous variables, the ATE will point in the direction where covariates have more variance.
+
+So we’ve seen that regression has its idiosyncrasies. It is linear, parametric, likes high variance features… This can be good or bad, depending on the context. Because of this, it’s important to be aware of other techniques we can use to control for confounders. Not only are they an extra tool in your causal tool belt, but understanding different ways to deal with confounding expands our understanding of the problem. For this reason, I present you now the Subclassification Estimator!
+
+## Matching: subclassification
+
+In general, if there is some causal effect we want to estimate, but it is hard to do so because of confounding of some variables X, what we need to do is make the treatment vs control comparison within small groups where X is the same. If we have conditional independence $(Y^0, Y^1)\perp D | X$ , then we can write the ATE as follows.
+
+$$
+ATE = \int(E[Y|X, D=1] - E[Y|X, D=0])dP(x)
+$$
+
+## Matching: subclassification
+
+What the integral does is it goes through all the space of the distribution of features X, computes the difference in means for all those tiny spaces and combines everything into the ATE.
+
+Another way to see this is to think about a discrete set of features. In this case, we can say that the features X takes on K different cells $\{X_1, X_2, ..., X_k\}$ and what we are doing is computing the treatment effect in each cell and combining them into the ATE. In this discrete case, converting the integral to a sum, we can derive the subclassifications estimator
+
+$$
+\hat{ATE} = \sum^K_{k=1}(\bar{Y}^1_k - \bar{Y}^0_k) * \dfrac{N_k}{N}
+$$
+
+## Matching: subclassification
+
+$$
+\hat{ATE} = \sum^K_{k=1}(\bar{Y}^1_k - \bar{Y}^0_k) * \dfrac{N_k}{N}
+$$
+
+As you can see, we are computing a local ATE for each cell and combining them using a weighted average, where the weights are the sample size of the cell. In our medicine example above, this would be the first estimate, which gave us −2.6.
+
+The subclassification estimator isn’t used much in practice, because of the curse of dimensionality.
+
+## Matching estimator
+
+The subclassification estimator gives us a nice intuition of what a causal inference estimator should do, how it should control for confounders. This allows us to explore other kinds of estimators, such as the Matching Estimator.
+
+## Matching estimator
+
+Since some confounder X makes it so that treated and untreated are not initially comparable, I can make them so by matching each treated unit with a similar untreated unit. It is like we're finding an untreated twin for every treated unit. By making such comparisons, treated and untreated become again comparable.
+
+As an example, let’s suppose we are trying to estimate the effect of a trainee program on earnings. Here is what the trainees looks like
+
+::: panel-tabset
+## trainees
+
+```{r}
+data_trainees <- readr::read_csv("data/trainees.csv", show_col_types = FALSE)
+
+data_trainees %>% 
+  dplyr::filter(trainees==1) %>% 
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## non trainees
+
+```{r}
+data_trainees %>% 
+  dplyr::filter(trainees==0) %>% 
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+:::
+
+```{r}
+
+```
+
+## Matching estimator
+
+A simple comparison in means, identifies that the trainees earn less money than those that didn’t go through the program.
+
+```{r}
+data_trainees %>% 
+  dplyr::group_by(trainees) %>% 
+  dplyr::summarize(mean_effect = mean(earnings)) %>% 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+However, if we look at the data tables, we notice that trainees are much younger than non trainees, which indicates that age is probably a confounder.
+
+We can use matching on age to try to correct that. We will take unit 1 from the treated and pair it with unit 27, since both are 28 years old. Unit 2 we will pair it with unit 34, unit 3 with unit 37, unit 4 we will pair it with unit 35… When it comes to unit 5, we need to find someone with age 29 from the non treated, but that is unit 37, which is already paired. This is not a problem, since we can use the same unit multiple times. If more than 1 unit is a match, we can choose randomly between them.
+
+```{r}
+unique_on_age <- data_trainees %>% 
+  dplyr::filter(trainees == 0) %>% 
+  dplyr::distinct(age, .keep_all = TRUE)
+
+matches <- data_trainees %>% 
+  dplyr::filter(trainees == 1) %>% 
+  dplyr::left_join(unique_on_age, by = 'age', suffix = c("_t_1", "_t_0")) %>% 
+  dplyr::mutate(t1_minus_t0 = earnings_t_1 - earnings_t_0) 
+
+matches %>% dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+If we take the mean of this last column we get the ATET estimate while controlling for age. Notice how the estimate is now very positive, compared to the previous one where we used a simple difference in means.
+
+```{r}
+matches %>% dplyr::summarize(ATE = mean(t1_minus_t0)) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+This is a contrived example, just to introduce matching.
+
+In reality, we usually have more than one feature and units don’t match perfectly. In this case, we have to define some measurement of proximity to compare how units are close to each other. One common metric for this is the euclidean norm $||X_i - X_j||$. This difference, however, is not invariant to the scale of the features. This means that features like age, that take values on the tenths, will be much less important when computing this norm compared to features like income, which take the order of hundreds.
+
+For this reason, before applying the norm, we need to scale the features so that they are on roughly the same scale.
+
+## Matching estimator
+
+Having defined a distance measure, we can now define the match as the nearest neighbour to that sample we wish to match. In math terms, we can write the matching estimator the following way
+
+$$
+\hat{ATE} = \frac{1}{N} \sum^N_{i=1} (2D_i - 1)\big(Y_i - Y_{jm}(i)\big)
+$$
+
+Where $Y_{jm}(i)$ is the sample from the other treatment group which is most similar to $Y_i$. We do this $2T_i - 1$ to match both ways: treated with controls and controls with the treatment.
+
+## Matching estimator
+
+To test this estimator, let’s consider a medicine example. Once again, we want to find the effect of a medication on days until recovery. Unfortunately, this effect is confounded by severity, sex and age. We have reasons to believe that patients with more severe conditions have a higher chance of receiving the medicine.
+
+```{r}
+data_med <- readr::read_csv("data/medicine_impact_recovery.csv", show_col_types = FALSE)
+
+data_med %>% 
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+If we look at a simple difference in means, $E[Y|D=1]-E[Y|D=0]$, we get that the treatment takes, on average, 16.9 more days to recover than the untreated. This is probably due to confounding, since we don’t expect the medicine to cause harm to the patient.
+
+```{r}
+data_med %>% 
+  dplyr::group_by(medication) %>% 
+  dplyr::summarize(mean_effect = mean(recovery)) %>% 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+To correct for this bias, we will control for X using matching. First, we need to remember to scale our features, otherwise, features like age will have higher importance than features like severity when we compute the distance between points. To do so, we can standardise the features.
+
+```{r}
+data_med %<>% recipes::recipe(recovery ~ .) %>% 
+  recipes::update_role(medication, new_role = 'treatment') %>% 
+  recipes::step_normalize(recipes::all_predictors()) %>% 
+  recipes::prep() %>% 
+  recipes::bake(new_data=NULL)
+
+data_med %>%   
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+Now, to the matching itself. Instead of coding a matching function, we will use the K nearest neighbour algorithm from `caret::knnreg`. This algorithm makes predictions by finding the nearest data point in an estimation or training set.
+
+For matching, we will need 2 of those. One, mt0, will store the untreated points and will find matches in the untreated when asked to do so. The other, mt1, will store the treated point and will find matches in the treated when asked to do so. After this fitting step, we can use these KNN models to make predictions, which will be our matches.
+
+## Matching estimator
+
+```{r}
+#| code-fold: true
+#| label: matching using knn
+treated   <- data_med %>% dplyr::filter(medication==1)
+untreated <- data_med %>% dplyr::filter(medication==0)
+
+mt0 <- # untreated knn model predicting recovery
+  caret::knnreg(x = untreated %>% dplyr::select(sex,age,severity), y = untreated$recovery, k=1)
+mt1 <- # treated knn model predicting recovery
+  caret::knnreg(x = treated %>% dplyr::select(sex,age,severity), y = treated$recovery, k=1)
+
+predicted <-
+  # combine the treated and untreated matches
+  c(
+    # find matches for the treated looking at the untreated knn model
+    treated %>%
+      tibble::rowid_to_column("ID") %>% 
+      split(.$ID) %>% 
+      purrr::map(
+        (\(x){
+          x %>% 
+            dplyr::mutate(
+              match = predict( mt0, x[1,c('sex','age','severity')] )
+            )
+        })
+      )
+    # find matches for the untreated looking at the treated knn model
+    , untreated %>%
+        tibble::rowid_to_column("ID") %>% 
+        split(.$ID) %>% 
+        purrr::map(
+          (\(x){
+            x %>% 
+              dplyr::mutate(
+                match = predict( mt1, x[1,c('sex','age','severity')] )
+              )
+          })
+        )
+  ) %>%
+  # bind the treated and untreated data 
+  dplyr::bind_rows()
+
+predicted %>%   
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) %>%
+  gtExtras::gt_theme_espn()
+```
+
+## Matching estimator
+
+With the matches, we can now apply the matching estimator formula
+
+$$
+\hat{ATE} = \frac{1}{N} \sum^N_{i=1} (2D_i - 1)\big(Y_i - Y_{jm}(i)\big)
+$$
+
+```{r}
+predicted %>% 
+  dplyr::summarize("ATE (est)" = mean( (2*medication - 1) * (recovery - match) )) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+Using this sort of matching, we can see that the effect of the medicine is not positive anymore. This means that, controlling for $X$, the medicine reduces the recovery time by about 1 day, on average. This is already a huge improvement on top of the biased estimate that predicted a 16.9 increase in recovery time.
+
+## Matching bias
+
+It turns out the matching estimator as we’ve designed above is biased. To see this, let’s consider the ATET estimator, instead of the ATE, just because it is simpler to write. The intuition will apply to the ATE as well.
+
+$$
+\hat{ATET} = \frac{1}{N_1}\sum (Y_i - Y_j(i))
+$$ where $N_1$ is the number of treated individuals and $Y_j(i)$ is the untreated match of treated unit i.
+
+## Matching bias
+
+To check for bias, what we do is hope we can apply the Central Limit Theorem so that this estimate converges to a normal distribution with mean zero.
+
+$$
+\sqrt{N_1}(\hat{ATET} - ATET)
+$$However, this doesn’t alway happen. If we define the mean outcome for the untreated given X, $\mu_0(x)=E[Y|X=x, D=0]$, we will have that (btw, I’ve omitted the proof for that because it’s a little beyond the point here).
+
+$$
+E[\sqrt{N_1}(\hat{ATET} - ATET)] = E[\sqrt{N_1}(\mu_0(X_i) - \mu_0(X_j(i)))]
+$$
+
+## Matching bias
+
+Now, $\mu_0(X_i) - \mu_0(X_j(i))$ is not so simple to understand, so let’s look at it more carefully. $\mu_0(X_i)$ is the outcome Y value of a treated unit $i$ had it not been treated. So, it is the counterfactual outcome $Y^0$ for unit $i$. $\mu_0(X_j(i))$ is the outcome of the untreated unit $j$ that is the match of unit $i$. So, it is also the $Y^0$, but for unit $j$ now. Only this time, it is a factual outcome, because $j$ is in the non treated group. Now, because $j$ and $i$ are only similar, but not the same, this will likely not be zero. In other words, $X_i \approx X_j$. So, $Y^0_i \approx Y^0_j$.
+
+## Matching bias
+
+As we increase the sample size, there will be more units to match, so the difference between unit $i$ and its match $j$ will also get smaller. But this difference converges to zero slowly. As a result $E[\sqrt{N_1}(\mu_0(X_i) - \mu_0(X_j(i)))]$ may not converge to zero, because the $\sqrt{N_1}$ grows faster than $(\mu_0(X_i) - \mu_0(X_j(i)))$ diminishes.
+
+## Matching bias
+
+Bias arises when the matching discrepancies are huge. Fortunately, we know how to correct it. Each observation contributes $(\mu_0(X_i) - \mu_0(X_j(i)))$ to the bias so all we need to do is subtract this quantity from each matching comparison in our estimator. To do so, we can replace $\mu_0(X_j(i))$ with some sort of estimate of this quantity $\hat{\mu}_0(X_j(i))$, which can be obtained with models like linear regression. This updates the ATET estimator to the following equation:
+
+$$
+\hat{ATET} = \frac{1}{N_1}\sum \big((Y_i - Y_{j(i)}) - (\hat{\mu_0}(X_i) - \hat{\mu_0}(X_{j(i)}))\big)
+$$ where $\hat{\mu_0}(x)$ is some estimative of $E[Y|X, D=0]$, like a linear regression fitted only on the untreated sample.
+
+## Matching bias
+
+```{r}
+#| code-fold: true
+#| label: bias corrected match
+ols0 <- lm(recovery ~ sex + age + severity, data = untreated) 
+ols1 <- lm(recovery ~ sex + age + severity, data = treated) 
+
+# find the units that match to the treated
+treated_match_index <- # RANN::nn2 does Nearest Neighbour Search
+  (RANN::nn2(mt0$learn$X, treated %>% dplyr::select(sex,age,severity), k=1))$nn.idx %>% 
+  as.vector()
+
+# find the units that match to the untreated
+untreated_match_index <- # RANN::nn2 does Nearest Neighbour Search
+  (RANN::nn2(mt1$learn$X, untreated %>% dplyr::select(sex,age,severity), k=1))$nn.idx %>% 
+  as.vector()
+
+predicted <- 
+c(
+  purrr::map2(
+    .x = 
+      treated %>% tibble::rowid_to_column("ID") %>% split(.$ID) 
+    , .y = treated_match_index
+    , .f = (\(x,y){
+          x %>% 
+            dplyr::mutate(
+              match = predict( mt0, x[1,c('sex','age','severity')] )
+              , bias_correct =
+                  predict( ols0, x[1,c('sex','age','severity')] ) -
+                  predict( ols0, untreated[y,c('sex','age','severity')] )
+            )
+        })
+  )
+  , purrr::map2(
+    .x = 
+      untreated %>% tibble::rowid_to_column("ID") %>% split(.$ID) 
+    , .y = untreated_match_index
+    , .f = (\(x,y){
+          x %>% 
+            dplyr::mutate(
+              match = predict( mt1, x[1,c('sex','age','severity')] )
+              , bias_correct =
+                  predict( ols1, x[1,c('sex','age','severity')] ) -
+                  predict( ols1, treated[y,c('sex','age','severity')] )
+            )
+        })
+  )
+) %>% 
+  # bind the treated and untreated data 
+  dplyr::bind_rows()
+
+predicted %>%   
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) %>%
+  gtExtras::gt_theme_espn()
+```
+
+## Matching bias
+
+Doesn’t this defeat the point of matching? If I have to run a linear regression anyway, why don’t I use only that, instead of this complicated model.
+
+First of all, this linear regression that we are fitting doesn’t extrapolate on the treatment dimension to get the treatment effect. Instead, its purpose is just to correct bias. Linear regression here is local, in the sense that it doesn’t try to see how the treated would be if it looked like the untreated. It does none of that extrapolation. This is left to the matching part. The meat of the estimator is still the matching component. The point is that OLS is secondary to this estimator.
+
+## Matching bias
+
+The second point is that matching is a non-parametric estimator. It doesn’t assume linearity or any kind of parametric model. As such, it is more flexible than linear regression and can work in situations where linear regression will not, namely, those where non linearity is very strong.
+
+## Matching bias
+
+With the bias correction formula, I get the following ATE estimation.
+
+```{r}
+predicted %>% 
+  dplyr::summarize(
+    "ATE (est)" = 
+      mean( (2*medication - 1) * (recovery - match - bias_correct) )) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+## Matching CI
+
+Of course, we also need to place a confidence interval around this measurement.
+
+In practice, we can simply use someone else’s code and just import a matching estimator. Here is one from the library Matching.
+
+```{r}
+#| message: false
+#| message: false
+#| error: false
+require(Matching)
+#  See https://www.jsekhon.com for additional documentation.
+c("ATE", "ATC", "ATT") %>% 
+  purrr::map(
+    (\(x){
+      pairmatching <- Matching::Match(
+        Y = data_med$recovery
+        , Tr = data_med$medication
+        , X = data_med %>% dplyr::select('sex','age','severity')
+        , estimand = x
+        , BiasAdjust = TRUE
+      )
+      tibble::tibble(measure = x, est = pairmatching$est[1,1], se = pairmatching$se)
+    })
+  ) %>% 
+  dplyr::bind_rows() %>% 
+  gt::gt() %>% 
+  gt::fmt_number(columns = c('est','se'), decimals = 3) %>%
+  gt::tab_header(
+    title = "Treatment Effect Estimates: Matching"
+    , subtitle = "using R package Matching"
+  ) %>% 
+  gtExtras::gt_theme_espn()
+```
+
+Finally, we can say with confidence that our medicine does indeed lower the time someone spends at the hospital. The ATE estimate is just a little bit lower than our algorithm, due to the difference in tie breaking of matches of knn implementation and the `Matching` R package.
+
+## Matching bias again
+
+We saw that matching is biased when the unit and its match are not so similar. But what causes them to be so different?
+
+As it turns out, the answer is quite simple and intuitive. It is easy to find people that match on a few characteristics, like sex. But if we add more characteristics, like age, income, city of birth and so on, it becomes harder and harder to find matches. In more general terms, the more features we have, the higher will be the distance between units and their matches.
+
+This is not something that hurts only the matching estimator. It ties back to the subclassification estimator we saw earlier. In that contrived medicine example where with man and woman, it was quite easy to build the subclassification estimator. That was because we only had 2 cells: man and woman. But what would happen if we had more? Let’s say we have 2 continuous features like age and income and we manage to discretise them into 5 buckets each. This will give us 25 cells, or $5^2$. And what if we had 10 covariates with 3 buckets each? Doesn’t seem like a lot right? Well, this would give us 59049 cells, or $3^{10}$. It’s easy to see how this can blow out of proportion pretty quickly. This is a phenomena pervasive in all data science, which is called the **The Curse of Dimensionality!!!**
+
+## Matching bias again
+
+In the context of the subclassification estimator, the curse of dimensionality means that it will suffer if we have lots of features.
+
+Lots of features imply multiple cells in X. If there are multiple cells, some of them will have very few data. Some of them might even have only treated or only control, so it won’t be possible to estimate the ATE there, which would break our estimator.
+
+In the matching context, this means that the feature space will be very sparse and units will be very far from each other. This will increase the distance between matches and cause bias problems.
+
+## Matching bias again
+
+As for linear regression, it actually handles this problem quite well.
+
+What it does is project all the features X into a single one, the Y dimension. It then makes treatment and control comparison on that projection. So, in some way, linear regression performs some sort of dimensionality reduction to estimate the ATE. It’s quite elegant.
 
 ## More
 

@@ -173,20 +173,19 @@ You can construct the roc_auc curve directly, as follows:
 #| label: construct the roc_auc curve directly
 
 # use the training results, and find points on the curve for a given threshold
-build_roc_auc <- function(threshold, dat = training_results){
+build_roc_aus <- function(threshold, dat = training_results){
   # threshold on predictions
   log_preds <- ifelse(dat$.pred_Yes > threshold, 1, 0)
-  # compute predictions and reference/truth | turn both into factors
-  ref <- factor(dat$churn, levels = c('Yes','No'), labels = c('Yes', 'No'))
-  log_preds <- factor(log_preds, levels = c(1,0), labels = c('Yes', 'No'))
-  # create the confusion matrix
-  cm <- caret::confusionMatrix(data = log_preds, reference = ref, positive = 'Yes')
-  # return the results
-  return( 
+  # compute predictions and reference/truth
+  log_preds <- factor(log_preds, levels = c(0,1), labels = c('No','Yes'))
+
+  return(
     tibble::tibble(
       threshold = threshold
-      , "1-Specificity" = 1-cm$byClass[['Specificity']]
-      , Sensitivity = cm$byClass[['Sensitivity']]
+      , "1-Specificity" = 
+        1 - yardstick::specificity_vec(truth = dat$churn, estimate = log_preds)
+      , Sensitivity = 
+          yardstick::sensitivity_vec(truth = dat$churn, estimate = log_preds)
     )
   )
 }
@@ -195,10 +194,10 @@ build_roc_auc <- function(threshold, dat = training_results){
 ```{r}
 #| label: plot the curve
 #take thesholds in [0,1] and calculate the corresponding x,y points
-((0:100)/100) |> purrr::map(~build_roc_aus(.x)) |> 
+((0:50)/50) |> purrr::map(~build_roc_aus(.x)) |> 
   dplyr::bind_rows() |> 
     ggplot(aes(x=`1-Specificity`, y=Sensitivity)) +
-    geom_line() + coord_fixed() +
+    geom_point(size=1) + coord_fixed() +
     geom_abline(intercept=0, slope=1)
 ```
 :::
