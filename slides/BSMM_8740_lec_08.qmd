@@ -733,7 +733,7 @@ Once again, we can use bootstrap and see that the variance is just slightly high
 #| code-fold: true
 #| message: false
 #| error: false
-#| label: bad ipw estimate plot CIs
+#| label: bad ipw estimate est CIs
 dat |> 
   dplyr::group_by(method) |> 
   dplyr::summarise(
@@ -1332,7 +1332,6 @@ Of course, we also need to place a confidence interval around this measurement.
 In practice, we can simply use someone else’s code and just import a matching estimator. Here is one from the library Matching.
 
 ```{r}
-#| message: false
 #| message: false
 #| error: false
 require(Matching)
