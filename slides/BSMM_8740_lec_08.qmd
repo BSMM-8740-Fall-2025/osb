@@ -71,8 +71,6 @@ Repeating our prior process, first we calculate the ipw weights and estimate the
 #| code-fold: true
 #| message: false
 #| warning: false
-#| label: ipw model
-#| code-fold: true
 #| code-summary: ATE estimate by IPW
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
