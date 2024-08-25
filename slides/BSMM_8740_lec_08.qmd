@@ -33,8 +33,6 @@ execute:
 
 -   We will look at other methods used to estimate causal effects, along with methods used for special situations.
 
-## Packages
-
 ```{r}
 #| message: false
 #| warning: false
@@ -51,8 +49,6 @@ librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtE
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
-
-## 
 
 # Causal Effect Estimation
 
@@ -102,7 +98,7 @@ Using `propensity::wt_ate` calculates **unstabilized** weights by default. In th
 ```{r}
 #| label: fig-ate-density-net-data
 #| code-fold: true
-#| fig.width: 5
+#| fig.width: 8
 #| fig.height: 4
 #| fig.cap: >
 #|   A density plot of the average treatment effect (ATE) weights. The plot is skewed, with higher values towards 8. This may indicate a problem with the model, but the weights aren't so extreme to destabilize the variance of the estimate.
@@ -127,9 +123,8 @@ Stabilized weights are often used to address this, e.g. the function `propensity
 
 Baseline covariates ($V\subset L$) are also used to stabilize IP weights: $SW^A(V)=\mathbb{E}[D|V]/\mathbb{E}[D|L]$.
 
-Note the the variables $V$ need to be included in the numerator and the denominator (as part of $L$)
-
-V-stabilization results in IP weights that are more stabilized than the ones without V.
+-   Note the the variables $V$ need to be included in the numerator and the denominator (as part of $L$)
+-   V-stabilization results in IP weights that are more stabilized than the ones without V.
 
 ## Inverse Probability Weighting
 
@@ -1382,6 +1377,541 @@ In the matching context, this means that the feature space will be very sparse a
 As for linear regression, it actually handles this problem quite well.
 
 What it does is project all the features X into a single one, the Y dimension. It then makes treatment and control comparison on that projection. So, in some way, linear regression performs some sort of dimensionality reduction to estimate the ATE. It’s quite elegant.
+
+## Difference-in-Differences
+
+#### Three Billboards in the South of Brazil
+
+To figure out how good billboards were as a marketing channel, A bank placed 3 billboards in the city of Porto Alegre, the capital of the state of Rio Grande do Sul. We wanted to see if that boosted deposits into our savings account. Rio Grande do Sul is part of the south of Brazil, one of the most developed regions.
+
+## Difference-in-Differences
+
+#### Three Billboards in the South of Brazil
+
+Data was also obtained from another capital from the south, Florianopolis, the capital city of the state of Santa Catarina in Brasil. The idea is that Florianopolis could be used as a control sample to estimate the counterfactual when compared to Porto Alegre. The billboard was placed in Porto Alegre for the entire month of June. The resulting data like this:
+
+```{r}
+data_bboard <- readr::read_csv("data/billboard_impact.csv", show_col_types = FALSE)
+
+data_bboard %>% 
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+Here deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+Let $Y^D(T)$ be the potential outcome for treatment D on period T. In an ideal world where we have the ability to observe the counterfactual, we would estimate the treatment effect of an intervention the following way:
+
+$$
+\hat{ATET} = E[Y^1(1) - Y^0(1)|D=1]
+$$
+
+In words, the causal effect is the outcome in the period post intervention in case of a treatment minus the outcome in also in the period after the intervention, but in the case of no treatment. Of course, we can’t measure this because $Y^0(1)$ is counterfactual.
+
+One way around this is a before and after comparison.
+
+$$
+\hat{ATET} = E[Y(1)|D=1] - E[Y(0)|D=1]
+$$
+
+In our example, we would compare the average deposits from POA before and after the billboard was placed.
+
+```{r}
+poa_before <- data_bboard |> dplyr::filter(poa==1 & jul==0) |> dplyr::pull(deposits) |> mean()
+poa_after  <- data_bboard |> dplyr::filter(poa==1 & jul==1) |> dplyr::pull(deposits) |> mean()
+poa_after - poa_before
+```
+
+This estimator is telling us that we should expect deposits to increase R\$ 41,04 after the intervention. But can we trust this?
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
+
+Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$. But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend. For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention. With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+Another idea is to compare the treated group with an untreated group that didn’t get the intervention:
+
+$$
+\hat{ATET} = E[Y(1)|D=1] - E[Y(1)|D=0]
+$$
+
+In our example, it would be to compare the deposits from POA to that of Florianopolis in the post intervention period.
+
+```{r}
+fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposits) |> mean()
+poa_after - fl_after
+```
+
+This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$. But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+Again, this is not a great idea. To solve this, we can use both space and time comparison. This is the idea of the difference in difference approach. It works by replacing the missing counterfactual the following way:
+
+$$
+E[Y^0(1)|D=1] = E[Y^0(0)|D=1] + (E[Y^0(1)|D=0] - E[Y^0(0)|D=0])
+$$
+
+What this does is take the treated unit **before the intervention** and adds a trend component to it, which is estimated using the control $E[Y^0(1)|D=0] - E[Y^0(0)|D=0]$. In words, it is saying that the treated **after the intervention**, had it not been treated, would look like the **treated before the treatment** plus a growth factor that is the same as the growth of the control.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+It is important to notice that this assumes that the trends in the treatment and control are the same:
+
+$$
+E[Y^0(1) − Y^0(0)|D=1] = E[Y^0(1) − Y^0(0)|D=0]
+$$
+
+where the left hand side is the counterfactual trend. Now, we can replace the estimated counterfactual in the treatment effect definition $E[Y^1(1)|D=1] - E[Y^0(1)|D=1]$
+
+$$
+\hat{ATET} = E[Y(1)|D=1] - (E[Y(0)|D=1] + (E[Y(1)|D=0] - E[Y(0)|D=0])
+$$
+
+It gets that name because it gets the difference between the difference between treatment and control after and before the treatment.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+Here is what that looks in code.
+
+```{r}
+fl_before <- data_bboard |> dplyr::filter(poa==0 & jul==0) |> dplyr::pull(deposits) |> mean()
+diff_in_diff = (poa_after-poa_before)-(fl_after-fl_before)
+diff_in_diff
+```
+
+Diff-in-Diff is telling us that we should expect deposits to increase by R\$ 6.52 per customer. Notice that the assumption that diff-in-diff makes is much more plausible than the other 2 estimators. It just assumes that the growth pattern between the 2 cities are the same. But it doesn’t require them to have the same base level nor does it require the trend to be zero.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+To visualize what diff-in-diff is doing, we can project the growth trend from the untreated into the treated to see the counterfactual, that is, the number of deposits we should expect if there were no intervention.
+
+```{r}
+#| fig-align: center
+#| fig-height: 4
+tibble::tibble( 
+  mo = c("May", "Jul") |> factor(levels=c("May", "Jul"))
+  , fl = c(fl_before, fl_after)
+  , poa = c(poa_before, poa_after)
+  , counterfactual = c(poa_before, poa_before+(fl_after-fl_before))
+) |> 
+  tidyr::pivot_longer(-mo) |> 
+  ggplot(aes(x=mo, y = value, group = name, color = name, linetype = name)) +
+  geom_line() +
+  theme_minimal()
+```
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+The small difference between the red and the blue dashed lines shows the small treatment effect on Porto Alegre.
+
+But how much can we trust this estimator? To get standard errors we use a neat trick that uses regression. Specifically, we will estimate the following linear model
+
+$$
+Y_i = \beta_0 + \beta_1 POA_i + \beta_2 Jul_i + \beta_3 POA_i*Jul_i + e_i
+$$
+
+Notice that $\beta_0$ is the baseline of the control. In our case, is the level of deposits in Florianopolis in the month of May. If we turn on the treated city dummy, we get $\beta_1$. So $\beta_0+\beta_1$ is the baseline of Porto Alegre in May, before the intervention, and $\beta_1$ is the increase of Porto Alegre baseline on top of Florianopolis. If we turn the POA dummy off and turn the July dummy on, we get $\beta_0+\beta_2$, which is the level of Florianópolis in July, after the intervention period. $\beta_2$ is then the trend of the control, since we add it on top of the baseline to get the level of the control at the period post intervention.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+As a recap, $\beta_1$ is the increment we get by going from the control to the treated, $\beta_2$ is the increment we get by going from the period before to the period after the intervention. Finally, if we turn both dummies on, we get $\beta_3$. $\beta_0+\beta_1+\beta_2+\beta_3$ is the level in Porto Alegre after the intervention. So $\beta_3$ is the incremental impact when you go from May to July and from Florianopolis to POA. In other words, it is the Difference in Difference estimator.
+
+```{r}
+lm(deposits ~ poa*jul, data = data_bboard) |> broom::tidy()
+```
+
+## Difference-in-Differences
+
+#### Non Parallel Trends
+
+One obvious problem with Diff-in-Diff is failure to satisfy the parallel trend assumption. If the growth trend from the treated is different from the trend of the control, diff-in-diff will be biased.
+
+This is a common problem with non-random data, where the decision to treat a region is based on its potential to respond well to the treatment, or when the treatment is targeted at regions that are not performing very well. In our marketing example we decided to test billboards in Porto Alegre not in order to check the effect of billboards in general. The reason is simply because sales perform poorly there. Perhaps online marketing is not working there. In this case, it could be that the growth we would see in Porto Alegre without a billboard would be lower than the growth we observe in other cities. This would cause us to underestimate the effect of the billboard there.
+
+## Difference-in-Differences
+
+#### Non Parallel Trends
+
+One way to check if this is happening is to plot the trend using past periods. For example, let’s suppose POA had a small decreasing trend but Florianopolis was on a steep ascent. In this case, showing periods from before would reveal those trends and we would know Diff-in-Diff is not a reliable estimator.
+
+```{r}
+#| warning: false
+tibble::tibble( 
+  mo = c("Jan", "Mar", "May", "Jul") |> factor(levels=c("Jan", "Mar", "May", "Jul"))
+  , fl = c(120, 150, fl_before, fl_after)
+  , poa = c(60, 50, poa_before, poa_after)
+  , counterfactual = c(NA, NA, poa_before, poa_before+(fl_after-fl_before))
+) |> 
+  tidyr::pivot_longer(-mo) |> 
+  ggplot(aes(x=mo, y = value, group = name, color = name, linetype = name)) +
+  geom_line() +
+  theme_minimal()
+```
+
+## Difference-in-Differences
+
+#### Non Parallel Trends
+
+One final issue that it’s worth mentioning is that you won’t be able to place confidence intervals around your Diff-in-Diff estimator if you only have aggregated data. Say for instance you don’t have data on what each of our customers from Florianópolis or Porto Alegre did. Instead, you only have the average deposits before and after the intervention for both cities. In this case, you will still be able to estimate the causal effect by Diff-in-Diff, but you won’t know the variance of it. That’s because all the variability in your data got squashed out in aggregation.
+
+## Panel Data and Fixed Effects
+
+In the simple Diff-in-Diff setup, we have a treated and a control group (the city of POA and FLN, respectively) and only two periods, a pre-intervention and a post-intervention period. But what would happen if we had more periods? Or more groups?
+
+This setup is so common and powerful for causal inference and gets its own name: panel data. A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
+
+To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). We want to see if that sort of offline marketing strategy can boost the usage of our investment products. Specifically, we want to know how much deposits in our investments account would increase if we placed billboards.
+
+## Panel Data and Fixed Effects
+
+In the previous chapter, we motivated the DiD estimator as an imputation strategy of what would have happened to Porto Alegre had we not placed the billboards in it. We said that the counterfactual outcome $Y^0$ for Porto Alegre **after the intervention** (placing a billboard) could be inputted as the number of deposits in Porto Alegre **before the intervention** plus a growth factor. This growth factor was estimated in a control city, Florianopolis (FLN).
+
+## Panel Data and Fixed Effects
+
+To recap some notation, here is how we can estimate this counterfactual outcome
+
+$$
+\begin{split}
+\underbrace{\widehat{Y^0(1)|D=1}}_{\substack{\text{POA outcome after intervention}} \\ \substack{\text{if no intervention had taken place}}} 
+= \underbrace{Y^0(0)|D=1}_{\substack{\text{POA outcome}} \\ \substack{\text{before intervention}}} 
++ \big( \underbrace{Y^0(1)|D=0}_{\substack{\text{FLN outcome after}} \\ \substack{\text{intervention in POA}}} 
+- \underbrace{Y^0(0)|D=0}_{\substack{\text{FLN outcome before}} \\ \substack{\text{intervention in POA}}} \big)
+\end{split}
+$$
+
+where $t$ denotes time, $D$ denotes the treatment (since $t$ is taken), $Y^D(t)$ denote the potential outcome for treatment $D$ in period $t$ (for example, $Y^0(1)$ is the outcome under the control in period 1).
+
+## Panel Data and Fixed Effects
+
+Now, if we take that imputed potential outcome, we can recover the treatment effect for POA (ATT) as follows
+
+$$
+\begin{split}
+\widehat{ATT} = \underbrace{Y^1(1)|D=1}_{\substack{\text{POA outcome} \\ \text{after intervention}}} - \widehat{Y^0(1)|D=1}
+\end{split}
+$$
+
+In other words, the effect of placing a billboard in POA is the outcome we saw on POA after placing the billboard minus our estimate of what would have happened if we hadn’t placed the billboard. Also, recall that the power of DiD comes from the fact that estimating the mentioned counterfactual only requires that the growth deposits in POA matches the growth in deposits in FLW. This is the key **parallel trends assumption**. We should definitely spend some time on it because it is going to become very important later on.
+
+## Panel Data and Fixed Effects
+
+#### Parallel Trends
+
+One way to see the parallel (or common) trends assumptions is as an independence assumption. Recall that the independence assumption requires that the treatment assignment is independent from the potential outcomes:
+
+$$
+Y^d \perp  D
+$$
+
+This means we don’t give more treatment to units with higher outcome (which would cause upward bias in the effect estimation) or lower outcome (which would cause downward bias). In this example, let’s say the marketing manager decides to add billboards only to cities that already have very high deposits. That way, he or she can later boast that cities with billboards generate more deposties, so of course the marketing campaign was a success.
+
+This violates the independence assumption: we are giving the treatment to cities with high $Y^0$.
+
+## Panel Data and Fixed Effects
+
+#### Parallel Trends
+
+Recall that a natural extension of this assumption is the conditional independence assumption, which allows the potential outcomes to be dependent on the treatment at first, but independent once we condition on the confounders $X$
+
+$$
+Y^d \perp D | X
+$$
+
+If the traditional independence assumption states that the treatment assignment can’t be related to **the levels** of potential outcomes, the parallel trends states that the treatment assignment can’t be related to **the growth** in potential outcomes over time. In fact, one way to write the parallel trends assumption is as follows
+
+$$
+\big(Y^d(t) - Y^d(t-1) \big)  \perp D
+$$
+
+## Panel Data and Fixed Effects
+
+#### Parallel Trends
+
+This assumption says it is fine that we assign the treatment to units that have a higher or lower level of the outcome. What we can’t do is assign the treatment to units based on how the outcome is growing. In our billboard example, this means it is OK to place billboards only in cities with originally high deposits level. What we can’t do is place billboards only in cities where the deposits are growing the most. That makes a lot of sense if we remember that DiD is imputting the counterfactual growth in the treated unit with the growth in the control unit. If growth in the treated unit under the control is different than the growth in the control unit, then we are in trouble.
+
+## Panel Data and Fixed Effects
+
+#### Controlling What you Cannot See
+
+Methods like propensity score, linear regression and matching are very good at controlling for confounding in non-random data, but they rely on a key assumption: conditional unconfoundedness
+
+$$
+(Y^0, Y^1) \perp D | X
+$$
+
+To put it in words, they require that all the confounders are known and measured, so that we can condition on them and make the treatment as good as random.
+
+## Panel Data and Fixed Effects
+
+#### Controlling What you Cannot See
+
+One major issue is that sometimes we simply can’t measure a confounder. For instance, take a classical labor economics problem of figuring out the impact of marriage on men’s earnings. It’s a well known fact in economics that married men earn more than single men. However, it is not clear if this relationship is causal or not.
+
+It could be that more educated men are both more likely to marry and more likely to have a high earnings job, which would mean that education is a confounder of the effect of marriage on earnings. For this confounder, we could measure the education of the person in the study and run a regression controlling for that. But another confounder could be beauty. It could be that more handsome men are both more likely to get married and more likely to have a high paying job. Unfortunately, beauty is one of those characteristics like intelligence. It’s something we can’t measure very well.
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+```{r}
+data_panel <- readr::read_csv("data/wage_panel.csv", show_col_types = FALSE)
+
+data_panel %>% 
+  dplyr::slice_head(n=5) %>% 
+  gt::gt() %>% 
+  gtExtras::gt_theme_espn()
+```
+
+Generally, the fixed effect model is defined as
+
+$$
+y_{it} = \beta X_{it} + \gamma U_i + e_{it}
+$$
+
+where $y_{it}$ is the outcome of individual $i$ at time $t$, $X_{it}$ is the vector of variables for individual $i$ at time $t$. $U_i$ is a set of unobservables for individual $i$ . Notice that those unobservables are unchanging through time, hence the lack of the time subscript. Finally, $e_{it}$ is the error term. For the education example, $y_{it}$ is log wages, $X_{it}$ are the observable variables that change in time, like marriage and experience and $U_i$ are the variables that are not observed but constant for each individual, like beauty and intelligence.
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Now, remember how I’ve said that using panel data with a fixed effect model is as simple as adding a dummy for the entities. It’s true, but in practice, we don’t actually do it. Imagine a dataset where we have 1 million customers. If we add one dummy for each of them, we would end up with 1 million columns, which is probably not a good idea. Instead, we use the trick of partitioning the linear regression into 2 separate models. We’ve seen this before, but now is a good time to recap it.
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Suppose you have a linear regression model with a set of features $X_1$ and another set of features $X_2$.
+
+$$
+\hat{Y} = \hat{\beta_1} X_1 + \hat{\beta_2} X_2
+$$
+
+where $X_1$ and $X_2$ are feature matrices (one row per feature and one column per observation) and $\hat{\beta_1}$ and $\hat{\beta_2}$ are row vectors. You can get the exact same $\hat{\beta_1}$ parameter by doing
+
+1.  regress the outcome $y$ on the second set of features $\hat{y^*} = \hat{\gamma_1} X_2$
+2.  regress the first set of features on the second $\hat{X_1} = \hat{\gamma_2} X_2$
+3.  obtain the residuals $\tilde{X}_1 = X_1 - \hat{X_1}$ and $\tilde{y}_1 = y_1 - \hat{y^*}$
+4.  regress the residuals of the outcome on the residuals of the features $\hat{y} = \hat{\beta_1} \tilde{X}_1$
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+The parameter from this last regression will be exactly the same as running the regression with all the features. But how exactly does this help us? Well, we can break the estimation of the model with the entity dummies into 2. First, we use the dummies to predict the outcome and the feature. These are steps 1 and 2 above.
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Recal how running a regression on a dummy variable is as simple as estimating the mean for that dummy? Let’s run a model where we predict wages as a function of the year dummy.
+
+```{r}
+lm(lwage ~ year, data = data_panel |> dplyr::mutate(year = factor(year))) |> 
+  broom::tidy()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Notice how this model is predicting the average income in 1980 to be 1.3935, in 1981 to be 1.5129 (1.3935+0.1194) and so on. Now, if we compute the average by year, we get the exact same result. (Remember that the base year, 1980, is the intercept. So you have to add the intercept to the parameters of the other years to get the mean `lwage` for the year).
+
+```{r}
+data_panel |> dplyr::group_by(year) |> 
+  dplyr::summarise(avg_lwage = mean(lwage)) |> 
+  gt::gt('year') |> 
+  gtExtras::gt_theme_espn()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+This means that if we get the average for every person in our panel, we are essentially regressing the individual dummy on the other variables. This motivates the following estimation procedure:
+
+1.  Create time-demeaned variables by subtracting the mean for the individual: $$
+    \begin{align*}
+    \ddot{Y}_{it} & =Y_{it}-\bar{Y}_{i}\\
+    \ddot{X}_{it} & =X_{it}-\bar{X}_{i}
+    \end{align*}
+    $$
+2.  Regress $\ddot{Y}_{it}$ on $\ddot{X}_{it}$
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Notice that when we do so, the unobserved $U_i$ vanishes. Since $U_i$ is constant across time, we have that $\bar{U_i}=U_i$. If we have the following system of two equations
+
+$$
+\begin{split}
+\begin{align}
+Y_{it} & = \beta X_{it} + \gamma U_i + e_{it} \\
+\bar{Y}_{i} & = \beta \bar{X}_{it} + \gamma \bar{U}_i + \bar{e}_{it} \\
+\end{align}
+\end{split}
+$$
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+And we subtract one from the other, we get
+
+$$
+\begin{split}
+\begin{align}
+(Y_{it} - \bar{Y}_{i}) & = (\beta X_{it} - \beta \bar{X}_{it}) + (\gamma U_i - \gamma U_i) + (e_{it}-\bar{e}_{it}) \\
+(Y_{it} - \bar{Y}_{i}) & = \beta(X_{it} - \bar{X}_{it}) + (e_{it}-\bar{e}_{it}) \\
+\ddot{Y}_{it} & = \beta \ddot{X}_{it} + \ddot{e}_{it} \\
+\end{align}
+\end{split}
+$$
+
+which wipes out all unobserved that are constant across time. To be honest, not only do the unobserved variables vanish. This happens to all the variables that are constant in time. For this reason, you can’t include any variables that are constant across time, as they would be a linear combination of the dummy variables and the model wouldn’t run.
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+To check which variables are those, we can group our data by individual and get the sum of the standard deviations. If it is zero, it means the variable isn’t changing across time for any of the individuals.
+
+```{r}
+data_panel |> dplyr::group_by(nr) |> 
+  dplyr::mutate(across(!starts_with("nr"),sd)) |> 
+  dplyr::distinct() |> 
+  dplyr::ungroup() |> 
+  dplyr::summarise(across(!starts_with("nr"),sum)) |> 
+  tidyr::pivot_longer(everything()) |> 
+  gt::gt('nr') |> 
+  gtExtras::gt_theme_espn()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+For our data, we need to remove ethnicity dummies, `black` and `hisp`, since they are constant for the individual. Also, we need to remove education. We will also not use occupation, since this is probably mediating the effect of marriage on wage (it could be that single men are able to take more time demanding positions). Having selected the features we will use, it’s time to estimate this model.
+
+To run our fixed effect model, first, let’s get our mean data. We can achieve this by grouping everything by individuals and taking the mean.
+
+```{r}
+#| message: false
+data_panel |> dplyr::group_by(nr) |>
+  dplyr::select(married, expersq, union, hours, lwage) |> 
+  dplyr::summarize(across(!starts_with("nr"),mean), .groups='drop') |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt('nr') |> 
+  gtExtras::gt_theme_espn()
+  
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+To demean the data, we need to set the index of the original data to be the individual identifier, `nr`. Then, we can simply subtract one data frame from the mean data frame.
+
+```{r}
+# NOTE: different in R
+data_panel_baked <- 
+  data_panel |> 
+  dplyr::select(nr, year, married, expersq, union, hours, lwage) |> 
+  split(~nr) |> 
+  purrr::imap(
+    (\(x, idx){
+      x |> 
+        recipes::recipe(~ .) |> 
+        recipes::update_role(year, new_role = "year") |> 
+        recipes::step_center(recipes::all_predictors()) |> 
+        recipes::prep() |> 
+        recipes::bake(new_data=NULL) |> 
+        dplyr::mutate(nr = idx, .before =1)
+    })
+  ) |> 
+  dplyr::bind_rows()
+
+data_panel_baked |> 
+  dplyr::slice_head(n=5) |> 
+  dplyr::select(-year) |> 
+  gt::gt('nr') |> 
+  gtExtras::gt_theme_espn()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Finally, we can run our fixed effect model on the time-demeaned data.
+
+```{r}
+lm(lwage ~ married + expersq + union + hours, data = data_panel_baked) |> 
+  broom::tidy()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+If we believe that fixed effect eliminates the all omitted variable bias, this model is telling us that marriage increases a man’s wage by 11%. This result is very significant. One detail here is that for fixed effect models, the standard errors need to be clustered. So, instead of doing all our estimation by hand (which is only nice for pedagogical reasons), we can use the library `linearmodels` and set the argument `cluster_entity` to True.
+
+```{r}
+# see https://www.r-bloggers.com/2021/05/clustered-standard-errors-with-r/
+estimatr::lm_robust(
+  lwage ~ expersq+union+married+hours 
+  , data = data_panel_baked
+  , fixed_effects = ~nr ) |> broom::tidy()
+```
+
+## Panel Data and Fixed Effects
+
+#### Fixed Effects
+
+Notice how the parameter estimates are identical to the ones we’ve got with time-demeaned data. The only difference is that the standard errors are a bit larger. Now, compare this to the simple OLS model that doesn’t take the time structure of the data into account. For this model, we add back the variables that are constant in time.
+
+```{r}
+lm(lwage ~ expersq+union+married+hours+black+hisp+educ, data = data_panel) |> 
+  broom::tidy()
+```
+
+This model is saying that marriage increases the man’s wage by 14%. A somewhat larger effect than the one we found with the fixed effect model. This suggests some omitted variable bias due to fixed individual factors, like intelligence and beauty, not being added to the model.
 
 ## More
 

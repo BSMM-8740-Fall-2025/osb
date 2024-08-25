@@ -493,11 +493,15 @@ doubly_robust_bad_ipw(
   , c('income', 'health', 'temperature'), "net", "malaria_risk")
 
 
-# +++++++++++++++++++++++++ STACKING +++++++++++++++++++++++++++++++++++++++
+# +++++++++++++++++++++++++ STACKING - g-computation +++++++++++++++++++++++++++++++++++++++
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
 # model fitting the outcome
-risk_model_net_fit <- glm(malaria_risk ~ net + income + health + temperature + insecticide_resistance, data = dat_)
+risk_model_net_fit <- glm(
+  malaria_risk ~ net + income + health + temperature + insecticide_resistance, data = dat_)
+
+risk_model_net_fit_1 <- glm(
+  malaria_risk ~ (net + income + health + temperature + insecticide_resistance)^2, data = dat_)
 
 dat_stacked <-
   dplyr::bind_rows(
@@ -506,7 +510,7 @@ dat_stacked <-
   )
 
 predictions <-
-  risk_model_net_fit |>
+  risk_model_net_fit_1 |>
   broom::augment(newdata = dat_stacked, type.predict = "response")
 
 predictions |>
