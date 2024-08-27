@@ -1,0 +1,101 @@
+---
+title: "Causality Part INFINITY"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 8]"
+author: "L.L. Odette"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+logo: "images/logo.png"
+format: 
+  revealjs: 
+    chalkboard: true
+    theme: slides.scss
+    multiplex: true
+    transition: fade
+    slide-number: true
+    margin: 0.05
+    html-math-method: mathml
+
+
+editor: visual
+menu:
+  numbers: true
+execute:
+  freeze: auto
+---
+
+## S1
+
+This is some stuff
+
+``` r
+#| code-annotations: below
+
+
+fit_ipw <- function(split, ...) {
+  # get bootstrapped data sample with `rsample::analysis()`
+  if("rsplit" %in% class(split)){                           # <1>
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
+
+  # fit propensity score model
+  propensity_model <- glm(                                  # <2>
+    net ~ income + health + temperature,
+    data = .df,
+    family = binomial()
+  )
+
+  # calculate inverse probability weights
+  .df <- propensity_model |>
+    broom::augment(type.predict = "response", data = .df) |>
+    dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
+
+  # fit correctly bootstrapped ipw model
+  lm(malaria_risk ~ net, data = .df, weights = wts) |>
+    broom::tidy()
+}
+
+1. bollocks
+2. more bollocks
+```
+
+## S2
+
+```{r}
+#| echo: true
+#| code-fold: show
+#| eval: FALSE
+
+fit_ipw <- function(split, ...) {
+  # get bootstrapped data sample with `rsample::analysis()`
+  if("rsplit" %in% class(split)){
+    .df <- rsample::analysis(split)
+  }else if("data.frame" %in% class(split)){
+    .df <- split
+  }
+
+  # fit propensity score model
+  propensity_model <- glm(
+    net ~ income + health + temperature,
+    data = .df,
+    family = binomial()
+  )
+
+  # calculate inverse probability weights
+  .df <- propensity_model |>
+    broom::augment(type.predict = "response", data = .df) |>
+    dplyr::mutate(wts = propensity::wt_ate(.fitted, net))
+
+  # fit correctly bootstrapped ipw model
+  lm(malaria_risk ~ net, data = .df, weights = wts) |>
+    broom::tidy()
+}
+
+```
+
+## S3
+
+$$
+\mathbb{E}\left [\sqrt{N_1}(\hat{ATET} - ATET)\right] = 
+\mathbb{E}\left[\sqrt{N_1}(\mu_0(X_i) - \mu_0(X_j(i))\right]
+$$

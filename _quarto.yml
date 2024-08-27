@@ -108,8 +108,7 @@ format:
     code-copy: true
     code-overflow: wrap
     toc: true
-    html-math-method:
-      method: mathjax
+    html-math-method: mathml
 
 freeze: auto
 

@@ -2,7 +2,7 @@
 title: "BSMM 8740 Syllabus"
 ---
 
-[Click here](/documents/BSMM-8740-Fall%202023.pdf "PDF of syllabus") **to download a PDF copy of the syllabus.**
+[Click here](/documents/BSMM-8740-Fall%202024.pdf "PDF of syllabus") **to download a PDF copy of the syllabus.**
 
 ```{r}
 #| echo: false
@@ -50,7 +50,7 @@ gt::gt_group(tbl_0,tbl_1)
 ```
 
 ::: callout-note
-***The Odette School of Business and the University of Windsor sit on the Traditional territory of the Three Fires confederacy of First Nations, comprised of the Ojibway, the Odawa, and the Potawatomie.***
+***The University of Windsor sits on the traditional territory of the Three Fires Confederacy of First Nations, which includes the Ojibwa, the Odawa, and the Potawatomi. We respect the longstanding relationships with First Nations people in this place in the 100-mile Windsor-Essex peninsula and the straits – les détroits – of Detroit.***
 :::
 
 ## Recording
@@ -73,13 +73,13 @@ The general objectives of this course are to:
 ## Master of Management Competencies
 
 | **Program Competencies**                                                                                                                                       | **Course Competencies**                                                                                                                                        | Tested by                                           |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+|----------------------------|----------------------------|----------------|
 | Apply an evidence-based decision model to evaluate and recommend the best available alternative to resolve an international business problem.                  | Apply an evidence-based decision model to evaluate and recommend the best available alternative to resolve an international business problem.                  | Lab Assessments                                     |
 | Analyze both qualitative and quantitative data and findings, distinguishing and evaluating their relevance to the resolution of international business issues. | Analyze both qualitative and quantitative data and findings, distinguishing and evaluating their relevance to the resolution of international business issues. | Quizzes, Midterm Examination, and Final Examination |
 
 ## Textbooks
 
-While there is no official textbook for the course, we will be assigning readings from the following textbooks.
+While there is no official textbook for the course, the following textbooks are useful references for the class material.
 
 -   [The Elements of Statistical Learning Learning - Data Mining, Inference, and Prediction](https://web.stanford.edu/~hastie/ElemStatLearn) by Hastie, Tibshirani, and Firedman.
 
@@ -99,7 +99,7 @@ While there is no official textbook for the course, we will be assigning reading
 | *Sep 18, 2024* | The Recipes Package                 |
 | *Sep 25, 2024* | Regression Methods                  |
 | *Oct 02, 2024* | The TidyModels Package              |
-| *Oct 16, 2024* | Classification & Clustering Methods |
+| *Oct 09, 2024* | Classification & Clustering Methods |
 | *Oct 23, 2024* | Time Series Methods                 |
 | *Oct 30, 2024* | Causality: DAGs                     |
 | *Nov 06, 2024* | Causality: Methods                  |
@@ -148,13 +148,15 @@ All course work is to be marked and final grades submitted using the 100% scale 
 
 ## Exam/Assignment Descriptions
 
+The use of generative artificial intelligence (AI) tools is strictly prohibited in all course assessments unless explicitly indicated otherwise in guidelines provided by the instructor for an assessment. This includes the use of ChatGPT, Google Gemini, Claude, Jenni, Github Co-pilot, DaLL-E, Midjourney, and all other tools that provide artificial intelligence capabilities. When the use of generative AI is permitted this use must be acknowledged and cited following citation instructions given in the assessment guidelines. Use of generative AI outside of assessment guidelines or without required citation will constitute academic misconduct and may be subject to discipline under Bylaw 31: Academic Integrity. It is the student’s responsibility to be clear concerning constraints on the use of generative AI for each assessment and to comply with these constraints.
+
 ### **Quizzes**
 
-The quizzes can consist of true/false, multiple choice, short answer, and essay questions from all material covered before the date of the mid-term exam. When writing quizzes, you must abide by University of Windsor policies governing plagiarism and academic integrity. Quiz submissions may be subjected to review by automated tools to verify their originality.
+The quizzes can consist of true/false, multiple choice, short answer, and essay questions from all material covered before the date of the quiz. When writing quizzes, you must abide by University of Windsor policies governing plagiarism and academic integrity. Quiz submissions may be subjected to review by automated tools to verify their originality.
 
 ### **Lab Assessments**
 
-Lab assessments will require learners to demonstrate the ability to apply methods and techniques to machine learning problem using the R language and explain the steps they followed to solve a problem.  Assessments should be completed in person during lab sessions.
+Lab assessments will require learners to demonstrate the ability to apply methods and techniques to machine learning problems using the R language and explain the steps they followed to solve a problem. Assessments should be started in person during lab sessions. Deadlines for each lab assessment will be posted.
 
 ### **Midterm Examination**
 
