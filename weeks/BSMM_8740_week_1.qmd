@@ -1,5 +1,5 @@
 ---
-title: "Week 1"
+title: "Week 1 - Tidyverse, EDA & Git"
 subtitle: "Welcome to BSMM 8740"
 editor: visual
 ---
@@ -12,9 +12,11 @@ editor: visual
 
 📖 Get familiar with Git by reading [Excuse me, do you have a moment to talk about version control?](https://peerj.com/preprints/3159v2/)
 
+📖 Get familiar with Git by reading [Excuse me, do you have a moment to talk about version control?](/documents/3159v2.pdf "Git and version control")
+
 📖 Read the article [What is Tidy Data?](https://towardsdatascience.com/what-is-tidy-data-d58bb9ad2458)
 
-📖 Read the chapters 2-4 in [R for Data Science](https://r4ds.hadley.nz/)
+📖 Read the chapters 2-5 in [R for Data Science](https://r4ds.hadley.nz/)
 
 ## Participate
 

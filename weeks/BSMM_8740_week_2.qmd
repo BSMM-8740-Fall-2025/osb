@@ -1,26 +1,28 @@
 ---
-title: "Feature Engineering"
-subtitle: "Simple linear regression"
+title: "Week 2: The Recipes Package"
+subtitle: ""
 editor: visual
 ---
 
 ## Prepare
 
-📖 Read Hands-On Machine Learning with R, Chapter 3: [Feature & Target Engineering](https://bradleyboehmke.github.io/HOML/engineering.html)
+📖 Read Chapter 8: Feature Engineering with recipes in [Tidy Modeling in R](https://www.tmwr.org/recipes)
 
-📖 Read Telling Stories with Data, Chapter 11: [Exploratory data analysis](https://tellingstorieswithdata.com/11-eda.html)
+📖 Read Preprocess your data with recipes - Chapter 2: [Preprocessing with Recipes](https://www.tidymodels.org/start/recipes/)
 
-📖 Read R for Data Science (2e), Chapter 11: [Exploratory data analysis](https://r4ds.hadley.nz/eda)
+📖 Familiarize yourself with the recipes package: [Package 'recipes'](https://cran.r-project.org/web/packages/recipes/recipes.pdf)
 
-📖 Feature Engineering and Selection: A Practical Approach for Predictive Models: Chapters 5 & 6: [Encoding Categorical & Numeric Predictors](http://www.feat.engineering/encoding-categorical-predictors)
+📖 Watch this video from Max Kuhn: [Cooking Your Data with Recipes in R with Max Kuhn](https://www.youtube.com/watch?v=GdR_S8bYaag)
+
+📖 Step through Max Kuhn's slides: [Cooking your data with recipes!!!](https://topepo.github.io/2021_11_HDSI_RUG/#1)
 
 ## Participate
 
-🖥️ [Lecture 2 -Feature engineering](/slides/BSMM_8740_lec_02.html)
+🖥️ [Lecture 2 - The Recipes Package](/slides/BSMM_8740_lec_02.html)
 
 ## Perform
 
-⌨️ [Lab 2 - Feature Engineering](/labs/BSMM_8740_lab_2.html "Lab instructions")
+⌨️ [Lab 2 - The Recipes Package](/labs/BSMM_8740_lab_2.html "Lab instructions")
 
 <br><br>
 

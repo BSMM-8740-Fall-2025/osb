@@ -1,20 +1,91 @@
 ---
-title: "Recipes"
-subtitle: "Data Prep and Feature Engineering with recipes"
+title: "Week 3 - Regression Methods"
+subtitle: " "
 editor: visual
 ---
 
 ## Prepare
 
-📖 Read Tidy Modeling with R, Chapter 8: [Feature Engineering with recipes](https://www.tmwr.org/recipes)
+📖 Read Chapter 2 - General Aspects of Fitting Regression Models in: [Regression Modeling Strategies](https://warin.ca/ressources/books/2015_Book_RegressionModelingStrategies.pdf)
+
+📖 Read Chapter (8.1-8.5) - Regression Models in: [Modern Statistics in R](https://modernstatisticswithr.com/regression.html)
+
+📖 Follow along with the R code in [Linear Regression in R: Linear Regression Hands on Tutorial](https://libguides.princeton.edu/R-linear_regression)
+
+📖 Follow along with the R code from R code for Regression Analysis in [An R companion](https://www.csub.edu/~emontoya2/rcomp/reg.html)
 
 ## Participate
 
-🖥️ [Lecture 3 - Recipes](/slides/BSMM_8740_lec_03.html)
+🖥️ [Lecture 3 - Regression Methods](/slides/BSMM_8740_lec_03.html)
 
 ## Perform
 
-⌨️ [Lab 3 - Recipes](/labs/BSMM_8740_lab_3.html "Lab instructions")
+⌨️ [Lab 3 - Regression Methods](/labs/BSMM_8740_lab_3.html "Lab instructions")
+
+⌨️ Example 1: grouped data & weighted regression
+
+```{r}
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(dplyr)
+
+set.seed(1024)
+
+# individual (true) dataset
+x <- round(rnorm(1e5))
+y <- round(x + x^2 + rnorm(1e5))
+ind <- data.frame(x, y)
+
+# aggregated dataset: grouped
+agg <- ind %>%
+  dplyr::group_by(x, y) |> 
+  dplyr::summarize(freq = dplyr::n(), .groups = 'keep')
+
+models <- list( 
+  "True"                = lm(y ~ x, data = ind),
+  "Aggregated"          = lm(y ~ x, data = agg),
+  "Aggregated & W"      = lm(y ~ x, data = agg, weights=freq)
+)
+
+models[['True']] |> broom::tidy(conf.int = TRUE)
+
+models[['Aggregated']] |> broom::tidy(conf.int = TRUE)
+
+models[['Aggregated & W']] |> broom::tidy(conf.int = TRUE)
+
+```
+
+```{r}
+
+
+ind$city = sample(c("Windsor","Chatham","Tilbury","London"), length(ind$x), replace = TRUE) 
+
+ind |> dplyr::mutate(
+  city = 
+  dplyr::case_when(
+    x<0 & y<0 ~ "Windsor"
+    , x<0 & y>0 ~ "Chatham"
+    , x>0 & y<0 ~ "Tilbury"
+    , TRUE ~ "London"
+  )
+)
+
+rec <- ind |> recipes::recipe(y ~ x + city) |> 
+  recipes::step_dummy(recipes::all_nominal_predictors()) |> 
+  recipes::prep()
+
+agg_city <- ind |> dplyr::group_by(city) |> 
+  dplyr::summarize(x = mean(x), y = mean(y), freq = dplyr::n(), .groups = 'drop')
+  
+
+lm(y ~ ., data = rec |> recipes::bake(new_data = ind))
+
+lm(y ~ ., data = rec |> recipes::bake(new_data = agg_city |> dplyr::select(-freq)), weights=agg_city$freq)
+```
 
 <br><br>
 
