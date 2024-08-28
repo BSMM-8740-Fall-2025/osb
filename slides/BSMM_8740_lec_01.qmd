@@ -6,10 +6,13 @@ footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github
 logo: "images/logo.png"
 format: 
   revealjs: 
+    chalkboard: true
     theme: slides.scss
     multiplex: true
     transition: fade
     slide-number: true
+    margin: 0.05
+    html-math-method: mathjax
 editor: visual
 menu:
   numbers: true

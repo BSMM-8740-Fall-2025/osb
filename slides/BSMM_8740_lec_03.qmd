@@ -10,10 +10,13 @@ logo: "images/logo.png"
 #   data-background-opacity: "0.40"
 format: 
   revealjs: 
+    chalkboard: true
     theme: slides.scss
     multiplex: true
     transition: fade
     slide-number: true
+    margin: 0.05
+    html-math-method: mathjax
 editor: visual
 menu:
   numbers: true
@@ -1222,7 +1225,7 @@ Regression with neural nets involves using artificial neural networks (ANNs) to 
     -   The process of forward propagation, loss calculation, and backward propagation is repeated for many iterations (epochs) until the loss converges to a minimum value.
 :::
 
-## Regression with ANNs: 
+## Regression with ANNs:
 
 ::: panel-tabset
 ## Advantages

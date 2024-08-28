@@ -10,11 +10,13 @@ logo: "images/logo.png"
 #   data-background-opacity: "0.40"
 format: 
   revealjs: 
+    chalkboard: true
     theme: slides.scss
     multiplex: true
     transition: fade
     slide-number: true
-#    margin: 0.05
+    margin: 0.05
+    html-math-method: mathjax
 editor: visual
 menu:
   numbers: true
