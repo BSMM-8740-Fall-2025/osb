@@ -60,11 +60,11 @@ knitr::opts_chunk$set(
 ## Announcements
 
 ::: {style="font-size: smaller"}
--   Please go to the [course website](https://bsmm-8740-fall-2024.github.io/osb/) to review the weekly slide, access the labs, read the syllabus, etc.
+-   Please go to the [course website](https://bsmm-8740-fall-2024.github.io/osb/) to review the weekly slides, access the labs, read the syllabus, etc.
 -   My intent is to have assigned lab exercises each week, which will be started during class.
-    -   Lab assignments will be due at 5:00pm sharp on the Friday following the lecture.
--   Lab 1 is due Friday September 15 at 5pm.
--   My regular office hour will be on Thursdays from 2:00pm - 3:00pm via MS Teams. Please email ahead of time.
+    -   Lab assignments will be due at 5:00pm sharp on the Sunday following the lecture.
+-   Lab 1 is due Sunday September 15 at 5pm.
+-   My regular office hour will be on Wednesday from 2:30pm - 3:30pm or via MS Teams as requested. Please email ahead of time.
 :::
 
 ## Expected Course Topics
@@ -77,8 +77,8 @@ knitr::opts_chunk$set(
 tibble::tibble(
   week = 1:10
   , topic = 
-    c('Tidyverse, EDA & git', 'The recipes package', 'Regression methods', 'More tidymodels packages'
-      , 'Classification & clustering methods', 'Time series methods', 'Causality: DAGs', 'Causality: Effects', 'Monte-Carlo methods', 'Bayesian methods')
+    c('The Tidyverse, EDA & Git', 'The Recipes Package', 'Regression Methods', 'The Tidymodels Packages'
+      , 'Classification & Clustering Methods', 'Time Series Methods', 'Causality: DAGs', 'Causality: Methods', 'Monte-Carlo Methods', 'Bayesian Methods')
 ) %>% 
   gt::gt() %>% 
   gtExtras::gt_theme_espn() %>% 

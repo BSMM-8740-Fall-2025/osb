@@ -48,7 +48,7 @@ $$\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{\epsilon}$$
 Therefore the estimated response for a given combination of explanatory variables and the associated residuals can be written as
 
 $$
-\hat{\mathbf{Y}} = \mathbf{X}\hat{\boldsymbol{\beta}} \hspace{10mm} \mathbf{e} = \mathbf{Y} - \mathbf{X}\hat{\boldsymbol{\beta}}
+\hat{\mathbf{Y}} = \mathbf{X}\hat{\boldsymbol{\beta}} \hspace{1cm} \mathbf{e} = \mathbf{Y} - \mathbf{X}\hat{\boldsymbol{\beta}}
 $$ {#eq-matrix_mean}
 
 ## Hat Matrix & Leverage

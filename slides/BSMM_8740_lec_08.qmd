@@ -2132,6 +2132,7 @@ data_panel <- readr::read_csv("data/wage_panel.csv", show_col_types = FALSE)
 data_panel %>% 
   dplyr::slice_head(n=5) %>% 
   gt::gt() %>% 
+  gt::tab_options( table.font.size = gt::px(28) ) |>
   gtExtras::gt_theme_espn()
 ```
 
@@ -2213,6 +2214,7 @@ Notice how this model is predicting the average income in 1980 to be 1.3935, in 
 data_panel |> dplyr::group_by(year) |> 
   dplyr::summarise(avg_lwage = mean(lwage)) |> 
   gt::gt('year') |> 
+  gt::tab_options( table.font.size = gt::px(28) ) |>
   gtExtras::gt_theme_espn()
 ```
 
@@ -2287,6 +2289,7 @@ data_panel |> dplyr::group_by(nr) |>
   dplyr::summarise(across(!starts_with("nr"),sum)) |> 
   tidyr::pivot_longer(everything()) |> 
   gt::gt('nr') |> 
+  gt::tab_options( table.font.size = gt::px(28) ) |>
   gtExtras::gt_theme_espn()
 ```
 
@@ -2307,6 +2310,7 @@ data_panel |> dplyr::group_by(nr) |>
   dplyr::summarize(across(!starts_with("nr"),mean), .groups='drop') |> 
   dplyr::slice_head(n=5) |> 
   gt::gt('nr') |> 
+  gt::tab_options( table.font.size = gt::px(28) ) |>
   gtExtras::gt_theme_espn()
   
 ```
@@ -2342,6 +2346,7 @@ data_panel_baked |>
   dplyr::slice_head(n=5) |> 
   dplyr::select(-year) |> 
   gt::gt('nr') |> 
+  gt::tab_options( table.font.size = gt::px(28) ) |>  
   gtExtras::gt_theme_espn()
 ```
 
