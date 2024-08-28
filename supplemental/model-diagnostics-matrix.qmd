@@ -30,14 +30,14 @@ We can represent the @eq-basic_model and @eq-ind_response using matrix notation.
 
 $$
 \mathbf{Y} = \begin{bmatrix}y_1 \\ y_2 \\ \vdots \\y_n\end{bmatrix} 
-\hspace{15mm}
+\hspace{1cm}
 \mathbf{X} = \begin{bmatrix}x_{11} & x_{12} & \dots & x_{1p} \\
 x_{21} & x_{22} & \dots & x_{2p} \\
 \vdots & \vdots & \ddots & \vdots\\
 x_{n1} & x_{n2} & \dots & x_{np} \end{bmatrix}
-\hspace{15mm}
+\hspace{1cm}
 \boldsymbol{\beta}= \begin{bmatrix}\beta_0 \\ \beta_1 \\ \vdots \\ \beta_p \end{bmatrix} 
-\hspace{15mm}
+\hspace{1cm}
 \boldsymbol{\epsilon}= \begin{bmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n \end{bmatrix}
 $$ {#eq-matrix-notation}
 

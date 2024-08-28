@@ -38,7 +38,7 @@ $$ {#eq-logL}
 <!-- insert details MLES -->
 
 The maximum likelihood estimate of $\boldsymbol{\beta}$ and $\sigma^2$ are $$
-\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \hspace{10mm} \hat{\sigma}^2 = \frac{1}{n}(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^T(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta}) = \frac{1}{n}RSS
+\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \hspace{1cm} \hat{\sigma}^2 = \frac{1}{n}(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^T(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta}) = \frac{1}{n}RSS
 $$ {#eq-mle}
 
 where $RSS$ is the residual sum of squares. Note that the maximum likelihood estimate is not exactly equal to the estimate of $\sigma^2$ we typically use $\frac{RSS}{n-p-1}$. This is because the maximum likelihood estimate of $\sigma^2$ in @eq-mle is a *biased* estimator of $\sigma^2$. When $n$ is much larger than the number of predictors $p$, then the differences in these two estimates are trivial.
