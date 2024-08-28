@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="Lab 2 - EDA and Feature Engineering – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
@@ -575,7 +546,7 @@ Important
 </section>
 <section id="exercise-6" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-6">Exercise 6</h3>
-<p>Similar to exercises 2 and 3, in this exercise take the raw data (<code>the_tate</code>) and add a column with the area of each artwork in <span class="math inline">\(\text{cm}^2\)</span>. Next select the artist, title and the area and remove NA values using <code>tidyr::drop_na</code>, then order the works by area. Use <code>dplyr::slice_head</code> and <code>dplyr::slice_tail</code> to find the largest and smallest artworks in the collection.</p>
+<p>Similar to exercises 2 and 3, in this exercise take the raw data (<code>the_tate</code>) and add a column with the area of each artwork in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">cm</mtext><mn>2</mn></msup><annotation encoding="application/x-tex">\text{cm}^2</annotation></semantics></math>. Next select the artist, title and the area and remove NA values using <code>tidyr::drop_na</code>, then order the works by area. Use <code>dplyr::slice_head</code> and <code>dplyr::slice_tail</code> to find the largest and smallest artworks in the collection.</p>
 </section>
 <section id="exercise-7" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-7">Exercise 7</h3>
@@ -584,10 +555,10 @@ Important
 <section id="exercise-8" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-8">Exercise 8</h3>
 <p>In the next two exercises we switch to a different dataset, the historical price data for the S&amp;P 500 Index.</p>
-<p>Read the historical price data in the file <code>SPX_HistoricalData_1692322132002.csv</code> using <code>readr:: read_csv</code> and add a column for the year of the transaction and the daily return <span class="math inline">\(r_i\)</span>, using the formula</p>
-<p><span class="math display">\[
+<p>Read the historical price data in the file <code>SPX_HistoricalData_1692322132002.csv</code> using <code>readr:: read_csv</code> and add a column for the year of the transaction and the daily return <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>i</mi></msub><annotation encoding="application/x-tex">r_i</annotation></semantics></math>, using the formula</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub><mo>≡</mo><mo>log</mo><mfrac><msub><mtext mathvariant="normal">Close/Last</mtext><mrow><mi>t</mi><mo>=</mo><mi>i</mi></mrow></msub><msub><mtext mathvariant="normal">Close/Last</mtext><mrow><mi>t</mi><mo>=</mo><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">
 r_i\equiv \log \frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}
-\]</span>You will likely need <code>dplyr::lead</code> or <code>dplyr::lead</code> functions. Add an additional column for the daily return variance <span class="math inline">\(\text{var}_i = \text{r}_i^2\)</span>.</p>
+</annotation></semantics></math>You will likely need <code>dplyr::lead</code> or <code>dplyr::lead</code> functions. Add an additional column for the daily return variance <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">var</mtext><mi>i</mi></msub><mo>=</mo><msubsup><mtext mathvariant="normal">r</mtext><mi>i</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">\text{var}_i = \text{r}_i^2</annotation></semantics></math>.</p>
 <p>Finally, group by year and use <code>dplyr::summary</code> to compute the annual returns and standard deviations. Add the argument <code>.groups = "drop"</code> to the <code>dplyr::summarize</code> function to drop the grouping after the summary is created.</p>
 </section>
 <section id="exercise-9" class="level3">

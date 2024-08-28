@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="causal_scratch – BSMM-8740 - Fall 2024">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
@@ -420,22 +391,22 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="rcts-to-regression">RCTs to Regression</h2>
 <section id="gold-standard-rct" class="level3">
 <h3 class="anchored" data-anchor-id="gold-standard-rct">Gold standard: RCT</h3>
-<p>Treatment indicator: <span class="math inline">\(D_i\in {0,1}\)</span></p>
+<p>Treatment indicator: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mi>i</mi></msub><mo>∈</mo><mrow><mn>0</mn><mo>,</mo><mn>1</mn></mrow></mrow><annotation encoding="application/x-tex">D_i\in {0,1}</annotation></semantics></math></p>
 <blockquote class="blockquote">
 <p>example: eligibility for expanded Medicaid</p>
 </blockquote>
-<p>Outcome: <span class="math inline">\(Y_{i}\)</span></p>
+<p>Outcome: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">Y_{i}</annotation></semantics></math></p>
 <blockquote class="blockquote">
 <p>example: number of doctor visits in past 6 months</p>
 </blockquote>
-<p>Potential outcomes <span class="math inline">\(Y_{i}^{0},Y_{i}^{1}\)</span></p>
-<p>Individual-level treatment effect <span class="math inline">\(\Delta_i^Y=Y_i^1-Y_i^0\)</span> (can never know this).</p>
+<p>Potential outcomes <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Y</mi><mi>i</mi><mn>0</mn></msubsup><mo>,</mo><msubsup><mi>Y</mi><mi>i</mi><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">Y_{i}^{0},Y_{i}^{1}</annotation></semantics></math></p>
+<p>Individual-level treatment effect <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>Δ</mi><mi>i</mi><mi>Y</mi></msubsup><mo>=</mo><msubsup><mi>Y</mi><mi>i</mi><mn>1</mn></msubsup><mo>−</mo><msubsup><mi>Y</mi><mi>i</mi><mn>0</mn></msubsup></mrow><annotation encoding="application/x-tex">\Delta_i^Y=Y_i^1-Y_i^0</annotation></semantics></math> (can never know this).</p>
 <p>Unbiased estimate of average treatment effect:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Δ</mi><mi>Y</mi></msup><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><msubsup><mi>Y</mi><mi>i</mi><mn>1</mn></msubsup><mo>−</mo><msubsup><mi>Y</mi><mi>i</mi><mn>0</mn></msubsup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
 \Delta^{Y}=\mathbb{E}\left[Y_{i}^{1}-Y_{i}^{0}\right]
-\]</span></p>
+</annotation></semantics></math></p>
 <p>or OLS coefficient on 𝐷𝑖 from this regression:</p>
-<p><span class="math display">\[Y_{i}=\alpha+\delta D_{i}+\epsilon_{i}\]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>i</mi></msub><mo>=</mo><mi>α</mi><mo>+</mo><mi>δ</mi><msub><mi>D</mi><mi>i</mi></msub><mo>+</mo><msub><mi>ϵ</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">Y_{i}=\alpha+\delta D_{i}+\epsilon_{i}</annotation></semantics></math></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>url_str  <span class="ot">&lt;-</span> </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">'https://github.com/Mixtape-Sessions/Machine-Learning/blob/main/Labs/data/'</span></span>
@@ -469,27 +440,27 @@ number of doctor visits: 0.268</code></pre>
 <section id="aluminium-standard-regression" class="level3">
 <h3 class="anchored" data-anchor-id="aluminium-standard-regression">Aluminium standard: Regression</h3>
 <p>The bivariate regression above leans heavily on random assignment of treatment:</p>
-<p><span class="math display">\[D_{i}\perp\!\!\!\!\perp Y_{i}^{0},Y_{i}^{1}\]</span></p>
-<p>Sometimes, even in an RCT, treatment is assigned randomly only conditional on some set of covariates <span class="math inline">\(X_i\)</span>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mi>i</mi></msub><mo>⊥</mo><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mo>⊥</mo><msubsup><mi>Y</mi><mi>i</mi><mn>0</mn></msubsup><mo>,</mo><msubsup><mi>Y</mi><mi>i</mi><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">D_{i}\perp\!\!\!\!\perp Y_{i}^{0},Y_{i}^{1}</annotation></semantics></math></p>
+<p>Sometimes, even in an RCT, treatment is assigned randomly only conditional on some set of covariates <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_i</annotation></semantics></math>.</p>
 <blockquote class="blockquote">
 <p><em>example:</em> in the Oregon HIE, eligibility for Medicaid was granted via lottery, but households with more members could have more lottery entries. So the lottery outcome is random only conditional on household size.</p>
 </blockquote>
-<p>So what happens if we don’t have random assignment? In terms of our regression model above, it means <span class="math inline">\(\epsilon_i\)</span> may be correlated with <span class="math inline">\(D_i\)</span>. For example, perhaps household size, <span class="math inline">\(X_i\)</span>, which increases the probability of treatment, is also associated with more doctor visits. If <span class="math inline">\(X_i\)</span> is omitted from the model, it is buried in the error term:</p>
-<p><span class="math display">\[
+<p>So what happens if we don’t have random assignment? In terms of our regression model above, it means <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϵ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\epsilon_i</annotation></semantics></math> may be correlated with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>i</mi></msub><annotation encoding="application/x-tex">D_i</annotation></semantics></math>. For example, perhaps household size, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_i</annotation></semantics></math>, which increases the probability of treatment, is also associated with more doctor visits. If <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_i</annotation></semantics></math> is omitted from the model, it is buried in the error term:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϵ</mi><mi>i</mi></msub><mo>=</mo><mi>β</mi><msub><mi>X</mi><mi>i</mi></msub><mo>+</mo><msub><mi>η</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">
 \epsilon_{i}=\beta X_{i}+\eta_{i}
-\]</span> We’ll assume for now that everything else related to doctor visits (<span class="math inline">\(\eta_i\)</span>) is unrelated to treatment. What does our bivariate regression coefficient deliver in this case?</p>
-<p><span id="eq-OVB"><span class="math display">\[\hat{\delta}^{\text{OLS}}=\frac{Cov\left(Y_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}=\delta+\beta\frac{Cov\left(X_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}
-\qquad(1)\]</span></span></p>
-<p>Simple regression gives us what we want (<span class="math inline">\(\delta\)</span>) plus an <strong>omitted variables bias</strong> term. The form of this term tells us what kinds of <span class="math inline">\(X_i\)</span> variables we should take care to control for in our regressions.</p>
+</annotation></semantics></math> We’ll assume for now that everything else related to doctor visits (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>η</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\eta_i</annotation></semantics></math>) is unrelated to treatment. What does our bivariate regression coefficient deliver in this case?</p>
+<p><span id="eq-OVB"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mtext mathvariant="normal">OLS</mtext></msup><mo>=</mo><mfrac><mrow><mi>C</mi><mi>o</mi><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>,</mo><msub><mi>D</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">Var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>D</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>=</mo><mi>δ</mi><mo>+</mo><mi>β</mi><mfrac><mrow><mi>C</mi><mi>o</mi><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo>,</mo><msub><mi>D</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">Var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>D</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{\delta}^{\text{OLS}}=\frac{Cov\left(Y_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}=\delta+\beta\frac{Cov\left(X_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}
+ \qquad(1)</annotation></semantics></math></span></p>
+<p>Simple regression gives us what we want (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math>) plus an <strong>omitted variables bias</strong> term. The form of this term tells us what kinds of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_i</annotation></semantics></math> variables we should take care to control for in our regressions.</p>
 <p>According to the <em>ommitted variable bias</em> (OVB) formula (<a href="#eq-OVB" class="quarto-xref">Equation&nbsp;1</a>), what kinds of variables should you be be sure to control for in regressions?</p>
-<p>Careful investigators will find a set of regressors <span class="math inline">\(X_i\)</span> for which they are willing to assume treatment is as good as randomly assigned:</p>
-<p><span class="math display">\[
+<p>Careful investigators will find a set of regressors <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_i</annotation></semantics></math> for which they are willing to assume treatment is as good as randomly assigned:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mi>i</mi></msub><mo>⊥</mo><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mspace width="-0.167em"></mspace><mo>⊥</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>Y</mi><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>X</mi><mi>i</mi></msub><mtext mathvariant="normal">.</mtext></mrow><annotation encoding="application/x-tex">
 D_i\perp\!\!\!\!\perp\left( Y_{i}\left( 0\right) ,Y_{i}\left( 1\right) \right) |X_{i}
 \text{.}
-\]</span> This combined with a linear model for the conditional expectation of <span class="math inline">\(Y_{i}^0\)</span> and <span class="math inline">\(Y_{i}^1\)</span> given <span class="math inline">\(X_{i}\)</span> means we can estimate the average treatment via OLS on the following regression equation:</p>
-<p><span class="math display">\[
+</annotation></semantics></math> This combined with a linear model for the conditional expectation of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>Y</mi><mi>i</mi><mn>0</mn></msubsup><annotation encoding="application/x-tex">Y_{i}^0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>Y</mi><mi>i</mi><mn>1</mn></msubsup><annotation encoding="application/x-tex">Y_{i}^1</annotation></semantics></math> given <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_{i}</annotation></semantics></math> means we can estimate the average treatment via OLS on the following regression equation:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>i</mi></msub><mo>=</mo><mi>δ</mi><msub><mi>D</mi><mi>i</mi></msub><mo>+</mo><msubsup><mi>X</mi><mi>i</mi><mi>′</mi></msubsup><mi>β</mi><mo>+</mo><msub><mi>ε</mi><mi>i</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
 Y_{i}=\delta D_{i}+X_{i}^{\prime }\beta +\varepsilon _{i}.
-\]</span></p>
+</annotation></semantics></math></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the household size indicators to our regressor set and run regression:</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(doc_num <span class="sc">~</span> ., <span class="at">data =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>weight), <span class="at">weights =</span> dat<span class="sc">$</span>weight)</span>
@@ -510,13 +481,13 @@ number of doctor visits (with controls): 0.314</code></pre>
 </section>
 <section id="connection-to-ml" class="level3">
 <h3 class="anchored" data-anchor-id="connection-to-ml">Connection to ML</h3>
-<p>Where does machine learning fit into this? It might be tempting to treat this regression as a prediction exercise where we are predicting <span class="math inline">\(Y_{i}\)</span> given <span class="math inline">\(D_{i}\)</span> and <span class="math inline">\(X_{i}\)</span>. Don’t give in to this temptation. We are not after a prediction for <span class="math inline">\(Y_{i}\)</span>, we are after a coefficient on <span class="math inline">\(D_{i}\)</span>.</p>
-<p>Modern machine learning algorithms are finely tuned for producing predictions, but along the way they compromise coefficients. So how can we deploy machine learning in the service of estimating the causal coefficient <span class="math inline">\(\delta\)</span>?</p>
-<p>To see where ML fits in, first remember that an equivalent way to estimate <span class="math inline">\(\delta\)</span> is the following three-step procedure:</p>
+<p>Where does machine learning fit into this? It might be tempting to treat this regression as a prediction exercise where we are predicting <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">Y_{i}</annotation></semantics></math> given <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>i</mi></msub><annotation encoding="application/x-tex">D_{i}</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_{i}</annotation></semantics></math>. Don’t give in to this temptation. We are not after a prediction for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">Y_{i}</annotation></semantics></math>, we are after a coefficient on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>i</mi></msub><annotation encoding="application/x-tex">D_{i}</annotation></semantics></math>.</p>
+<p>Modern machine learning algorithms are finely tuned for producing predictions, but along the way they compromise coefficients. So how can we deploy machine learning in the service of estimating the causal coefficient <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math>?</p>
+<p>To see where ML fits in, first remember that an equivalent way to estimate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math> is the following three-step procedure:</p>
 <ol type="1">
-<li>Regress <span class="math inline">\(Y_{i}\)</span> on <span class="math inline">\(X_{i}\)</span> and compute the residuals, <span class="math inline">\(\tilde{Y}_{i}=Y_{i}-\hat{Y}_{i}^{OLS}\)</span>, where <span class="math inline">\(\hat{Y}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }Y\)</span></li>
-<li>Regress <span class="math inline">\(D_{i}\)</span> on <span class="math inline">\(X_{i}\)</span> and compute the residuals, <span class="math inline">\(\tilde{D}_{i}=D_{i}-\hat{D}_{i}^{OLS}\)</span>, where <span class="math inline">\(\hat{D}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }D\)</span></li>
-<li>Regress <span class="math inline">\(\tilde{Y}_{i}\)</span> on <span class="math inline">\(\tilde{D}_{i}\)</span>.</li>
+<li>Regress <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">Y_{i}</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_{i}</annotation></semantics></math> and compute the residuals, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>Y</mi><mo accent="true">̃</mo></mover><mi>i</mi></msub><mo>=</mo><msub><mi>Y</mi><mi>i</mi></msub><mo>−</mo><msubsup><mover><mi>Y</mi><mo accent="true">̂</mo></mover><mi>i</mi><mrow><mi>O</mi><mi>L</mi><mi>S</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\tilde{Y}_{i}=Y_{i}-\hat{Y}_{i}^{OLS}</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>Y</mi><mo accent="true">̂</mo></mover><mi>i</mi><mrow><mi>O</mi><mi>L</mi><mi>S</mi></mrow></msubsup><mo>=</mo><msubsup><mi>X</mi><mi>i</mi><mi>′</mi></msubsup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>X</mi><mi>′</mi></msup><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>X</mi><mi>′</mi></msup><mi>Y</mi></mrow><annotation encoding="application/x-tex">\hat{Y}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }Y</annotation></semantics></math></li>
+<li>Regress <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi>i</mi></msub><annotation encoding="application/x-tex">D_{i}</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>i</mi></msub><annotation encoding="application/x-tex">X_{i}</annotation></semantics></math> and compute the residuals, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>D</mi><mo accent="true">̃</mo></mover><mi>i</mi></msub><mo>=</mo><msub><mi>D</mi><mi>i</mi></msub><mo>−</mo><msubsup><mover><mi>D</mi><mo accent="true">̂</mo></mover><mi>i</mi><mrow><mi>O</mi><mi>L</mi><mi>S</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\tilde{D}_{i}=D_{i}-\hat{D}_{i}^{OLS}</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>D</mi><mo accent="true">̂</mo></mover><mi>i</mi><mrow><mi>O</mi><mi>L</mi><mi>S</mi></mrow></msubsup><mo>=</mo><msubsup><mi>X</mi><mi>i</mi><mi>′</mi></msubsup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>X</mi><mi>′</mi></msup><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mi>X</mi><mi>′</mi></msup><mi>D</mi></mrow><annotation encoding="application/x-tex">\hat{D}_{i}^{OLS}=X_{i}^{\prime}\left( X^{\prime }X\right) ^{-1}X^{\prime }D</annotation></semantics></math></li>
+<li>Regress <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>Y</mi><mo accent="true">̃</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\tilde{Y}_{i}</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>D</mi><mo accent="true">̃</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\tilde{D}_{i}</annotation></semantics></math>.</li>
 </ol>
 <p>Let’s try it!</p>
 <div class="cell">
@@ -558,7 +529,7 @@ number of doctor visits (with controls): 0.314</code></pre>
 number of doctor visits (partialled out): 0.314</code></pre>
 </div>
 </div>
-<p>ML enters the picture by providing an alternate way to generate <span class="math inline">\(\hat{Y}_i\)</span> and <span class="math inline">\(\hat{D}_i\)</span> when OLS is not the best tool for the job. The first two steps are really just prediction exercises, and in principle any supervised machine learning algorithm can step in here.</p>
+<p>ML enters the picture by providing an alternate way to generate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>Y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\hat{Y}_i</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>D</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\hat{D}_i</annotation></semantics></math> when OLS is not the best tool for the job. The first two steps are really just prediction exercises, and in principle any supervised machine learning algorithm can step in here.</p>
 <p>Back to the whiteboard!</p>
 
 

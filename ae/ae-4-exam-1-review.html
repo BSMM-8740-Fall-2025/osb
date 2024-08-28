@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="AE 4: Exam 1 Review – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
@@ -581,7 +552,7 @@ Important
 <ul>
 <li>How are the plots similar? How do they differ?</li>
 <li>What is an advantage of using the plot of the residuals vs.&nbsp;fitted to check conditions and model diagnostics?</li>
-<li>What is an advantage of using the plot of the <span class="math inline">\(\sqrt{|\text{standardized residuals}|}\)</span> vs.&nbsp;fitted to check conditions and model diagnostics?</li>
+<li>What is an advantage of using the plot of the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mrow><mo stretchy="true" form="prefix">|</mo><mtext mathvariant="normal">standardized residuals</mtext><mo stretchy="true" form="postfix">|</mo></mrow></msqrt><annotation encoding="application/x-tex">\sqrt{|\text{standardized residuals}|}</annotation></semantics></math> vs.&nbsp;fitted to check conditions and model diagnostics?</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add your code here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

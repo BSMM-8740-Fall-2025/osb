@@ -102,35 +102,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <meta property="og:title" content="AE 12: Exam 3 Review – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
@@ -575,10 +546,10 @@ Important
 </table>
 </div>
 </div>
-<p>Let <span class="math inline">\(\pi\)</span> be probability that a crab is from Lb species.</p>
-<p><span class="math display">\[
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math> be probability that a crab is from Lb species.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>−</mo><mover><mi>π</mi><mo accent="true">̂</mo></mover></mrow></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>0.798</mn><mo>+</mo><mn>0.043</mn><mo>*</mo><mi>f</mi><mi>o</mi><mi>r</mi><mi>c</mi><mi>e</mi><mi>_</mi><mi>c</mi><mi>e</mi><mi>n</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">
 \log\Big(\frac{\hat{\pi}}{1 - \hat{\pi}}\Big) = -0.798 + 0.043 * force\_cent
-\]</span></p>
+</annotation></semantics></math></p>
 </section>
 <section id="exercise-4" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-4">Exercise 4</h2>
@@ -689,8 +660,8 @@ Important
 <section id="exercise-8" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-8">Exercise 8</h2>
 <p>Write the equation of the model.</p>
-<p><span class="math display">\[\log\Big(\frac{\hat{\pi}_{Hn}}{\hat{\pi}_{Cp}}\Big) = \]</span></p>
-<p><span class="math display">\[\log\Big(\frac{\hat{\pi}_{Lb}}{\hat{\pi}_{Cp}}\Big) = \]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>H</mi><mi>n</mi></mrow></msub><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>C</mi><mi>p</mi></mrow></msub></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo><mo>=</mo></mrow><annotation encoding="application/x-tex">\log\Big(\frac{\hat{\pi}_{Hn}}{\hat{\pi}_{Cp}}\Big) = </annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mo minsize="1.8" maxsize="1.8" stretchy="false" form="prefix">(</mo><mfrac><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>L</mi><mi>b</mi></mrow></msub><msub><mover><mi>π</mi><mo accent="true">̂</mo></mover><mrow><mi>C</mi><mi>p</mi></mrow></msub></mfrac><mo minsize="1.8" maxsize="1.8" stretchy="false" form="postfix">)</mo><mo>=</mo></mrow><annotation encoding="application/x-tex">\log\Big(\frac{\hat{\pi}_{Lb}}{\hat{\pi}_{Cp}}\Big) = </annotation></semantics></math></p>
 </section>
 <section id="exercise-9" class="level2">
 <h2 class="anchored" data-anchor-id="exercise-9">Exercise 9</h2>
