@@ -20,10 +20,10 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(
-  tidyverse.  # for data analysis and visualisation
-  , magrittr. # for piping data between operations
-  , scales.   # for pretty axis labels
-  , DT.       # for interactive table
+  tidyverse  # for data analysis and visualisation
+  , magrittr # for piping data between operations
+  , scales   # for pretty axis labels
+  , DT       # for interactive table
 )
 ```
 
