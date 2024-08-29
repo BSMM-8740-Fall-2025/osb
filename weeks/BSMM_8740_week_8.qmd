@@ -1,26 +1,30 @@
 ---
-title: "Week 8"
-subtitle: "Causaility: DAGs"
+title: "Week 8 - Causality: Methods"
+subtitle: " "
 editor: visual
 ---
 
+::: callout-important
+Due date: Lab 8 - Sunday, Nov 10, 5pm ET
+:::
+
 ## Prepare
 
-📖 Read Tidy Modeling in R Chp 10: [Resampling for evaluating performance](https://www.tmwr.org/resampling.html)
+📖 Read Chp 10-14 in: [Causal Inference for the Brave and True](https://matheusfacure.github.io/python-causality-handbook/10-Matching.html)
+
+📖 Read Chp 8-10 in: [Causal Inference in R](https://www.r-causal.org/chapters/08-building-ps-models)
+
+📖 Read Chp 8-10 in: [Causal Inference in R](https://www.r-causal.org/chapters/08-building-ps-models)
+
+📖 Read *Matching and Subclassification*, Chp 5 in: [Causal Inference the Mixtape](https://mixtape.scunning.com/05-matching_and_subclassification)
 
 ## Participate
 
-🖥️ [Lecture 8 - Causality: DAGs](/slides/BSMM_8740_lec_08.html)
-
-## Practice
-
-[Application Exercise 6 - The office - CV](/ae/ae-6-the-office-cv.html)
-
-[Application Exercise 7 - Exam 2 Review](/ae/ae-7-exam-2-review.html)
+🖥️ [Lecture 8 - Causality: Methods](/slides/BSMM_8740_lec_08.html)
 
 ## Perform
 
-⌨️ [Lab 8 - Causality: DAGs](labs/BSMM_8740_lab_8.html)
+⌨️ [Lab 8 - Causality: Methods](labs/BSMM_8740_lab_8.html)
 
 <br><br>
 

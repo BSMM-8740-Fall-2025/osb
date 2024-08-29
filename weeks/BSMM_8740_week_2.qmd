@@ -4,6 +4,10 @@ subtitle: ""
 editor: visual
 ---
 
+::: callout-important
+-   Due date: Lab 2  - Sunday, Sept 22, 5pm ET
+:::
+
 ## Prepare
 
 📖 Read Chapter 8: Feature Engineering with recipes in [Tidy Modeling in R](https://www.tmwr.org/recipes)

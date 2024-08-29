@@ -1,24 +1,34 @@
 ---
-title: "Week 7"
-subtitle: "Time series methods"
+title: "Week 7 - Causality: DAGs"
+subtitle: " "
 editor: visual
 ---
 
+::: callout-important
+Due date: Lab 7 - Sunday, Nov 03, 5pm ET
+:::
+
 ## Prepare
 
-📖 Read Tidy Modeling in R Chp 8: [Feature engineering with recipes](https://www.tmwr.org/recipes.html)
+📖 Read Chp 1 in: [Statistical Tools for Causal Inference](https://chabefer.github.io/STCI/FPCI.html)
+
+📖 Read [Tutorial on Directed Acyclic Graphs](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8821727/)
+
+📖 Read [ggdag: An R Package for visualizing and analyzing causal directed acyclic graphs](https://r-causal.github.io/ggdag/)
+
+📖 Read Causal inference & directed acyclic diagrams (DAGs), Chp 7.3-7.4 in [(Mostly Clinical) Epidemiology with R](https://bookdown.org/jbrophy115/bookdown-clinepi/causal.html#dag)
+
+📖 Read [Propensity Score Analysis: A Primer and Tutorial](https://iqss.github.io/dss-ps/) Chp 1-4:
+
+📖 Read Margin Effects Zoo, [Inverse Probability Weighting](https://marginaleffects.com/vignettes/ipw.html), for treatment evaluation using the `marginaleffects` package.
 
 ## Participate
 
-🖥️ [Lecture 7 - Time series methods](/slides/BSMM_8740_lec_07.html)
-
-## Practice
-
-📋 [Application Exercise 5 - The Office](/ae/ae-5-the-office.html)
+🖥️ [Lecture 7 - Causality: DAGs](/slides/BSMM_8740_lec_07.html)
 
 ## Perform
 
-⌨️ [Lab 7 -Time series](labs/BSSM_8740_lab_7.html)
+⌨️ [Lab 7 -Causality: DAGs](labs/BSSM_8740_lab_7.html)
 
 <br><br>
 

@@ -4,6 +4,10 @@ subtitle: "Welcome to BSMM 8740"
 editor: visual
 ---
 
+::: callout-important
+-   Due date: Lab 1  - Sunday, Sept 15, 5pm ET
+:::
+
 ## Prepare
 
 📖 Read the [syllabus](/course-syllabus.html)

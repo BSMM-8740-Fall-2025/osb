@@ -1,30 +1,36 @@
 ---
-title: "Week 6"
-subtitle: "Classification"
+title: "Week 6 - Time Series Methods"
+subtitle: " "
 editor: visual
 ---
 
 ::: callout-important
-Due dates: Exam 1 - Mon, Feb 7 at 11:59pm
+Due date: Lab 6 - Sunday, Oct 27, 5pm ET
 :::
 
 ## Prepare
 
-No reading (take a break after the exam! 😴)
+📖 Read Time Series Analysis with R, Chapter 7: [Structural Decomposition](https://nicolarighetti.github.io/Time-Series-Analysis-With-R/structural-decomposition.html)
+
+📖 Read [Modeling time series with tidy resampling](https://www.tidymodels.org/learn/models/time-series/)
+
+📖 Read [Introducing Modeltime: Tidy Time Series Forecasting using Tidymodels](https://www.r-bloggers.com/2020/06/introducing-modeltime-tidy-time-series-forecasting-using-tidymodels/)
+
+📖 Read Forecasting: Principles and Practice, Chapter 7: [Time series regression models](https://otexts.com/fpp3/regression.html)
+
+📖 Read Forecasting: Principles and Practice, Chapter 9: [ARIMA Models](https://otexts.com/fpp3/arima.html)
 
 ## Participate
 
-🖥️ [Lecture 6 - Classification methods](/slides/BSMM_8740_lec_06.html)
+🖥️ [Lecture 6 - Time Series Methods](/slides/BSMM_8740_lec_06.html)
 
 ## Practice
 
-No application exercises
+📋 [Quiz 1 Solutions](/ae/q1soln.html)
 
 ## Perform
 
-⌨️ [Lab 6 - Classification](labs/BSMM_8740_lab_6.html)
-
-✅ [Exam 1](/exams/exam-1.html)
+⌨️ [Lab 6 - Time Series Methods](labs/BSMM_8740_lab_6.html)
 
 <br><br>
 

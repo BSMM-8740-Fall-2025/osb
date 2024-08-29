@@ -1,35 +1,33 @@
 ---
-title: "Week 5"
-subtitle: "Models"
+title: "Week 5 - Classification & Clustering Methods"
+subtitle: " "
 editor: visual
 ---
 
 ::: callout-important
--   Due date: Lab 2 - Fri, Feb 4, 5pm ET
--   Exam 1 released on Fri, Feb 4, due Mon, Feb 7 at 11:59pm
+-   Due date: Lab 5 - Sunday, Oct 13, 5pm ET
+-   Quiz 1 will be in class on October 09 (est. 30 minutes)
 :::
 
 ## Prepare
 
-📖 Read Introduction to Modern Statistics, Sec 8.1: [Indicator and categorical predictors](https://openintro-ims.netlify.app/model-mlr.html#ind-and-cat-predictors)
+📖 Read Introduction to Modern Statistics, Sec 9: [Logistic regression](https://openintro-ims.netlify.app/model-logistic)
 
-📖 Read Introduction to Modern Statistics, Sec 8.2: [Many predictors in a model](https://openintro-ims.netlify.app/model-mlr.html#many-predictors-in-a-model)
+📖 Read [Classification with the Tidymodels Framework in R](https://medium.com/r-evolution/classification-with-tidymodels-in-r-56f073de8f6b)
 
-📖 Read Introduction to Modern Statistics, Sec 8.3: [Adjusted R-squared](https://openintro-ims.netlify.app/model-mlr.html#adjusted-r-squared)
+📖 Absorb [Understanding Precision, Sensitivity, and Specificity In Classification Modeling and How To Calculate Them With A Confusion Matrix](https://towardsdatascience.com/understanding-common-classification-metrics-titanic-style-8b8a562d3e32)
+
+📖 Check out [Tidymodels Tutorial - Classification](https://www.kaggle.com/code/burakdilber/tidymodels-tutorial-classification)
+
+📖 Look at [Classification: ROC and AUC](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
 
 ## Participate
 
-🖥️ [Lecture 5 - Models](/slides/BSMM_8740_lec_05.html)
-
-## Practice
-
-📋 [Application Exercise 4 - Exam 1 Review](/ae/ae-4-exam-1-review.html)
+🖥️ [Lecture 5 - Classification & Clustering Methods](/slides/BSMM_8740_lec_05.html)
 
 ## Perform
 
-⌨️ [Lab 5 - Models](labs/BSMM_8740_lab_5.html)
-
-✅ [Exam 1](/exams/exam-1.html)
+⌨️ [Lab 5 - Classification & Clustering Methods](labs/BSMM_8740_lab_5.html)
 
 <br><br>
 

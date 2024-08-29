@@ -4,6 +4,10 @@ subtitle: " "
 editor: visual
 ---
 
+::: callout-important
+-   Due date: Lab 3  - Sunday, Sept 29, 5pm ET
+:::
+
 ## Prepare
 
 📖 Read Chapter 2 - General Aspects of Fitting Regression Models in: [Regression Modeling Strategies](https://warin.ca/ressources/books/2015_Book_RegressionModelingStrategies.pdf)
@@ -12,7 +16,9 @@ editor: visual
 
 📖 Follow along with the R code in [Linear Regression in R: Linear Regression Hands on Tutorial](https://libguides.princeton.edu/R-linear_regression)
 
-📖 Follow along with the R code from R code for Regression Analysis in [An R companion](https://www.csub.edu/~emontoya2/rcomp/reg.html)
+📖 Follow along with the R code from *R code for Regression Analysis* in [An R companion](https://www.csub.edu/~emontoya2/rcomp/reg.html)
+
+📖 Check out *Regression and Other Stories - Examples*: [Regression and Other Stories Examples](https://avehtari.github.io/ROS-Examples/examples.html)
 
 ## Participate
 
@@ -24,18 +30,35 @@ editor: visual
 
 ⌨️ Example 1: grouped data & weighted regression
 
+From Section 10.8 of [Regression and Other Stories](https://users.aalto.fi/~ave/ROS.pdf):
+
+#### Three models leading to weighted regression
+
+*Weighted least squares can be derived from three different models:*
+
+1.  *Using observed data to represent a larger population. This is the most common way that regression weights are used in practice. A weighted regression is fit to sample data in order to estimate the (unweighted) linear model that would be obtained if it could be fit to the entire population. For example, suppose our data come from a survey that oversamples older white women, and we are interested in estimating the population regression. Then we would assign to survey respondent a weight that is proportional to the number of people of that type in the population represented by that person in the sample. In this example, men, younger people, and members of ethnic minorities would have higher weights. Including these weights in the regression is a way to approximately minimize the sum of squared errors with respect to the population rather than the sample.*
+
+2.  *Duplicate observations. More directly, suppose each data point can represent one or more actual observations, so that i represents a collection of w_i data points, all of which happen to have x_i as their vector of predictors, and where y_i is the average of the corresponding wi outcome variables. Then weighted regression on the compressed dataset, (x, y, w), is equivalent to unweighted regression on the original data.*
+
+3.  *Unequal variances. From a completely different direction, weighted least squares is the maximum likelihood estimate for the regression model with independent normally distributed errors with unequal variances, where sd(ε_i) is proportional to 1/√w_i . That is, measurements with higher variance get lower weight when fitting the model. As discussed further in Section 11.1, unequal variances are not typically a major issue for the goal of estimating regression coefficients, but they become more important when making predictions about individual cases.*
+
+We will use weighted regression later in the course (Lectures 7 & 8), using observed data to represent a larger population - case 1 above.
+
+Here's an example of the second case:
+
 ```{r}
+#| echo: true
 # check if 'librarian' is installed and if not, install it
 if (! "librarian" %in% rownames(installed.packages()) ){
   install.packages("librarian")
 }
   
 # load packages if not already loaded
-librarian::shelf(dplyr)
+librarian::shelf(dplyr, broom)
 
 set.seed(1024)
 
-# individual (true) dataset
+# individual (true) dataset, with 100,000 rows
 x <- round(rnorm(1e5))
 y <- round(x + x^2 + rnorm(1e5))
 ind <- data.frame(x, y)
@@ -43,7 +66,7 @@ ind <- data.frame(x, y)
 # aggregated dataset: grouped
 agg <- ind %>%
   dplyr::group_by(x, y) |> 
-  dplyr::summarize(freq = dplyr::n(), .groups = 'keep')
+  dplyr::summarize(freq = dplyr::n(), .groups = 'drop') 
 
 models <- list( 
   "True"                = lm(y ~ x, data = ind),
@@ -59,33 +82,7 @@ models[['Aggregated & W']] |> broom::tidy(conf.int = TRUE)
 
 ```
 
-```{r}
-
-
-ind$city = sample(c("Windsor","Chatham","Tilbury","London"), length(ind$x), replace = TRUE) 
-
-ind |> dplyr::mutate(
-  city = 
-  dplyr::case_when(
-    x<0 & y<0 ~ "Windsor"
-    , x<0 & y>0 ~ "Chatham"
-    , x>0 & y<0 ~ "Tilbury"
-    , TRUE ~ "London"
-  )
-)
-
-rec <- ind |> recipes::recipe(y ~ x + city) |> 
-  recipes::step_dummy(recipes::all_nominal_predictors()) |> 
-  recipes::prep()
-
-agg_city <- ind |> dplyr::group_by(city) |> 
-  dplyr::summarize(x = mean(x), y = mean(y), freq = dplyr::n(), .groups = 'drop')
-  
-
-lm(y ~ ., data = rec |> recipes::bake(new_data = ind))
-
-lm(y ~ ., data = rec |> recipes::bake(new_data = agg_city |> dplyr::select(-freq)), weights=agg_city$freq)
-```
+Note the differences in the coefficient estimate for $x$ and the corresponding standard errors.
 
 <br><br>
 

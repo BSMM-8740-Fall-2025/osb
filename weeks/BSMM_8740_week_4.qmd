@@ -1,24 +1,32 @@
 ---
-title: "Week 4"
-subtitle: "Regression methods"
+title: "Week 4 - The TidyModels Package"
+subtitle: " "
 editor: visual
 ---
 
+::: callout-important
+-   Due date: Lab 4 - Sunday, Oct 06, 5pm ET
+:::
+
 ## Prepare
 
-📖 Read *Introduction to Modern Statistics* , Chapter 7 (7.1.1 - 7.2.5): [Linear regression with a single predictor](https://openintro-ims.netlify.app/model-slr)
+📖 Read [*A Review of R Modeling Fundamentals*](https://www.tmwr.org/base-r)
 
-📖 Read *Linear Methods for Regression*, Chapter 3 (3.1 - 3.2.3, 3.4 - 3.4.3): [Linear Methods for Regression](https://web.stanford.edu/~hastie/ElemStatLearn)
+📖 Read [*Build a Model*](https://www.tidymodels.org/start/models/)
 
-📖 Check out *Regression and Other Stories - Examples*: [Regression and Other Stories Examples](https://avehtari.github.io/ROS-Examples/examples.html)
+📖 Read [*A gentle Introduction to Tidymodels*](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/)
+
+📖 Take a look at [Tidymodels: tidy machine learning in R](https://rebeccabarter.com/blog/2020-03-25_machine_learning)
+
+📖 Check out *Tidymodels Cheatsheet*: [Tidymodels Functions](https://bcheggeseth.github.io/253_spring_2024/tidymodels-cheatsheet.html#tidymodels-functions)
 
 ## Participate
 
-🖥️ [Lecture 4 - Regression methods](/slides/BSMM_8740_lec_04.html)
+🖥️ [Lecture 4 -The TidyModels Package](/slides/BSMM_8740_lec_04.html)
 
 ## Perform
 
-⌨️ [Lab 4 - Regression methods](/labs/BSMM_8740_lab_4.html "Lab instructions")
+⌨️ [Lab 4 -The TidyModels Package](/labs/BSMM_8740_lab_4.html "Lab instructions")
 
 <br><br>
 

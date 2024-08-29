@@ -12,9 +12,19 @@ We will look at the relationship between budget and revenue for movies made in t
 ```{r load-packages}
 #| warning: false
 #| message: false
-library(tidyverse) # for data analysis and visualisation
-library(scales)    # for pretty axis labels
-library(DT)        # for interactive table
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse.  # for data analysis and visualisation
+  , magrittr. # for piping data between operations
+  , scales.   # for pretty axis labels
+  , DT.       # for interactive table
+)
 ```
 
 ## Data
@@ -25,7 +35,10 @@ The `movies` data set includes basic information about each movie including budg
 #| message: false
 #| warning: false
 movies <- 
-  readr::read_csv("https://raw.githubusercontent.com/danielgrijalva/movie-stats/master/movies.csv")
+  readr::read_csv(
+    "https://raw.githubusercontent.com/danielgrijalva/movie-stats/master/movies.csv"
+    , show_col_types = FALSE
+    )
 ```
 
 View the first 10 rows of data.
@@ -53,9 +66,9 @@ Then, we will filter for these genres and visualize the average gross revenue ov
 #| messages: false
 #| warning: false
 movies %>%
-  filter(genre %in% genre_list) %>% 
-  group_by(genre,year) %>%
-  summarise(avg_gross = mean(gross), .groups = "keep") %>%
+  dplyr::filter(genre %in% genre_list) %>% 
+  dplyr::group_by(genre,year) %>%
+  dplyr::summarise(avg_gross = mean(gross), .groups = "keep") %>%
   ggplot(mapping = aes(x = year, y = avg_gross, color= genre)) +
     geom_point() + 
     geom_line() +
@@ -79,7 +92,7 @@ Next, let's see the relationship between a movie's budget and its gross revenue.
 #| echo: true
 #| warning: false
 movies %>%
-  filter(genre %in% genre_list, budget > 0) %>% 
+  dplyr::filter(genre %in% genre_list, budget > 0) %>% 
   ggplot(mapping = aes(x=log(budget), y = log(gross), color=genre)) +
   geom_point(alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE) +
