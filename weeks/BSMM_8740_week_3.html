@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Recipes – BSMM-8740 - Fall 2024</title>
+<title>Week 3 - Regression Methods – BSMM-8740 - Fall 2024</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -71,11 +105,11 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<meta property="og:title" content="Recipes – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="Data Prep and Feature Engineering with recipes">
+<meta property="og:title" content="Week 3 - Regression Methods – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="Recipes – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="Data Prep and Feature Engineering with recipes">
+<meta name="twitter:title" content="Week 3 - Regression Methods – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/weeks/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -337,8 +371,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/BSMM_8740_week_1.html">Weekly materials</a></li><li class="breadcrumb-item"><a href="../weeks/BSMM_8740_week_3.html">Week 3</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Recipes</h1>
-<p class="subtitle lead">Data Prep and Feature Engineering with recipes</p>
+<h1 class="title">Week 3 - Regression Methods</h1>
 </div>
 
 
@@ -355,23 +388,116 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Due date: Lab 3 - Sunday, Sept 29, 5pm ET</li>
+</ul>
+</div>
+</div>
 <section id="prepare" class="level2">
 <h2 class="anchored" data-anchor-id="prepare">Prepare</h2>
-<p>📖 Read Tidy Modeling with R, Chapter 8: <a href="https://www.tmwr.org/recipes">Feature Engineering with recipes</a></p>
+<p>📖 Read Chapter 2 - General Aspects of Fitting Regression Models in: <a href="https://warin.ca/ressources/books/2015_Book_RegressionModelingStrategies.pdf">Regression Modeling Strategies</a></p>
+<p>📖 Read Chapter (8.1-8.5) - Regression Models in: <a href="https://modernstatisticswithr.com/regression.html">Modern Statistics in R</a></p>
+<p>📖 Follow along with the R code in <a href="https://libguides.princeton.edu/R-linear_regression">Linear Regression in R: Linear Regression Hands on Tutorial</a></p>
+<p>📖 Follow along with the R code from <em>R code for Regression Analysis</em> in <a href="https://www.csub.edu/~emontoya2/rcomp/reg.html">An R companion</a></p>
+<p>📖 Check out <em>Regression and Other Stories - Examples</em>: <a href="https://avehtari.github.io/ROS-Examples/examples.html">Regression and Other Stories Examples</a></p>
 </section>
 <section id="participate" class="level2">
 <h2 class="anchored" data-anchor-id="participate">Participate</h2>
-<p>🖥️ <a href="../slides/BSMM_8740_lec_03.html">Lecture 3 - Recipes</a></p>
+<p>🖥️ <a href="../slides/BSMM_8740_lec_03.html">Lecture 3 - Regression Methods</a></p>
 </section>
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
-<p>⌨️ <a href="../labs/BSMM_8740_lab_3.html" title="Lab instructions">Lab 3 - Recipes</a></p>
+<p>⌨️ <a href="../labs/BSMM_8740_lab_3.html" title="Lab instructions">Lab 3 - Regression Methods</a></p>
+<p>⌨️ Example 1: grouped data &amp; weighted regression</p>
+<p>From Section 10.8 of <a href="https://users.aalto.fi/~ave/ROS.pdf">Regression and Other Stories</a>:</p>
+<section id="three-models-leading-to-weighted-regression" class="level4">
+<h4 class="anchored" data-anchor-id="three-models-leading-to-weighted-regression">Three models leading to weighted regression</h4>
+<p><em>Weighted least squares can be derived from three different models:</em></p>
+<ol type="1">
+<li><p><em>Using observed data to represent a larger population. This is the most common way that regression weights are used in practice. A weighted regression is fit to sample data in order to estimate the (unweighted) linear model that would be obtained if it could be fit to the entire population. For example, suppose our data come from a survey that oversamples older white women, and we are interested in estimating the population regression. Then we would assign to survey respondent a weight that is proportional to the number of people of that type in the population represented by that person in the sample. In this example, men, younger people, and members of ethnic minorities would have higher weights. Including these weights in the regression is a way to approximately minimize the sum of squared errors with respect to the population rather than the sample.</em></p></li>
+<li><p><em>Duplicate observations. More directly, suppose each data point can represent one or more actual observations, so that i represents a collection of w_i data points, all of which happen to have x_i as their vector of predictors, and where y_i is the average of the corresponding wi outcome variables. Then weighted regression on the compressed dataset, (x, y, w), is equivalent to unweighted regression on the original data.</em></p></li>
+<li><p><em>Unequal variances. From a completely different direction, weighted least squares is the maximum likelihood estimate for the regression model with independent normally distributed errors with unequal variances, where sd(ε_i) is proportional to 1/√w_i . That is, measurements with higher variance get lower weight when fitting the model. As discussed further in Section 11.1, unequal variances are not typically a major issue for the goal of estimating regression coefficients, but they become more important when making predictions about individual cases.</em></p></li>
+</ol>
+<p>We will use weighted regression later in the course (Lectures 7 &amp; 8), using observed data to represent a larger population - case 1 above.</p>
+<p>Here’s an example of the second case:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check if 'librarian' is installed and if not, install it</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span> <span class="st">"librarian"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>()) ){</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"librarian"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages if not already loaded</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>librarian<span class="sc">::</span><span class="fu">shelf</span>(dplyr, broom)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+  The 'cran_repo' argument in shelf() was not set, so it will use
+  cran_repo = 'https://cran.r-project.org' by default.
+
+  To avoid this message, set the 'cran_repo' argument to a CRAN
+  mirror URL (see https://cran.r-project.org/mirrors.html) or set
+  'quiet = TRUE'.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1024</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># individual (true) dataset, with 100,000 rows</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="fl">1e5</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">round</span>(x <span class="sc">+</span> x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(x, y)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># aggregated dataset: grouped</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>agg <span class="ot">&lt;-</span> ind <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(x, y) <span class="sc">|&gt;</span> </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">freq =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">list</span>( </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"True"</span>                <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> ind),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Aggregated"</span>          <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> agg),</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Aggregated &amp; W"</span>      <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> agg, <span class="at">weights=</span>freq)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>models[[<span class="st">'True'</span>]] <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  term        estimate std.error statistic p.value conf.low conf.high
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)     1.08   0.00580      187.       0    1.07       1.10
+2 x               1.01   0.00558      181.       0    0.998      1.02</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>models[[<span class="st">'Aggregated'</span>]] <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  term        estimate std.error statistic  p.value conf.low conf.high
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)    5.51      0.717      7.69 8.74e-11    4.08       6.95
+2 x              0.910     0.302      3.01 3.69e- 3    0.306      1.51</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>models[[<span class="st">'Aggregated &amp; W'</span>]] <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  term        estimate std.error statistic    p.value conf.low conf.high
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)     1.08     0.224      4.84 0.00000795    0.637      1.53
+2 x               1.01     0.216      4.68 0.0000145     0.579      1.44</code></pre>
+</div>
+</div>
+<p>Note the differences in the coefficient estimate for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> and the corresponding standard errors.</p>
 <p><br><br></p>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

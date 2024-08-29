@@ -970,7 +970,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 <span id="cb36-13"><a></a><span class="sc">&gt;</span> <span class="co"># there is a standard output format for yardstick functions</span></span>
 <span id="cb36-14"><a></a><span class="er">&gt;</span> yardstick<span class="sc">::</span><span class="fu">rmse</span>(ames_test_res, <span class="at">truth =</span> Sale_Price, <span class="at">estimate =</span> .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-ncol="3" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="3">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <pre><code># A tibble: 588 × 1
@@ -1118,7 +1118,7 @@ Prediction Class1 Class2
 <span id="cb50-12"><a></a><span class="sc">+</span>   , <span class="at">estimate =</span> predicted</span>
 <span id="cb50-13"><a></a><span class="sc">+</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code># A tibble: 3 × 3
@@ -5401,7 +5401,7 @@ Prediction Class1 Class2
 <p>The most important variation on cross-validation is repeated <em>V</em>-fold cross-validation. Repeated V-fold cv, reduce noise in the estimate by using more data, i.e.&nbsp;averaging more <em>V</em> statistics.</p>
 <p>R repetitions of V-fold cross-validation reduces the standard error variance by a factor of <span class="math inline">\(1/\sqrt{\text{R}}\)</span>.</p>
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a><span class="sc">&gt;</span> rsample<span class="sc">::</span><span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>, <span class="at">repeats =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code>#  10-fold cross-validation repeated 5 times 
@@ -5441,7 +5441,7 @@ Prediction Class1 Class2
 <p>A bootstrap sample of the training set is a sample that is the same size as the training set but is drawn <em>with replacement.</em></p>
 <p>When bootstrapping, the assessment set is often called the&nbsp;<em>out-of-bag</em>&nbsp;sample.</p>
 <div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a></a><span class="sc">&gt;</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(ames_train, <span class="at">times =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code># Bootstrap sampling 
@@ -5610,7 +5610,7 @@ Prediction Class1 Class2
 <span id="cb84-7"><a></a><span class="sc">+</span>   tune<span class="sc">::</span><span class="fu">fit_resamples</span>(<span class="at">resamples =</span> ames_folds, <span class="at">control =</span> keep_pred)</span>
 <span id="cb84-8"><a></a><span class="sc">&gt;</span> rf_res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code># Resampling results

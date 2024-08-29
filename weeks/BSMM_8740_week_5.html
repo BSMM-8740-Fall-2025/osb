@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Week 5 – BSMM-8740 - Fall 2024</title>
+<title>Week 5 - Classification &amp; Clustering Methods – BSMM-8740 - Fall 2024</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -71,11 +71,11 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<meta property="og:title" content="Week 5 – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="Models">
+<meta property="og:title" content="Week 5 - Classification &amp; Clustering Methods – BSMM-8740 - Fall 2024">
+<meta property="og:description" content="">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="Week 5 – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="Models">
+<meta name="twitter:title" content="Week 5 - Classification &amp; Clustering Methods – BSMM-8740 - Fall 2024">
+<meta name="twitter:description" content="">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/weeks/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -328,7 +328,6 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
-  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice">Practice</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_5.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -338,8 +337,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/BSMM_8740_week_1.html">Weekly materials</a></li><li class="breadcrumb-item"><a href="../weeks/BSMM_8740_week_5.html">Week 5</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Week 5</h1>
-<p class="subtitle lead">Models</p>
+<h1 class="title">Week 5 - Classification &amp; Clustering Methods</h1>
 </div>
 
 
@@ -367,29 +365,26 @@ Important
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Due date: Lab 2 - Fri, Feb 4, 5pm ET</li>
-<li>Exam 1 released on Fri, Feb 4, due Mon, Feb 7 at 11:59pm</li>
+<li>Due date: Lab 5 - Sunday, Oct 13, 5pm ET</li>
+<li>Quiz 1 will be in class on October 09 (est. 30 minutes)</li>
 </ul>
 </div>
 </div>
 <section id="prepare" class="level2">
 <h2 class="anchored" data-anchor-id="prepare">Prepare</h2>
-<p>📖 Read Introduction to Modern Statistics, Sec 8.1: <a href="https://openintro-ims.netlify.app/model-mlr.html#ind-and-cat-predictors">Indicator and categorical predictors</a></p>
-<p>📖 Read Introduction to Modern Statistics, Sec 8.2: <a href="https://openintro-ims.netlify.app/model-mlr.html#many-predictors-in-a-model">Many predictors in a model</a></p>
-<p>📖 Read Introduction to Modern Statistics, Sec 8.3: <a href="https://openintro-ims.netlify.app/model-mlr.html#adjusted-r-squared">Adjusted R-squared</a></p>
+<p>📖 Read Introduction to Modern Statistics, Sec 9: <a href="https://openintro-ims.netlify.app/model-logistic">Logistic regression</a></p>
+<p>📖 Read <a href="https://medium.com/r-evolution/classification-with-tidymodels-in-r-56f073de8f6b">Classification with the Tidymodels Framework in R</a></p>
+<p>📖 Absorb <a href="https://towardsdatascience.com/understanding-common-classification-metrics-titanic-style-8b8a562d3e32">Understanding Precision, Sensitivity, and Specificity In Classification Modeling and How To Calculate Them With A Confusion Matrix</a></p>
+<p>📖 Check out <a href="https://www.kaggle.com/code/burakdilber/tidymodels-tutorial-classification">Tidymodels Tutorial - Classification</a></p>
+<p>📖 Look at <a href="https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc">Classification: ROC and AUC</a></p>
 </section>
 <section id="participate" class="level2">
 <h2 class="anchored" data-anchor-id="participate">Participate</h2>
-<p>🖥️ <a href="../slides/BSMM_8740_lec_05.html">Lecture 5 - Models</a></p>
-</section>
-<section id="practice" class="level2">
-<h2 class="anchored" data-anchor-id="practice">Practice</h2>
-<p>📋 <a href="../ae/ae-4-exam-1-review.html">Application Exercise 4 - Exam 1 Review</a></p>
+<p>🖥️ <a href="../slides/BSMM_8740_lec_05.html">Lecture 5 - Classification &amp; Clustering Methods</a></p>
 </section>
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
-<p>⌨️ <a href="labs/BSMM_8740_lab_5.html">Lab 5 - Models</a></p>
-<p>✅ <a href="../exams/exam-1.html">Exam 1</a></p>
+<p>⌨️ <a href="labs/BSMM_8740_lab_5.html">Lab 5 - Classification &amp; Clustering Methods</a></p>
 <p><br><br></p>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
