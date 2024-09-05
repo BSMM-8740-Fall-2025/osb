@@ -84,6 +84,12 @@ website:
             text: "Week 11"
       - section: "Supplemental notes"
         contents:
+          - href: supplemental/smd.qmd
+            text: Standardized Mean Differences (SMD)
+          - href: supplemental/omitted_variables.qmd
+            text: Omitted Variable Bias
+          - href: supplemental/collinearity.qmd
+            text: Collinearity
           - href: supplemental/slr-derivations.qmd
             text: SLR derivations
           - href: supplemental/model-diagnostics-matrix.qmd
