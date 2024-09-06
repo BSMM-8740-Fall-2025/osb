@@ -10,6 +10,8 @@ geometry:
   - heightrounded
 ---
 
+Git is a distributed version control system that allows multiple people to work on a project simultaneously, tracking changes and coordinating updates. It stores project history, enabling users to revert to previous versions and manage different branches for features or fixes. Git is widely used for collaboration, ensuring code integrity and simplifying the process of merging contributions from multiple developers.
+
 ## Let's Git Started
 
 ### 1. Register a Github account
@@ -30,7 +32,7 @@ You can change your username later, but better to get this right the first time.
 
 -   <https://help.github.com/articles/what-happens-when-i-change-my-username/>
 
-We will be switching between the console and the terminal, in this lab and others. The **Console** is where you can execute R code, while the **Terminal** is where you can execute system functions like git.
+We will be switching between the console and the terminal, in class and in assignments. The **Console** is where you can execute R code, while the **Terminal** is where you can execute system functions like git.
 
 ![](images/Screen%20Shot%202023-09-12%20at%2012.25.57%20PM.png){fig-align="center" width="300"}
 
@@ -40,10 +42,28 @@ Go to the **Terminal** tab in RStudio and enter `git --version` to see its versi
 
 If this instruction gives an error, it's possible that *git* is not installed on your machine. If so, let your instructor know. All machines in the lab should have *git* installed.
 
+::: callout-note
+## FYI - some common git commands
+
+Here are short definitions for key Git commands. Most of these are built into the RStudio IDE, and we'll use them through RStudio:
+
+1.  **git init**: Initializes a new Git repository in the current directory \[**use RStudio**\].
+2.  **git add**: Stages changes (files or modifications) for the next commit \[**use RStudio**\].
+3.  **git commit**: Saves the staged changes to the repository with a message describing the update \[**use RStudio**\].
+4.  **git status**: Displays the state of the working directory and the staging area, showing untracked, modified, or staged files.
+5.  **git push**: Sends local commits to a remote repository \[**use RStudio**\].
+6.  **git pull**: Fetches and integrates changes from a remote repository to the local branch \[**use RStudio**\].
+7.  **git branch**: Lists, creates, or deletes branches in the repository \[**use RStudio**\].
+8.  **git checkout**: Switches to a different branch or commit in the repository \[**use RStudio**\].
+9.  **git merge**: Combines the changes from one branch into the current branch.
+10. **git fetch**: Downloads new data from a remote repository without merging it into the current branch.
+11. **git log**: Displays the commit history for the current branch.
+:::
+
 ### 3. Introduce yourself to Git
 
 ::: callout-important
-make sure that the package `usethis` has been installed. You can check under the packages tab in the file & plots viewer (e.g., do a search).
+Make sure that the R package `usethis` has been installed. You can check under the packages tab in the file & plots viewer (e.g., do a search).
 :::
 
 You can set your Git user name and email from within R (i.e. go back to the **Console** tab):
@@ -59,7 +79,7 @@ usethis::use_git_config(
 )
 ```
 
-Your commits will be labelled with this user name, so make it informative to potential collaborators and future you.
+Your git commits will be labelled with this user name, so make it informative to potential collaborators and future you.
 
 ### 4. Set up personal access tokens for HTTPS
 
@@ -73,7 +93,7 @@ The recommendation to use a personal access token (PAT) is exactly what we cover
 usethis::create_github_token()
 ```
 
-The `usethis` approach takes you to a pre-filled form with pre-selected some recommended scopes, which you can look over and adjust before clicking "Generate token".
+The `usethis` approach takes you to a pre-filled form with some pre-selected recommended scopes, which you can look over and adjust before clicking "Generate token".
 
 It is a very good idea to describe the token's purpose in the *Note* field, because one day you might have multiple PATs. We recommend naming each token after its use case, such as the computer or project you are using it for, e.g. "personal-macbook-air" or "lab1-course-8740". In the future, you will find yourself staring at this list of tokens, because inevitably you'll need to re-generate or delete one of them. Make it easy to figure out which token you've come here to fiddle with.
 
@@ -89,8 +109,8 @@ Treat this PAT like a password! Do not ever hard-wire your PAT into your code! A
 
 ##### 4.2 Save your PAT
 
--   Copy the generated PAT to a secure, long-term system for storing secrets, like 1Password or LastPass.
--   email it to yourself.
+-   Copy the generated PAT to a secure, long-term system for storing secrets, like 1Password, LastPass or KeePass, or
+-   email it to yourself, or
 -   copy it onto a piece of scrap paper.
 
 ##### 4.3 Store your PAT in the Git credential store
@@ -133,9 +153,9 @@ You are now ready interact with GitHub via RStudio!
 
 3.  Click on the green **CODE** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS**). Click on the clipboard icon to copy the repo URL.
 
-4.  In RStudio, go to *File* ➛ *New Project* ➛*Version Control* ➛ *Git*.
+4.  In RStudio, go to *File* -\>*New Project* -\>*Version Control* -\>*Git*.
 
-5.  Copy and paste the URL of your assignment repo (the clipboard copy you made in step 4) into the dialog box *Repository URL*. Tab to the next text box and the project directory name should be automatically populated, but **make sure you select a directory** in *Create project as a subdirectory of*.
+5.  Copy and paste the URL of your assignment repo (the clipboard copy you made in step 4) into the dialog box *Repository URL*. Tab to the next text box and the project directory name should be automatically populated, but **make sure you select a directory** in *Create project as a subdirectory of*. If you can't find your project code on the computer, it's likely you did not specify where the project folder should be created. [**Don't make this mistake**]{.underline}.
 
 6.  Finally, click *Create Project*, and the files from your GitHub repo will be displayed in the *Files* pane in RStudio.
 
@@ -156,7 +176,7 @@ Below are the components of a Quarto (.qmd) file.
 The top portion of your R Markdown file (between the three dashed lines) is called **YAML**. It stands for "YAML Ain't Markup Language". It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.
 
 ::: callout-important
-In each lab, quiz, and exam you'll sign into your personal repository on the course organization site at [BSMM-8740-Fall-2023](https://github.com/BSMM-8740-Fall-2023/ "Course GitHub organization") on GitHub and open the Quarto (\``` .qmd` ``) file there, change the [author name to your name]{.underline}, [set the date field in the YAML]{.underline}, and render the document to ensure that your code executes properly.
+In each lab, quiz, and exam you'll work from a R project based on your personal repository at the course organization site at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2024/ "Course GitHub organization") on GitHub. To start, open the Quarto (\``` .qmd` ``) file in the project, change the [author name to your name]{.underline}, [set the date field in the YAML]{.underline}, and at least once before the deadline render the document to ensure that your code executes properly.
 :::
 
 ### Committing changes
@@ -169,14 +189,14 @@ If you're happy with these changes, we'll prepare the changes to be pushed to yo
 
 You don't have to commit after every change, as this would get quite tedious. You should commit states that are *meaningful to you* for inspection, comparison, or restoration. Be sure to commit at the end of lab sessions, and before the submission deadline.
 
-In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.
+In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use.
 
 ### Push changes
 
 Now that you have made an update and committed this change, it's time to push these changes to your repo on GitHub.
 
-In order to push your changes to GitHub, you must have **staged** your **commit** to be pushed. click on **Push**.
+In order to push your changes to GitHub, you must have **staged** your changes, and **committed them** to be pushed. Then click on **Push**.
 
-To make sure all the changes went to GitHub. Go to your GitHub repo (at the course site) and refresh the page. You should see your commit message next to the updated files. If you see this, all your changes are on GitHub and you're good to go!
+To make sure all the changes went to GitHub. You can go to your GitHub repo (at the course site) and refresh the page. You should see your commit message next to the updated files. If you see this, all your changes are on GitHub and you're good to go!
 
 More on the basic use of git [here](https://happygitwithr.com/git-intro).
