@@ -104,6 +104,9 @@ website:
             text: PCA, KPCA, and ICA
           - href: https://towardsdatascience.com/qr-matrix-factorization-15bae43a6b2
             text: QR decomposition
+          - href: supplemental/Bias_Variance_Trade_offs.qmd
+            text: Bias-Variance Trade offs
+
 
 format:
   html:
