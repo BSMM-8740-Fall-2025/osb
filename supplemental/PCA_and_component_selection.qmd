@@ -49,7 +49,7 @@ Let's perform an experiment, generating a large random $N\times N$ data set usin
 #| echo: true
 #| code-fold: true
 #| code-summary: eigenvalues from random symmetric matrix (Normally distributed measurements)
-
+require(ggplot2, quietly = TRUE)
 # 5000 rows and columns
 n <- 5000
 # generate n^2 samples from N(0,1)
