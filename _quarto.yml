@@ -109,6 +109,7 @@ website:
           - href: PCA_and_component_selection.qmd
             text: PCA and component selection
 
+
 format:
   html:
     theme:
