@@ -26,14 +26,6 @@ If this time doesn't work for you or you'd like to schedule a one-on-one meeting
 
 ## Teaching assistants
 
-<<<<<<< HEAD
-+-------------------------------------------------+-------------+-----------------------------+----------+
-|                                                 | Name        | Office hours                | Location |
-+:================================================+:============+=============================+==========+
-| ![](images/team/circ_IMG_0987.jpg){width="159"} | Binny Kaur  | TBD: starting Sept 18, 2024 | TBD      |
-+-------------------------------------------------+-------------+-----------------------------+----------+
-=======
 |                                                 | Name       | Office hours                | Location |
 |:------------------------------------------------|:-----------|-----------------------------|----------|
 | ![](images/team/circ_IMG_0987.jpg){width="159"} | Binny Kaur | TBD: starting Sept 18, 2024 | TBD      |
->>>>>>> mods
