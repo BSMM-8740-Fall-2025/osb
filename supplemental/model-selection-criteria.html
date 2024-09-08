@@ -29,6 +29,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../supplemental/Bias_Variance_Trade_offs.html" rel="next">
 <link href="../supplemental/log-transformations.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -331,6 +332,18 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">QR decomposition</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/Bias_Variance_Trade_offs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bias-Variance Trade offs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../PCA_and_component_selection.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PCA and component selection</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -412,11 +425,11 @@ L(\mathbf{X}, \mathbf{Y}|\boldsymbol{\beta}, \sigma^2) = \prod\limits_{i=1}^n (2
 </section>
 <section id="aic" class="level2">
 <h2 class="anchored" data-anchor-id="aic">AIC</h2>
-<p>Akaike’s Information Criterion (AIC) is</p>
+<p>Akaike’s Information Criterion (AIC) is is a <strong>model selection criterion</strong> developed by <strong>Hirotugu Akaike</strong> that aims to estimate the relative quality of different models while penalizing for model complexity. Here is the original paper on AIC concept by Akaike – <a href="https://link.springer.com/chapter/10.1007/978-1-4612-1694-0_16">A New Look at the Statistical Modeling Identification.</a> The purpose of AIC is to find a model that maximizes the likelihood of the data while taking into account the number of parameters used. The formula for AIC is as follows:</p>
 <p><span id="eq-aic"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>I</mi><mi>C</mi><mo>=</mo><mi>−</mi><mn>2</mn><mo>log</mo><mi>L</mi><mo>+</mo><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>5</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 AIC = -2 \log L + 2(p+1)
  \qquad(5)</annotation></semantics></math></span></p>
-<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\log L</annotation></semantics></math> is the log-likelihood. This is the general form of AIC that can be applied to a variety of models, but for now, let’s focus on AIC for mutliple linear regression.</p>
+<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\log L</annotation></semantics></math> is the log-likelihood which measures how well the model fits the data. The term <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p+1</annotation></semantics></math> represents the number of parameters in the model, including the intercept and any additional predictors. This is the general form of AIC that can be applied to a variety of models, but for now, let’s focus on AIC for mutliple linear regression.</p>
 <p><span id="eq-aic-reg"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>A</mi><mi>I</mi><mi>C</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>−</mi><mn>2</mn><mo>log</mo><mi>L</mi><mo>+</mo><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>−</mi><mn>2</mn><mo minsize="2.4" maxsize="2.4" stretchy="false" form="prefix">[</mo><mo>−</mo><mfrac><mi>n</mi><mn>2</mn></mfrac><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>π</mi><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo>−</mo><mi>𝐗</mi><mi>𝛃</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>T</mi></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐘</mi><mo>−</mo><mi>𝐗</mi><mi>𝛃</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="2.4" maxsize="2.4" stretchy="false" form="postfix">]</mo><mo>+</mo><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>n</mi><mo>log</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mn>2</mn><mi>π</mi><mfrac><mrow><mi>R</mi><mi>S</mi><mi>S</mi></mrow><mi>n</mi></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><mfrac><mn>1</mn><mrow><mi>R</mi><mi>S</mi><mi>S</mi><mi>/</mi><mi>n</mi></mrow></mfrac><mi>R</mi><mi>S</mi><mi>S</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>n</mi><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>n</mi><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>R</mi><mi>S</mi><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>n</mi><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>6</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 \begin{aligned}
 AIC &amp;= -2 \log L + 2(p+1) \\
@@ -428,7 +441,12 @@ AIC &amp;= -2 \log L + 2(p+1) \\
 </section>
 <section id="bic" class="level2">
 <h2 class="anchored" data-anchor-id="bic">BIC</h2>
-<p>[To be added.]</p>
+<p>Similar to AIC, the Bayesian Information Criterion (BIC) is another model selection criterion that considers both model fit and complexity. BIC is based on Bayesian principles and provides a more stronger penalty for model complexity compared to AIC. Gideon Schwarz’s foundational paper on BIC is titled “<a href="https://sites.stat.washington.edu/courses/stat527/s13/readings/ann_stat1978.pdf">Estimating the Dimension of a Model</a>” and was published in 1978. The formula for BIC is as follows:</p>
+<p><span id="eq-bic-reg"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi>I</mi><mi>C</mi><mo>=</mo><mi>−</mi><mn>2</mn><mo>log</mo><mi>L</mi><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>log</mo><mi>n</mi><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>7</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+BIC = -2 \log L + (p+1) \log n
+ \qquad(7)</annotation></semantics></math></span></p>
+<p>In the formula, the terms <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\log L</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p+1</annotation></semantics></math> have the same meaning as in AIC. Additionally, the term <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">\log n</annotation></semantics></math> represents the logarithm of the sample size (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>). The <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">\log n</annotation></semantics></math> term in BIC introduces a stronger penalty for model complexity compared to AIC, as the penalty term scales with the sample size.</p>
+<p>The main difference between AIC and BIC lies in the penalty term for model complexity. While AIC penalizes complexity to some extent with the term <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">2 (p+1)</annotation></semantics></math>, BIC’s penalty increases logarithmically with the sample size, resulting in a more pronounced penalty. Therefore, BIC tends to favor simpler models compared to AIC, promoting a more parsimonious approach to model selection.</p>
 
 
 </section>
@@ -1005,6 +1023,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../supplemental/Bias_Variance_Trade_offs.html" class="pagination-link" aria-label="Bias-Variance Trade offs">
+        <span class="nav-page-text">Bias-Variance Trade offs</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
