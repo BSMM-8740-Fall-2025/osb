@@ -106,7 +106,7 @@ website:
             text: QR decomposition
           - href: supplemental/Bias_Variance_Trade_offs.qmd
             text: Bias-Variance Trade offs
-          - href: PCA_and_component_selection.qmd
+          - href: supplemental/PCA_and_component_selection.qmd
             text: PCA and component selection
 
 
