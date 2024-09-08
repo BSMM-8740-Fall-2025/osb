@@ -42,12 +42,13 @@ Do we need them all? How many are just due to noise or measurement error?
 
 #### Random Matrices
 
-Let's perform an experiment, generating a large random data set
+Let's perform an experiment, generating a large random $N\times N$ data set using $N(0,1)$ measurements.
 
 ```{r}
-#| label: normal random symmetric matrix 
+#| label: random symmetric matrix, normal
 #| echo: true
-require(ggplot2)
+#| code-fold: true
+#| code-summary: eigenvalues from random symmetric matrix (Normally distributed measurements)
 
 # 5000 rows and columns
 n <- 5000
@@ -66,10 +67,15 @@ tibble::tibble(lambda = lambda$values) |>
   theme_minimal()
 ```
 
+Let's do the same, but with uniform $U(0,1)$ distributed measurements.
+
 ```{r}
+#| label: random symmetric matrix, uniform
+#| code-fold: true
+#| code-summary: eigenvalues from random symmetric matrix (Uniformly distributed measurements)
 # 5000 rows and columns
 n <- 5000
-# generate n^2 samples from N(0,1)
+# generate n^2 samples from U(0,1)
 m <- array( runif(n^2) ,c(n,n))
 # make it symmetric
 m2 <- sqrt(12)*(m + t(m) -1)/sqrt(2*n) # t(m) %*% m
@@ -83,6 +89,8 @@ tibble::tibble(lambda = lambda$values) |>
   labs(x = 'eignevalues', title = 'Uniform random symmetric matrix') +
   theme_minimal()
 ```
+
+Note the striking pattern: the density of eigenvalues is a semicircle.
 
 #### Wigner’s semicircle law
 
@@ -121,7 +129,7 @@ $$ where $x_{i,j}$ denotes the $j$-th (normalized) value of variable $i$. This c
 Assuming the values of $H$ are random with variance $\sigma^2$ then in the limit $T,M\rightarrow\infty$, while keeping the ratio $Q\equiv\frac{T}{M}\ge1$ constant, the density of eigenvalues of $E$ is given by
 
 $$
-\rho\left(\lambda\right) = \frac{Q}{2\pi\sigma^2}\frac{\sqrt{\left(\lambda_+-\lambda\right)\left(\lambda_--\lambda\right)}}{\lambda}
+\rho\left(\lambda\right) = \frac{Q}{2\pi\sigma^2}\frac{\sqrt{\left(\lambda_+-\lambda\right)\left(\lambda-\lambda_-\right)}}{\lambda}
 $$ where the minimum and maximum eigenvalues are given by
 
 $$
@@ -131,25 +139,121 @@ $$
 is also known as the **Marchenko-Pastur** distribution that describes the asymptotic behavior of eigenvalues of large random correlation matrices.
 
 ```{r}
-#| label: IID random normal returns
-#| warnings: false
-#| errors: false
+#| label: Marchenko-Pastur distribution
+#| code-fold: true
+#| code-summary: code for Marchenko-Pastur distribution
+mpd <- function(lambda,T,M,sigma=1){
+  Q <- T/M
+  lambda_plus  <- (1+sqrt(1/Q))^2 * sigma^2
+  lambda_minus <- (1-sqrt(1/Q))^2 * sigma^2
+  if(lambda < lambda_minus | lambda > lambda_plus){
+    0
+  }else{
+    (Q/(2*pi*sigma^2)) * sqrt((lambda_plus-lambda)*(lambda-lambda_minus)) / lambda
+  }
+}
+```
 
+::: panel-tabset
+## M = 1000, T = 5000
+
+```{r}
+#| code-fold: true
+#| warning: false
+#| error: false
 t <- 5000;
 m <- 1000;
 h = array(rnorm(m*t),c(m,t)); # Time series in rows
 e = h %*% t(h)/t; # Form the correlation matrix
 lambdae = eigen(e, symmetric=T, only.values = T);
-# ee = lambdae$values;
-# hist(ee, breaks =seq(0.01,3.01,.02), main=NA,xlab=”Eigenvalues”, freq=F)
 
-# plot the eignevalues
+# create the mp distribution
+mpd_tbl <- tibble::tibble(lambda = c(lambdae$values, seq(0,3,0.1)) ) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m)))
+
+# plot the eigenvalues
 tibble::tibble(lambda = lambdae$values) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m))) |> 
   ggplot(aes(x = lambda, y = after_stat(density))) + 
   geom_histogram(color = "white", fill="lightblue", bins=100) + 
-  geom_density() +
-  labs(x = 'eignevalues', title = 'Normal random symmetric matrix') +
+  geom_line(data = mpd_tbl, aes(y=mp_dist)) +
+  labs(x = 'eigenvalues', title = 'Empirical density'
+  , subtitle = 
+    stringr::str_glue("with superimposed Marchenko-Pastur density | M={t}, T={m}")
+  ) +
   xlim(0,3) +
   theme_minimal()
-
 ```
+
+## M = 100, T = 500
+
+```{r}
+#| code-fold: true
+#| warning: false
+#| error: false
+t <- 500;
+m <- 100;
+h = array(rnorm(m*t),c(m,t)); # Time series in rows
+e = h %*% t(h)/t; # Form the correlation matrix
+lambdae = eigen(e, symmetric=T, only.values = T);
+
+# create the mp distribution
+mpd_tbl <- tibble::tibble(lambda = c(lambdae$values, seq(0,3,0.1)) ) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m)))
+
+# plot the eigenvalues
+tibble::tibble(lambda = lambdae$values) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m))) |> 
+  ggplot(aes(x = lambda, y = after_stat(density))) + 
+  geom_histogram(color = "white", fill="lightblue", bins=30) + 
+  geom_line(data = mpd_tbl, aes(y=mp_dist)) +
+  labs(x = 'eigenvalues', title = 'Empirical density'
+  , subtitle = 
+    stringr::str_glue("with superimposed Marchenko-Pastur density | M={t}, T={m}")
+  ) +
+  xlim(0,3) +
+  theme_minimal()
+```
+
+## M = 10, T = 50
+
+```{r}
+#| warning: false
+#| error: false
+#| code-fold: true
+t <- 50;
+m <- 10;
+h = array(rnorm(m*t),c(m,t)); # Time series in rows
+e = h %*% t(h)/t; # Form the correlation matrix
+lambdae = eigen(e, symmetric=T, only.values = T);
+
+# create the mp distribution
+mpd_tbl <- tibble::tibble(lambda = c(lambdae$values, seq(0,3,0.1)) ) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m)))
+
+# plot the eigenvalues
+tibble::tibble(lambda = lambdae$values) |> 
+  dplyr::mutate(mp_dist = purrr::map_dbl(lambda, ~mpd(lambda = ., t,m))) |> 
+  ggplot(aes(x = lambda, y = after_stat(density))) + 
+  geom_histogram(color = "white", fill="lightblue", bins=15) + 
+  geom_line(data = mpd_tbl, aes(y=mp_dist)) +
+  labs(x = 'eigenvalues', title = 'Empirical density'
+  , subtitle = 
+    stringr::str_glue("with superimposed Marchenko-Pastur density | M={t}, T={m}")
+  ) +
+  xlim(0,3) +
+  theme_minimal()
+```
+:::
+
+## Application to correlation matrices
+
+For the special case of correlation matrices (e.g. PCA), we know that $\sigma^2=1$ and $Q = M/T$. This bounds the probability mass over the interval defined by $\left(1\pm\sqrt{\frac{1}{Q}}\right)^2$.
+
+Since this distribution describes the spectrum of random matrices with mean 0, the eigenvalues of correlation matrices (read PCA component weights) that fall inside of the aforementioned interval could be considered spurious or noise. For instance, obtaining a correlation matrix of 10 variables with 252 observations would render
+
+$$
+\lambda_+=\left(1\pm\sqrt{\frac{1}{Q}}\right)^2\approx1.43
+$$
+
+Thus, out of 10 eigenvalues/components of said correlation matrix, only the values higher than 1.43 would be considered significantly different from random.
