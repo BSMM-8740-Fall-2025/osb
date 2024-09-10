@@ -2508,7 +2508,7 @@
     "href": "slides/BSMM_8740_lec_01.html#tidying",
     "title": "Tidyverse, EDA & git",
     "section": "Tidying",
-    "text": "Tidying\n\ntidyr::table3 %&gt;% \n  tidyr::separate_wider_delim(cols = rate, delim = \"/\", names = c(\"cases\", \"population\") )\n\n# A tibble: 6 × 4\n  country      year cases  population\n  &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     \n1 Afghanistan  1999 745    19987071  \n2 Afghanistan  2000 2666   20595360  \n3 Brazil       1999 37737  172006362 \n4 Brazil       2000 80488  174504898 \n5 China        1999 212258 1272915272\n6 China        2000 213766 1280428583"
+    "text": "Tidying\n\ntidyr::table3 %&gt;% \n  tidyr::separate_wider_delim(\n    cols = rate\n    , delim = \"/\"\n    , names = c(\"cases\", \"population\") \n)\n\n# A tibble: 6 × 4\n  country      year cases  population\n  &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     \n1 Afghanistan  1999 745    19987071  \n2 Afghanistan  2000 2666   20595360  \n3 Brazil       1999 37737  172006362 \n4 Brazil       2000 80488  174504898 \n5 China        1999 212258 1272915272\n6 China        2000 213766 1280428583"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#exploratory-data-analysis-eda-1",
@@ -2543,7 +2543,7 @@
     "href": "slides/BSMM_8740_lec_01.html#eda-view-some-rows",
     "title": "Tidyverse, EDA & git",
     "section": "EDA: view some rows",
-    "text": "EDA: view some rows\nUse dplyr::slice_sample() to see a random selection of rows in a data.frame\n\n\ndat %&gt;% dplyr::slice_sample(n=10)\n\n# A tibble: 10 × 9\n    year marital         age race  rincome        partyid    relig denom tvhours\n   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;\n 1  2012 Married          34 White $25000 or more Ind,near … Prot… Meth…      NA\n 2  2012 Never married    21 Black Refused        Independe… Prot… Don'…      NA\n 3  2010 Never married    40 White $25000 or more Independe… None  Not …      NA\n 4  2000 Married          53 White $25000 or more Not str d… Prot… Other       2\n 5  2014 Married          44 White Not applicable Not str r… Prot… Sout…       3\n 6  2014 Never married    60 White $20000 - 24999 Strong re… Prot… Unit…      10\n 7  2014 Married          59 White $25000 or more Strong de… Prot… Epis…      NA\n 8  2000 Divorced         67 White Not applicable Strong re… Prot… Meth…       1\n 9  2002 Never married    24 Black Not applicable No answer  Don'… Not …      NA\n10  2012 Married          78 White Not applicable Strong re… Prot… Wi e…      NA\n\n\nThere are many dplyr::slice_{X} variants, along with dplyr::filter"
+    "text": "EDA: view some rows\nUse dplyr::slice_sample() to see a random selection of rows in a data.frame\n\n\ndat %&gt;% dplyr::slice_sample(n=10)\n\n# A tibble: 10 × 9\n    year marital         age race  rincome        partyid    relig denom tvhours\n   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;\n 1  2010 Married          60 White $25000 or more Strong de… None  Not …       3\n 2  2006 Never married    44 Black Not applicable Ind,near … Prot… Bapt…      NA\n 3  2008 Widowed          69 Black Not applicable Strong de… Prot… Bapt…       2\n 4  2002 Divorced         40 White No answer      Not str r… None  Not …      NA\n 5  2012 Never married    28 White $25000 or more Not str r… None  Not …       1\n 6  2008 Married          26 White $20000 - 24999 Not str r… Prot… Sout…      NA\n 7  2010 Never married    27 Black $25000 or more Strong de… Prot… Bapt…      NA\n 8  2006 Married          63 White Not applicable Strong de… Prot… Unit…      NA\n 9  2002 Divorced         76 White Not applicable Ind,near … Cath… Not …       4\n10  2000 Divorced         31 White Not applicable Not str d… Cath… Not …      NA\n\n\nThere are many dplyr::slice_{X} variants, along with dplyr::filter"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#bad-data-rightarrow-bad-results",
@@ -2564,7 +2564,7 @@
     "href": "slides/BSMM_8740_lec_01.html#eda-packages-for-eda",
     "title": "Tidyverse, EDA & git",
     "section": "EDA: packages for EDA",
-    "text": "EDA: packages for EDA\n\nThe function skimr::skim() gives an enhanced version of base R’s summary() .\nOther packages, such as DataExplorer:: rely more on graphing.\n\nWe’ll look at a few of the DataExplorer:: functions next."
+    "text": "EDA: packages for EDA\n\nThe function skimr::skim() gives an enhanced version of base R’s summary() .\nOther packages, such as DataExplorer:: rely more on graphing."
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#skimrskim",
@@ -2578,7 +2578,7 @@
     "href": "slides/BSMM_8740_lec_01.html#eda-factor-variable-counts",
     "title": "Tidyverse, EDA & git",
     "section": "EDA: factor variable counts",
-    "text": "EDA: factor variable counts\nMost of the columns here are factors(categories). Use these to count the number of observations per category.\n\nforecats::fct_countdplyr::counttable()\n\n\n\nforcats::fct_count(dat$relig) %&gt;% dplyr::arrange(desc(n))\n\n# A tibble: 16 × 2\n   f                           n\n   &lt;fct&gt;                   &lt;int&gt;\n 1 Protestant              10846\n 2 Catholic                 5124\n 3 None                     3523\n 4 Christian                 689\n 5 Jewish                    388\n 6 Other                     224\n 7 Buddhism                  147\n 8 Inter-nondenominational   109\n 9 Moslem/islam              104\n10 Orthodox-christian         95\n11 No answer                  93\n12 Hinduism                   71\n13 Other eastern              32\n14 Native american            23\n15 Don't know                 15\n16 Not applicable              0\n\n\n\n\n\ndat |&gt; dplyr::count(relig) |&gt; dplyr::arrange(desc(n))\n\n# A tibble: 15 × 2\n   relig                       n\n   &lt;fct&gt;                   &lt;int&gt;\n 1 Protestant              10846\n 2 Catholic                 5124\n 3 None                     3523\n 4 Christian                 689\n 5 Jewish                    388\n 6 Other                     224\n 7 Buddhism                  147\n 8 Inter-nondenominational   109\n 9 Moslem/islam              104\n10 Orthodox-christian         95\n11 No answer                  93\n12 Hinduism                   71\n13 Other eastern              32\n14 Native american            23\n15 Don't know                 15\n\n\n\n\n\ndat$relig |&gt; table() |&gt; as.data.frame() %&gt;% dplyr::arrange(desc(Freq))\n\n                      Var1  Freq\n1               Protestant 10846\n2                 Catholic  5124\n3                     None  3523\n4                Christian   689\n5                   Jewish   388\n6                    Other   224\n7                 Buddhism   147\n8  Inter-nondenominational   109\n9             Moslem/islam   104\n10      Orthodox-christian    95\n11               No answer    93\n12                Hinduism    71\n13           Other eastern    32\n14         Native american    23\n15              Don't know    15\n16          Not applicable     0"
+    "text": "EDA: factor variable counts\nMost of the columns here are factors (categories). Use these to count the number of observations per category.\n\nforecats::fct_countdplyr::counttable()\n\n\n\nforcats::fct_count(dat$relig) %&gt;% dplyr::arrange(desc(n))\n\n# A tibble: 16 × 2\n   f                           n\n   &lt;fct&gt;                   &lt;int&gt;\n 1 Protestant              10846\n 2 Catholic                 5124\n 3 None                     3523\n 4 Christian                 689\n 5 Jewish                    388\n 6 Other                     224\n 7 Buddhism                  147\n 8 Inter-nondenominational   109\n 9 Moslem/islam              104\n10 Orthodox-christian         95\n11 No answer                  93\n12 Hinduism                   71\n13 Other eastern              32\n14 Native american            23\n15 Don't know                 15\n16 Not applicable              0\n\n\n\n\n\ndat |&gt; dplyr::count(relig) |&gt; dplyr::arrange(desc(n))\n\n# A tibble: 15 × 2\n   relig                       n\n   &lt;fct&gt;                   &lt;int&gt;\n 1 Protestant              10846\n 2 Catholic                 5124\n 3 None                     3523\n 4 Christian                 689\n 5 Jewish                    388\n 6 Other                     224\n 7 Buddhism                  147\n 8 Inter-nondenominational   109\n 9 Moslem/islam              104\n10 Orthodox-christian         95\n11 No answer                  93\n12 Hinduism                   71\n13 Other eastern              32\n14 Native american            23\n15 Don't know                 15\n\n\n\n\n\ndat$relig |&gt; table() |&gt; as.data.frame() %&gt;% dplyr::arrange(desc(Freq))\n\n                      Var1  Freq\n1               Protestant 10846\n2                 Catholic  5124\n3                     None  3523\n4                Christian   689\n5                   Jewish   388\n6                    Other   224\n7                 Buddhism   147\n8  Inter-nondenominational   109\n9             Moslem/islam   104\n10      Orthodox-christian    95\n11               No answer    93\n12                Hinduism    71\n13           Other eastern    32\n14         Native american    23\n15              Don't know    15\n16          Not applicable     0"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#eda-binary-factors",
@@ -2637,67 +2637,67 @@
     "text": "EDA: summary\n\nUnderstand what the measurements represent and confirm constraints (if any) and suitability of encoding.\nMake a decision on how to deal with missing data.\nUnderstand shape of measurements (may identify an issue or suggest a data transformation)"
   },
   {
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-1",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-1",
+    "title": "Tidyverse, EDA & git",
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\n\nfor continuous variables (usually the independent variables or covariates):\n\nnormalization (scale values to \\([0,1]\\))\n\n\\(X_\\text{norm} = \\frac{X-X_\\text{min}}{X_\\text{max}-X_\\text{min}}\\)\n\nstandardization (subtract mean and scale by stdev)\n\n\\(X_\\text{std} = \\frac{X-\\mu_X}{\\sigma_X}\\)\n\nscaling (multiply / divide by a constant)\n\n\\(X_\\text{scaled} = K\\times X\\)"
+  },
+  {
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-2",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-2",
+    "title": "Tidyverse, EDA & git",
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\n\nOther common transformations:\n\nBox-cox: with \\(\\tilde{x}\\) the geometric mean of the (positive) predictor data (\\(\\tilde{x}=\\left(\\prod_{i=1}^{n}x_{i}\\right)^{1/n}\\))\n\n\\[\nx_i(\\lambda) = \\left\\{\n\\begin{array}{cc}\n\\frac{x_i^{\\lambda}-1}{\\lambda\\tilde{x}^{\\lambda-1}} & \\lambda\\ne 0\\\\\n\\tilde{x}\\log x_i & \\lambda=0\n\\end{array}\n\\right .  \n\\]\n\n\n\n\n\n\n\n\nNote\n\n\nBox-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like."
+  },
+  {
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-3",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-3",
+    "title": "Tidyverse, EDA & git",
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\n\nOne last common transformation:\n\nlogit transformation for bounded target variables (scaled to lie in \\([0,1]\\))\n\n\\[\n\\text{logit}\\left(p\\right)=\\log\\frac{p}{1-p},\\;p\\in [0,1]\n\\]\n\n\n\n\n\n\n\n\nNote\n\n\nThe Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range \\(\\left(-\\infty,\\infty\\right)\\), where p is the proportion of each sample that is 1 (or 0)"
+  },
+  {
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-4",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-4",
+    "title": "Tidyverse, EDA & git",
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\n\nWhy normalize or standardize?\n\nvariation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.\n\ne.g. income and age\n\nreduce the impact of outliers\nmake results more explainable"
+  },
+  {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation",
     "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation",
     "title": "Tidyverse, EDA & git",
     "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nfor continuous variables (usually the independent variables or covariates):\n\nnormalization (scale values to \\([0,1]\\))\n\n\\(X_\\text{norm} = \\frac{X-X_\\text{min}}{X_\\text{max}-X_\\text{min}}\\)\n\nstandardization (subtract mean and scale by stdev)\n\n\\(X_\\text{std} = \\frac{X-\\mu_X}{\\sigma_X}\\)\n\nscaling (multiply / divide by a constant)\n\n\\(X_\\text{scaled} = K\\times X\\)"
+    "text": "Feature engineering: transformation\n\nfor continuous variables (usually the target variables):\n\ntransformation (arithmetic, basis functions, polynomials, splines, differencing)\n\n\\(y = \\log(y),\\sqrt{y},\\frac{1}{y}\\), etc.\n\\(y = \\sum_i \\beta_i\\text{f}_i(x)\\;\\text{s.t.}\\;0=\\int\\text{f}_i(x)\\text{f}_j(x)\\; \\forall i\\ne j\\)\n\\(y = \\beta_0+\\beta_1 x+\\beta_2 x^2+\\beta_3 x^3+\\ldots\\)\n\\(y = \\beta_0+\\beta_1 x_1+\\beta_2 x_2+\\beta_3 x_1 x_2+\\ldots\\)\n\\(y'_i = y_i-y_{i-1}\\)"
   },
   {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-1",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-1",
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-5",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-5",
     "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nOther common transformations:\n\nBox-cox: with \\(\\tilde{x}\\) the geometric mean of the (positive) predictor data (\\(\\tilde{x}=\\left(\\prod_{i=1}^{n}x_{i}\\right)^{1/n}\\))\n\n\\[\nx_i(\\lambda) = \\left\\{\n\\begin{array}{cc}\n\\frac{x_i^{\\lambda}-1}{\\lambda\\tilde{x}^{\\lambda-1}} & \\lambda\\ne 0\\\\\n\\tilde{x}\\log x_i & \\lambda=0\n\\end{array}\n\\right .  \n\\]\n\n\n\n\n\n\n\nNote\n\n\nBox-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like."
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\nfor categorical variables (either target or explanatory variables):\n\nbinning / bucketing\n\nrepresent a numerical value as a categorical value\n\ncategorical\\(\\rightarrow\\)ordinal and ordinal\\(\\rightarrow\\)categorical\n\nfor date variables:\n\ntimestamp\\(\\rightarrow\\)date or date part"
   },
   {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-2",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-2",
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-6",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-6",
     "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nOne last common transformation:\n\nlogit transformation for bounded target variables (scaled to lie in \\([0,1]\\))\n\n\\[\n\\text{logit}\\left(p\\right)=\\log\\frac{p}{1-p},\\;p\\in [0,1]\n\\]\n\n\n\n\n\n\n\nNote\n\n\nThe Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range \\(\\left(-\\infty,\\infty\\right)\\), where p is the proportion of each sample that is 1 (or 0)"
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ntransformation\n\nWhy transform?\n\nit can make your model perform better\n\ne.g. \\(\\log\\) transform makes exponential data linear, and log-Normal data Gaussian\n\\(\\log\\) transforms also make multiplicative models additive\ne.g. polynomials, basis functions and splines help model non-linearities in data"
   },
   {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-3",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-3",
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-7",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-7",
     "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nWhy normalize or standardize?\n\nvariation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.\n\ne.g. income and age\n\nreduce the impact of outliers\nmake results more explainable"
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ncreation\n\noutliers (due to data entry, measurement/experiment, intentional errors)\n\noutliers can be identified by quantile methods (Gaussian data)\noutliers can be removed, treated as missing, or capped\n\nlag variables (either target or explanatory variables)\n\nuseful in time series models, e.g. \\(y_t,y_{t-1},\\ldots y_{t-n}\\)"
   },
   {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-4",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-4",
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-8",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-8",
     "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nfor continuous variables (usually the target variables):\n\ntransformation (arithmetic, basis functions, polynomials, splines, differencing)\n\n\\(y = \\log(y),\\sqrt{y},\\frac{1}{y}\\), etc.\n\\(y = \\sum_i \\beta_i\\text{f}_i(x)\\;\\text{s.t.}\\;0=\\int\\text{f}_i(x)\\text{f}_j(x)\\; \\forall i\\ne j\\)\n\\(y = \\beta_0+\\beta_1 x+\\beta_2 x^2+\\beta_3 x^3+\\ldots\\)\n\\(y = \\beta_0+\\beta_1 x_1+\\beta_2 x_2+\\beta_3 x_1 x_2+\\ldots\\)\n\\(y'_i = y_i-y_{i-1}\\)"
-  },
-  {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-5",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-5",
-    "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nfor categorical variables (either target or explanatory variables):\n\nbinning / bucketing\n\nrepresent a numerical value as a categorical value\n\ncategorical\\(\\rightarrow\\)ordinal and ordinal\\(\\rightarrow\\)categorical\n\nfor date variables:\n\ntimestamp\\(\\rightarrow\\)date or date part"
-  },
-  {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-6",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation-6",
-    "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\nWhy transform?\n\nit can make your model perform better\n\ne.g. \\(\\log\\) transform makes exponential data linear, and log-Normal data Gaussian\n\\(\\log\\) transforms also make multiplicative models additive\ne.g. polynomials, basis functions and splines help model non-linearities in data"
-  },
-  {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-creation",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-creation",
-    "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: creation",
-    "text": "Feature engineering: creation\n\noutliers (due to data entry, measurement/experiment, intentional errors)\n\noutliers can be identified by quantile methods (Gaussian data)\noutliers can be removed, treated as missing, or capped\n\nlag variables (either target or explanatory variables)\n\nuseful in time series models, e.g. \\(y_t,y_{t-1},\\ldots y_{t-n}\\)"
-  },
-  {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-creation-1",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-creation-1",
-    "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: creation",
-    "text": "Feature engineering: creation\n\nbinning / bucketing\n\nrepresent numerical as categorical and vice versa\n\ninterval and ratio levels"
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ncreation\n\nbinning / bucketing\n\nrepresent numerical as categorical and vice versa\n\ninterval and ratio levels"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-summary",
@@ -2711,7 +2711,7 @@
     "href": "slides/BSMM_8740_lec_01.html#recap",
     "title": "Tidyverse, EDA & git",
     "section": "Recap",
-    "text": "Recap\n\n\nToday we have introduced tidy data, tidyverse verbs and the pipe operator.\nIn the lab we introduced Git and the data backup workflows.\n\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
+    "text": "Recap\n\n\nToday we have introduced tidy data, tidyverse verbs and the pipe operator.\nWe briefly discussed EDA\nIn the lab we will introduc Git and the data backup workflows.\n\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
   },
   {
     "objectID": "slides/BSMM_8740_lec_02.html#recap-of-last-lecture",

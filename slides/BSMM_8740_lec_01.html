@@ -437,7 +437,7 @@ Dr.&nbsp;L.L. Odette
 <div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="xyrjbmzlce" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="feocnkydbg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 28px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
@@ -1547,8 +1547,12 @@ GROUP BY `x_bin`</code></pre>
 <section id="tidying" class="slide level2">
 <h2>Tidying</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb67" data-code-line-numbers="1|2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a>tidyr<span class="sc">::</span>table3 <span class="sc">%&gt;%</span> </span>
-<span id="cb67-2"><a></a>  tidyr<span class="sc">::</span><span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> rate, <span class="at">delim =</span> <span class="st">"/"</span>, <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"population"</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67" data-code-line-numbers="1|2-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a>tidyr<span class="sc">::</span>table3 <span class="sc">%&gt;%</span> </span>
+<span id="cb67-2"><a></a>  tidyr<span class="sc">::</span><span class="fu">separate_wider_delim</span>(</span>
+<span id="cb67-3"><a></a>    <span class="at">cols =</span> rate</span>
+<span id="cb67-4"><a></a>    , <span class="at">delim =</span> <span class="st">"/"</span></span>
+<span id="cb67-5"><a></a>    , <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"population"</span>) </span>
+<span id="cb67-6"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
   country      year cases  population
@@ -1643,16 +1647,16 @@ $ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
 <pre><code># A tibble: 10 × 9
     year marital         age race  rincome        partyid    relig denom tvhours
    &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;
- 1  2012 Married          34 White $25000 or more Ind,near … Prot… Meth…      NA
- 2  2012 Never married    21 Black Refused        Independe… Prot… Don'…      NA
- 3  2010 Never married    40 White $25000 or more Independe… None  Not …      NA
- 4  2000 Married          53 White $25000 or more Not str d… Prot… Other       2
- 5  2014 Married          44 White Not applicable Not str r… Prot… Sout…       3
- 6  2014 Never married    60 White $20000 - 24999 Strong re… Prot… Unit…      10
- 7  2014 Married          59 White $25000 or more Strong de… Prot… Epis…      NA
- 8  2000 Divorced         67 White Not applicable Strong re… Prot… Meth…       1
- 9  2002 Never married    24 Black Not applicable No answer  Don'… Not …      NA
-10  2012 Married          78 White Not applicable Strong re… Prot… Wi e…      NA</code></pre>
+ 1  2010 Married          60 White $25000 or more Strong de… None  Not …       3
+ 2  2006 Never married    44 Black Not applicable Ind,near … Prot… Bapt…      NA
+ 3  2008 Widowed          69 Black Not applicable Strong de… Prot… Bapt…       2
+ 4  2002 Divorced         40 White No answer      Not str r… None  Not …      NA
+ 5  2012 Never married    28 White $25000 or more Not str r… None  Not …       1
+ 6  2008 Married          26 White $20000 - 24999 Not str r… Prot… Sout…      NA
+ 7  2010 Never married    27 Black $25000 or more Strong de… Prot… Bapt…      NA
+ 8  2006 Married          63 White Not applicable Strong de… Prot… Unit…      NA
+ 9  2002 Divorced         76 White Not applicable Ind,near … Cath… Not …       4
+10  2000 Divorced         31 White Not applicable Not str d… Cath… Not …      NA</code></pre>
 </div>
 </div>
 <p>There are many dplyr::slice_{X} variants, along with dplyr::filter</p>
@@ -1701,10 +1705,7 @@ $ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
 <h2>EDA: packages for EDA</h2>
 <ul>
 <li><p>The function <code>skimr::skim()</code> gives an enhanced version of base R’s <code>summary()</code> .</p></li>
-<li><p>Other packages, such as <code>DataExplorer::</code> rely more on graphing.</p>
-<ul>
-<li>We’ll look at a few of the <code>DataExplorer::</code> functions next.</li>
-</ul></li>
+<li><p>Other packages, such as <code>DataExplorer::</code> rely more on graphing.</p></li>
 </ul>
 </section>
 <section id="skimrskim" class="slide level2">
@@ -1876,7 +1877,7 @@ $ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
 </section>
 <section id="eda-factor-variable-counts" class="slide level2">
 <h2>EDA: factor variable counts</h2>
-<p>Most of the columns here are <code>factor</code>s(categories). Use these to count the number of observations per category.</p>
+<p>Most of the columns here are <code>factors</code> (categories). Use these to count the number of observations per category.</p>
 <div class="panel-tabset">
 <ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">forecats::fct_count</a></li><li><a href="#tabset-10-2">dplyr::count</a></li><li><a href="#tabset-10-3">table()</a></li></ul>
 <div class="tab-content">
@@ -2258,8 +2259,10 @@ partyid                 0    1
 <h1>Feature engineering</h1>
 <p>Feature engineering is the act of converting raw observations into desired features using statistical, mathematical, or machine learning approaches.</p>
 </section>
-<section id="feature-engineering-transformation" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-1" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation">transformation</h4>
+<div style="font-size: x-large">
 <p>for continuous variables (usually the independent variables or covariates):</p>
 <ul>
 <li><strong>normalization</strong> (scale values to <span class="math inline">\([0,1]\)</span>)
@@ -2275,9 +2278,12 @@ partyid                 0    1
 <li><span class="math inline">\(X_\text{scaled} = K\times X\)</span></li>
 </ul></li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-transformation-1" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-2" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-1">transformation</h4>
+<div style="font-size: x-large">
 <p>Other common transformations:</p>
 <ul>
 <li>Box-cox: with <span class="math inline">\(\tilde{x}\)</span> the geometric mean of the (<strong>positive</strong>) predictor data (<span class="math inline">\(\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}\)</span>)</li>
@@ -2290,7 +2296,8 @@ x_i(\lambda) = \left\{
 \end{array}
 \right .  
 \]</span></p>
-<div style="font-size: smaller">
+</div>
+<div style="font-size: x-large">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2306,8 +2313,10 @@ x_i(\lambda) = \left\{
 </div>
 </div>
 </section>
-<section id="feature-engineering-transformation-2" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-3" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-2">transformation</h4>
+<div style="font-size: x-large">
 <p>One last common transformation:</p>
 <ul>
 <li>logit transformation for bounded target variables (scaled to lie in <span class="math inline">\([0,1]\)</span>)</li>
@@ -2315,7 +2324,8 @@ x_i(\lambda) = \left\{
 <p><span class="math display">\[
 \text{logit}\left(p\right)=\log\frac{p}{1-p},\;p\in [0,1]
 \]</span></p>
-<div style="font-size: small">
+</div>
+<div style="font-size: x-large">
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2331,8 +2341,10 @@ x_i(\lambda) = \left\{
 </div>
 </div>
 </section>
-<section id="feature-engineering-transformation-3" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-4" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-3">transformation</h4>
+<div style="font-size: x-large">
 <p>Why normalize or standardize?</p>
 <ul>
 <li>variation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.
@@ -2342,9 +2354,11 @@ x_i(\lambda) = \left\{
 <li>reduce the impact of outliers</li>
 <li>make results more explainable</li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-transformation-4" class="slide level2">
+<section id="feature-engineering-transformation" class="slide level2">
 <h2>Feature engineering: transformation</h2>
+<div style="font-size: x-large">
 <p>for continuous variables (usually the target variables):</p>
 <ul>
 <li><strong>transformation</strong> (arithmetic, basis functions, polynomials, splines, differencing)
@@ -2356,9 +2370,11 @@ x_i(\lambda) = \left\{
 <li><span class="math inline">\(y'_i = y_i-y_{i-1}\)</span></li>
 </ul></li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-transformation-5" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-5" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-4">transformation</h4>
 <p>for categorical variables (either target or explanatory variables):</p>
 <ul>
 <li>binning / bucketing
@@ -2372,8 +2388,10 @@ x_i(\lambda) = \left\{
 <li>timestamp<span class="math inline">\(\rightarrow\)</span>date or date part</li>
 </ul>
 </section>
-<section id="feature-engineering-transformation-6" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-6" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-5">transformation</h4>
+<div style="font-size: x-large">
 <p>Why transform?</p>
 <ul>
 <li><p>it can make your model perform better</p>
@@ -2383,9 +2401,11 @@ x_i(\lambda) = \left\{
 <li>e.g.&nbsp;polynomials, basis functions and splines help model non-linearities in data</li>
 </ul></li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-creation" class="slide level2">
-<h2>Feature engineering: creation</h2>
+<section id="feature-engineering-7" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="creation">creation</h4>
 <ul>
 <li>outliers (due to data entry, measurement/experiment, intentional errors)
 <ul>
@@ -2398,8 +2418,9 @@ x_i(\lambda) = \left\{
 </ul></li>
 </ul>
 </section>
-<section id="feature-engineering-creation-1" class="slide level2">
-<h2>Feature engineering: creation</h2>
+<section id="feature-engineering-8" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="creation-1">creation</h4>
 <ul>
 <li>binning / bucketing
 <ul>
@@ -2422,7 +2443,8 @@ x_i(\lambda) = \left\{
 <div>
 <ul>
 <li class="fragment"><p>Today we have introduced tidy data, tidyverse verbs and the pipe operator.</p></li>
-<li class="fragment"><p>In the lab we introduced Git and the data backup workflows.</p></li>
+<li class="fragment"><p>We briefly discussed EDA</p></li>
+<li class="fragment"><p>In the lab we will introduc Git and the data backup workflows.</p></li>
 </ul>
 </div>
 
