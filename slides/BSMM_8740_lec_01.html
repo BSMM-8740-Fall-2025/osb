@@ -437,7 +437,7 @@ Dr.&nbsp;L.L. Odette
 <div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="feocnkydbg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="vbvzvwyxua" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 28px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 3px; border-top-color: #FFFFFF; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
@@ -1647,16 +1647,16 @@ $ tvhours &lt;int&gt; 12, NA, 2, 4, 1, NA, 3, NA, 0, 3</code></pre>
 <pre><code># A tibble: 10 × 9
     year marital         age race  rincome        partyid    relig denom tvhours
    &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;
- 1  2010 Married          60 White $25000 or more Strong de… None  Not …       3
- 2  2006 Never married    44 Black Not applicable Ind,near … Prot… Bapt…      NA
- 3  2008 Widowed          69 Black Not applicable Strong de… Prot… Bapt…       2
- 4  2002 Divorced         40 White No answer      Not str r… None  Not …      NA
- 5  2012 Never married    28 White $25000 or more Not str r… None  Not …       1
- 6  2008 Married          26 White $20000 - 24999 Not str r… Prot… Sout…      NA
- 7  2010 Never married    27 Black $25000 or more Strong de… Prot… Bapt…      NA
- 8  2006 Married          63 White Not applicable Strong de… Prot… Unit…      NA
- 9  2002 Divorced         76 White Not applicable Ind,near … Cath… Not …       4
-10  2000 Divorced         31 White Not applicable Not str d… Cath… Not …      NA</code></pre>
+ 1  2014 Never married    34 White $10000 - 14999 Not str r… None  Not …       2
+ 2  2002 Never married    21 Other Not applicable Not str d… Prot… Bapt…       2
+ 3  2004 Never married    31 White Not applicable Not str r… Cath… Not …      NA
+ 4  2002 Married          59 White $20000 - 24999 Not str d… Prot… Unit…      NA
+ 5  2006 Married          61 White Not applicable Strong re… Chri… No d…      NA
+ 6  2004 Divorced         59 White Lt $1000       Ind,near … Prot… No d…      NA
+ 7  2006 Widowed          55 Black Not applicable Ind,near … Prot… Bapt…      NA
+ 8  2002 Separated        44 White Not applicable Ind,near … Jewi… Not …       1
+ 9  2008 Married          41 White Not applicable Strong re… Prot… Sout…      NA
+10  2006 Never married    22 Other $25000 or more Strong de… Other Not …      NA</code></pre>
 </div>
 </div>
 <p>There are many dplyr::slice_{X} variants, along with dplyr::filter</p>
@@ -2356,8 +2356,9 @@ x_i(\lambda) = \left\{
 </ul>
 </div>
 </section>
-<section id="feature-engineering-transformation" class="slide level2">
-<h2>Feature engineering: transformation</h2>
+<section id="feature-engineering-5" class="slide level2">
+<h2>Feature engineering:</h2>
+<h4 id="transformation-4">transformation</h4>
 <div style="font-size: x-large">
 <p>for continuous variables (usually the target variables):</p>
 <ul>
@@ -2372,9 +2373,10 @@ x_i(\lambda) = \left\{
 </ul>
 </div>
 </section>
-<section id="feature-engineering-5" class="slide level2">
+<section id="feature-engineering-6" class="slide level2">
 <h2>Feature engineering:</h2>
-<h4 id="transformation-4">transformation</h4>
+<h4 id="transformation-5">transformation</h4>
+<div style="font-size: x-large">
 <p>for categorical variables (either target or explanatory variables):</p>
 <ul>
 <li>binning / bucketing
@@ -2387,10 +2389,11 @@ x_i(\lambda) = \left\{
 <ul>
 <li>timestamp<span class="math inline">\(\rightarrow\)</span>date or date part</li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-6" class="slide level2">
+<section id="feature-engineering-7" class="slide level2">
 <h2>Feature engineering:</h2>
-<h4 id="transformation-5">transformation</h4>
+<h4 id="transformation-6">transformation</h4>
 <div style="font-size: x-large">
 <p>Why transform?</p>
 <ul>
@@ -2403,9 +2406,10 @@ x_i(\lambda) = \left\{
 </ul>
 </div>
 </section>
-<section id="feature-engineering-7" class="slide level2">
+<section id="feature-engineering-8" class="slide level2">
 <h2>Feature engineering:</h2>
 <h4 id="creation">creation</h4>
+<div style="font-size: x-large">
 <ul>
 <li>outliers (due to data entry, measurement/experiment, intentional errors)
 <ul>
@@ -2417,10 +2421,12 @@ x_i(\lambda) = \left\{
 <li>useful in time series models, e.g.&nbsp;<span class="math inline">\(y_t,y_{t-1},\ldots y_{t-n}\)</span></li>
 </ul></li>
 </ul>
+</div>
 </section>
-<section id="feature-engineering-8" class="slide level2">
+<section id="feature-engineering-9" class="slide level2">
 <h2>Feature engineering:</h2>
 <h4 id="creation-1">creation</h4>
+<div style="font-size: x-large">
 <ul>
 <li>binning / bucketing
 <ul>
@@ -2428,6 +2434,7 @@ x_i(\lambda) = \left\{
 </ul></li>
 <li>interval and ratio levels</li>
 </ul>
+</div>
 </section>
 <section id="feature-engineering-summary" class="slide level2">
 <h2>Feature engineering: summary</h2>
@@ -2444,7 +2451,7 @@ x_i(\lambda) = \left\{
 <ul>
 <li class="fragment"><p>Today we have introduced tidy data, tidyverse verbs and the pipe operator.</p></li>
 <li class="fragment"><p>We briefly discussed EDA</p></li>
-<li class="fragment"><p>In the lab we will introduc Git and the data backup workflows.</p></li>
+<li class="fragment"><p>In the lab we will introduce Git and the data backup workflows.</p></li>
 </ul>
 </div>
 

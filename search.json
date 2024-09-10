@@ -2543,7 +2543,7 @@
     "href": "slides/BSMM_8740_lec_01.html#eda-view-some-rows",
     "title": "Tidyverse, EDA & git",
     "section": "EDA: view some rows",
-    "text": "EDA: view some rows\nUse dplyr::slice_sample() to see a random selection of rows in a data.frame\n\n\ndat %&gt;% dplyr::slice_sample(n=10)\n\n# A tibble: 10 × 9\n    year marital         age race  rincome        partyid    relig denom tvhours\n   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;\n 1  2010 Married          60 White $25000 or more Strong de… None  Not …       3\n 2  2006 Never married    44 Black Not applicable Ind,near … Prot… Bapt…      NA\n 3  2008 Widowed          69 Black Not applicable Strong de… Prot… Bapt…       2\n 4  2002 Divorced         40 White No answer      Not str r… None  Not …      NA\n 5  2012 Never married    28 White $25000 or more Not str r… None  Not …       1\n 6  2008 Married          26 White $20000 - 24999 Not str r… Prot… Sout…      NA\n 7  2010 Never married    27 Black $25000 or more Strong de… Prot… Bapt…      NA\n 8  2006 Married          63 White Not applicable Strong de… Prot… Unit…      NA\n 9  2002 Divorced         76 White Not applicable Ind,near … Cath… Not …       4\n10  2000 Divorced         31 White Not applicable Not str d… Cath… Not …      NA\n\n\nThere are many dplyr::slice_{X} variants, along with dplyr::filter"
+    "text": "EDA: view some rows\nUse dplyr::slice_sample() to see a random selection of rows in a data.frame\n\n\ndat %&gt;% dplyr::slice_sample(n=10)\n\n# A tibble: 10 × 9\n    year marital         age race  rincome        partyid    relig denom tvhours\n   &lt;int&gt; &lt;fct&gt;         &lt;int&gt; &lt;fct&gt; &lt;fct&gt;          &lt;fct&gt;      &lt;fct&gt; &lt;fct&gt;   &lt;int&gt;\n 1  2014 Never married    34 White $10000 - 14999 Not str r… None  Not …       2\n 2  2002 Never married    21 Other Not applicable Not str d… Prot… Bapt…       2\n 3  2004 Never married    31 White Not applicable Not str r… Cath… Not …      NA\n 4  2002 Married          59 White $20000 - 24999 Not str d… Prot… Unit…      NA\n 5  2006 Married          61 White Not applicable Strong re… Chri… No d…      NA\n 6  2004 Divorced         59 White Lt $1000       Ind,near … Prot… No d…      NA\n 7  2006 Widowed          55 Black Not applicable Ind,near … Prot… Bapt…      NA\n 8  2002 Separated        44 White Not applicable Ind,near … Jewi… Not …       1\n 9  2008 Married          41 White Not applicable Strong re… Prot… Sout…      NA\n10  2006 Never married    22 Other $25000 or more Strong de… Other Not …      NA\n\n\nThere are many dplyr::slice_{X} variants, along with dplyr::filter"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#bad-data-rightarrow-bad-results",
@@ -2665,39 +2665,39 @@
     "text": "Feature engineering:\ntransformation\n\nWhy normalize or standardize?\n\nvariation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.\n\ne.g. income and age\n\nreduce the impact of outliers\nmake results more explainable"
   },
   {
-    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation",
-    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-transformation",
-    "title": "Tidyverse, EDA & git",
-    "section": "Feature engineering: transformation",
-    "text": "Feature engineering: transformation\n\nfor continuous variables (usually the target variables):\n\ntransformation (arithmetic, basis functions, polynomials, splines, differencing)\n\n\\(y = \\log(y),\\sqrt{y},\\frac{1}{y}\\), etc.\n\\(y = \\sum_i \\beta_i\\text{f}_i(x)\\;\\text{s.t.}\\;0=\\int\\text{f}_i(x)\\text{f}_j(x)\\; \\forall i\\ne j\\)\n\\(y = \\beta_0+\\beta_1 x+\\beta_2 x^2+\\beta_3 x^3+\\ldots\\)\n\\(y = \\beta_0+\\beta_1 x_1+\\beta_2 x_2+\\beta_3 x_1 x_2+\\ldots\\)\n\\(y'_i = y_i-y_{i-1}\\)"
-  },
-  {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-5",
     "href": "slides/BSMM_8740_lec_01.html#feature-engineering-5",
     "title": "Tidyverse, EDA & git",
     "section": "Feature engineering:",
-    "text": "Feature engineering:\ntransformation\nfor categorical variables (either target or explanatory variables):\n\nbinning / bucketing\n\nrepresent a numerical value as a categorical value\n\ncategorical\\(\\rightarrow\\)ordinal and ordinal\\(\\rightarrow\\)categorical\n\nfor date variables:\n\ntimestamp\\(\\rightarrow\\)date or date part"
+    "text": "Feature engineering:\ntransformation\n\nfor continuous variables (usually the target variables):\n\ntransformation (arithmetic, basis functions, polynomials, splines, differencing)\n\n\\(y = \\log(y),\\sqrt{y},\\frac{1}{y}\\), etc.\n\\(y = \\sum_i \\beta_i\\text{f}_i(x)\\;\\text{s.t.}\\;0=\\int\\text{f}_i(x)\\text{f}_j(x)\\; \\forall i\\ne j\\)\n\\(y = \\beta_0+\\beta_1 x+\\beta_2 x^2+\\beta_3 x^3+\\ldots\\)\n\\(y = \\beta_0+\\beta_1 x_1+\\beta_2 x_2+\\beta_3 x_1 x_2+\\ldots\\)\n\\(y'_i = y_i-y_{i-1}\\)"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-6",
     "href": "slides/BSMM_8740_lec_01.html#feature-engineering-6",
     "title": "Tidyverse, EDA & git",
     "section": "Feature engineering:",
-    "text": "Feature engineering:\ntransformation\n\nWhy transform?\n\nit can make your model perform better\n\ne.g. \\(\\log\\) transform makes exponential data linear, and log-Normal data Gaussian\n\\(\\log\\) transforms also make multiplicative models additive\ne.g. polynomials, basis functions and splines help model non-linearities in data"
+    "text": "Feature engineering:\ntransformation\n\nfor categorical variables (either target or explanatory variables):\n\nbinning / bucketing\n\nrepresent a numerical value as a categorical value\n\ncategorical\\(\\rightarrow\\)ordinal and ordinal\\(\\rightarrow\\)categorical\n\nfor date variables:\n\ntimestamp\\(\\rightarrow\\)date or date part"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-7",
     "href": "slides/BSMM_8740_lec_01.html#feature-engineering-7",
     "title": "Tidyverse, EDA & git",
     "section": "Feature engineering:",
-    "text": "Feature engineering:\ncreation\n\noutliers (due to data entry, measurement/experiment, intentional errors)\n\noutliers can be identified by quantile methods (Gaussian data)\noutliers can be removed, treated as missing, or capped\n\nlag variables (either target or explanatory variables)\n\nuseful in time series models, e.g. \\(y_t,y_{t-1},\\ldots y_{t-n}\\)"
+    "text": "Feature engineering:\ntransformation\n\nWhy transform?\n\nit can make your model perform better\n\ne.g. \\(\\log\\) transform makes exponential data linear, and log-Normal data Gaussian\n\\(\\log\\) transforms also make multiplicative models additive\ne.g. polynomials, basis functions and splines help model non-linearities in data"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-8",
     "href": "slides/BSMM_8740_lec_01.html#feature-engineering-8",
     "title": "Tidyverse, EDA & git",
     "section": "Feature engineering:",
-    "text": "Feature engineering:\ncreation\n\nbinning / bucketing\n\nrepresent numerical as categorical and vice versa\n\ninterval and ratio levels"
+    "text": "Feature engineering:\ncreation\n\n\noutliers (due to data entry, measurement/experiment, intentional errors)\n\noutliers can be identified by quantile methods (Gaussian data)\noutliers can be removed, treated as missing, or capped\n\nlag variables (either target or explanatory variables)\n\nuseful in time series models, e.g. \\(y_t,y_{t-1},\\ldots y_{t-n}\\)"
+  },
+  {
+    "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-9",
+    "href": "slides/BSMM_8740_lec_01.html#feature-engineering-9",
+    "title": "Tidyverse, EDA & git",
+    "section": "Feature engineering:",
+    "text": "Feature engineering:\ncreation\n\n\nbinning / bucketing\n\nrepresent numerical as categorical and vice versa\n\ninterval and ratio levels"
   },
   {
     "objectID": "slides/BSMM_8740_lec_01.html#feature-engineering-summary",
@@ -2711,7 +2711,7 @@
     "href": "slides/BSMM_8740_lec_01.html#recap",
     "title": "Tidyverse, EDA & git",
     "section": "Recap",
-    "text": "Recap\n\n\nToday we have introduced tidy data, tidyverse verbs and the pipe operator.\nWe briefly discussed EDA\nIn the lab we will introduc Git and the data backup workflows.\n\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
+    "text": "Recap\n\n\nToday we have introduced tidy data, tidyverse verbs and the pipe operator.\nWe briefly discussed EDA\nIn the lab we will introduce Git and the data backup workflows.\n\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
   },
   {
     "objectID": "slides/BSMM_8740_lec_02.html#recap-of-last-lecture",
