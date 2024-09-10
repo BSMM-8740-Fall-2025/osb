@@ -58,6 +58,8 @@ website:
             text: Schedule
           - href: course-faq.qmd
             text: FAQ
+          - href: GitHub.qmd
+            text: GitHub username survey
       - section: "Weekly materials"
         contents:
           - href: weeks/BSMM_8740_week_1.qmd
