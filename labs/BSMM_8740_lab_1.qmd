@@ -1,6 +1,10 @@
 ---
 title: "Lab 1 - Tidy Data Wrangling"
+subtitle: "BSMM 8740 Fall 2024"
+author: "Add your name here"
+format: html
 editor: visual
+self-contained: true
 reference-location: margin
 ---
 
@@ -14,34 +18,53 @@ As the labs progress, you are encouraged to explore beyond what the labs require
 
 By the end of the lab, you will...
 
--   Have practiced version control using GitHub
 -   Be familiar with the workflow using R, RStudio, Git, and GitHub
+-   Have practiced version control using GitHub
+
+## Getting started
+
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-1-\[your github username\]** repository .
+
+    Create an R project using your **2024-lab-1-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2024-lab-1.qmd` file in your repository.
+
+-   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
 
 ::: callout-important
 To access Github from the lab, you will need to make sure you are logged in as follows:
 
 -   username: **.\\daladmin**
 -   password: **Business507!**
+
+Remember to (create a PAT and set your git credentials)
+
+-   create your PAT using `usethis::create_github_token()` ,
+-   store your PAT with `gitcreds::gitcreds_set()` ,
+-   set your username and email with
+    -   `usethis::use_git_config( user.name = ___, user.email = ___)`
 :::
 
-# Now, today's lab
-
-We will use the following package in today's lab.
+## Packages
 
 ::: callout-note
 The code below will install (if necessary) and load the packages needed in today's exercises
 :::
 
 ```{r}
+#| echo: true
 #| message: false
-#| error: false
+#| warning: false
 # check if 'librarian' is installed and if not, install it
 if (! "librarian" %in% rownames(installed.packages()) ){
   install.packages("librarian")
+}
   
 # load packages if not already loaded
-librarian::shelf(tidyverse, Lahman, magrittr, gt, gtExtras, ggplot2)}
+librarian::shelf(tidyverse, Lahman, magrittr, gt, gtExtras, ggplot2, skimr
+                 , dplyr, gt, gtExtras, here, readr, rmarkdown)
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
+
+# Now, today's lab
 
 The tidyverse is a meta-package. When you load it you get eight packages loaded for you:
 
@@ -82,37 +105,58 @@ The variable definitions are found in the help for Teams
 
 ### Exercises
 
-Write all code and narrative in your R Markdown file. Write all narrative in complete sentences. Throughout the assignment, you should periodically **Render** your Quarto document to produce the updated PDF, **commit** the changes in the Git pane, and **push** the updated files to GitHub.
+Write all code and narrative in your R Markdown file where indicated. Write all narrative in complete sentences. Throughout the assignment, you should periodically **render** your Quarto document to ensure that all code executes and that your document format is intact, **save, stage &** **commit** the changes in the Git pane, and **push** the updated files to your repository. This ensures that your work is saved.
 
 ::: callout-tip
-Make sure we can read all or your code in your PDF document. This means you will need to break up long lines of code. One way to help avoid long lines of code is is start a new line after every pipe (`%>%`) and plus sign (`+`).
+Make sure we can read all of the code in your quarto document. This means you will need to break up long lines of code. One way to help avoid long lines of code is is start a new line after every pipe (`%>%` or `|>`) and plus sign (`+`).
 :::
 
 ### Exercise 1
 
-The `view()` function helped us get a quick view of the dataset, but let's get more detail about its structure. Viewing a summary of the data is a useful starting point for data analysis, especially if the dataset has a large number of observations (rows) or variables (columns). Run the code below to use the `dplyr::glimpse()` function to see a summary of the `ikea` dataset.
-
-How many observations are in the `ikea` dataset? How many variables?
+The `view()` function helps us get a quick view of the dataset, but let's get more detail about its structure. Viewing a summary of the data is a useful starting point for data analysis, especially if the dataset has a large number of observations (rows) or variables (columns). Run the code below to use the `dplyr::glimpse()` function to see a summary of the `ikea` dataset.
 
 ```{r}
 #| eval: false
 #| label: glimpse-data
 #| results: false
-dplyr::glimpse(Teams)
+dplyr::glimpse(Teams[1:10,])
 ```
 
-::: callout-note
-In your `lab-1.qmd` document you'll see that we already added the code required for the exercise as well as a sentence where you can fill in the blanks to report the answer. Use this format for the remaining exercises.
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
 
-Also note that the code chunk as a label: `glimpse-data`. It's not required, but good practice and highly encouraged to label your code chunks in this way.
+How many observations are in the Teams dataset? How many variables/measurements?
+
+```{r}
+#| label: glimpse-data
+#| eval: false
+```
+
+How many character columns/measurements have missing variables?
+
+```{r}
+#| eval: false
+# run a data exploration here using the skimr package.
+Teams |> skimr::skim()
+```
+:::
+
+::: callout-note
+In your `lab-1.qmd` document you'll see that we already added the code required for most exercises as well as a sentence where you can fill in the blanks to report the answer.
+
+Also note that the code chunk as a label: `glimpse-data`. It's not required, but it is good practice and highly encouraged to label your code chunks in this way. If there is an error when you render your document, the code-chunk label will identify where the error is.
 :::
 
 ### Exercise 2
 
 [Ben Baumer](#0) worked for the [New York Mets](#0) from 2004 to 2012. What was the team W/L record during those years? Use `filter()` and `select()` to quickly identify only those pieces of information that we care about.
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
 ```{r}
 #| eval: false
+# fill in the blanks and ensure your code produces the correct result
 mets <- Teams  %>% 
   dplyr::filter(teamID == "NYN")
 my_mets <- mets %>% 
@@ -120,6 +164,7 @@ my_mets <- mets %>%
 my_mets %>% 
   dplyr::select(_,_,_,_)
 ```
+:::
 
 ### Exercise 3
 
@@ -133,8 +178,12 @@ $$
 
 where $\text{RA}$ is the number of runs the team allows to be scored, $\text{RS}$ is the number of runs that the team scores, and $\hat{\text{W}}_{\text{pct}}$ is the team's expected winning percentage. Luckily for us, the runs scored and allowed are present in the `Teams` table, so let's grab them and save them in a new data frame.
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
 ```{r}
 #| eval: false
+# fill in the blanks and ensure your code produces the correct result
 mets_ben <- Teams |>
   dplyr::select(_, _, _, _, _, _) |>
   dplyr::filter(_ == "NYN" & _ %in% 2004:2012)
@@ -149,17 +198,22 @@ mets_ben <- mets_ben |>
   dplyr::rename(_ = _)    # new name = old name
 mets_ben
 ```
+:::
 
 ::: render-commit-push
-This is a good place to fender, commit, and push changes to your remote bsmm-lab-1 repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 1 - 3"), and push. After you push the changes, the Git pane in RStudio should be empty.
+This is a good place to **save, stage**, **commit**, and **push** changes to your remote lab-1 repository. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 1 - 3"), and push. After you push the changes, the Git pane in RStudio should be empty.
 :::
 
 ### Exercise 4
 
 Next, we need to compute the team's actual winning percentage in each of these seasons. Thus, we need to add a new column to our data frame, and we do this with the `mutate()` command.
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
 ```{r}
 #| eval: false
+# add the calculation using the formula above
 mets_ben <- mets_ben |>
   dplyr::mutate(WPct = _)
 mets_ben
@@ -169,10 +223,12 @@ The expected number of wins is then equal to the product of the expected winning
 
 ```{r}
 #| eval: false
+# fill in the blanks and ensure your code produces the correct result
 mets_ben <- mets_ben |>
   dplyr::mutate(W_hat = _)
 mets_ben
 ```
+:::
 
 ### Exercise 5
 
@@ -180,22 +236,39 @@ In this case, the Mets' fortunes were better than expected in three of these sea
 
 In how many seasons were the Mets better than expected? How many were they worse than expected?
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| eval: false
+# repeat the better_than/ worse_than calculation for all the years in the dataset: show your work.
+
+```
+:::
+
 ::: render-commit-push
-This is a good place to render, commit, and push changes to your remote lab-1 repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 4 and 5"), and push. After you push the changes, the Git pane in RStudio should be empty.
+This is a good place to **save, stage**, **commit**, and **push** changes to your remote lab-1 repo. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 4 and 5"), and push. After you push the changes, the Git pane in RStudio should be empty.
 :::
 
 ### Exercise 6
 
 Naturally, the Mets experienced ups and downs during Ben's time with the team. Which seasons were best? To figure this out, we can simply sort the rows of the data frame.
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
 ```{r}
 #| eval: false
 dplyr::arrange(mets_ben, _)
 ```
+:::
 
 ### Exercise 7
 
 In 2006, the Mets had the best record in baseball during the regular season and nearly made the [*World Series*](https://en.wikipedia.org/w/index.php?search=World%20Series). How do these seasons rank in terms of the team's performance relative to our model?
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
 
 ```{r}
 #| eval: false
@@ -204,12 +277,11 @@ mets_ben %>%
   dplyr::arrange(_)
 ```
 
-### Exercise 8
-
-Summarize the Mets performance
+Summarize the Mets performance:
 
 ```{r}
 #| eval: false
+# fill in the blanks and ensure your code produces the correct result
 mets_ben |>
   dplyr::summarize(
     num_years = _, 
@@ -220,32 +292,19 @@ mets_ben |>
   )
 ```
 
-In these nine years, the Mets had a combined record of \_ wins and \_ losses, for an overall winning percentage of \_.
-
-::: render-commit-push
-This is a good place to render, commit, and push changes to your remote lab-1 repo on GitHub. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 6 - 8"), and push. After you push the changes, the Git pane in RStudio should be empty.
+In these nine years, the Mets had a combined record of *? wins and* ? losses, for an overall winning percentage of \_?.
 :::
 
-### Exercise 9
+::: render-commit-push
+This is a good place to **save, stage**, **commit**, and **push** changes to your remote lab-1 repo. Click the checkbox next to each file in the Git pane to stage the updates you've made, write an informative commit message (e.g., "Completed exercises 6 - 8"), and push. After you push the changes, the Git pane in RStudio should be empty.
+:::
 
-Next, let's look at the relationship between the price and width of Ikea furniture. Fill in the code below to visualize the relationship between the two variables using a scatterplot.
-
-Then, use your visualization to describe the relationship between the width and price of Ikea furniture.
-
-```{r}
-#| eval: false
-ggplot(data = _____, aes(x = width, y = _____)) +
-  geom_point() + 
-  labs(
-    x = "_____", 
-    y = "_____", 
-    title = "_____"
-    )
-```
-
-### Exercise 10
+### Exercise 8
 
 Discretize the years into three chunks: one for each of the three general managers under whom Ben worked. [Jim Duquette](https://en.wikipedia.org/w/index.php?search=Jim%20Duquette) was the Mets' [*general manager*](https://en.wikipedia.org/w/index.php?search=general%20manager) in 2004, [Omar Minaya](https://en.wikipedia.org/w/index.php?search=Omar%20Minaya) from 2005 to 2010, and [Sandy Alderson](https://en.wikipedia.org/w/index.php?search=Sandy%20Alderson) from 2011 to 2012.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
 
 ```{r}
 #| eval: false
@@ -276,16 +335,58 @@ mets_ben <- mets_ben |>
     )
   )
 ```
-
-::: render-commit-push
-You're done and ready to submit your work! Render, commit, and push all remaining changes. You can use the commit message "Done with Lab 1!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub.
 :::
 
-### Exercise 11
+### Exercise 9
+
+The following dataset is the basis of a model that predicts which businesses are likely to have customer churn at the start of 2015, based on the business type and incorporation_date. This question will give you some practice using the various `tidyr::` pivot operations.
+
+```{r}
+#| eval: true
+#| label: raw churn data
+#| warning: false
+#| message: false
+set.seed(42)
+
+# read data and drop column 1 (it contains row numbers and doesn't have a column name)
+df <- readr::read_csv("data/monthly_data.csv", show_col_types = FALSE, col_select = -1)
+
+# Have a glimpse of the data
+glimpse(df)
+```
+
+You'll notice that the data is not in tidy form: one type of measurement in each column and all measurements that go together in the same row. To put this data into tidy from you'll need to
+
+1.  Take all the columns with names that start with a date string and use `tidyr::pivot_longer` to create a column named [**date**]{.underline} containing the original column names and a column named [**quantity**]{.underline} to contain the values.
+2.  In the date column (which contains strings at this stage), split the date from the remainder of the string, saving the remainder in a column called [**paymentMandate,**]{.underline} and the date string in a column called [**date**]{.underline}. To do this use `tidyr::separate_wider_delim` with `delim = "_"` and the specified names.
+3.  Next, use tidyr::pivot_wider with `names_from = paymentMandate`, and `values_from = quantity` to create [**payments**]{.underline} and [**mandates**]{.underline} columns.
+4.  Finally, use `dplyr::mutate` to change the type of the [**data**]{.underline} and [**incorporation_date**]{.underline} columns to `Date`.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+What is the mean of the sales_per_visit columns/measurement? Are there any grouped observations?
+
+```{r}
+# show your steps and the resulting tibble here:
+
+```
+
+Your code should produce a tibble that looks like this:
+
+```{r}
+#| echo: false
+readRDS("data/q9result.rda")
+```
+:::
+
+### Exercise 10
 
 #### The Business Problem
 
-The story begins in a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI). Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than $1\$$ as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:
+The story begins in a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI).
+
+Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than $\$ 1$ as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:
 
 -   Select a sample of existing customers from the same cohort.
 -   Set a test window of 1 month.
@@ -310,7 +411,7 @@ set.seed(8740)
 They pulled the data from a csv file and displayed the first 5 measurements.
 
 ```{r}
-data <- readr::read_csv(here::here("labs/data", "sales_dag.csv"), show_col_types = FALSE)
+data <- readr::read_csv("data/sales_dag.csv", show_col_types = FALSE)
 
 data |> dplyr::slice_head(n=5) |> 
   gt::gt() |> 
@@ -320,10 +421,17 @@ data |> dplyr::slice_head(n=5) |>
 
 They then checked for missing values and whether the measurements were in the correct format.
 
-```{r}
-# run a data exploration here
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
 
+What is the mean of the sales_per_visit columns/measurement? Are there any grouped observations?
+
+```{r}
+#| eval: false
+# run a data exploration here using the skimr package.
+data |> skimr::skim()
 ```
+:::
 
 ##### Exploratory Data Analysis
 
@@ -331,14 +439,17 @@ As part of the project scope, the data science team in charge of the analysis wa
 
 They started by looking at the share of customers which received a discount:
 
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
 ```{r}
-# show the % share of customers receiving a discount vs the % ot receiving a discount
+# calculate the % share of customers receiving a discount vs the % not receiving a discount
 ```
 
 Similarly for the share of customers which are loyal:
 
 ```{r}
-# show the % share of customers that are 'loyal' vs not 'loyal'
+# calculate the % share of customers that are 'loyal' vs not 'loyal'
 ```
 
 To understand these features better, they also looked at a cross-tab table:
@@ -347,6 +458,7 @@ To understand these features better, they also looked at a cross-tab table:
 # build a cross-tab table of 'loyal' customers vs customers getting a discount
 
 ```
+:::
 
 Note that all customers with discount are loyal (as required) and that there are loyal users which did not receive a discount. This is because they had exceptional sales numbers. Verify this:
 
@@ -370,7 +482,6 @@ In order to have orders of magnitude for the sales, the data scientist provided 
 #| eval: false
 #| warning: false
 #| message: false
-# data["sales"].describe()
 gtExtras::gt_plt_summary(data)
 ```
 
@@ -390,9 +501,13 @@ data |>
 ```
 
 ::: render-commit-push
+You're done and ready to submit your work! Save, stage, commit, and push all remaining changes. You can use the commit message "Done with Lab 1!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub.
+:::
+
+::: callout-important
 ## Submission
 
-I will pull (copy) everyone's submissions at 5:00pm on the Friday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (**don't forget to commit and then push your work!**)
+I will pull (copy) everyone's repository submissions at 5:00pm on the Sunday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (**don't forget to commit and then push your work!**)
 :::
 
 ## Grading
@@ -401,7 +516,7 @@ Total points available: 30 points.
 
 | Component | Points |
 |-----------|--------|
-| Ex 1 - 11 | 30     |
+| Ex 1 - 10 | 30     |
 
 ## Resources for additional practice (optional)
 

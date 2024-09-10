@@ -1,5 +1,5 @@
 ---
-title: "A few words on Bayesian Analysis"
+title: "Monte Carlo Methods"
 subtitle: "BSMM8740-2-R-2024F [WEEK - 9]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
@@ -33,218 +33,174 @@ execute:
 
 ## This week
 
--   We will get a taste of Bayesian regression applied to elasticity analysis.
+-   We will get explore Monte Carlo methods as a way to integrate difficult functions, and sample from difficult probability distributions.
+-   Along the way we will look at Markov Chains which both underlie sampling methods and provide a way to model the generation of data.
 
-# Bayesian Regression
+## Monte Carlo (MC) Methods
 
-## Elasticity estimation
+Monte Carlo methods are a class of *simulation-based* methods that seek to avoid complicated and/or intractable mathematical computations.
 
-Since elasticity is defined as the percentage change in volume ($\Delta V/V$) for a given percentage change in price ($\Delta p/p$), then with elasticity parameter $\beta$ we write:
+Especially those that arise from probability distributions.
 
-$$
-\begin{align*}
-\frac{\Delta V}{V} & = \beta\times\frac{\Delta p}{p} \\
-\frac{\partial V}{V} & = \beta\times\frac{\partial p}{p} \\
-\partial\log(V) & = \beta\times\partial\log(p)
-\end{align*}
-$$ {#eq-elasticity}
+## MC Methods
 
-## Elasticity estimation
-
-This equation is the justification for the log-log regression model of elasticity, and this model has solution $V = Kp^\beta$, where $K$ is a constant.
-
-As written, the value of $K$ is either the volume when $p=1$ which may or may not be useful, or it is the volume when $\beta=0$, which is uninteresting.
-
-## Elasticity estimation
-
-To make the interpretation of the constant $K$ more useful, the model can be written as
+We can use MC methods to estimate probabilities: for a random variable $Z$ with outcomes in a set $\Omega$, with some subset $S\subset\Omega$ and event $E\equiv Z\in S$, we can compute the probability of $E$ (i.e. $\mathbb{P}(E)$) with of samples of $Z$, say $z_1,z_2,\ldots,z_M$ as
 
 $$
-\partial\log(V) = \beta\times\partial\log(p/p_{\text{baseline}});\qquad V = K\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}
+\mathbb{P}(E) = \frac{1}{M}\sum_{i=1}^M 1_{z_i\in S}
 $$
 
-in which case the constant is interpreted as the volume when the price equals the baseline price; the elasticity parameter $\beta$ is unchanged.
+## MC Methods
 
-## Elasticity estimation
+#### Example
 
-If $V = Kp^\beta$ then $\log(V) = \log(K) + \beta\log(p)$, and $\partial\log(V)/\partial\log(p) = \beta$ as in the last line of equation (@eq-elasticity).
-
-The equation $\log(V) = \log(K) + \beta\log(p)$ defines a linear relation between the log term and is sometimes estimated as a linear regression on the log terms.
-
-## Elasticity estimation
-
-In this version of the problem there are only two parameters, the constant $\log(K)$ (aka the intercept in the log-log plot of volume vs price plot) and the elasticity $\beta$, the slope of the log-log plot.
-
-As in all linear regressions the variance of the error term is **assumed** constant and its mean is **assumed** zero.
-
-## Maximum likelihood (MLE)
-
-For a linear regression $y\sim \mathcal{N}(\beta x,\sigma^2)$ the likelihood of any one observation $y_i$ is
+If $Z\sim\mathscr{N}(1,3)$ and $S=Z:0\le Z\le 3$ then
 
 $$
-\pi\left(\left.y_{i}\right|x_{i},\beta,\sigma^{2}\right)=\pi\left(\left.y_{i}\right|x_{i},\theta\right)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i}-\beta x_{i})^{2}}{2\sigma^{2}}}
-$$ and the log-likelihood of $N$ observations is
+\mathbb{P}(E) = \mathbb{P}(0\le Z\le 3) = \int_0^3\frac{1}{\sqrt{2\pi3}}e^{-\frac{(t-1)^2}{2*3}}dt
+$$ In which case it is easier to just use R and calculate:
 
-$$
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-## Maximum likelihood (MLE)
-
-The maximum likelihood estimate of $\beta$ is
-
-$$
-\hat{\theta}_{\text{MLE}}=\arg\max_{\theta} -\sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-$$
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-this is equivalent to minimizing the sum of the squared errors, and is also called the a priori estimate.
-
-## Bayesian model
-
-The Bayesian model for our elasticity problem is (to within a scaling constant)
-
-$$
-\begin{align*}
-\pi\left(\left.\theta\right|V,P\right)\sim\pi\left(\left.V\right|P,\theta\right)\times\pi\left(\theta\right)
-\end{align*}
-$$ {#eq-bayes}
-
-where the parameters are $\theta=\{\beta,K\}$.
-
-::: {style="font-size: 70%"}
-In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods in equation (@eq-bayes) to avoid numerical problems arising from the product of small probabilities.
-:::
-
-## Maximum a posteriori (MAPE)
-
-The maximum a posteriori estimate of the parameters is
-
-$$
-\begin{align*}
-\hat{\theta}_{\text{MAP}} & =\arg\max_{\theta}\log\prod_{i=1}^{N}\pi\left(\left. \theta \right|v_{i},p_{i}\right)\\
- & =\arg\max_{\theta}\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)\\
- & =\arg\min_{\theta}-\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)
-\end{align*}
-$$
-
-## Likelihood Function
-
-The key choice we need to make in the Bayesian model is the form of the likelihood function for the observed volumes given the parameters. This is a statistical model describing how the observed volume data is generated given the parameters.
-
-Since the volume data is units sold per unit time (i.e. integers), we have several options for the likelihood function (e.g. Poisson, Negative Binomial, Binomial, mixture models of various sorts), but the Poisson model is the simplest.
-
-## Likelihood Function
-
-The Poisson model of the data has a single, positive, real-valued rate parameter $\lambda$ which represents the units sold per unit time (a rate), so we can choose:
-
-$$
-\begin{align*}
-\lambda = \exp^{\log(K) + \beta\log(p)}\Rightarrow \log(\lambda) = \log(K) + \beta\log(p)
-\end{align*}
-$$ which gives us the log-log relationship of the model, with the crucial difference that we have additionally chosen a model for the data-generating process: a Poisson process with parameter $\lambda$.
-
-## Likelihood Function
-
-Note that a Poisson process is quite different than the Gaussian process, so we can't use a OLS model.
-
-We need a glm model instead, e.g the regression should be modeled as
-
-``` r
-glm(volume ~ log(price), family = 'poisson')
-```
-
-## Economics
-
-One challenge with standard regression models is that they don't admit assumptions outside the likelihoods.
-
-In the case of elasticity models though, we have economic reasons to expect the estimated coefficient of price to be negative, i.e. that the demand curve slopes downwards.
-
-So, how to incorporate this or any other assumptions about the data generating process (think DAGs again) when off-the-shelf packages aren't flexible enough?
-
-## Stan
-
-One popular option for developing flexible statistical models is the **Stan** language.
-
-**Stan** is a high-level probabilistic programming language used for statistical modeling and Bayesian inference. It's designed to make it easier for researchers, data scientists, and statisticians to specify and estimate complex statistical models.
-
-R has several interfaces to Stan, including [RStan](https://chat.openai.com/c/04f46742-c817-49ff-8b07-2497d363e0d5), [CmdStanR](https://mc-stan.org/cmdstanr/index.html), and [brms](https://mc-stan.org/users/interfaces/brms).
-
-## Stan
-
-In Stan, you declare your model using a domain-specific language. You specify the relationships between variables and define the likelihood and prior distributions.
-
-Stan then samples from the posterior distributions of the model parameters.
-
-## Stan
-
-```{stan output.var='Y'}
+```{r}
 #| echo: true
-#| label: Stan model
 #| code-fold: true
-#| code-summary: "Poisson elasticity model implemented in the Stan language"
-#| code-line-numbers: "1-14|16-19|21-28|30-39|41-48"
-#| eval: false
-data {
-  /* Dimensions */
-  int<lower=1> N; // rows
-
-  /* log price vector (integer) */
-  array[N] real P;
-  
-  /* demand vector (integer) */
-  array[N] int<lower=0> Y;
-
-  /* hyperparameters*/
-  real<lower=0> s;       // scale parameter for intercept prior
-  real<lower=0> e_scale; // scale parameter for elasticity prior
-}
-
-parameters {
-  real <upper=0> elasticity;      // elasticities variable < 0 
-  real intercept;                 // intercepts variable
-}
-
-transformed parameters {
-  array[N] real log_lambda;       // log volume for likelihoods
-  
-  for (i in 1:N){
-    log_lambda[i] = intercept + elasticity * P[i];
-  }
-  
-}
-
-model {
-  /* Priors on the parameters */
-  target += normal_lpdf(intercept  | 0, s);
-  target += cauchy_lpdf(elasticity | 0, e_scale);
-
-  /* Conditional log-likelihoods for each observed volume */
-  for (i in 1 : N) {
-    target += poisson_lpmf(Y[i] | exp(log_lambda[i]) );
-  }
-}
-
-generated quantities {
-  array[N] int<lower=-1> y_new;  // estimate volumes
-  vector[N] log_lik;             // compute log-likelihood for this model
-  for (i in 1 : N) {
-      y_new[i]   = poisson_rng( exp(log_lambda[i]) );
-      log_lik[i] = poisson_lpmf(Y[i] | exp(log_lambda[i]) );
-  }
-}
+pnorm(3, mean=1, sd=sqrt(3)) - pnorm(0, mean=1, sd=sqrt(3))
 ```
 
-## Stan
+than it is to compute the integral.
 
-::: {style="font-size: 65%"}
-The Stan programme produces samples from the posterior distributions of the parameters (below). These can be used to produce posterior predictive samples for the volumes given the prices, for comparison with the observed data.
+## MC Methods
+
+#### Example continued
+
+In case we don't know that `pnorm` exists we could do this:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: MC computation
+# define the event
+event_E_happened <- function( x ) {
+  if( 0 <= x & x <= 3 ) {
+    return( TRUE ) # The event happened
+  } else {
+    return( FALSE ) # The event DIDN'T happen
+  }
+}
+
+# Now MC says that we should generate lots of copies of Z...
+NMC <- 10000; # 10000 seems like "a lot".
+rnorm( NMC, mean=1, sd=sqrt(3) ) |> 
+  purrr::map_lgl(event_E_happened) |> 
+  sum()/NMC
+```
+
+## MC Methods
+
+Now
+
+::: {style="font-size: x-large"}
+$$
+\mathbb{P}(E) = \frac{1}{M}\sum_{i=1}^M 1_{z_i\in S}
+$$
 :::
 
-![](images/ni_elasticity_samples.png){fig-align="center" width="800"}
+is the MC estimate of $\mathbb{E}[E]$, which is unbiased because for each $i$, $\mathbb{E}[1_{z_i\in S}]=\mathbb{E}[E]$, and the variance is
+
+::: {style="font-size: x-large"}
+$$
+\mathrm{Var}\left({\mathbb{P}(E)}\right)=\frac{1}{M^2}\mathrm{Var}\left(\sum_{i=1}^M 1_{z_i\in S}\right)=\frac{1}{M^2}\sum_{i=1}^M \mathrm{Var}\left(1_{z_i\in S}\right)=\frac{1}{M} \mathrm{Var}\left(1_{z_i\in S}\right)
+$$
+:::
+
+## Random Number Generation
+
+Monte Carlo simulation starts with random number generation, usually split into 2 stages:
+
+-   generation of independent uniform $(0, 1)$ random variables, and
+-   conversion into random variables with a particular distribution (e.g. Normal)
+
+[**Very important**]{.underline}: never write your own generator, always use a well validated generator from a reputable source (e.g. R).
+
+## Random Number Generation
+
+Pseudo-random generators found in computers use a deterministic (i.e. repeatable) algorithm to generate a sequence of (apparently) random numbers on the $(0, 1)$ interval.
+
+What defines a good random number generator (RNG) has a long period – how long it takes before the sequence repeats itself $2^{32}$ is not enough (need at least $2^{40}$). various statistical tests to measure “randomness” – well validated software will have gone through these checks.
+
+## Random Number Generation
+
+Recall that $\mathscr{N}(0, 1)$ Normal random variables (mean 0, variance 1) have the probability density function:
+
+$$
+p(x)=\frac{1}{2\pi}e^{-\frac{1}{2}x^2}\equiv\phi(x)
+$$
+and if $X\sim\mathscr{N}(0, 1)$ then its CDF is:
+
+$$
+\mathbb{P}[X\le x] = \int_{-\infty}^x\phi(x)dx
+$$
+## Random Number Generation
+
+The Box-Muller transformation method takes two independent uniform $(0, 1)$ random numbers $y_1$, $y_2$, and defines:
+
+$$
+\begin{align*}
+x_{1} & =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
+ x_2& =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
+\end{align*}
+$$
+It can be proved that $x_1$ and $x_2$ are independent $\mathscr{N}(0, 1)$ random variables
+
+## Random Number Generation
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-cap: "Normal y1 vs Normal y2"
+#| layout-ncol: 2
+#| column: page
+samples <- matrix(runif(10000), ncol=2) |> data.frame() |> 
+  dplyr::mutate(
+    normals = 
+      purrr::map2(
+        X1, X2
+        ,(\(x1,x2){
+          data.frame(
+            y1 = sqrt( -2 * log(x1) ) * cos(2 * pi * x2)
+            , y2 = sqrt( -2 * log(x1) ) * sin(2 * pi * x2) 
+          )
+        })
+      )
+  ) |> 
+  tidyr::unnest(normals)  
+  
+
+samples |> 
+  tidyr::pivot_longer(-c(X1,X2)) |> 
+  ggplot(aes(x=value, color=name, fill=name)) + 
+  geom_histogram(aes(y=..density..), bins = 60, position="identity", alpha=0.3) + 
+  labs(x="Value", y="Density") + theme_minimal()
+
+samples |> 
+ggplot(aes(x=y1, y=y2)) + geom_point() + coord_fixed() + theme_minimal()
+
+```
+
+
+## Central Limit Theorem
+
+The CLT says that if $\sigma^2=\mathrm{Var}\left({\mathbb{P}(E)}\right)$ is
+
+## MC Methods
+
+Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
+
+Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
+
+## Monte Carlo Methods
+
+Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
+
+Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
 
 ## More
 
