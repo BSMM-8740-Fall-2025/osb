@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="L.L. Odette">
-  <title>BSMM-8740 - Fall 2024 – A few words on Bayesian Analysis</title>
+  <title>BSMM-8740 - Fall 2024 – Monte Carlo Methods</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -387,10 +387,10 @@
       margin-right: 0; 
     }
   </style>
-<meta property="og:title" content="A few words on Bayesian Analysis – BSMM-8740 - Fall 2024">
+<meta property="og:title" content="Monte Carlo Methods – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 9]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="A few words on Bayesian Analysis – BSMM-8740 - Fall 2024">
+<meta name="twitter:title" content="Monte Carlo Methods – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 9]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
@@ -401,7 +401,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">A few words on Bayesian Analysis</h1>
+  <h1 class="title">Monte Carlo Methods</h1>
   <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 9]</p>
 
 <div class="quarto-title-authors">
@@ -423,193 +423,176 @@ L.L. Odette
 <section id="this-week" class="slide level2">
 <h2>This week</h2>
 <ul>
-<li>We will get a taste of Bayesian regression applied to elasticity analysis.</li>
+<li>We will get explore Monte Carlo methods as a way to integrate difficult functions, and sample from difficult probability distributions.</li>
+<li>Along the way we will look at Markov Chains which both underlie sampling methods and provide a way to model the generation of data.</li>
 </ul>
 </section>
-<section>
-<section id="bayesian-regression" class="title-slide slide level1 center">
-<h1>Bayesian Regression</h1>
-
+<section id="monte-carlo-mc-methods" class="slide level2">
+<h2>Monte Carlo (MC) Methods</h2>
+<p>Monte Carlo methods are a class of <em>simulation-based</em> methods that seek to avoid complicated and/or intractable mathematical computations.</p>
+<p>Especially those that arise from probability distributions.</p>
 </section>
-<section id="elasticity-estimation" class="slide level2">
-<h2>Elasticity estimation</h2>
-<p>Since elasticity is defined as the percentage change in volume (<span class="math inline">\(\Delta V/V\)</span>) for a given percentage change in price (<span class="math inline">\(\Delta p/p\)</span>), then with elasticity parameter <span class="math inline">\(\beta\)</span> we write:</p>
-<p><span id="eq-elasticity"><span class="math display">\[
-\begin{align*}
-\frac{\Delta V}{V} &amp; = \beta\times\frac{\Delta p}{p} \\
-\frac{\partial V}{V} &amp; = \beta\times\frac{\partial p}{p} \\
-\partial\log(V) &amp; = \beta\times\partial\log(p)
-\end{align*}
-\tag{1}\]</span></span></p>
-</section>
-<section id="elasticity-estimation-1" class="slide level2">
-<h2>Elasticity estimation</h2>
-<p>This equation is the justification for the log-log regression model of elasticity, and this model has solution <span class="math inline">\(V = Kp^\beta\)</span>, where <span class="math inline">\(K\)</span> is a constant.</p>
-<p>As written, the value of <span class="math inline">\(K\)</span> is either the volume when <span class="math inline">\(p=1\)</span> which may or may not be useful, or it is the volume when <span class="math inline">\(\beta=0\)</span>, which is uninteresting.</p>
-</section>
-<section id="elasticity-estimation-2" class="slide level2">
-<h2>Elasticity estimation</h2>
-<p>To make the interpretation of the constant <span class="math inline">\(K\)</span> more useful, the model can be written as</p>
+<section id="mc-methods" class="slide level2">
+<h2>MC Methods</h2>
+<p>We can use MC methods to estimate probabilities: for a random variable <span class="math inline">\(Z\)</span> with outcomes in a set <span class="math inline">\(\Omega\)</span>, with some subset <span class="math inline">\(S\subset\Omega\)</span> and event <span class="math inline">\(E\equiv Z\in S\)</span>, we can compute the probability of <span class="math inline">\(E\)</span> (i.e.&nbsp;<span class="math inline">\(\mathbb{P}(E)\)</span>) with of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> as</p>
 <p><span class="math display">\[
-\partial\log(V) = \beta\times\partial\log(p/p_{\text{baseline}});\qquad V = K\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}
-\]</span></p>
-<p>in which case the constant is interpreted as the volume when the price equals the baseline price; the elasticity parameter <span class="math inline">\(\beta\)</span> is unchanged.</p>
-</section>
-<section id="elasticity-estimation-3" class="slide level2">
-<h2>Elasticity estimation</h2>
-<p>If <span class="math inline">\(V = Kp^\beta\)</span> then <span class="math inline">\(\log(V) = \log(K) + \beta\log(p)\)</span>, and <span class="math inline">\(\partial\log(V)/\partial\log(p) = \beta\)</span> as in the last line of equation (<a href="#/elasticity-estimation" class="quarto-xref">Equation&nbsp;1</a>).</p>
-<p>The equation <span class="math inline">\(\log(V) = \log(K) + \beta\log(p)\)</span> defines a linear relation between the log term and is sometimes estimated as a linear regression on the log terms.</p>
-</section>
-<section id="elasticity-estimation-4" class="slide level2">
-<h2>Elasticity estimation</h2>
-<p>In this version of the problem there are only two parameters, the constant <span class="math inline">\(\log(K)\)</span> (aka the intercept in the log-log plot of volume vs price plot) and the elasticity <span class="math inline">\(\beta\)</span>, the slope of the log-log plot.</p>
-<p>As in all linear regressions the variance of the error term is <strong>assumed</strong> constant and its mean is <strong>assumed</strong> zero.</p>
-</section>
-<section id="maximum-likelihood-mle" class="slide level2">
-<h2>Maximum likelihood (MLE)</h2>
-<p>For a linear regression <span class="math inline">\(y\sim \mathcal{N}(\beta x,\sigma^2)\)</span> the likelihood of any one observation <span class="math inline">\(y_i\)</span> is</p>
-<p><span class="math display">\[
-\pi\left(\left.y_{i}\right|x_{i},\beta,\sigma^{2}\right)=\pi\left(\left.y_{i}\right|x_{i},\theta\right)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i}-\beta x_{i})^{2}}{2\sigma^{2}}}
-\]</span> and the log-likelihood of <span class="math inline">\(N\)</span> observations is</p>
-<p><span class="math display">\[
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
+\mathbb{P}(E) = \frac{1}{M}\sum_{i=1}^M 1_{z_i\in S}
 \]</span></p>
 </section>
-<section id="maximum-likelihood-mle-1" class="slide level2">
-<h2>Maximum likelihood (MLE)</h2>
-<p>The maximum likelihood estimate of <span class="math inline">\(\beta\)</span> is</p>
+<section id="mc-methods-1" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="example">Example</h4>
+<p>If <span class="math inline">\(Z\sim\mathscr{N}(1,3)\)</span> and <span class="math inline">\(S=Z:0\le Z\le 3\)</span> then</p>
 <p><span class="math display">\[
-\hat{\theta}_{\text{MLE}}=\arg\max_{\theta} -\sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-\]</span></p>
-<p><span class="math display">\[
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-\]</span></p>
-<p>this is equivalent to minimizing the sum of the squared errors, and is also called the a priori estimate.</p>
-</section>
-<section id="bayesian-model" class="slide level2">
-<h2>Bayesian model</h2>
-<p>The Bayesian model for our elasticity problem is (to within a scaling constant)</p>
-<p><span id="eq-bayes"><span class="math display">\[
-\begin{align*}
-\pi\left(\left.\theta\right|V,P\right)\sim\pi\left(\left.V\right|P,\theta\right)\times\pi\left(\theta\right)
-\end{align*}
-\tag{2}\]</span></span></p>
-<p>where the parameters are <span class="math inline">\(\theta=\{\beta,K\}\)</span>.</p>
-<div style="font-size: 70%">
-<p>In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods in equation (<a href="#/bayesian-model" class="quarto-xref">Equation&nbsp;2</a>) to avoid numerical problems arising from the product of small probabilities.</p>
-</div>
-</section>
-<section id="maximum-a-posteriori-mape" class="slide level2">
-<h2>Maximum a posteriori (MAPE)</h2>
-<p>The maximum a posteriori estimate of the parameters is</p>
-<p><span class="math display">\[
-\begin{align*}
-\hat{\theta}_{\text{MAP}} &amp; =\arg\max_{\theta}\log\prod_{i=1}^{N}\pi\left(\left. \theta \right|v_{i},p_{i}\right)\\
-&amp; =\arg\max_{\theta}\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)\\
-&amp; =\arg\min_{\theta}-\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)
-\end{align*}
-\]</span></p>
-</section>
-<section id="likelihood-function" class="slide level2">
-<h2>Likelihood Function</h2>
-<p>The key choice we need to make in the Bayesian model is the form of the likelihood function for the observed volumes given the parameters. This is a statistical model describing how the observed volume data is generated given the parameters.</p>
-<p>Since the volume data is units sold per unit time (i.e.&nbsp;integers), we have several options for the likelihood function (e.g.&nbsp;Poisson, Negative Binomial, Binomial, mixture models of various sorts), but the Poisson model is the simplest.</p>
-</section>
-<section id="likelihood-function-1" class="slide level2">
-<h2>Likelihood Function</h2>
-<p>The Poisson model of the data has a single, positive, real-valued rate parameter <span class="math inline">\(\lambda\)</span> which represents the units sold per unit time (a rate), so we can choose:</p>
-<p><span class="math display">\[
-\begin{align*}
-\lambda = \exp^{\log(K) + \beta\log(p)}\Rightarrow \log(\lambda) = \log(K) + \beta\log(p)
-\end{align*}
-\]</span> which gives us the log-log relationship of the model, with the crucial difference that we have additionally chosen a model for the data-generating process: a Poisson process with parameter <span class="math inline">\(\lambda\)</span>.</p>
-</section>
-<section id="likelihood-function-2" class="slide level2">
-<h2>Likelihood Function</h2>
-<p>Note that a Poisson process is quite different than the Gaussian process, so we can’t use a OLS model.</p>
-<p>We need a glm model instead, e.g the regression should be modeled as</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">glm</span>(volume <span class="sc">~</span> <span class="fu">log</span>(price), <span class="at">family =</span> <span class="st">'poisson'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="economics" class="slide level2">
-<h2>Economics</h2>
-<p>One challenge with standard regression models is that they don’t admit assumptions outside the likelihoods.</p>
-<p>In the case of elasticity models though, we have economic reasons to expect the estimated coefficient of price to be negative, i.e.&nbsp;that the demand curve slopes downwards.</p>
-<p>So, how to incorporate this or any other assumptions about the data generating process (think DAGs again) when off-the-shelf packages aren’t flexible enough?</p>
-</section>
-<section id="stan" class="slide level2">
-<h2>Stan</h2>
-<p>One popular option for developing flexible statistical models is the <strong>Stan</strong> language.</p>
-<p><strong>Stan</strong> is a high-level probabilistic programming language used for statistical modeling and Bayesian inference. It’s designed to make it easier for researchers, data scientists, and statisticians to specify and estimate complex statistical models.</p>
-<p>R has several interfaces to Stan, including <a href="https://chat.openai.com/c/04f46742-c817-49ff-8b07-2497d363e0d5">RStan</a>, <a href="https://mc-stan.org/cmdstanr/index.html">CmdStanR</a>, and <a href="https://mc-stan.org/users/interfaces/brms">brms</a>.</p>
-</section>
-<section id="stan-1" class="slide level2">
-<h2>Stan</h2>
-<p>In Stan, you declare your model using a domain-specific language. You specify the relationships between variables and define the likelihood and prior distributions.</p>
-<p>Stan then samples from the posterior distributions of the model parameters.</p>
-</section>
-<section id="stan-2" class="slide level2">
-<h2>Stan</h2>
-<div class="cell" data-output.var="Y">
+\mathbb{P}(E) = \mathbb{P}(0\le Z\le 3) = \int_0^3\frac{1}{\sqrt{2\pi3}}e^{-\frac{(t-1)^2}{2*3}}dt
+\]</span> In which case it is easier to just use R and calculate:</p>
+<div class="cell">
 <details class="code-fold">
-<summary>Poisson elasticity model implemented in the Stan language</summary>
-<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="1-14|16-19|21-28|30-39|41-48"><pre class="sourceCode numberSource stan number-lines code-with-copy"><code class="sourceCode stan"><span id="cb2-1"><a></a><span class="kw">data</span> {</span>
-<span id="cb2-2"><a></a>  <span class="co">/* Dimensions */</span></span>
-<span id="cb2-3"><a></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; N; <span class="co">// rows</span></span>
-<span id="cb2-4"><a></a></span>
-<span id="cb2-5"><a></a>  <span class="co">/* log price vector (integer) */</span></span>
-<span id="cb2-6"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> P;</span>
-<span id="cb2-7"><a></a>  </span>
-<span id="cb2-8"><a></a>  <span class="co">/* demand vector (integer) */</span></span>
-<span id="cb2-9"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; Y;</span>
-<span id="cb2-10"><a></a></span>
-<span id="cb2-11"><a></a>  <span class="co">/* hyperparameters*/</span></span>
-<span id="cb2-12"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; s;       <span class="co">// scale parameter for intercept prior</span></span>
-<span id="cb2-13"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; e_scale; <span class="co">// scale parameter for elasticity prior</span></span>
-<span id="cb2-14"><a></a>}</span>
-<span id="cb2-15"><a></a></span>
-<span id="cb2-16"><a></a><span class="kw">parameters</span> {</span>
-<span id="cb2-17"><a></a>  <span class="dt">real</span> &lt;<span class="kw">upper</span>=<span class="dv">0</span>&gt; elasticity;      <span class="co">// elasticities variable &lt; 0 </span></span>
-<span id="cb2-18"><a></a>  <span class="dt">real</span> intercept;                 <span class="co">// intercepts variable</span></span>
-<span id="cb2-19"><a></a>}</span>
-<span id="cb2-20"><a></a></span>
-<span id="cb2-21"><a></a><span class="kw">transformed parameters</span> {</span>
-<span id="cb2-22"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> log_lambda;       <span class="co">// log volume for likelihoods</span></span>
-<span id="cb2-23"><a></a>  </span>
-<span id="cb2-24"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span>:N){</span>
-<span id="cb2-25"><a></a>    log_lambda[i] = intercept + elasticity * P[i];</span>
-<span id="cb2-26"><a></a>  }</span>
-<span id="cb2-27"><a></a>  </span>
-<span id="cb2-28"><a></a>}</span>
-<span id="cb2-29"><a></a></span>
-<span id="cb2-30"><a></a><span class="kw">model</span> {</span>
-<span id="cb2-31"><a></a>  <span class="co">/* Priors on the parameters */</span></span>
-<span id="cb2-32"><a></a>  <span class="kw">target +=</span> normal_lpdf(intercept  | <span class="dv">0</span>, s);</span>
-<span id="cb2-33"><a></a>  <span class="kw">target +=</span> cauchy_lpdf(elasticity | <span class="dv">0</span>, e_scale);</span>
-<span id="cb2-34"><a></a></span>
-<span id="cb2-35"><a></a>  <span class="co">/* Conditional log-likelihoods for each observed volume */</span></span>
-<span id="cb2-36"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
-<span id="cb2-37"><a></a>    <span class="kw">target +=</span> poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
-<span id="cb2-38"><a></a>  }</span>
-<span id="cb2-39"><a></a>}</span>
-<span id="cb2-40"><a></a></span>
-<span id="cb2-41"><a></a><span class="kw">generated quantities</span> {</span>
-<span id="cb2-42"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=-<span class="dv">1</span>&gt; y_new;  <span class="co">// estimate volumes</span></span>
-<span id="cb2-43"><a></a>  <span class="dt">vector</span>[N] log_lik;             <span class="co">// compute log-likelihood for this model</span></span>
-<span id="cb2-44"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
-<span id="cb2-45"><a></a>      y_new[i]   = poisson_rng( exp(log_lambda[i]) );</span>
-<span id="cb2-46"><a></a>      log_lik[i] = poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
-<span id="cb2-47"><a></a>  }</span>
-<span id="cb2-48"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">pnorm</span>(<span class="dv">3</span>, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">3</span>)) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="dv">0</span>, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.594</code></pre>
+</div>
+</div>
+<p>than it is to compute the integral.</p>
+</section>
+<section id="mc-methods-2" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="example-continued">Example continued</h4>
+<p>In case we don’t know that <code>pnorm</code> exists we could do this:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>MC computation</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># define the event</span></span>
+<span id="cb3-2"><a></a>event_E_happened <span class="ot">&lt;-</span> <span class="cf">function</span>( x ) {</span>
+<span id="cb3-3"><a></a>  <span class="cf">if</span>( <span class="dv">0</span> <span class="sc">&lt;=</span> x <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> <span class="dv">3</span> ) {</span>
+<span id="cb3-4"><a></a>    <span class="fu">return</span>( <span class="cn">TRUE</span> ) <span class="co"># The event happened</span></span>
+<span id="cb3-5"><a></a>  } <span class="cf">else</span> {</span>
+<span id="cb3-6"><a></a>    <span class="fu">return</span>( <span class="cn">FALSE</span> ) <span class="co"># The event DIDN'T happen</span></span>
+<span id="cb3-7"><a></a>  }</span>
+<span id="cb3-8"><a></a>}</span>
+<span id="cb3-9"><a></a></span>
+<span id="cb3-10"><a></a><span class="co"># Now MC says that we should generate lots of copies of Z...</span></span>
+<span id="cb3-11"><a></a>NMC <span class="ot">&lt;-</span> <span class="dv">10000</span>; <span class="co"># 10000 seems like "a lot".</span></span>
+<span id="cb3-12"><a></a><span class="fu">rnorm</span>( NMC, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">3</span>) ) <span class="sc">|&gt;</span> </span>
+<span id="cb3-13"><a></a>  purrr<span class="sc">::</span><span class="fu">map_lgl</span>(event_E_happened) <span class="sc">|&gt;</span> </span>
+<span id="cb3-14"><a></a>  <span class="fu">sum</span>()<span class="sc">/</span>NMC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5954</code></pre>
+</div>
 </div>
 </section>
-<section id="stan-3" class="slide level2">
-<h2>Stan</h2>
-<div style="font-size: 65%">
-<p>The Stan programme produces samples from the posterior distributions of the parameters (below). These can be used to produce posterior predictive samples for the volumes given the prices, for comparison with the observed data.</p>
+<section id="mc-methods-3" class="slide level2">
+<h2>MC Methods</h2>
+<p>Now</p>
+<div style="font-size: x-large">
+<p><span class="math display">\[
+\mathbb{P}(E) = \frac{1}{M}\sum_{i=1}^M 1_{z_i\in S}
+\]</span></p>
 </div>
-
-<img data-src="images/ni_elasticity_samples.png" class="quarto-figure quarto-figure-center r-stretch" width="800"></section>
+<p>is the MC estimate of <span class="math inline">\(\mathbb{E}[E]\)</span>, which is unbiased because for each <span class="math inline">\(i\)</span>, <span class="math inline">\(\mathbb{E}[1_{z_i\in S}]=\mathbb{E}[E]\)</span>, and the variance is</p>
+<div style="font-size: x-large">
+<p><span class="math display">\[
+\mathrm{Var}\left({\mathbb{P}(E)}\right)=\frac{1}{M^2}\mathrm{Var}\left(\sum_{i=1}^M 1_{z_i\in S}\right)=\frac{1}{M^2}\sum_{i=1}^M \mathrm{Var}\left(1_{z_i\in S}\right)=\frac{1}{M} \mathrm{Var}\left(1_{z_i\in S}\right)
+\]</span></p>
+</div>
+</section>
+<section id="random-number-generation" class="slide level2">
+<h2>Random Number Generation</h2>
+<p>Monte Carlo simulation starts with random number generation, usually split into 2 stages:</p>
+<ul>
+<li>generation of independent uniform <span class="math inline">\((0, 1)\)</span> random variables, and</li>
+<li>conversion into random variables with a particular distribution (e.g.&nbsp;Normal)</li>
+</ul>
+<p><u><strong>Very important</strong></u>: never write your own generator, always use a well validated generator from a reputable source (e.g.&nbsp;R).</p>
+</section>
+<section id="random-number-generation-1" class="slide level2">
+<h2>Random Number Generation</h2>
+<p>Pseudo-random generators found in computers use a deterministic (i.e.&nbsp;repeatable) algorithm to generate a sequence of (apparently) random numbers on the <span class="math inline">\((0, 1)\)</span> interval.</p>
+<p>What defines a good random number generator (RNG) has a long period – how long it takes before the sequence repeats itself <span class="math inline">\(2^{32}\)</span> is not enough (need at least <span class="math inline">\(2^{40}\)</span>). various statistical tests to measure “randomness” – well validated software will have gone through these checks.</p>
+</section>
+<section id="random-number-generation-2" class="slide level2">
+<h2>Random Number Generation</h2>
+<p>Recall that <span class="math inline">\(\mathscr{N}(0, 1)\)</span> Normal random variables (mean 0, variance 1) have the probability density function:</p>
+<p><span class="math display">\[
+p(x)=\frac{1}{2\pi}e^{-\frac{1}{2}x^2}\equiv\phi(x)
+\]</span> and if <span class="math inline">\(X\sim\mathscr{N}(0, 1)\)</span> then its CDF is:</p>
+<p><span class="math display">\[
+\mathbb{P}[X\le x] = \int_{-\infty}^x\phi(x)dx
+\]</span> ## Random Number Generation</p>
+<p>The Box-Muller transformation method takes two independent uniform <span class="math inline">\((0, 1)\)</span> random numbers <span class="math inline">\(y_1\)</span>, <span class="math inline">\(y_2\)</span>, and defines:</p>
+<p><span class="math display">\[
+\begin{align*}
+x_{1} &amp; =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
+x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
+\end{align*}
+\]</span> It can be proved that <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are independent <span class="math inline">\(\mathscr{N}(0, 1)\)</span> random variables</p>
+</section>
+<section id="random-number-generation-3" class="slide level2">
+<h2>Random Number Generation</h2>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>samples <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10000</span>), <span class="at">ncol=</span><span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a></a>    <span class="at">normals =</span> </span>
+<span id="cb5-4"><a></a>      purrr<span class="sc">::</span><span class="fu">map2</span>(</span>
+<span id="cb5-5"><a></a>        X1, X2</span>
+<span id="cb5-6"><a></a>        ,(\(x1,x2){</span>
+<span id="cb5-7"><a></a>          <span class="fu">data.frame</span>(</span>
+<span id="cb5-8"><a></a>            <span class="at">y1 =</span> <span class="fu">sqrt</span>( <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">log</span>(x1) ) <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x2)</span>
+<span id="cb5-9"><a></a>            , <span class="at">y2 =</span> <span class="fu">sqrt</span>( <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">log</span>(x1) ) <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x2) </span>
+<span id="cb5-10"><a></a>          )</span>
+<span id="cb5-11"><a></a>        })</span>
+<span id="cb5-12"><a></a>      )</span>
+<span id="cb5-13"><a></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb5-14"><a></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(normals)  </span>
+<span id="cb5-15"><a></a>  </span>
+<span id="cb5-16"><a></a></span>
+<span id="cb5-17"><a></a>samples <span class="sc">|&gt;</span> </span>
+<span id="cb5-18"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(X1,X2)) <span class="sc">|&gt;</span> </span>
+<span id="cb5-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value, <span class="at">color=</span>name, <span class="at">fill=</span>name)) <span class="sc">+</span> </span>
+<span id="cb5-20"><a></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">bins =</span> <span class="dv">60</span>, <span class="at">position=</span><span class="st">"identity"</span>, <span class="at">alpha=</span><span class="fl">0.3</span>) <span class="sc">+</span> </span>
+<span id="cb5-21"><a></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Value"</span>, <span class="at">y=</span><span class="st">"Density"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
+<span id="cb5-22"><a></a>samples <span class="sc">|&gt;</span> </span>
+<span id="cb5-23"><a></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>y1, <span class="at">y=</span>y2)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell column-page quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+<figcaption>Normal y1 vs Normal y2</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-2.png" width="960"></p>
+<figcaption>Normal y1 vs Normal y2</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="central-limit-theorem" class="slide level2">
+<h2>Central Limit Theorem</h2>
+<p>The CLT says that if <span class="math inline">\(\sigma^2=\mathrm{Var}\left({\mathbb{P}(E)}\right)\)</span> is</p>
+</section>
+<section id="mc-methods-4" class="slide level2">
+<h2>MC Methods</h2>
+<p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
+<p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
+</section>
+<section id="monte-carlo-methods" class="slide level2">
+<h2>Monte Carlo Methods</h2>
+<p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
+<p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
+</section>
 <section id="more" class="slide level2">
 <h2>More</h2>
 <ul>
@@ -630,7 +613,7 @@ L.L. Odette
 <p><a href="https://bsmm-8740-fall-2024.github.io/osb/">bsmm-8740-fall-2024.github.io/osb</a></p>
 </div>
 </div>
-</section></section>
+</section>
     </div>
   </div>
 
