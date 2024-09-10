@@ -1248,8 +1248,9 @@ Why normalize or standardize?
 -   make results more explainable
 :::
 
-## Feature engineering: transformation
+## Feature engineering: 
 
+#### transformation
 ::: {style="font-size: x-large"}
 for continuous variables (usually the target variables):
 
@@ -1264,7 +1265,7 @@ for continuous variables (usually the target variables):
 ## Feature engineering:
 
 #### transformation
-
+::: {style="font-size: x-large"}
 for categorical variables (either target or explanatory variables):
 
 -   binning / bucketing
@@ -1274,6 +1275,7 @@ for categorical variables (either target or explanatory variables):
 for date variables:
 
 -   timestamp$\rightarrow$date or date part
+:::
 
 ## Feature engineering:
 
@@ -1293,19 +1295,22 @@ Why transform?
 
 #### creation
 
+::: {style="font-size: x-large"}
 -   outliers (due to data entry, measurement/experiment, intentional errors)
     -   outliers can be identified by quantile methods (Gaussian data)
     -   outliers can be removed, treated as missing, or capped
 -   lag variables (either target or explanatory variables)
     -   useful in time series models, e.g. $y_t,y_{t-1},\ldots y_{t-n}$
+:::
 
 ## Feature engineering:
 
 #### creation
-
+::: {style="font-size: x-large"}
 -   binning / bucketing
     -   represent numerical as categorical and vice versa
 -   interval and ratio levels
+:::
 
 ## Feature engineering: summary
 
@@ -1324,5 +1329,5 @@ Why transform?
 
 -   We briefly discussed EDA
 
--   In the lab we will introduc Git and the data backup workflows.
+-   In the lab we will introduce Git and the data backup workflows.
 :::
