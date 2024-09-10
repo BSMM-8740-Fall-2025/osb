@@ -903,9 +903,13 @@ When tidy dataset x and y have the same variables, set operations work as expect
 #| echo: true
 #| message: false
 #| code-fold: false
-#| code-line-numbers: "1|2"
+#| code-line-numbers: "1|2-6"
 tidyr::table3 %>% 
-  tidyr::separate_wider_delim(cols = rate, delim = "/", names = c("cases", "population") )
+  tidyr::separate_wider_delim(
+    cols = rate
+    , delim = "/"
+    , names = c("cases", "population") 
+)
 ```
 
 # Exploratory Data Analysis (EDA)
@@ -998,8 +1002,6 @@ dat %>% summary()
 
 -   Other packages, such as `DataExplorer::` rely more on graphing.
 
-    -   We'll look at a few of the `DataExplorer::` functions next.
-
 ## `skimr::skim()`
 
 ```{r}
@@ -1027,7 +1029,7 @@ skim_dat[["factor"]]
 
 ## EDA: factor variable counts
 
-Most of the columns here are `factor`s(categories). Use these to count the number of observations per category.
+Most of the columns here are `factors` (categories). Use these to count the number of observations per category.
 
 ::: panel-tabset
 ## forecats::fct_count
@@ -1177,8 +1179,11 @@ Finally, be aware that how missing data is encoded depends on the dataset
 
 Feature engineering is the act of converting raw observations into desired features using statistical, mathematical, or machine learning approaches.
 
-## Feature engineering: transformation
+## Feature engineering:
 
+#### transformation
+
+::: {style="font-size: x-large"}
 for continuous variables (usually the independent variables or covariates):
 
 -   **normalization** (scale values to $[0,1]$)
@@ -1187,9 +1192,13 @@ for continuous variables (usually the independent variables or covariates):
     -   $X_\text{std} = \frac{X-\mu_X}{\sigma_X}$
 -   **scaling** (multiply / divide by a constant)
     -   $X_\text{scaled} = K\times X$
+:::
 
-## Feature engineering: transformation
+## Feature engineering:
 
+#### transformation
+
+::: {style="font-size: x-large"}
 Other common transformations:
 
 -   Box-cox: with $\tilde{x}$ the geometric mean of the (**positive**) predictor data ($\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}$)
@@ -1202,13 +1211,17 @@ x_i(\lambda) = \left\{
 \end{array}
 \right .  
 $$
+:::
 
-::: {.callout-note style="font-size: smaller"}
+::: {.callout-note style="font-size: x-large"}
 Box-cox is an example of a power transform; it is a technique used to stabilize variance, make the data more normal distribution-like.
 :::
 
-## Feature engineering: transformation
+## Feature engineering:
 
+#### transformation
+
+::: {style="font-size: x-large"}
 One last common transformation:
 
 -   logit transformation for bounded target variables (scaled to lie in $[0,1]$)
@@ -1216,22 +1229,28 @@ One last common transformation:
 $$
 \text{logit}\left(p\right)=\log\frac{p}{1-p},\;p\in [0,1]
 $$
+:::
 
-::: {.callout-note style="font-size: small"}
+::: {.callout-note style="font-size: x-large"}
 The Logit transform is primarily used to transform binary response data, such as survival/non-survival or present/absent, to provide a continuous value in the range $\left(-\infty,\infty\right)$, where p is the proportion of each sample that is 1 (or 0)
 :::
 
-## Feature engineering: transformation
+## Feature engineering:
 
+#### transformation
+
+::: {style="font-size: x-large"}
 Why normalize or standardize?
 
 -   variation in the range of feature values can lead to biased model performance or difficulties during the learning process, particularly in distance-based algorithms.
     -   e.g. income and age
 -   reduce the impact of outliers
 -   make results more explainable
+:::
 
 ## Feature engineering: transformation
 
+::: {style="font-size: x-large"}
 for continuous variables (usually the target variables):
 
 -   **transformation** (arithmetic, basis functions, polynomials, splines, differencing)
@@ -1240,8 +1259,11 @@ for continuous variables (usually the target variables):
     -   $y = \beta_0+\beta_1 x+\beta_2 x^2+\beta_3 x^3+\ldots$
     -   $y = \beta_0+\beta_1 x_1+\beta_2 x_2+\beta_3 x_1 x_2+\ldots$
     -   $y'_i = y_i-y_{i-1}$
+:::
 
-## Feature engineering: transformation
+## Feature engineering:
+
+#### transformation
 
 for categorical variables (either target or explanatory variables):
 
@@ -1253,8 +1275,11 @@ for date variables:
 
 -   timestamp$\rightarrow$date or date part
 
-## Feature engineering: transformation
+## Feature engineering:
 
+#### transformation
+
+::: {style="font-size: x-large"}
 Why transform?
 
 -   it can make your model perform better
@@ -1262,8 +1287,11 @@ Why transform?
     -   e.g. $\log$ transform makes exponential data linear, and log-Normal data Gaussian
     -   $\log$ transforms also make multiplicative models additive
     -   e.g. polynomials, basis functions and splines help model non-linearities in data
+:::
 
-## Feature engineering: creation
+## Feature engineering:
+
+#### creation
 
 -   outliers (due to data entry, measurement/experiment, intentional errors)
     -   outliers can be identified by quantile methods (Gaussian data)
@@ -1271,7 +1299,9 @@ Why transform?
 -   lag variables (either target or explanatory variables)
     -   useful in time series models, e.g. $y_t,y_{t-1},\ldots y_{t-n}$
 
-## Feature engineering: creation
+## Feature engineering:
+
+#### creation
 
 -   binning / bucketing
     -   represent numerical as categorical and vice versa
@@ -1292,5 +1322,7 @@ Why transform?
 ::: incremental
 -   Today we have introduced tidy data, tidyverse verbs and the pipe operator.
 
--   In the lab we introduced Git and the data backup workflows.
+-   We briefly discussed EDA
+
+-   In the lab we will introduc Git and the data backup workflows.
 :::
