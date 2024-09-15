@@ -460,7 +460,7 @@ L.L. Odette
 <section id="mc-methods-2" class="slide level2">
 <h2>MC Methods</h2>
 <h4 id="example-continued">Example continued</h4>
-<p>In case we don’t know that <code>pnorm</code> exists we could do this:</p>
+<p>Surprisingly, in case we don’t know that <code>pnorm</code> exists, we could do this:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>MC computation</summary>
@@ -480,7 +480,7 @@ L.L. Odette
 <span id="cb3-14"><a></a>  <span class="fu">sum</span>()<span class="sc">/</span>NMC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5954</code></pre>
+<pre><code>[1] 0.5898</code></pre>
 </div>
 </div>
 </section>
@@ -498,6 +498,14 @@ L.L. Odette
 \mathrm{Var}\left({\mathbb{P}(E)}\right)=\frac{1}{M^2}\mathrm{Var}\left(\sum_{i=1}^M 1_{z_i\in S}\right)=\frac{1}{M^2}\sum_{i=1}^M \mathrm{Var}\left(1_{z_i\in S}\right)=\frac{1}{M} \mathrm{Var}\left(1_{z_i\in S}\right)
 \]</span></p>
 </div>
+</section>
+<section id="mc-methods-4" class="slide level2">
+<h2>MC Methods</h2>
+<p>This is true for any function of the random variable <span class="math inline">\(Z\)</span>, and</p>
+<p><span class="math display">\[
+\mathbb{E}\left[h(Z)\right]\approx \hat{h}=\frac{1}{M}\sum_{i=1}^M h(z_i)
+\]</span></p>
+<p>and the variance of <span class="math inline">\(h(Z)\)</span> decreases as <span class="math inline">\(1/M\)</span> by the same reasoning.</p>
 </section>
 <section id="random-number-generation" class="slide level2">
 <h2>Random Number Generation</h2>
@@ -558,40 +566,1314 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 <span id="cb5-22"><a></a>samples <span class="sc">|&gt;</span> </span>
 <span id="cb5-23"><a></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>y1, <span class="at">y=</span>y2)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell column-page quarto-layout-panel" data-layout-ncol="2">
+<div class="cell column-page quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
-<figcaption>Normal y1 vs Normal y2</figcaption>
+<figcaption>Normal y1 vs Normal y2; independent random RVs</figcaption>
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-2.png" width="960"></p>
-<figcaption>Normal y1 vs Normal y2</figcaption>
+<figcaption>Normal y1 vs Normal y2; independent random RVs</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </section>
+<section id="random-number-generation-4" class="slide level2">
+<h2>Random Number Generation</h2>
+<p>Your computer is only capable of producing pseudorandom numbers. These are made by running a pseudorandom number generator algorithm which is deterministic, e.g.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] -0.1574 -1.1989 -0.8892  1.0091  0.6130  1.0072
+ [7]  0.4144 -1.8579 -1.3487  0.5189</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">set.seed</span>(<span class="dv">340</span>)</span>
+<span id="cb7-2"><a></a><span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] -0.1574 -1.1989 -0.8892  1.0091  0.6130  1.0072
+ [7]  0.4144 -1.8579 -1.3487  0.5189</code></pre>
+</div>
+</div>
+<p>Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers. That is what “statistical randomness” means!</p>
+</section>
 <section id="central-limit-theorem" class="slide level2">
 <h2>Central Limit Theorem</h2>
-<p>The CLT says that if <span class="math inline">\(\sigma^2=\mathrm{Var}\left({\mathbb{P}(E)}\right)\)</span> is</p>
+<p>The CLT says that for <span class="math inline">\(f=\mathbb{P}(E)\)</span> if <span class="math inline">\(\sigma^2\equiv\mathrm{Var}\left(f\right)\)</span> is finite then the error of the MC estimate</p>
+<p><span class="math display">\[
+e_N(f)=\bar{f}-\mathbb{E}[f]
+\]</span></p>
+<p>is approximately Normal in distribution for large <span class="math inline">\(M\)</span>, i.e.</p>
+<p><span class="math display">\[
+e_N(f)\sim\sigma M^{1/2}Z
+\]</span> where <span class="math inline">\(Z\sim\mathscr{N}(0,1)\)</span></p>
 </section>
-<section id="mc-methods-4" class="slide level2">
+<section id="mc-methods-5" class="slide level2">
 <h2>MC Methods</h2>
 <p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
 <p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
 </section>
-<section id="monte-carlo-methods" class="slide level2">
-<h2>Monte Carlo Methods</h2>
+<section id="mc-methods-6" class="slide level2">
+<h2>MC Methods</h2>
+<div style="font-size: x-large">
+<p>We can use Monte Carlo to estimate probabilities of the form <span class="math inline">\(\mathbb{P}\left[E\right]\)</span> by approximating expectations of the form <span class="math inline">\(\mathbb{E}[1_{X\in E}]\)</span>.</p>
+<p>If <span class="math inline">\(X\sim\mathscr{N}(\mu,\sigma)\)</span> and we want to compute <span class="math inline">\(\mathbb{E}[\log|X|]\)</span>, we could set up and solve the integral</p>
+<p><span class="math display">\[
+\mathbb{E} \log |X|
+= \int_{-\infty}^\infty \left( \log |t| \right) f( t; \mu, \sigma) dt
+= \int_{-\infty}^\infty \frac{ \log |t| }{ \sqrt{2\pi \sigma^2} }
+                  \exp\left\{ \frac{ -(t-\mu)^2 }{ 2\sigma^2 } \right\}dt
+\]</span></p>
+<p>Alternatively, we could just draw lots of Monte Carlo replicates <span class="math inline">\(X_1,X_2,\cdots,X_M\)</span> from a normal with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, and look at the sample mean <span class="math inline">\(M^{-1}\sum_{i=1}^M\log|x_i|\)</span>, once again appealing to the law of large numbers to ensure that this sample mean is close to its expectation.</p>
+<p>Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
+</div>
+</section>
+<section id="mc-methods-7" class="slide level2">
+<h2>MC Methods</h2>
+<div style="font-size: x-large">
+<p>This idea can be pushed still further. Suppose that we want to compute an integral</p>
+<p><span class="math display">\[
+\int_Dg(x)dx
+\]</span> where <span class="math inline">\(D\)</span> is some domain of integration and <span class="math inline">\(g(.)\)</span> is a function.</p>
+<p>Let <span class="math inline">\(f(x)\)</span> be the density of some random variable with <span class="math inline">\(f(x)&gt;0, \forall x\in D\)</span>. In other words, <span class="math inline">\(f\)</span> is the density of a random variable supported on <span class="math inline">\(D\)</span>. Then we can rewrite the integral as</p>
+<p><span class="math display">\[
+\int_Dg(x)dx = \int_D\frac{g(x)}{f(x)}f(x)dx = \mathbb{E}[h(x)]
+\]</span> where <span class="math inline">\(h(x)=g(x)/f(x)\)</span> and <span class="math inline">\(X\sim f\)</span></p>
+</div>
+</section>
+<section id="mc-methods-8" class="slide level2">
+<h2>MC Methods</h2>
+<div style="font-size: x-large">
+<p>Now suppose we are given <span class="math inline">\(h(x)\)</span> and we want to compute <span class="math inline">\(\mathbb{E}[h(X)]\)</span> where <span class="math inline">\(X\sim f,\,x\in D\)</span>. So we need to sample from <span class="math inline">\(f\)</span>, but what if we could not do that directly?</p>
+<p>If there were some other distribution <span class="math inline">\(g(x)\)</span> we could sample from, such that <span class="math inline">\(g(x)&gt;0,\,x\in D\)</span>, then</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{E}_{f}\left[h(x)\right] &amp; =\int_{D}h(x)f(x)dx\\
+&amp; =\int_{S}h(x)\frac{f(x)}{g(x)}g(x)dx=\mathbb{E}_{g}\left[h(x)\frac{f(x)}{g(x)}\right]\\
+&amp; =\frac{1}{n}\sum_{i=1}^{n}h(x_{i})\frac{f(x_{i})}{g(x_{i})}\quad x_{i}\sim g
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-9" class="slide level2">
+<h2>MC Methods</h2>
+<div style="font-size: x-large">
+<p>This is called importance sampling (IS).</p>
+<ol type="1">
+<li>draw iid <span class="math inline">\(x_1,x_2,\ldots,x_n\)</span> from g and calculate the importance weight <span class="math display">\[
+w(x_i)=\frac{f(x_{i})}{g(x_{i})}
+\]</span></li>
+<li>estimate <span class="math inline">\(\mathbb{E}_f(h)\)</span> by <span class="math display">\[
+\hat{\mu}_h=\frac{1}{n}\sum_{i=1}^nw(x_i)h(x_i)
+\]</span></li>
+</ol>
+</div>
+</section>
+<section id="mc-methods-10" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="example-1">example</h4>
+<div style="font-size: x-large">
+<p>Estimate <span class="math inline">\(\mathbb E_f(X)\)</span> where <span class="math inline">\(f(x) = \sqrt{2/\pi}e^{-\frac{x^2}{2}};\;x\ge 0\)</span> (this is the half-Normal distribution)</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb9-2"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rexp</span>(n, <span class="at">rate=</span><span class="dv">2</span>)</span>
+<span id="cb9-3"><a></a>W <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> X<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>X) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">2</span> <span class="sc">*</span> pi)</span>
+<span id="cb9-4"><a></a></span>
+<span id="cb9-5"><a></a>mu_h  <span class="ot">&lt;-</span> <span class="fu">mean</span>(W<span class="sc">*</span>X)</span>
+<span id="cb9-6"><a></a>var_h <span class="ot">&lt;-</span> <span class="fu">var</span>(W<span class="sc">*</span>X)<span class="sc">/</span>n</span>
+<span id="cb9-7"><a></a>se_h  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(var_h)</span>
+<span id="cb9-8"><a></a></span>
+<span id="cb9-9"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">mean =</span> mu_h,  <span class="at">variance =</span> var_h, <span class="st">'standard error'</span> <span class="ot">=</span> se_h) <span class="sc">|&gt;</span> </span>
+<span id="cb9-10"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-11"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="axenrzallf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#axenrzallf table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#axenrzallf thead, #axenrzallf tbody, #axenrzallf tfoot, #axenrzallf tr, #axenrzallf td, #axenrzallf th {
+  border-style: none;
+}
+
+#axenrzallf p {
+  margin: 0;
+  padding: 0;
+}
+
+#axenrzallf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#axenrzallf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#axenrzallf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#axenrzallf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#axenrzallf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#axenrzallf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#axenrzallf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#axenrzallf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#axenrzallf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#axenrzallf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#axenrzallf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#axenrzallf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#axenrzallf .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#axenrzallf .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#axenrzallf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#axenrzallf .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#axenrzallf .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#axenrzallf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#axenrzallf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#axenrzallf .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#axenrzallf .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#axenrzallf .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#axenrzallf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#axenrzallf .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#axenrzallf .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#axenrzallf .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#axenrzallf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#axenrzallf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#axenrzallf .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#axenrzallf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#axenrzallf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#axenrzallf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#axenrzallf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#axenrzallf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#axenrzallf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#axenrzallf .gt_left {
+  text-align: left;
+}
+
+#axenrzallf .gt_center {
+  text-align: center;
+}
+
+#axenrzallf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#axenrzallf .gt_font_normal {
+  font-weight: normal;
+}
+
+#axenrzallf .gt_font_bold {
+  font-weight: bold;
+}
+
+#axenrzallf .gt_font_italic {
+  font-style: italic;
+}
+
+#axenrzallf .gt_super {
+  font-size: 65%;
+}
+
+#axenrzallf .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#axenrzallf .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#axenrzallf .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#axenrzallf .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#axenrzallf .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#axenrzallf .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#axenrzallf .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#axenrzallf .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#axenrzallf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mean</th>
+<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">variance</th>
+<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">standard error</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="mean">0.8030</td>
+<td class="gt_row gt_right" headers="variance">0.0003</td>
+<td class="gt_row gt_right" headers="standard error">0.0178</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="mc-methods-11" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="unknown-normalizing-constant">unknown normalizing constant</h4>
+<div style="font-size: x-large">
+<p>Suppose that <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span> and <span class="math inline">\(\int_Dq(x)dx=Z_q&lt;\infty\)</span> The <span class="math inline">\(q()\)</span> is an un-normalized density on <span class="math inline">\(D\)</span> whereas the corresponding normalized density is <span class="math inline">\(\frac{1}{Z_q}q(x)\)</span>.</p>
+<p>Using IS, let <span class="math inline">\(g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx\)</span>, so <span class="math inline">\(r\)</span> is an un-normalized density with <span class="math inline">\(Z_r\)</span> possibly unknown.</p>
+<ol type="1">
+<li>Draw <span class="math inline">\(x_1,x_2,\ldots,x_n\)</span> from <span class="math inline">\(g(x)\)</span> and calculate importance weights <span class="math inline">\(w(x_i)=g(x_i)/r(x_i)\)</span></li>
+<li>Estimate <span class="math inline">\(\mathbb{E}_f\left[h(X)\right]\)</span> by <span class="math display">\[
+\hat{\mu_h}=\frac{\sum_{i=1}^nw(x_i)h(x_i)}{\sum_{i=1}^nw(x_i)}
+\]</span></li>
+</ol>
+</div>
+</section>
+<section id="mc-methods-12" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="unknown-normalizing-constant-1">unknown normalizing constant</h4>
+<div style="font-size: x-large">
+<p>since</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) &amp; \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}\right]=\int\frac{q(X)}{r(X)}g(x)dx=\frac{Z_{q}}{Z_{r}}\\
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) &amp; \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]=\int\frac{q(X)}{r(X)}g(x)h(x)dx=\frac{1}{Z_{r}}\int g(x)h(x)dx
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-13" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="repeating-the-prior-example-but-un-normalized">repeating the prior example, but un-normalized</h4>
+<div style="font-size: x-large">
+<p>Estimate <span class="math inline">\(\mathbb E_f(X)\)</span> where <span class="math inline">\(f(x) = e^{-\frac{x^2}{2}};\;x\ge 0\)</span> (this is the half-Normal distribution, un-normalized)</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="co"># un-normalized weights</span></span>
+<span id="cb10-2"><a></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb10-3"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rexp</span>(n, <span class="at">rate=</span><span class="dv">2</span>)</span>
+<span id="cb10-4"><a></a>W <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span> X<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>X)</span>
+<span id="cb10-5"><a></a></span>
+<span id="cb10-6"><a></a>mu_h2  <span class="ot">&lt;-</span> <span class="fu">sum</span>(W<span class="sc">*</span>X)<span class="sc">/</span><span class="fu">sum</span>(W)</span>
+<span id="cb10-7"><a></a>var_h2 <span class="ot">&lt;-</span> <span class="fu">var</span>(W<span class="sc">/</span><span class="fu">mean</span>(W))</span>
+<span id="cb10-8"><a></a>se_h2  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(var_h2)</span>
+<span id="cb10-9"><a></a></span>
+<span id="cb10-10"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">mean =</span> mu_h2,  <span class="at">variance =</span> var_h2, <span class="st">'standard error'</span> <span class="ot">=</span> se_h2) <span class="sc">|&gt;</span> </span>
+<span id="cb10-11"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb10-12"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="gileglyojp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gileglyojp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#gileglyojp thead, #gileglyojp tbody, #gileglyojp tfoot, #gileglyojp tr, #gileglyojp td, #gileglyojp th {
+  border-style: none;
+}
+
+#gileglyojp p {
+  margin: 0;
+  padding: 0;
+}
+
+#gileglyojp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gileglyojp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#gileglyojp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gileglyojp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gileglyojp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gileglyojp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gileglyojp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gileglyojp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gileglyojp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gileglyojp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gileglyojp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gileglyojp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gileglyojp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#gileglyojp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#gileglyojp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gileglyojp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gileglyojp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gileglyojp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gileglyojp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gileglyojp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gileglyojp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gileglyojp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#gileglyojp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gileglyojp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gileglyojp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gileglyojp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gileglyojp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gileglyojp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gileglyojp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gileglyojp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gileglyojp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gileglyojp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gileglyojp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gileglyojp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gileglyojp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gileglyojp .gt_left {
+  text-align: left;
+}
+
+#gileglyojp .gt_center {
+  text-align: center;
+}
+
+#gileglyojp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gileglyojp .gt_font_normal {
+  font-weight: normal;
+}
+
+#gileglyojp .gt_font_bold {
+  font-weight: bold;
+}
+
+#gileglyojp .gt_font_italic {
+  font-style: italic;
+}
+
+#gileglyojp .gt_super {
+  font-size: 65%;
+}
+
+#gileglyojp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#gileglyojp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gileglyojp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#gileglyojp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#gileglyojp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#gileglyojp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#gileglyojp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#gileglyojp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#gileglyojp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mean</th>
+<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">variance</th>
+<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">standard error</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="mean">0.7895</td>
+<td class="gt_row gt_right" headers="variance">0.4058</td>
+<td class="gt_row gt_right" headers="standard error">0.6370</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="mc-methods-14" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-procedure">rejection sampling procedure</h4>
+<div style="font-size: x-large">
+<p>Assume we have an un-normalized <span class="math inline">\(g(x)\)</span>, i.e.&nbsp;<span class="math inline">\(\pi(x)=cg(x)\)</span> but <span class="math inline">\(c\)</span> is unknown.</p>
+<p>We want to generate iid samples <span class="math inline">\(x_1,x_2,\ldots,x_M\sim \pi\)</span> to estimate <span class="math inline">\(\mathbb{E}_\pi[h]\)</span></p>
+<p>Now assume we have an easily sampled density <span class="math inline">\(f\)</span>, and known <span class="math inline">\(K&gt;0\)</span>, such that <span class="math inline">\(Kf(x)\ge g(x),\;\forall x\)</span>, i.e.&nbsp;<span class="math inline">\(Kf(x)\ge \pi(x)/c\)</span> ( or <span class="math inline">\(cKf(x)\ge \pi(x)\)</span>).</p>
+<p>Then use the following procedure:</p>
+<ul>
+<li>sample <span class="math inline">\(X\sim f\)</span> and <span class="math inline">\(U\sim \mathrm{uniform}[0,1]\)</span></li>
+<li>if <span class="math inline">\(U\le\frac{g(X)}{Kf(x)}\)</span>, the accept X as a draw from <span class="math inline">\(\pi\)</span></li>
+<li>otherwise reject the sample and repeat</li>
+</ul>
+</div>
+</section>
+<section id="mc-methods-15" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling">rejection sampling</h4>
+<div style="font-size: x-large">
+<ul>
+<li><p>Since <span class="math inline">\(0\le\frac{g(x)}{Kf(x)}\le 1\)</span> we know that <span class="math inline">\(\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)=\frac{g(x)}{Kf(x)}\)</span></p></li>
+<li><p>and so</p></li>
+</ul>
+<p><span class="math display">\[
+\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-16" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-1">rejection sampling</h4>
+<div style="font-size: x-large">
+<ul>
+<li><p>Since <span class="math inline">\(0\le\frac{g(x)}{Kf(x)}\le 1\)</span> we know that <span class="math inline">\(\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)=\frac{g(x)}{Kf(x)}\)</span></p></li>
+<li><p>and so</p></li>
+</ul>
+<p><span class="math display">\[
+\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-17" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-2">rejection sampling</h4>
+<div style="font-size: x-large">
+<p>Similarly, for any <span class="math inline">\(y\in\mathbb{R}\)</span>, we can calculate the joint probability</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{P}\left(X\le y,U\le\frac{g(X)}{Kf(X)}\right) &amp; =\mathbb{E}\left[1_{X\le y}1_{U\le\frac{g(X)}{Kf(X)}}\right]\\
+&amp; =\mathbb{E}\left[1_{X\le y}\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X\right)\right]\\
+&amp; =\mathbb{E}\left[1_{X\le y}\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^{y}\frac{g(x)}{Kf(x)}f(x)dx\\
+&amp; =\int_{-\infty}^{y}\frac{g(x)}{K}dx
+\end{align*}
+\]</span></p>
+<ul>
+<li>and so we have the joint probability (above - <span class="math inline">\(\mathbb{P}(A,B)\)</span>), and the probability of acceptance (previous slide - <span class="math inline">\(\mathbb{P}(B)\)</span>), so the probability, conditional on acceptance (<span class="math inline">\(\mathbb{P}(A|B)\)</span>) is <span class="math inline">\(\frac{\mathbb{P}(A,B)}{\mathbb{P}(B)}\)</span> by Bayes rule.</li>
+</ul>
+</div>
+</section>
+<section id="mc-methods-18" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-3">rejection sampling</h4>
+<div style="font-size: x-large">
+<p><span class="math display">\[
+\mathbb{P}\left(X\le y|U\le\frac{g(X)}{Kf(X)}\right)=\frac{\int_{-\infty}^{y}\frac{g(x)}{K}dx}{\int_{-\infty}^\infty\frac{g(X)}{K}dx}=\int_{-\infty}^{y}\pi(x)dx
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-19" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-4">rejection sampling</h4>
+<ul>
+<li>consider random variable <span class="math inline">\(X\)</span> with pdf/pmf <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span> which is difficult to sample from</li>
+<li>we will sample from <span class="math inline">\(q\)</span> using a proposal pdf/pmf <span class="math inline">\(f\)</span> which we can sample from</li>
+<li>if we can find a constant <span class="math inline">\(K\)</span> such that <span class="math inline">\(q(x)\le Kf(x); \forall x\in D\)</span>. Alternatively <span class="math inline">\(\frac{q(x)}{f(x)}\le K\)</span></li>
+<li>then there is a rejection method that returns <span class="math inline">\(X\sim q\)</span></li>
+</ul>
+</section>
+<section id="mc-methods-20" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-method">rejection sampling method</h4>
+<ol type="1">
+<li>given a proposal pdf/pmf <span class="math inline">\(f\)</span> we can sample from, and constant <span class="math inline">\(K\)</span> such that <span class="math inline">\(\frac{q(x)}{f(x)}\le K; \forall x\in D\)</span></li>
+<li>sample <span class="math inline">\(Y_i\sim f\)</span> and <span class="math inline">\(U_i\sim\mathrm{U}[0,1]\)</span></li>
+<li>for <span class="math inline">\(U_i\le\frac{q(Y_i)}{Kf(Y_i)}\)</span> return <span class="math inline">\(X_i=Y_i\)</span>; otherwise return nothing and continue.</li>
+</ol>
+</section>
+<section id="mc-methods-21" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-proof-for-discrete-rv">rejection sampling: proof for discrete rv</h4>
+<div style="font-size: xx-large">
+<p>We have <span class="math inline">\(\mathbb{P}(X=x) = \sum_{i=1}^n\mathbb{P}(\mathrm{reject }\,Y)^{n-1}\mathbb{P}(\mathrm{draw }\,Y=x\,\mathrm{and\, accept})\)</span></p>
+<p>We also have</p>
+<p><span class="math display">\[
+\begin{align*}
+&amp; \mathbb{P}(\mathrm{draw}\,Y=x\,\mathrm{and\,accept})\\
+= &amp; \mathbb{P}(\mathrm{draw}\,Y=x)\mathbb{P}(\left.\mathrm{accept}\,Y\right|Y=x)\\
+= &amp; f(x)\mathbb{P}(\left.U\le\frac{q(Y)}{Kf(Y)}\right|Y=x)\\
+= &amp; \frac{q(x)}{K}
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-22" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-proof-for-discrete-rv-1">rejection sampling: proof for discrete rv</h4>
+<div style="font-size: xx-large">
+<p>The probability of rejection of a draw is</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{P}(\mathrm{{reject}}\,Y) &amp; =\sum_{x\in D}\mathbb{P}(\mathrm{{draw}}\,Y=x\,\mathrm{and\,reject\,it})\\
+&amp; =\sum_{x\in D}f(x)\mathbb{P}(\left.U\ge\frac{q(Y)}{Kf(Y)}\right|Y=x)\\
+&amp; =\sum_{x\in D}f(x)(1-\frac{q(x)}{Kf(x)})=1-\frac{1}{K}
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-23" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-proof-for-discrete-rv-2">rejection sampling: proof for discrete rv</h4>
+<div style="font-size: xx-large">
+<p>and so<sup>1</sup></p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{P}(X=x) &amp; =\sum_{n=1}^{\infty}\mathbb{P}(\mathrm{reject}\,Y)^{n-1}\mathbb{P}(\mathrm{draw}\,Y=x\,\mathrm{and\,accept})\\
+&amp; =\sum_{n=1}^{\infty}\left(1-\frac{1}{K}\right)^{n-1}\frac{q(x)}{K}=q(x)
+\end{align*}
+\]</span></p>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>The <strong>geometric distribution</strong> is a discrete distribution that can be interpreted as the number of failures before the first success (<span class="math inline">\(\mathbb{P}(X=k)=(1-p)^{k-1}p\)</span>, with mean <span class="math inline">\(p\)</span>).</p></li></ol></aside></section>
+<section id="mc-methods-24" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-proof-for-continuous-scalar-rv">rejection sampling: proof for continuous scalar rv</h4>
+<div style="font-size: x-large">
+<p>Recal that we accept the proposal <span class="math inline">\(Y\)</span> whenever <span class="math inline">\((U,Y)\sim q_{U,Y}\)</span> where <span class="math inline">\(q_{U,Y}\left(u,y\right)=q(y)U_{0,1}(u)\)</span> such that <span class="math inline">\(U\le q(Y)/(Kf(Y))\)</span></p>
+<p>We have</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{P}\left(X\le x\right) &amp; =\mathbb{P}\left(\left.Y\le x\right|U\le q(Y)/Kf(Y))\right)\\
+&amp; =\frac{\mathbb{P}\left(Y\le x,U\le q(Y)/Kf(Y))\right)}{\mathbb{P}\left(U\le q(Y)/Kf(Y))\right)}\\
+&amp; =\frac{\int_{-\infty}^{x}\int_{0}^{q(y)/Kf(y)}f_{U,Y}\left(u,y\right)dudy}{\int_{-\infty}^{\infty}\int_{0}^{q(y)/Kf(y)}f_{U,Y}\left(u,y\right)dudy}\\
+&amp; =\frac{\int_{-\infty}^{x}\int_{0}^{q(y)/Kf(y)}f\left(y\right)dudy}{\int_{-\infty}^{\infty}\int_{0}^{q(y)/Kf(y)}f\left(y\right)dudy}=\int_{-\infty}^{x}q(y)dy
+\end{align*}
+\]</span></p>
+</div>
+</section>
+<section id="mc-methods-25" class="slide level2">
+<h2>MC Methods</h2>
+<h4 id="rejection-sampling-unknown-normalizing-constants">rejection sampling: unknown normalizing constants</h4>
+<div style="font-size: x-large">
+<p>In most practical scenarios, we know <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(q(x)\)</span> only up to some normalizing constants</p>
+<p><span class="math display">\[
+f(x)=\bar{f}(x)/K_f\;\mathrm{and}\;q(x)=\bar{q}(x)/K_q
+\]</span> We can still use rejection sampling since</p>
+<p><span class="math display">\[
+\frac{q(x)}{f(x)}\le K\;\mathrm{iff}\;\frac{\bar{q}(x)}{\bar{f}(x)}\le\hat{K}\equiv  K\frac{K_q}{K_f}
+\]</span> In practice this means we can ignore the normalizing constants if we can find <span class="math inline">\(\hat{K}\)</span> to bound <span class="math inline">\(\frac{\bar{q}(x)}{\bar{f}(x)}\)</span></p>
+</div>
+</section>
+<section id="mc-methods-26" class="slide level2">
+<h2>MC Methods</h2>
+<div style="font-size: x-large">
 <p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
 <p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
+</div>
+</section>
+<section id="markov-chains" class="slide level2">
+<h2>Markov Chains</h2>
+<div style="font-size: xx-large">
+<p>Consider the following <strong>simple random walk</strong> on the integers <span class="math inline">\(\mathbb Z\)</span>: We start at <span class="math inline">\(0\)</span>, then at each time step, we go up by one with probability <span class="math inline">\(p\)</span> and down by one with probability <span class="math inline">\(q = 1-p\)</span>. When <span class="math inline">\(p = q = \frac12\)</span>, we’re equally as likely to go up as down, and we call this the <strong>simple symmetric random walk</strong>.</p>
+<p>The simple random walk is a simple but very useful model for lots of processes, like stock prices, sizes of populations, or positions of gas particles. (In many modern models, however, these have been replaced by more complicated continuous time and space models.) The simple random walk is sometimes called the “drunkard’s walk”, suggesting it could model a drunk person trying to stagger home.</p>
+</div>
+</section>
+<section id="markov-chains-1" class="slide level2">
+<h2>Markov Chains</h2>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-9-2.png" width="960"></p>
+</div>
+</div>
+</div>
 </section>
 <section id="more" class="slide level2">
 <h2>More</h2>
@@ -614,6 +1896,7 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 </div>
 </div>
 </section>
+
     </div>
   </div>
 

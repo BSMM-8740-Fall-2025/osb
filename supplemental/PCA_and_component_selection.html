@@ -463,7 +463,7 @@ A^\top A = \left(V\Sigma V^\top\right)\left(U\Sigma^\top V^\top\right)=V\left(\S
 <section id="random-matrices" class="level4">
 <h4 class="anchored" data-anchor-id="random-matrices">Random Matrices</h4>
 <p>Let’s perform an experiment, generating a large random <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">N\times N</annotation></semantics></math> data set using <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N(0,1)</annotation></semantics></math> measurements.</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>eigenvalues from random symmetric matrix (Normally distributed measurements)</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ggplot2, <span class="at">quietly=</span><span class="cn">TRUE</span>)</span>
@@ -485,15 +485,15 @@ A^\top A = \left(V\Sigma V^\top\right)\left(U\Sigma^\top V^\top\right)=V\left(\S
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="PCA_and_component_selection_files/figure-html/random symmetric matrix, normal-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="PCA_and_component_selection_files/figure-html/random symmetric matrix, normal-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Let’s do the same, but with uniform <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">U(0,1)</annotation></semantics></math> distributed measurements.</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>eigenvalues from random symmetric matrix (Uniformly distributed measurements)</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5000 rows and columns</span></span>
@@ -513,9 +513,9 @@ A^\top A = \left(V\Sigma V^\top\right)\left(U\Sigma^\top V^\top\right)=V\left(\S
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="PCA_and_component_selection_files/figure-html/random symmetric matrix, uniform-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="PCA_and_component_selection_files/figure-html/random symmetric matrix, uniform-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
