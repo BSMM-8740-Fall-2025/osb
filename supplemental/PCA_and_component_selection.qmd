@@ -49,6 +49,7 @@ Let's perform an experiment, generating a large random $N\times N$ data set usin
 #| echo: true
 #| code-fold: true
 #| code-summary: eigenvalues from random symmetric matrix (Normally distributed measurements)
+#| fig-align: center
 require(ggplot2, quietly=TRUE)
 
 # 5000 rows and columns
@@ -74,6 +75,7 @@ Let's do the same, but with uniform $U(0,1)$ distributed measurements.
 #| label: random symmetric matrix, uniform
 #| code-fold: true
 #| code-summary: eigenvalues from random symmetric matrix (Uniformly distributed measurements)
+#| fig-align: center
 # 5000 rows and columns
 n <- 5000
 # generate n^2 samples from U(0,1)
