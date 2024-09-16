@@ -480,7 +480,7 @@ L.L. Odette
 <span id="cb3-14"><a></a>  <span class="fu">sum</span>()<span class="sc">/</span>NMC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5898</code></pre>
+<pre><code>[1] 0.5894</code></pre>
 </div>
 </div>
 </section>
@@ -1861,16 +1861,50 @@ f(x)=\bar{f}(x)/K_f\;\mathrm{and}\;q(x)=\bar{q}(x)/K_q
 </section>
 <section id="markov-chains-1" class="slide level2">
 <h2>Markov Chains</h2>
-<div>
-
-</div>
-<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<details class="code-fold">
+<summary>random walks</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">require</span>(ggplot2, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-2"><a></a><span class="fu">set.seed</span>(<span class="dv">315</span>)</span>
+<span id="cb11-3"><a></a></span>
+<span id="cb11-4"><a></a>rrw <span class="ot">&lt;-</span> <span class="cf">function</span>(n, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) {</span>
+<span id="cb11-5"><a></a>  q <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> p</span>
+<span id="cb11-6"><a></a>  Z <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>), n, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(p, q))</span>
+<span id="cb11-7"><a></a>  X <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">cumsum</span>(Z))</span>
+<span id="cb11-8"><a></a>  <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">cumsum</span>(Z))</span>
+<span id="cb11-9"><a></a>}</span>
+<span id="cb11-10"><a></a></span>
+<span id="cb11-11"><a></a>n <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb11-12"><a></a>rw_dat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span><span class="dv">0</span><span class="sc">:</span>n) <span class="sc">|&gt;</span> </span>
+<span id="cb11-13"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb11-14"><a></a>    <span class="st">"p = 2/3"</span> <span class="ot">=</span> <span class="fu">rrw</span>(n, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb11-15"><a></a>    , <span class="st">"p = 1/3"</span> <span class="ot">=</span> <span class="fu">rrw</span>(n, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb11-16"><a></a>    , <span class="st">"p = 1/2"</span> <span class="ot">=</span> <span class="fu">rrw</span>(n, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb11-17"><a></a>  )</span>
+<span id="cb11-18"><a></a></span>
+<span id="cb11-19"><a></a>p0 <span class="ot">&lt;-</span> rw_dat <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-20"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>x) <span class="sc">|&gt;</span> </span>
+<span id="cb11-21"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>value, <span class="at">color=</span>name)) <span class="sc">+</span> </span>
+<span id="cb11-22"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb11-23"><a></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb11-24"><a></a></span>
+<span id="cb11-25"><a></a>p1 <span class="ot">&lt;-</span> rw_dat <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">200</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-26"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>x) <span class="sc">|&gt;</span> </span>
+<span id="cb11-27"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>value, <span class="at">color=</span>name)) <span class="sc">+</span> </span>
+<span id="cb11-28"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb11-29"><a></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb11-30"><a></a></span>
+<span id="cb11-31"><a></a>p3 <span class="ot">&lt;-</span> rw_dat <span class="sc">|&gt;</span> <span class="co">#dplyr::slice_head(n=200) |&gt; </span></span>
+<span id="cb11-32"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>x) <span class="sc">|&gt;</span> </span>
+<span id="cb11-33"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>value, <span class="at">color=</span>name)) <span class="sc">+</span> </span>
+<span id="cb11-34"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb11-35"><a></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb11-36"><a></a></span>
+<span id="cb11-37"><a></a>p0<span class="sc">+</span>p1<span class="sc">+</span>p3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
 <p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-9-2.png" width="960"></p>
 </div>
 </div>
 </div>
