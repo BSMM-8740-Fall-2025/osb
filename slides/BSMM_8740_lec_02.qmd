@@ -45,19 +45,20 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 ## Recap of last lecture
 
--   Last time we worked with exploratory data analysis and then used the tidyverse verbs to engineer features into our datasets.
+-   Last week we introduced the tidyverse verbs used to manipulate (tidy) data
+-   We also used the tidyverse verbs for exploratory data analysis and to engineer features into our datasets.
 
 ## Today's Outline
 
 -   We'll review the R model formula approach to model specification,
--   We'll introducte data pre-processing and design/model matrix generation with the `recipes` package, and
+-   We'll introduce data pre-processing and design/model matrix generation with the `recipes` package, and
 -   We'll show how using recipes will facilitate developing feature engineering workflows that can be applied to multiple datasets (e.g. train and test as well as cross-validation[^1] datasets)
 
 [^1]: Cross-validation is a resampling method that uses different portions of the data to test and train a model on different iterations.
 
 ## R Model Formulas
 
-A simple formula in a linear model to predict house prices (using the dataset Sacremento from the package `modeldata`):
+Here's a simple formula used in a linear model to predict house prices (using the dataset Sacremento from the package `modeldata`):
 
 ```{r sac}
 #| echo: true
@@ -76,9 +77,9 @@ mod1 <- stats::lm(
 ::: {style="font-size: 60%"}
 The purpose of this code chunk:
 
-1.  subset some of the observations (`subset`)
-2.  create a design matrix for 2 predictor variable (but 3 model terms)
-3.  log transform the outcome variable
+1.  subset some of the observations (using the `subset` argument)
+2.  create a design matrix for 2 predictor variables (but 3 model terms)
+3.  log transform the outcome variables
 4.  fit a linear regression model
 
 The first two steps create the *design-* or *model- matrix*.
@@ -248,7 +249,7 @@ We can approach the design matrix and preprocessing steps by first specifying a 
 
 A recipe is a specification of *intent*.
 
-One issue with the formula method is that it couples the specification for your predictors along with the implementation.
+One issue with the formula method is that it couples the specification for your predictors along with the model implementation.
 
 Recipes separate the *planning* from the *doing*.
 
@@ -268,6 +269,8 @@ Once created, a *recipe* can be `prep`ped on training data then `bake`d with any
 ```{r rec_basic}
 #| echo: true
 #| message: false
+#| code-fold: true
+#| code-summary: recipes workflow
 #| code-line-numbers: "2|4-6|9|11"
 ## Create an initial recipe with only predictors and outcome
 rec <- recipes::recipe(price ~ type + sqft, data = Sacramento)
@@ -408,7 +411,7 @@ aq_recipe <- aq_recipe %>%
 
 Baseline preprocessing methods can be categorized as:
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   **dummy**: Do qualitative predictors require a numeric encoding (e.g., via dummy variables or other methods)?
 -   **zv**: Should columns with a single unique value be removed?
 -   **impute**: If some predictors are missing, should they be estimated via imputation?
@@ -587,7 +590,7 @@ A pretty good description of PCA can be found [here](https://towardsdatascience.
 
 PCA step-by-step:
 
-::: {style="font-size: 65%"}
+::: {style="font-size: x-large"}
 1.  **Standardize the Data**:
     -   Before applying PCA, we often standardize the data, which means adjusting all variables to have the same scale. This is important because PCA is sensitive to the scale of the data.
 2.  **Find the Principal Components**:
@@ -599,7 +602,7 @@ PCA step-by-step:
 
 ## More sophisticated steps: PCA
 
-::: {style="font-size: 65%"}
+::: {style="font-size: x-large"}
 You have test scores in Math, Science, and English. You want to find a way to understand overall performance without looking at all three subjects separately.
 
 1.  **Original Data**: You have three scores for each student: Math, Science, and English.
