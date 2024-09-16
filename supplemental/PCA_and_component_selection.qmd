@@ -10,35 +10,63 @@ The PCA material here is taken from [Probabilistic View of Principal Component A
 We'll assume all columns in our data have been normalized - with zero mean and unit standard deviation.
 :::
 
-#### SVD
+#### Eigenvalue decomposition
 
-One of the major important concepts in Linear Algebra is SVD and it’s a factorization technique for real or complex matrices where for example a matrix (say *A*) can be factorized as:
+For any square matrix $A$, $x$ is an eigenvector of $A$ and $\lambda$ the corresponding eigenvalue of $A$ if $Ax=\lambda x$. Suppose $A$ has a full set of $N$ independent eigenvectors (most matrices do, but not all).
+
+If we put the eigenvectors into a matrix $Q$ (the eigenvectors are the column vectors of the matrix), then $AQ=Q\Lambda$, where $\Lambda$ is a diagonal matrix, with the eigenvalues on the diagonal. Thus
+
+$$
+A = Q\Lambda Q^{-1} =  Q\Lambda Q^\top
+$$ {#eq-eigen}
+
+This is the **Eigenvalue Decomposition**: a square $N\times N$ matrix ($A$) which is diagonalizable can be factorized as:
+
+$$
+A = Q\Lambda Q^\top 
+$$
+
+where $Q$ is the square $N\times N$ matrix whose $i$th column is the eigenvector $q_i$ of $B$, and $\Lambda$ is the diagonal matrix whose diagonal elements are the corresponding eigenvalues. $Q$ is square and orthogonal ($Q=Q^{-1}=Q^\top$), because the eigenvectors are orthogonal.
+
+#### SVD (Singular Value Decomposition)
+
+If $A$ is not square we need a different decomposition. Suppose $A$ is an $N\times D$ matrix ($N$ rows and $D$ columns) - then we need a square, orthogonal $N\times N$ matrix $V$ to multiply on the right, and a square, orthogonal $D\times D$ matrix $U$ to multiply on the left. In which case our matrix (say *A*) can be factorized as:
 
 $$
 A = U\Sigma V^\top 
-$$ {#eq-SVD} where $U$,$V^\top$ are orthogonal matrices (transpose equals the inverse) and $\Sigma$ would be a diagonal matrix. A need not be a square matrix, say it’s a $N\times D$ matrix so we can already think of this as our data matrix with $N$ instances and $D$ features. $U,V$ are square matrices ($N\times N$) and ($D\times D$) respectively, and $\Sigma$ will then be an $N\times D$ matrix where the $D\times D$ subset will be diagonal and the remaining entries will be zero.
+$$ {#eq-SVD}
 
-#### Eigenvalue decomposition
+$\Sigma$ will then be an $N\times D$ matrix where the $D\times D$ subset will be diagonal with $r$ singular values $\sigma_i\;i\in\{1,2,\ldots,r\}$ and the remaining entries will be zero.
 
-We also know Eigenvalue decomposition. Given a square matrix ($B$) which is diagonalizable can be factorized as:
-
-$$
-B = Q\Lambda Q^\top 
-$$ {#eq-eigen}
-
-where $Q$ is the square $N\times N$ matrix whose $i$th column is the eigenvector $q_i$ of $B$, and $\Lambda$ is the diagonal matrix whose diagonal elements are the corresponding eigenvalues.
-
-Let’s try to modify equation (@eq-SVD) by multiplying it by $A^\top$.
+We have
 
 $$
-A^\top A = \left(V\Sigma V^\top\right)\left(U\Sigma^\top V^\top\right)=V\left(\Sigma\Sigma^\top \right)V^\top
-$$ Here, $A^\top A$ would be a Square matrix even though $A$ initially didn’t need to be (could be $m\times n$). $\Sigma\Sigma^\top$ is a diagonal matrix and $V$ is an orthogonal matrix. Now, this is basically the eigendecomposition of a matrix $A^\top A$. The eigenvalues here are squares of the singular values for $A$ in eq. (@eq-SVD).
+A = U\Sigma V^\top =\sigma_1u_1v_1^\top + \sigma_2u_2v_2^\top + \ldots+\sigma_ru_rv_r^\top
+$$ Note that this is a sum of matrices. The first is the best rank 1 approximation to $A$; the first $k$ is the best rank $k$ approximation to $A$
 
-For a positive semi-definite matrix SVD and eigendecomposition are equivalent. PCA boils down to the [**eigendecomposition of the covariance matrix**]{.underline}. Finding the maximum eigenvalue(s) and corresponding eigenvector(s) are basically then can be thought of as finding the direction of maximum variance.
+#### PCA decomposition
+
+The PCA decomposition requires that one compute the eigenvalues and eigenvectors of the covariance matrix of $A$ (again an $N\times D$ matrix), which is the product $\frac{1}{n-1}AA^\top$. Since the covariance matrix is symmetric, the matrix is diagonalizable, and the eigenvectors can be normalized such that they are orthonormal.
+
+The square corvariance matrix ($\frac{1}{n-1}AA^\top$) is symmetric and thus diagonizable, and so from equation (@eq-eigen), it can be factorized as:
+
+$$
+\frac{1}{n-1}AA^\top = Q\Lambda Q^\top 
+$$ where $\Lambda$ is the diagonal matrix with the eigenvalues of the covariance matrix and $Q$ has column vectors that are the eigenvectors of the covariance matrix.
+
+However, using the SVD (@eq-SVD) we can also write
+
+$$
+\frac{1}{n-1}AA^\top = \frac{1}{n-1} \left(U\Sigma V^\top\right)\left(V\Sigma U^\top\right) = U\Sigma^2U^\top
+$$
+
+Using the SVD to perform PCA makes much better sense numerically than forming the covariance matrix to begin with, since the formation of $AA^\top$ can cause loss of precision.
+
+For a positive semi-definite matrix SVD and eigendecomposition are equivalent. PCA boils down to the [**eigendecomposition of the covariance matrix**]{.underline}. Finding the maximum eigenvalue(s) and corresponding eigenvector(s) can be thought of as finding the direction of maximum variance.
 
 If we have a lot of data (many rows or many columns or both), we'll have a large covariance matrix and large number of eigenvalues and their corresponding eigenvectors (though there can be duplicates).
 
-Do we need them all? How many are just due to noise or measurement error?
+Do we need them all? How many are just due to noise or measurement error? First look at random matrices, then at covariance matrices formed from random matrices.
 
 #### Random Matrices
 
@@ -65,7 +93,7 @@ lambda <- eigen(m2, symmetric=T, only.values = T)
 tibble::tibble(lambda = lambda$values) |> 
   ggplot(aes(x = lambda, y = after_stat(density))) + 
   geom_histogram(color = "white", fill="lightblue", bins=100) + 
-  labs(x = 'eignevalues', title = 'Normal random symmetric matrix') +
+  labs(x = 'eigenvalues', title = 'Normal random symmetric matrix') +
   theme_minimal()
 ```
 
@@ -89,7 +117,7 @@ lambda <- eigen(m2, symmetric=T, only.values = T)
 tibble::tibble(lambda = lambda$values) |> 
   ggplot(aes(x = lambda, y = after_stat(density))) + 
   geom_histogram(color = "white", fill="lightblue", bins=100) + 
-  labs(x = 'eignevalues', title = 'Uniform random symmetric matrix') +
+  labs(x = 'eigenvalues', title = 'Uniform random symmetric matrix') +
   theme_minimal()
 ```
 
@@ -97,7 +125,7 @@ Note the striking pattern: the density of eigenvalues is a semicircle.
 
 #### Wigner’s semicircle law
 
-Let $\tilde{A}$ be an $N\times N$ matrix with entries $\tilde{A}_{i,j}\sim\mathcal{N\left(0,\sigma^2\right)}$. Define
+Let $\tilde{A}$ be an $N\times N$ matrix with entries $\tilde{A}_{i,j}\sim\mathcal{N}\left(0,\sigma^2\right)$. Define
 
 $$
 A_N=\frac{1}{\sqrt{N}}\left(\frac{A+A^\top}{2}\right)
@@ -168,7 +196,7 @@ t <- 5000;
 m <- 1000;
 h = array(rnorm(m*t),c(m,t)); # Time series in rows
 e = h %*% t(h)/t; # Form the correlation matrix
-lambdae = eigen(e, symmetric=T, only.values = T);
+lambdae = eigen(e, symmetric=TRUE, only.values = TRUE);
 
 # create the mp distribution
 mpd_tbl <- tibble::tibble(lambda = c(lambdae$values, seq(0,3,0.1)) ) |> 
@@ -251,7 +279,7 @@ tibble::tibble(lambda = lambdae$values) |>
 
 ## Application to correlation matrices
 
-For the special case of correlation matrices (e.g. PCA), we know that $\sigma^2=1$ and $Q = M/T$. This bounds the probability mass over the interval defined by $\left(1\pm\sqrt{\frac{1}{Q}}\right)^2$.
+For the special case of correlation matrices (e.g. PCA), we know that $\sigma^2=1$ and $Q = T/M$. This bounds the probability mass over the interval defined by $\left(1\pm\sqrt{\frac{1}{Q}}\right)^2$.
 
 Since this distribution describes the spectrum of random matrices with mean 0, the eigenvalues of correlation matrices (read PCA component weights) that fall inside of the aforementioned interval could be considered spurious or noise. For instance, obtaining a correlation matrix of 10 variables with 252 observations would render
 

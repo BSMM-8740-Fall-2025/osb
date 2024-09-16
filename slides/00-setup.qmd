@@ -9,7 +9,7 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(
-  magrittr, tidyverse, malcolmbarrett/causalworkshop
+  magrittr, tidyverse, malcolmbarrett/causalworkshop, ggplot2, patchwork
 )
 
 source("R/ggdag-mask.R")

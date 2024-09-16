@@ -570,33 +570,50 @@ The simple random walk is a simple but very useful model for lots of processes, 
 ## Markov Chains
 
 ```{r}
-#| layout-ncol: 2
-#| fig-height: 10
+#| fig-height: 5
+#| layout-ncol: 1
+#| echo: true
+#| code-fold: true
+#| code-summary: random walks
+
+require(ggplot2, quietly = TRUE)
 set.seed(315)
 
 rrw <- function(n, p = 1/2) {
   q <- 1 - p
   Z <- sample(c(1, -1), n, replace = TRUE, prob = c(p, q))
   X <- c(0, cumsum(Z))
+  c(0, cumsum(Z))
 }
 
-n <- 20
-p <- 2/3
-plot(0:n, rrw(n, p),
-  main = "Random walk for n = 20 steps, p = 2/3",
-  xlab = "Time, n",
-  ylab = bquote("Random walk," ~ X[n]),
-  type = "b", col = "blue"
-)
-p <- 1/3
-plot(0:n, rrw(n, p),
-  main = "Random walk for n = 20 steps, p = 1/3",
-  xlab = "Time, n",
-  ylab = bquote("Random walk," ~ X[n]),
-  type = "b", col = "blue"
-)
-```
+n <- 2000
+rw_dat <- tibble::tibble(x=0:n) |> 
+  dplyr::mutate(
+    "p = 2/3" = rrw(n, 2/3)
+    , "p = 1/3" = rrw(n, 1/3)
+    , "p = 1/2" = rrw(n, 1/2)
+  )
 
+p0 <- rw_dat |> dplyr::slice_head(n=20) |> 
+  tidyr::pivot_longer(cols = -x) |> 
+  ggplot(aes(x=x,y=value, color=name)) + 
+  geom_line() + 
+  theme_minimal()
+
+p1 <- rw_dat |> dplyr::slice_head(n=200) |> 
+  tidyr::pivot_longer(cols = -x) |> 
+  ggplot(aes(x=x,y=value, color=name)) + 
+  geom_line() + 
+  theme_minimal()
+
+p3 <- rw_dat |> #dplyr::slice_head(n=200) |> 
+  tidyr::pivot_longer(cols = -x) |> 
+  ggplot(aes(x=x,y=value, color=name)) + 
+  geom_line() + 
+  theme_minimal()
+
+p0+p1+p3
+```
 
 ## More
 
