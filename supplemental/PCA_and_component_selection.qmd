@@ -10,7 +10,7 @@ The PCA material here is taken from [Probabilistic View of Principal Component A
 We'll assume all columns in our data have been normalized - with zero mean and unit standard deviation.
 :::
 
-#### Eigenvalue decomposition
+#### Eigenvalue decomposition 
 
 For any square matrix $A$, $x$ is an eigenvector of $A$ and $\lambda$ the corresponding eigenvalue of $A$ if $Ax=\lambda x$. Suppose $A$ has a full set of $N$ independent eigenvectors (most matrices do, but not all).
 
