@@ -259,13 +259,6 @@ The Recipes website is found at: [`https://topepo.github.io/recipes`](https://to
 
 ## Recipes
 
-Once created, a *recipe* can be `prep`ped on training data then `bake`d with any other data.
-
-::: {style="font-size: smaller"}
--   the `prep` step calculates and stores variables related to the steps (e.g. (min,max) for scaling), using the training data
--   the `bake` step applies the steps to new data
-:::
-
 ```{r rec_basic}
 #| echo: true
 #| message: false
@@ -284,6 +277,13 @@ rec_trained <- recipes::prep(rec, training = Sacramento, retain = TRUE)
 # apply the computations to new_data
 design_mat  <- recipes::bake(rec_trained, new_data = Sacramento)
 ```
+
+Once created, a *recipe* can be `prep`ped on training data then `bake`d with any other data.
+
+::: {style="font-size: smaller"}
+-   the `prep` step calculates and stores variables related to the steps (e.g. (min,max) for scaling), using the training data
+-   the `bake` step applies the steps to new data
+:::
 
 ## Selecting Variables
 
@@ -418,9 +418,9 @@ Baseline preprocessing methods can be categorized as:
 -   **decorrelate**: If there are correlated predictors, should this correlation be mitigated? This might mean filtering out predictors, using principal component analysis, or a model-based technique (e.g., regularization).
 -   **normalize**: Should predictors be centered and scaled?
 -   **transform**: Is it helpful to transform predictors to be more symmetric?
-:::
 
 See [recommended preprocessing](https://www.tmwr.org/pre-proc-table) for recipe steps.
+:::
 
 ## Available Steps
 
@@ -562,21 +562,21 @@ We can examine the center, scale, and Yeo Johnson parameters computed for each c
 
 ```{r}
 #| echo: true
-basic |> recipes::tidy(1)
+basic |> recipes::tidy(1) |> dplyr::slice_head(n=8)
 ```
 
 ## means
 
 ```{r}
 #| echo: true
-basic |> recipes::tidy(2)
+basic |> recipes::tidy(2) |> dplyr::slice_head(n=8)
 ```
 
 ## std deviations
 
 ```{r}
 #| echo: true
-basic |> recipes::tidy(3)
+basic |> recipes::tidy(3) |> dplyr::slice_head(n=8)
 ```
 :::
 
@@ -590,7 +590,7 @@ A pretty good description of PCA can be found [here](https://towardsdatascience.
 
 PCA step-by-step:
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 1.  **Standardize the Data**:
     -   Before applying PCA, we often standardize the data, which means adjusting all variables to have the same scale. This is important because PCA is sensitive to the scale of the data.
 2.  **Find the Principal Components**:
@@ -602,7 +602,7 @@ PCA step-by-step:
 
 ## More sophisticated steps: PCA
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 You have test scores in Math, Science, and English. You want to find a way to understand overall performance without looking at all three subjects separately.
 
 1.  **Original Data**: You have three scores for each student: Math, Science, and English.
@@ -703,9 +703,13 @@ pca %>% ggplot(aes(x = PC1, y = PC2, color = Class)) +
 
 ## Recap
 
--   We've used the Recipes package to create a workflow for data pre-processing and feature engineering
+-   We've used the `recipes` package to create a workflow for data pre-processing and feature engineering
 -   The `recipe` verbs define the pre-processing and feature engineering steps
 -   using the recipe object, the verb `prep` prepares the data on a training set, storing the meta-parameters.
 -   the verb `bake` applies the prepped recipe to new data, using the meta-parameters.
 
-------------------------------------------------------------------------
+## Recap
+
+-   When first created, the recipe object contains the the steps defined for pre-processing
+-   Once the recipe has been prepped, usually on training data, it contains the calculations required to perform pre-processing of data in the context of the training set, e.g. mean and stdev of normalized columns, PCA components, etc. ( the meta-parameters).
+-   the prepped recipe is used to preprocess datasets in context of the training data. E.g. to normalize a column in the test data we subtract the corresponding training set mean and divide by the corresponding training set stdev.
