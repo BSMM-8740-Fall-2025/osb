@@ -2,6 +2,11 @@
 title: "Principal Component Analysis (PCA) and Component Selection"
 ---
 
+```{r}
+#| echo: false
+require(ggplot2, quietly = TRUE)
+```
+
 ## PCA (short version)
 
 ::: callout-note
@@ -10,7 +15,7 @@ The PCA material here is taken from [Probabilistic View of Principal Component A
 We'll assume all columns in our data have been normalized - with zero mean and unit standard deviation.
 :::
 
-#### Eigenvalue decomposition 
+#### Eigenvalue decomposition
 
 For any square matrix $A$, $x$ is an eigenvector of $A$ and $\lambda$ the corresponding eigenvalue of $A$ if $Ax=\lambda x$. Suppose $A$ has a full set of $N$ independent eigenvectors (most matrices do, but not all).
 
@@ -61,6 +66,74 @@ $$
 $$
 
 Using the SVD to perform PCA makes much better sense numerically than forming the covariance matrix to begin with, since the formation of $AA^\top$ can cause loss of precision.
+
+Here is a simple PCA example:
+
+::: panel-tabset
+## Data
+
+```{r}
+#| echo: true
+#| code-fold: true
+set.seed(1) # For data reproducibility
+# create some data
+dat1 <- tibble::tibble(
+  x = rnorm(50, 50, sd = 3)
+  , y = .5*x + rnorm(50, sd = sqrt(3))
+)
+# plot it
+dat1 |> 
+  ggplot(aes(x = x, y = y)) +
+  geom_point(,color = "blue", size = 2) +
+  xlab("Variable 1") +
+  ylab("Variable 2") +
+  theme_classic()
+# center and
+dat1 <- dat1 |>  
+  dplyr::mutate(x = x - mean(x), y = y - mean(y))
+# convert to matrix
+dat2 <- dat1 |> dplyr::select(x,y) |> as.matrix()
+```
+
+## Correlation
+
+```{r}
+#| echo: true
+# Calculate the covariance matrix
+cov_m <- (t(dat2) %*% dat2) / (nrow(dat2) - 1) 
+cov_m
+```
+
+```{r}
+#| echo: true
+# we can also use the cov function in base R
+cov(dat2)
+```
+
+## PCA
+
+```{r}
+#| echo: true
+#| code-fold: true
+# Use eigen() to obtain eigenvectors and eigenvalues
+cov_e <- eigen(cov_m)
+
+# Eigenvectors
+e_vec <- cov_e$vectors
+
+# Eigenvalues
+e_val <- cov_e$values
+
+# First eigenvector 
+ev_1 <- e_vec[,1]
+
+# Second eigenvector 
+ev_2 <- e_vec[,2]
+
+# eigenvectors are orthogonal and eigenvalues capture total variance
+c( ev_1 %*% ev_2, e_val, e_val |> sum(), cov_m |> diag() |> sum())
+```
+:::
 
 For a positive semi-definite matrix SVD and eigendecomposition are equivalent. PCA boils down to the [**eigendecomposition of the covariance matrix**]{.underline}. Finding the maximum eigenvalue(s) and corresponding eigenvector(s) can be thought of as finding the direction of maximum variance.
 
