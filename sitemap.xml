@@ -153,19 +153,7 @@
     <lastmod>2024-07-16T20:56:46.261Z</lastmod>
   </url>
   <url>
-    <loc>https://bsmm-8740-fall-2024.github.io/osb/labs/solutions/BSMM_8740_lab_1_solutions.html</loc>
-    <lastmod>2024-09-15T18:50:27.295Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/10-continuous-g-computation-exercises.html</loc>
-    <lastmod>2024-08-28T00:22:25.561Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/in_process/Causal_via_Prediction_R.html</loc>
-    <lastmod>2024-08-14T20:12:53.344Z</lastmod>
-  </url>
-  <url>
-    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/rcts_to_regression.html</loc>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/causal_scratch.html</loc>
     <lastmod>2024-08-12T16:16:29.467Z</lastmod>
   </url>
   <url>
@@ -173,8 +161,24 @@
     <lastmod>2024-08-12T16:37:36.855Z</lastmod>
   </url>
   <url>
-    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/causal_scratch.html</loc>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/rcts_to_regression.html</loc>
     <lastmod>2024-08-12T16:16:29.467Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/in_process/Causal_via_Prediction_R.html</loc>
+    <lastmod>2024-08-14T20:12:53.344Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/misc/10-continuous-g-computation-exercises.html</loc>
+    <lastmod>2024-08-28T00:22:25.561Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/labs/solutions/BSMM_8740_lab_1_solutions.html</loc>
+    <lastmod>2024-09-15T18:50:27.295Z</lastmod>
+  </url>
+  <url>
+    <loc>https://bsmm-8740-fall-2024.github.io/osb/labs/BSMM_8740_lab_2.html</loc>
+    <lastmod>2024-09-17T19:03:48.918Z</lastmod>
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/labs/BSMM_8740_lab_1.html</loc>
@@ -254,7 +258,7 @@
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/index.html</loc>
-    <lastmod>2024-09-15T18:50:27.295Z</lastmod>
+    <lastmod>2024-09-17T19:03:48.917Z</lastmod>
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/slides/BSMM_8740_lec_04.html</loc>
@@ -306,7 +310,7 @@
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/supplemental/Bias_Variance_Trade_offs.html</loc>
-    <lastmod>2024-09-17T18:43:56.225Z</lastmod>
+    <lastmod>2024-09-17T19:03:29.871Z</lastmod>
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/supplemental/log-transformations.html</loc>
@@ -314,7 +318,7 @@
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/supplemental/model-selection-criteria.html</loc>
-    <lastmod>2024-09-17T18:43:56.226Z</lastmod>
+    <lastmod>2024-09-17T19:03:29.872Z</lastmod>
   </url>
   <url>
     <loc>https://bsmm-8740-fall-2024.github.io/osb/computing-pipelines.html</loc>
