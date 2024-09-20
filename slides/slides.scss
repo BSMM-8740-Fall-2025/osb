@@ -47,3 +47,17 @@ details>summary {
   max-width: unset !important;
   max-height: unset !important;
 }
+
+div.theorem, div.example, div.proof, div.definition, div.lemma, .thpart {
+  padding: 1em 1em 0em 1em;
+  margin-top: 10px;
+  margin-bottom: 24px;
+  border: 1px solid #ccc;
+  border-radius:4px;
+}
+
+
+
+div.theorem p:nth-child(1), div.example p:nth-child(1), div.proof p:nth-child(1), div.definition p:nth-child(1), div.lemma p:nth-child(1), .thpart p:nth-child(1), .mysummary p:nth-child(1), .mysched p:nth-child(1), .myanswers p:nth-child(1), .myq p:nth-child(1), .oldsched p:nth-child(1) {
+  text-indent: 0px;
+}
