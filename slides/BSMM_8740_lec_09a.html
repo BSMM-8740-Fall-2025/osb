@@ -473,14 +473,14 @@ L.L. Odette
 <span id="cb3-7"><a></a>  }</span>
 <span id="cb3-8"><a></a>}</span>
 <span id="cb3-9"><a></a></span>
-<span id="cb3-10"><a></a><span class="co"># Now MC says that we should generate lots of copies of Z...</span></span>
+<span id="cb3-10"><a></a><span class="co"># generate lots of copies of Z...</span></span>
 <span id="cb3-11"><a></a>NMC <span class="ot">&lt;-</span> <span class="dv">10000</span>; <span class="co"># 10000 seems like "a lot".</span></span>
 <span id="cb3-12"><a></a><span class="fu">rnorm</span>( NMC, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">3</span>) ) <span class="sc">|&gt;</span> </span>
 <span id="cb3-13"><a></a>  purrr<span class="sc">::</span><span class="fu">map_lgl</span>(event_E_happened) <span class="sc">|&gt;</span> </span>
 <span id="cb3-14"><a></a>  <span class="fu">sum</span>()<span class="sc">/</span>NMC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5964</code></pre>
+<pre><code>[1] 0.5934</code></pre>
 </div>
 </div>
 </section>
@@ -523,6 +523,7 @@ L.L. Odette
 </section>
 <section id="random-number-generation-2" class="slide level2">
 <h2>Random Number Generation</h2>
+<div style="font-size: x-large">
 <p>Recall that <span class="math inline">\(\mathscr{N}(0, 1)\)</span> Normal random variables (mean 0, variance 1) have the probability density function:</p>
 <p><span class="math display">\[
 p(x)=\frac{1}{2\pi}e^{-\frac{1}{2}x^2}\equiv\phi(x)
@@ -537,6 +538,7 @@ x_{1} &amp; =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
 x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 \end{align*}
 \]</span> It can be proved that <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are independent <span class="math inline">\(\mathscr{N}(0, 1)\)</span> random variables</p>
+</div>
 </section>
 <section id="random-number-generation-3" class="slide level2">
 <h2>Random Number Generation</h2>
@@ -561,17 +563,19 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 <span id="cb5-17"><a></a>samples <span class="sc">|&gt;</span> </span>
 <span id="cb5-18"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(X1,X2)) <span class="sc">|&gt;</span> </span>
 <span id="cb5-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value, <span class="at">color=</span>name, <span class="at">fill=</span>name)) <span class="sc">+</span> </span>
-<span id="cb5-20"><a></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">bins =</span> <span class="dv">60</span>, <span class="at">position=</span><span class="st">"identity"</span>, <span class="at">alpha=</span><span class="fl">0.3</span>) <span class="sc">+</span> </span>
-<span id="cb5-21"><a></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Value"</span>, <span class="at">y=</span><span class="st">"Density"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
-<span id="cb5-22"><a></a>samples <span class="sc">|&gt;</span> </span>
-<span id="cb5-23"><a></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>y1, <span class="at">y=</span>y2)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-20"><a></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb5-21"><a></a>    <span class="fu">aes</span>(<span class="at">y=</span>..density..), <span class="at">bins =</span> <span class="dv">60</span>, <span class="at">position=</span><span class="st">"identity"</span>, <span class="at">alpha=</span><span class="fl">0.3</span></span>
+<span id="cb5-22"><a></a>  ) <span class="sc">+</span> </span>
+<span id="cb5-23"><a></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Value"</span>, <span class="at">y=</span><span class="st">"Density"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
+<span id="cb5-24"><a></a>samples <span class="sc">|&gt;</span> </span>
+<span id="cb5-25"><a></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>y1, <span class="at">y=</span>y2)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">coord_fixed</span>() <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell column-page quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
 <figcaption>Normal y1 vs Normal y2; independent random RVs</figcaption>
 </figure>
 </div>
@@ -579,7 +583,7 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-4-2.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-4-2.png" width="960"></p>
 <figcaption>Normal y1 vs Normal y2; independent random RVs</figcaption>
 </figure>
 </div>
@@ -589,6 +593,7 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 </section>
 <section id="random-number-generation-4" class="slide level2">
 <h2>Random Number Generation</h2>
+<div style="font-size: x-large">
 <p>Your computer is only capable of producing pseudorandom numbers. These are made by running a pseudorandom number generator algorithm which is deterministic, e.g.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -605,6 +610,7 @@ x_2&amp; =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 </div>
 </div>
 <p>Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers. That is what “statistical randomness” means!</p>
+</div>
 </section>
 <section id="central-limit-theorem" class="slide level2">
 <h2>Central Limit Theorem</h2>
@@ -619,8 +625,10 @@ e_N(f)\sim\sigma M^{1/2}Z
 </section>
 <section id="mc-methods-5" class="slide level2">
 <h2>MC Methods</h2>
+<div style="font-size: x-large">
 <p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
 <p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
+</div>
 </section>
 <section id="mc-methods-6" class="slide level2">
 <h2>MC Methods</h2>
@@ -639,7 +647,7 @@ e_N(f)\sim\sigma M^{1/2}Z
 </section>
 <section id="mc-methods-7" class="slide level2">
 <h2>MC Methods</h2>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p>This idea can be pushed still further. Suppose that we want to compute an integral</p>
 <p><span class="math display">\[
 \int_Dg(x)dx
@@ -652,7 +660,7 @@ e_N(f)\sim\sigma M^{1/2}Z
 </section>
 <section id="mc-methods-8" class="slide level2">
 <h2>MC Methods</h2>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p>Now suppose we are given <span class="math inline">\(h(x)\)</span> and we want to compute <span class="math inline">\(\mathbb{E}[h(X)]\)</span> where <span class="math inline">\(X\sim f,\,x\in D\)</span>. So we need to sample from <span class="math inline">\(f\)</span>, but what if we could not do that directly?</p>
 <p>If there were some other distribution <span class="math inline">\(g(x)\)</span> we could sample from, such that <span class="math inline">\(g(x)&gt;0,\,x\in D\)</span>, then</p>
 <p><span class="math display">\[
@@ -666,7 +674,7 @@ e_N(f)\sim\sigma M^{1/2}Z
 </section>
 <section id="mc-methods-9" class="slide level2">
 <h2>MC Methods</h2>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p>This is called importance sampling (IS).</p>
 <ol type="1">
 <li>draw iid <span class="math inline">\(x_1,x_2,\ldots,x_n\)</span> from g and calculate the importance weight <span class="math display">\[
@@ -695,471 +703,27 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <span id="cb9-8"><a></a></span>
 <span id="cb9-9"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">mean =</span> mu_h,  <span class="at">variance =</span> var_h, <span class="st">'standard error'</span> <span class="ot">=</span> se_h) <span class="sc">|&gt;</span> </span>
 <span id="cb9-10"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb9-11"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-11"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-12"><a></a>  gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">|&gt;</span>  </span>
+<span id="cb9-13"><a></a>  <span class="co">#gt::tab_header(title = )</span></span>
+<span id="cb9-14"><a></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="axenrzallf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#axenrzallf table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#axenrzallf thead, #axenrzallf tbody, #axenrzallf tfoot, #axenrzallf tr, #axenrzallf td, #axenrzallf th {
-  border-style: none;
-}
-
-#axenrzallf p {
-  margin: 0;
-  padding: 0;
-}
-
-#axenrzallf .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#axenrzallf .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#axenrzallf .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#axenrzallf .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#axenrzallf .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#axenrzallf .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#axenrzallf .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#axenrzallf .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#axenrzallf .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#axenrzallf .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#axenrzallf .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#axenrzallf .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#axenrzallf .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#axenrzallf .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#axenrzallf .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#axenrzallf .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#axenrzallf .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#axenrzallf .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#axenrzallf .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#axenrzallf .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#axenrzallf .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#axenrzallf .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#axenrzallf .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#axenrzallf .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#axenrzallf .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#axenrzallf .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#axenrzallf .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#axenrzallf .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#axenrzallf .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#axenrzallf .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#axenrzallf .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#axenrzallf .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#axenrzallf .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#axenrzallf .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#axenrzallf .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#axenrzallf .gt_left {
-  text-align: left;
-}
-
-#axenrzallf .gt_center {
-  text-align: center;
-}
-
-#axenrzallf .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#axenrzallf .gt_font_normal {
-  font-weight: normal;
-}
-
-#axenrzallf .gt_font_bold {
-  font-weight: bold;
-}
-
-#axenrzallf .gt_font_italic {
-  font-style: italic;
-}
-
-#axenrzallf .gt_super {
-  font-size: 65%;
-}
-
-#axenrzallf .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#axenrzallf .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#axenrzallf .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#axenrzallf .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#axenrzallf .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#axenrzallf .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#axenrzallf .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#axenrzallf .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#axenrzallf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-
-<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead>
-<tr class="header gt_col_headings">
-<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mean</th>
-<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">variance</th>
-<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">standard error</th>
+  
+  
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<thead style="border-style: none;">
+<tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">mean</th>
+<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">variance</th>
+<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">standard error</th>
 </tr>
 </thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td class="gt_row gt_right" headers="mean">0.8030</td>
-<td class="gt_row gt_right" headers="variance">0.0003</td>
-<td class="gt_row gt_right" headers="standard error">0.0178</td>
+<tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+<tr class="odd" style="border-style: none;">
+<td class="gt_row gt_right" headers="mean" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.8030</td>
+<td class="gt_row gt_right" headers="variance" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.0003</td>
+<td class="gt_row gt_right" headers="standard error" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.0178</td>
 </tr>
 </tbody>
 </table>
@@ -1172,7 +736,7 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <h2>MC Methods</h2>
 <h4 id="unknown-normalizing-constant">unknown normalizing constant</h4>
 <div style="font-size: x-large">
-<p>Suppose that <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span> and <span class="math inline">\(\int_Dq(x)dx=Z_q&lt;\infty\)</span> The <span class="math inline">\(q()\)</span> is an un-normalized density on <span class="math inline">\(D\)</span> whereas the corresponding normalized density is <span class="math inline">\(\frac{1}{Z_q}q(x)\)</span>.</p>
+<p>Suppose that <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span> and <span class="math inline">\(\int_Dq(x)dx=Z_q&lt;\infty\)</span>. Here <span class="math inline">\(q()\)</span> is an un-normalized density on <span class="math inline">\(D\)</span> whereas the corresponding normalized density is <span class="math inline">\(\frac{1}{Z_q}q(x)\)</span>.</p>
 <p>Using IS, let <span class="math inline">\(g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx\)</span>, so <span class="math inline">\(r\)</span> is an un-normalized density with <span class="math inline">\(Z_r\)</span> possibly unknown.</p>
 <ol type="1">
 <li>Draw <span class="math inline">\(x_1,x_2,\ldots,x_n\)</span> from <span class="math inline">\(g(x)\)</span> and calculate importance weights <span class="math inline">\(w(x_i)=g(x_i)/r(x_i)\)</span></li>
@@ -1185,12 +749,14 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <section id="mc-methods-12" class="slide level2">
 <h2>MC Methods</h2>
 <h4 id="unknown-normalizing-constant-1">unknown normalizing constant</h4>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p>since</p>
 <p><span class="math display">\[
 \begin{align*}
 \frac{1}{n}\sum_{i=1}^{n}w(x_{i}) &amp; \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}\right]=\int\frac{q(X)}{r(X)}g(x)dx=\frac{Z_{q}}{Z_{r}}\\
-\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) &amp; \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]=\int\frac{q(X)}{r(X)}g(x)h(x)dx=\frac{1}{Z_{r}}\int g(x)h(x)dx
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) &amp; \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]\\
+&amp; =\int\frac{q(X)}{r(X)}g(x)h(x)dx\\
+&amp; =\frac{1}{Z_{r}}\int g(x)h(x)dx
 \end{align*}
 \]</span></p>
 </div>
@@ -1198,10 +764,12 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <section id="mc-methods-13" class="slide level2">
 <h2>MC Methods</h2>
 <h4 id="repeating-the-prior-example-but-un-normalized">repeating the prior example, but un-normalized</h4>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p>Estimate <span class="math inline">\(\mathbb E_f(X)\)</span> where <span class="math inline">\(f(x) = e^{-\frac{x^2}{2}};\;x\ge 0\)</span> (this is the half-Normal distribution, un-normalized)</p>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>calculation of some kind</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="co"># un-normalized weights</span></span>
 <span id="cb10-2"><a></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
 <span id="cb10-3"><a></a>X <span class="ot">&lt;-</span> <span class="fu">rexp</span>(n, <span class="at">rate=</span><span class="dv">2</span>)</span>
@@ -1213,471 +781,28 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <span id="cb10-9"><a></a></span>
 <span id="cb10-10"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">mean =</span> mu_h2,  <span class="at">variance =</span> var_h2, <span class="st">'standard error'</span> <span class="ot">=</span> se_h2) <span class="sc">|&gt;</span> </span>
 <span id="cb10-11"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb10-12"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-12"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">decimals=</span><span class="dv">4</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-13"><a></a>  gt<span class="sc">::</span><span class="fu">tab_options</span>( <span class="at">table.font.size =</span> gt<span class="sc">::</span><span class="fu">px</span>(<span class="dv">20</span>) ) <span class="sc">|&gt;</span>  </span>
+<span id="cb10-14"><a></a>  <span class="co">#gt::tab_header(title = )</span></span>
+<span id="cb10-15"><a></a>  gt<span class="sc">::</span><span class="fu">as_raw_html</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div id="gileglyojp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#gileglyojp table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#gileglyojp thead, #gileglyojp tbody, #gileglyojp tfoot, #gileglyojp tr, #gileglyojp td, #gileglyojp th {
-  border-style: none;
-}
-
-#gileglyojp p {
-  margin: 0;
-  padding: 0;
-}
-
-#gileglyojp .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#gileglyojp .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#gileglyojp .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#gileglyojp .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#gileglyojp .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#gileglyojp .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#gileglyojp .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#gileglyojp .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#gileglyojp .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#gileglyojp .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#gileglyojp .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#gileglyojp .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#gileglyojp .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#gileglyojp .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#gileglyojp .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#gileglyojp .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#gileglyojp .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#gileglyojp .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#gileglyojp .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#gileglyojp .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#gileglyojp .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#gileglyojp .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#gileglyojp .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#gileglyojp .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#gileglyojp .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#gileglyojp .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#gileglyojp .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#gileglyojp .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#gileglyojp .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#gileglyojp .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#gileglyojp .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#gileglyojp .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#gileglyojp .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#gileglyojp .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#gileglyojp .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#gileglyojp .gt_left {
-  text-align: left;
-}
-
-#gileglyojp .gt_center {
-  text-align: center;
-}
-
-#gileglyojp .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#gileglyojp .gt_font_normal {
-  font-weight: normal;
-}
-
-#gileglyojp .gt_font_bold {
-  font-weight: bold;
-}
-
-#gileglyojp .gt_font_italic {
-  font-style: italic;
-}
-
-#gileglyojp .gt_super {
-  font-size: 65%;
-}
-
-#gileglyojp .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#gileglyojp .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#gileglyojp .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#gileglyojp .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#gileglyojp .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#gileglyojp .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#gileglyojp .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#gileglyojp .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#gileglyojp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-
-<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead>
-<tr class="header gt_col_headings">
-<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">mean</th>
-<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">variance</th>
-<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">standard error</th>
+  
+  
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 20px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" data-bgcolor="#FFFFFF">
+<thead style="border-style: none;">
+<tr class="header gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+<th id="mean" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">mean</th>
+<th id="variance" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">variance</th>
+<th id="standard error" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col" style="text-align: right; border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-bgcolor="#FFFFFF" data-valign="bottom">standard error</th>
 </tr>
 </thead>
-<tbody class="gt_table_body">
-<tr class="odd">
-<td class="gt_row gt_right" headers="mean">0.7895</td>
-<td class="gt_row gt_right" headers="variance">0.4058</td>
-<td class="gt_row gt_right" headers="standard error">0.6370</td>
+<tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+<tr class="odd" style="border-style: none;">
+<td class="gt_row gt_right" headers="mean" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.7895</td>
+<td class="gt_row gt_right" headers="variance" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.4058</td>
+<td class="gt_row gt_right" headers="standard error" style="text-align: right; border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; font-variant-numeric: tabular-nums;" data-valign="middle">0.6370</td>
 </tr>
 </tbody>
 </table>
@@ -1690,15 +815,17 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <h2>MC Methods</h2>
 <h4 id="rejection-sampling-procedure">rejection sampling procedure</h4>
 <div style="font-size: x-large">
-<p>Assume we have an un-normalized <span class="math inline">\(g(x)\)</span>, i.e.&nbsp;<span class="math inline">\(\pi(x)=cg(x)\)</span> but <span class="math inline">\(c\)</span> is unknown.</p>
-<p>We want to generate iid samples <span class="math inline">\(x_1,x_2,\ldots,x_M\sim \pi\)</span> to estimate <span class="math inline">\(\mathbb{E}_\pi[h]\)</span></p>
-<p>Now assume we have an easily sampled density <span class="math inline">\(f\)</span>, and known <span class="math inline">\(K&gt;0\)</span>, such that <span class="math inline">\(Kf(x)\ge g(x),\;\forall x\)</span>, i.e.&nbsp;<span class="math inline">\(Kf(x)\ge \pi(x)/c\)</span> ( or <span class="math inline">\(cKf(x)\ge \pi(x)\)</span>).</p>
-<p>Then use the following procedure:</p>
 <ul>
+<li>Assume we have an un-normalized <span class="math inline">\(g(x)\)</span>, i.e.&nbsp;<span class="math inline">\(\pi(x)=cg(x)\)</span> but <span class="math inline">\(c\)</span> is unknown.</li>
+<li>We want to generate iid samples <span class="math inline">\(x_1,x_2,\ldots,x_M\sim \pi\)</span> to estimate <span class="math inline">\(\mathbb{E}_\pi[h]\)</span></li>
+<li>Now assume we have an easily sampled density <span class="math inline">\(f\)</span>, and known <span class="math inline">\(K&gt;0\)</span>, such that <span class="math inline">\(Kf(x)\ge g(x),\;\forall x\)</span>, i.e.&nbsp;<span class="math inline">\(Kf(x)\ge \pi(x)/c\)</span> ( or <span class="math inline">\(cKf(x)\ge \pi(x)\)</span>).</li>
+</ul>
+<p>Then use the following procedure:</p>
+<ol type="1">
 <li>sample <span class="math inline">\(X\sim f\)</span> and <span class="math inline">\(U\sim \mathrm{uniform}[0,1]\)</span></li>
 <li>if <span class="math inline">\(U\le\frac{g(X)}{Kf(x)}\)</span>, the accept X as a draw from <span class="math inline">\(\pi\)</span></li>
 <li>otherwise reject the sample and repeat</li>
-</ul>
+</ol>
 </div>
 </section>
 <section id="mc-methods-15" class="slide level2">
@@ -1723,7 +850,11 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <li><p>and so</p></li>
 </ul>
 <p><span class="math display">\[
-\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
+\begin{align*}
+\mathbb{E}_{f}\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right] &amp; =\mathbb{E}_{f}\left[\frac{g(X)}{Kf(X)}\right]\\
+&amp; =\int_{-\infty}^{\infty}\frac{g(X)}{Kf(X)}f(x)dx\\
+&amp; =\int_{-\infty}^{\infty}\frac{g(X)}{K}dx
+\end{align*}
 \]</span></p>
 </div>
 </section>
@@ -1748,7 +879,7 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <section id="mc-methods-18" class="slide level2">
 <h2>MC Methods</h2>
 <h4 id="rejection-sampling-3">rejection sampling</h4>
-<div style="font-size: x-large">
+<div style="font-size: xx-large">
 <p><span class="math display">\[
 \mathbb{P}\left(X\le y|U\le\frac{g(X)}{Kf(X)}\right)=\frac{\int_{-\infty}^{y}\frac{g(x)}{K}dx}{\int_{-\infty}^\infty\frac{g(X)}{K}dx}=\int_{-\infty}^{y}\pi(x)dx
 \]</span></p>
@@ -1758,8 +889,8 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 <h2>MC Methods</h2>
 <h4 id="rejection-sampling-4">rejection sampling</h4>
 <ul>
-<li>consider random variable <span class="math inline">\(X\)</span> with pdf/pmf <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span> which is difficult to sample from</li>
-<li>we will sample from <span class="math inline">\(q\)</span> using a proposal pdf/pmf <span class="math inline">\(f\)</span> which we can sample from</li>
+<li>consider a random variable <span class="math inline">\(X\)</span> with pdf/pmf <span class="math inline">\(q(x)&gt;0;\;x\in D\)</span>, which is <strong>difficult to sample</strong> from</li>
+<li>we will sample from <span class="math inline">\(q\)</span> using a proposal pdf/pmf <span class="math inline">\(f\)</span> which <strong>we can sample from</strong></li>
 <li>if we can find a constant <span class="math inline">\(K\)</span> such that <span class="math inline">\(q(x)\le Kf(x); \forall x\in D\)</span>. Alternatively <span class="math inline">\(\frac{q(x)}{f(x)}\le K\)</span></li>
 <li>then there is a rejection method that returns <span class="math inline">\(X\sim q\)</span></li>
 </ul>
@@ -1815,7 +946,7 @@ w(x_i)=\frac{f(x_{i})}{g(x_{i})}
 \end{align*}
 \]</span></p>
 </div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>The <strong>geometric distribution</strong> is a discrete distribution that can be interpreted as the number of failures before the first success (<span class="math inline">\(\mathbb{P}(X=k)=(1-p)^{k-1}p\)</span>, with mean <span class="math inline">\(p\)</span>).</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>The <strong>geometric distribution</strong> is a discrete pmf that can be interpreted as the number of failures before the first success (<span class="math inline">\(\mathbb{P}(X=k)=(1-p)^{k-1}p\)</span>, with mean <span class="math inline">\(p\)</span>).</p></li></ol></aside></section>
 <section id="mc-methods-24" class="slide level2">
 <h2>MC Methods</h2>
 <h4 id="rejection-sampling-proof-for-continuous-scalar-rv">rejection sampling: proof for continuous scalar rv</h4>
@@ -1847,22 +978,27 @@ f(x)=\bar{f}(x)/K_f\;\mathrm{and}\;q(x)=\bar{q}(x)/K_q
 </section>
 <section id="mc-methods-26" class="slide level2">
 <h2>MC Methods</h2>
-<div style="font-size: x-large">
-<p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
+<div style="font-size: xx-large">
+<p>Suppose we need to compute an expectation <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> for some random variable <span class="math inline">\(Z\)</span> and some function <span class="math inline">\(g:\mathbb{R}\to\mathbb{R}\)</span>.</p>
+<p>Monte Carlo methods avoid doing any integration or summation over the pdf/pmf and instead just generate lots of samples of <span class="math inline">\(Z\)</span>, say <span class="math inline">\(z_1,z_2,\ldots,z_M\)</span> and <em>estimate</em> <span class="math inline">\(\mathbb{E}[g(Z)]\)</span> as <span class="math inline">\(\frac{1}{M}\sum_{i=1}^Mg(z_i)\)</span>. The law of large numbers states that this sample mean should be close to <span class="math inline">\(\mathbb{E}[g(Z)]\)</span>.</p>
 <p>Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.</p>
 </div>
 </section>
 <section id="stochastic-processes" class="slide level2">
 <h2>Stochastic processes</h2>
+<div style="font-size: xx-large">
 <p>A stochastic process, which we will usually write as <span class="math inline">\((X_n)\)</span>, is an indexed sequence of random variables that are (usually) dependent on each other.</p>
 <p>Each random variable <span class="math inline">\(X_n\)</span> takes a value in a state space <span class="math inline">\(\mathcal S\)</span> which is the set of possible values for the process. As with usual random variables, the state space <span class="math inline">\(\mathcal S\)</span> can be discrete or continuous. A discrete state space denotes a set of distinct possible outcomes, which can be finite or countably infinite. For example, <span class="math inline">\(\mathcal S = \{\text{Heads},\text{Tails}\}\)</span> is the state space for a single coin flip, while in the case of counting insurance claims, the state space would be the nonnegative integers <span class="math inline">\(\mathcal S = \mathbb Z_+ = \{0,1,2,\dots\}\)</span>.</p>
+</div>
 </section>
 <section id="stochastic-processes-1" class="slide level2">
 <h2>Stochastic processes</h2>
-<p>Further, the process has an index set that puts the random variables that make up the process in order. The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by <span class="math inline">\(n = 0,1,2,\dots\)</span>, while continuous time denotes a process monitored constantly over time, often denoted by <span class="math inline">\(t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}\)</span>.</p>
+<p>Further, the process has an index set that puts the random variables that make up the process in order.</p>
+<p>The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by <span class="math inline">\(n = 0,1,2,\dots\)</span>, while continuous time denotes a process monitored constantly over time, often denoted by <span class="math inline">\(t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}\)</span>.</p>
 </section>
 <section id="markov-property" class="slide level2">
 <h2>Markov property</h2>
+<div style="font-size: xx-large">
 <p>Think of a simple board game where we roll a dice and move that many squares forward on the board. Suppose we are currently on the square <span class="math inline">\(X_n\)</span>. Then what can we say about which square <span class="math inline">\(X_{n+1}\)</span> we move to on our next turn?</p>
 <ul>
 <li><span class="math inline">\(X_{n+1}\)</span> is random, since it depends on the roll of the dice.</li>
@@ -1870,11 +1006,13 @@ f(x)=\bar{f}(x)/K_f\;\mathrm{and}\;q(x)=\bar{q}(x)/K_q
 <li>Given the square <span class="math inline">\(X_n\)</span> we are now, <span class="math inline">\(X_{n+1}\)</span> doesn’t depend any further on which sequence of squares <span class="math inline">\(X_0, X_1, \dots, X_{n-1}\)</span> we used to get here.</li>
 </ul>
 <p>The third point is called the Markov property or memoryless property. We say “memoryless”, because we only need to remember what square we’ve reached, not which squares we used to get here. The stochastic process before this moment has no bearing on the future, given where we are now. A mathematical way to say this is that “the past and the future are conditionally independent given the present.”</p>
+</div>
 </section>
 <section id="markov-chains" class="slide level2">
 <h2>Markov Chains</h2>
 <div style="font-size: xx-large">
-<p>Consider the following <strong>simple random walk</strong> on the integers <span class="math inline">\(\mathbb Z\)</span>: We start at <span class="math inline">\(0\)</span>, then at each time step, we go up by one with probability <span class="math inline">\(p\)</span> and down by one with probability <span class="math inline">\(q = 1-p\)</span>. When <span class="math inline">\(p = q = \frac12\)</span>, we’re equally as likely to go up as down, and we call this the <strong>simple symmetric random walk</strong>.</p>
+<p>Consider the following <strong>simple random walk</strong> on the integers <span class="math inline">\(\mathbb Z\)</span>:</p>
+<p>We start at <span class="math inline">\(0\)</span>, then at each time step, we go up by one with probability <span class="math inline">\(p\)</span> and down by one with probability <span class="math inline">\(q = 1-p\)</span>. When <span class="math inline">\(p = q = \frac12\)</span>, we’re equally as likely to go up as down, and we call this the <strong>simple symmetric random walk</strong>.</p>
 <p>The simple random walk is a simple but very useful model for lots of processes, like stock prices, sizes of populations, or positions of gas particles. (In many modern models, however, these have been replaced by more complicated continuous time and space models.) The simple random walk is sometimes called the “drunkard’s walk”, suggesting it could model a drunk person trying to stagger home.</p>
 </div>
 </section>
@@ -1923,49 +1061,62 @@ f(x)=\bar{f}(x)/K_f\;\mathrm{and}\;q(x)=\bar{q}(x)/K_q
 <div class="cell quarto-layout-panel" data-layout-ncol="1">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: center;">
-<p><img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
 </div>
 </div>
 </div>
 </section>
 <section id="markov-chains-2" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>We can write this as a stochastic process <span class="math inline">\((X_n)\)</span> with discrete time <span class="math inline">\(n = \{0,1,2,\dots\} = \mathbb Z_+\)</span> and discrete state space <span class="math inline">\(\mathcal S = \mathbb Z\)</span>, where <span class="math inline">\(X_0 = 0\)</span> and, for <span class="math inline">\(n \geq 0\)</span>, we have <span class="math display">\[ X_{n+1} = \begin{cases} X_n + 1 &amp; \text{with probability $p$,} \\
                              X_n - 1 &amp; \text{with probability $q$.} \end{cases} \]</span></p>
 <p>It’s clear from this definition that <span class="math inline">\(X_{n+1}\)</span> (the future) depends on <span class="math inline">\(X_n\)</span> (the present), but, given <span class="math inline">\(X_n\)</span>, does not depend on <span class="math inline">\(X_{n-1}, \dots, X_1, X_0\)</span> (the past). Thus the Markov property holds, and the simple random walk is a discrete time Markov process or Markov chain.</p>
+</div>
 </section>
 <section id="markov-chains-3" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>So far we’ve seen a a few examples of stochastic processes in discrete time and discrete space with the Markov memoryless property. Now we will develop the theory more generally.</p>
 <p>To define a so-called “Markov chain”, we first need to say where we start from, and second what the probabilities of transitions from one state to another are.</p>
 <p>In our examples of the simple random walk and gambler’s ruin, we specified the start point <span class="math inline">\(X_0 = i\)</span> exactly, but we could pick the start point at random according to some distribution <span class="math inline">\(\lambda_i = \mathbb P(X_0 = i)\)</span>.</p>
+</div>
 </section>
 <section id="markov-chains-4" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: x-large">
 <p>After that, we want to know the transition probabilities <span class="math inline">\(\mathbb P(X_{n+1} = j \mid X_n = i)\)</span> for <span class="math inline">\(i,j \in \mathcal S\)</span>. Here, because of the Markov property, the transition probability only needs to condition on the state we’re in now <span class="math inline">\(X_n = i\)</span>, and not on the whole history of the process.</p>
 <p>In the case of the simple random walk, for example, we had initial distribution <span class="math display">\[ \lambda_i = \mathbb P(X_0 = i) = \begin{cases} 1 &amp; \text{if $i = 0$} \\ 0 &amp; \text{otherwise} \end{cases} \]</span> and transition probabilities <span class="math display">\[ \mathbb P(X_{n+1} = j \mid X_n = i) = \begin{cases} p &amp; \text{if $j = i+1$} \\ q &amp; \text{if $j = i-1$} \\ 0 &amp; \text{otherwise.} \end{cases} \]</span></p>
 <p>For the random walk (and also the gambler’s ruin), the transition probabilities <span class="math inline">\(\mathbb P(X_{n+1} = j \mid X_n = i)\)</span> don’t depend on <span class="math inline">\(n\)</span>; in other words, the transition probabilities stay the same over time. A Markov process with this property is called time homogeneous. We will always consider time homogeneous processes from now on (unless we say otherwise).</p>
+</div>
 </section>
 <section id="markov-chains-5" class="slide level2">
 <h2>Markov Chains</h2>
-<p>Let’s write <span class="math inline">\(p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)\)</span> for the transition probabilities, which are independent of <span class="math inline">\(n\)</span>. We must have <span class="math inline">\(p_{ij} \geq 0\)</span>, since it is a probability, and we must also have <span class="math inline">\(\sum_j p_{ij} = 1\)</span> for all states <span class="math inline">\(i\)</span>, as this is the sum of the probabilities of all the places you can move to from state i.</p>
+<div style="font-size: xx-large">
+<p>Write <span class="math inline">\(p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)\)</span> for the transition probabilities, which are independent of <span class="math inline">\(n\)</span>. We must have <span class="math inline">\(p_{ij} \geq 0\)</span>, since it is a probability, and we must also have <span class="math inline">\(\sum_j p_{ij} = 1\)</span> for all states <span class="math inline">\(i\)</span>, as this is the sum of the probabilities of all the places you can move to from state i.</p>
 <p>When the state space is finite (and even sometimes when it’s not), it’s convenient to write the transition probabilities <span class="math inline">\((p_{ij})\)</span> as a matrix <span class="math inline">\(\mathsf P\)</span>, called the transition matrix, whose <span class="math inline">\((i,j)\)</span>th entry is <span class="math inline">\(p_{ij}\)</span>. Then the condition that <span class="math inline">\(\sum_j p_{ij} = 1\)</span> is the condition that each of the rows of <span class="math inline">\(\mathsf P\)</span> add up to <span class="math inline">\(1\)</span>.</p>
+</div>
 </section>
 <section id="markov-chains-6" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>Consider a simple two-state Markov chain with state space <span class="math inline">\(\mathcal S = \{0,1\}\)</span> and transition matrix <span class="math display">\[ \mathsf P = \begin{pmatrix} p_{00} &amp; p_{01} \\ p_{10} &amp; p_{11} \end{pmatrix} = \begin{pmatrix} 1-\alpha &amp; \alpha \\ \beta &amp; 1-\beta \end{pmatrix}  \]</span> for some <span class="math inline">\(0 &lt; \alpha, \beta &lt; 1\)</span>. Note that the rows of <span class="math inline">\(\mathsf P\)</span> add up to <span class="math inline">\(1\)</span>, as they must.</p>
 <p>We can illustrate <span class="math inline">\(\mathsf P\)</span> by a transition diagram, where the blobs are the states and the arrows give the transition probabilities. (We don’t draw the arrow if <span class="math inline">\(p_{ij} = 0\)</span>.) In this case, our transition diagram looks like this:</p>
+</div>
 </section>
 <section id="markov-chains-7" class="slide level2">
 <h2>Markov Chains</h2>
 
-<img data-src="BSMM_8740_lec_09_files/figure-revealjs/twostate-1.png" width="384" class="r-stretch quarto-figure-center"><p class="caption">Transition diagram for the two-state Markov chain</p></section>
+<img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-10-1.png" width="384" class="r-stretch quarto-figure-center"><p class="caption">Transition diagram for the two-state Markov chain</p></section>
 <section id="markov-chains-8" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>We can use this as a simple model of customer churn, for example. If the customer has closed their account (state 0) on one period, then with probability <span class="math inline">\(\alpha\)</span> we will be able to entice them to open their account again (state 1) by the next period; while if the customer has an account (state 1), then with probability <span class="math inline">\(\beta\)</span> they will have closed their account (state 0) by the next period.</p>
+</div>
 </section>
 <section id="markov-chains-9" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: x-large">
 <div id="printer" class="example">
 <p><em>If the customer has an account on period n, what’s the probability they also have an account on period n+2?</em></p>
 <p><span class="math display">\[
@@ -1982,18 +1133,30 @@ p_{11}(2) = \mathbb P (X_{n+2} = 1 \mid X_n = 1)
   &amp;= \beta\alpha + (1-\beta)^2 .
 \end{align*}
 \]</span></p>
+</div>
+</div>
+</section>
+<section id="markov-chains-10" class="slide level2">
+<h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>In the second equality, we used the Markov property to mean conditional probabilities like <span class="math inline">\(\mathbb P(X_{n+2} = 1 \mid X_{n+1} = k)\)</span> did not have to depend on <span class="math inline">\(X_n\)</span>.</p>
 <p>Another way to think of this as we summing the probabilities of all length-2 paths from 1 to 1, which are <span class="math inline">\(1\to 0\to 1\)</span> with probability <span class="math inline">\(\beta\alpha\)</span> and <span class="math inline">\(1 \to 1 \to 1\)</span> with probability <span class="math inline">\((1-\beta)^2\)</span></p>
 </div>
+</section>
+<section id="markov-chains-11" class="slide level2">
+<h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>In the above example, we calculated a two-step transition probability <span class="math inline">\(p_{ij}(2) = \mathbb P (X_{n+2} = j \mid X_n = i)\)</span> by conditioning on the first step. That is, by considering all the possible intermediate steps <span class="math inline">\(k\)</span>, we have</p>
 <p><span class="math display">\[
 p_{ij}(2) = \sum_{k\in\mathcal S} \mathbb P (X_{n+1} = k \mid X_n = i)\mathbb P (X_{n+2} = j \mid X_{n+1} = k) = \sum_{k\in\mathcal S} p_{ik}p_{kj}
 \]</span></p>
 <p>But this is exactly the formula for multiplying the matrix <span class="math inline">\(\mathsf P\)</span> with itself! In other words, <span class="math inline">\(p_{ij}(2) = \sum_{k} p_{ik}p_{kj}\)</span> is the <span class="math inline">\((i,j)\)</span>th entry of the matrix square <span class="math inline">\(\mathsf P^2 = \mathsf{PP}\)</span>. If we write <span class="math inline">\(\mathsf P(2)  = (p_{ij}(2))\)</span> for the matrix of two-step transition probabilities, we have <span class="math inline">\(\mathsf P(2) = \mathsf P^2\)</span>.</p>
 <p>More generally, we see that this rule holds over multiple steps, provided we sum over all the possible paths <span class="math inline">\(i\to k_1 \to k_2 \to \cdots \to k_{n-1} \to j\)</span> of length <span class="math inline">\(n\)</span> from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>.</p>
+</div>
 </section>
-<section id="markov-chains-10" class="slide level2">
+<section id="markov-chains-12" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <div id="thm-n-step" class="theorem">
 <p><span class="theorem-title"><strong>Theorem 1</strong></span> Let <span class="math inline">\((X_n)\)</span> be a Markov chain with state space <span class="math inline">\(\mathcal S\)</span> and transition matrix <span class="math inline">\(\mathsf P = (p_{ij})\)</span>. For <span class="math inline">\(i,j \in \mathcal S\)</span>, write <span class="math display">\[ p_{ij}(n) = \mathbb P(X_n = j \mid X_0 = i) \]</span> for the <span class="math inline">\(n\)</span>-step transition probability. Then</p>
 <p><span class="math display">\[
@@ -2001,62 +1164,77 @@ p_{ij}(n) = \sum_{k_1, k_2, \dots, k_{n-1} \in \mathcal S} p_{ik_1} p_{k_1k_2} \
 \]</span></p>
 <p>In particular, <span class="math inline">\(p_{ij}(n)\)</span> is the <span class="math inline">\((i,j)\)</span>th element of the matrix power <span class="math inline">\(\mathsf P^n\)</span>, and the matrix of <span class="math inline">\(n\)</span>-step transition probabilities is given by <span class="math inline">\(\mathsf P(n) = \mathsf P^n\)</span>.</p>
 </div>
+</div>
 </section>
-<section id="markov-chains-11" class="slide level2">
+<section id="markov-chains-13" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>The so-called <strong>Chapman–Kolmogorov equations</strong> follow immediately from this.</p>
 <div id="c-k" class="theorem" name="Chapman–Kolmogorov equations">
 <p>Let <span class="math inline">\((X_n)\)</span> be a Markov chain with state space <span class="math inline">\(\mathcal S\)</span> and transition matrix <span class="math inline">\(\mathsf P = (p_{ij})\)</span>. Then, for non-negative integers <span class="math inline">\(n,m\)</span>, we have <span class="math display">\[ p_{ij}(n+m) = \sum_{k \in \mathcal S} p_{ik}(n)p_{kj}(m) , \]</span> or, in matrix notation, <span class="math inline">\(\mathsf P(n+m) = \mathsf P(n)\mathsf P(m)\)</span>.</p>
 </div>
+</div>
+</section>
+<section id="markov-chains-14" class="slide level2">
+<h2>Markov Chains</h2>
+<div style="font-size: xx-large">
 <p>In other words, a trip of length <span class="math inline">\(n + m\)</span> from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span> is a trip of length <span class="math inline">\(n\)</span> from <span class="math inline">\(i\)</span> to some other state <span class="math inline">\(k\)</span>, then a trip of length <span class="math inline">\(m\)</span> from <span class="math inline">\(k\)</span> back to <span class="math inline">\(j\)</span>, and this intermediate stop <span class="math inline">\(k\)</span> can be any state, so we have to sum the probabilities.</p>
 <p>Of course, once we know that <span class="math inline">\(\mathsf P(n) = \mathsf P^n\)</span> is given by the matrix power, it’s clear to see that <span class="math inline">\(\mathsf P(n+m) = \mathsf P^{n+m} = \mathsf P^n \mathsf P^m = \mathsf P(n)\mathsf P(m)\)</span>.</p>
+</div>
 </section>
-<section id="markov-chains-12" class="slide level2">
+<section id="markov-chains-15" class="slide level2">
 <h2>Markov Chains</h2>
+<div style="font-size: x-large">
 <p>If we start from a state given by a distribution <span class="math inline">\(\boldsymbol \pi = (\pi_i)\)</span>, then after step 1 the probability we’re in state <span class="math inline">\(j\)</span> is <span class="math inline">\(\sum_i \pi_i p_{ij}\)</span>. So if <span class="math inline">\(\pi_j = \sum_i \pi_i p_{ij}\)</span>, we stay in this distribution forever. We call such a distribution a stationary distribution. We again recognise this formula as a matrix-vector multiplication, so this is <span class="math inline">\(\boldsymbol \pi = \boldsymbol \pi\mathsf P\)</span>, where <span class="math inline">\(\boldsymbol \pi\)</span> is a <em>row</em> vector.</p>
 <div class="definition">
 <p>Let <span class="math inline">\((X_n)\)</span> be a Markov chain on a state space <span class="math inline">\(\mathcal S\)</span> with transition matrix <span class="math inline">\(\mathsf P\)</span>. Let <span class="math inline">\(\boldsymbol \pi = (\pi_i)\)</span> be a distribution on <span class="math inline">\(\mathcal S\)</span>, in that <span class="math inline">\(\pi_i \geq 0\)</span> for all <span class="math inline">\(i \in \mathcal S\)</span> and <span class="math inline">\(\sum_{i \in \mathcal S} \pi_i = 1\)</span>. We call <span class="math inline">\(\boldsymbol \pi\)</span> a <strong>stationary distribution</strong> if</p>
 <p><span class="math display">\[
-\pi_j =* \sum_{i\in \mathcal S} \pi_i p_{ij} \quad \text{for all $j \in \mathcal S$}
+\pi_j = \sum_{i\in \mathcal S} \pi_i p_{ij} \quad \text{for all $j \in \mathcal S$}
 \]</span></p>
 <p>or, equivalently, if <span class="math inline">\(\boldsymbol \pi = \boldsymbol \pi\mathsf P\)</span>.</p>
 </div>
 <p>Note that we’re saying the <em>distribution</em> <span class="math inline">\(\mathbb P(X_n = i)\)</span> stays the same; the Markov chain <span class="math inline">\((X_n)\)</span> itself will keep moving. One way to think is that if we started off a thousand Markov chains, choosing each starting position to be <span class="math inline">\(i\)</span> with probability <span class="math inline">\(\pi_i\)</span>, then (roughly) <span class="math inline">\(1000 \pi_j\)</span> of them would be in state <span class="math inline">\(j\)</span> at any time in the future – but not necessarily the same ones each time.</p>
+</div>
 </section>
-<section id="markov-chains-13" class="slide level2">
+<section id="markov-chains-16" class="slide level2">
 <h2>Markov Chains</h2>
 <h4 id="properties">properties</h4>
+<div style="font-size: xx-large">
 <p>A Markov Chain is <strong>irreducible</strong> if you have positive probability of eventually getting from anywhere to anywhere else.</p>
-<p>A Markov Chain is <strong>aperiodic</strong> if there are no forced cycles, i.e.&nbsp;there do not exist disjoint non-empty subsets X1,X2,…,Xd ford≥2,suchthatP(x,Xi+1)=1 forallx∈Xi (1≤i≤d−1),andP(x,X1)=1forallx∈Xd. [Diagram.]</p>
+<p>A Markov Chain is <strong>aperiodic</strong> if there are no forced cycles, i.e.&nbsp;there do not exist disjoint non-empty subsets <span class="math inline">\(X_1,X_2,...,X_d\)</span> for <span class="math inline">\(d≥2\)</span>,such that <span class="math inline">\(P(x,Xi+1)=1\)</span> for all <span class="math inline">\(x\in Xi (1≤i≤d−1)\)</span>,and <span class="math inline">\(P(x,X1)=1\)</span> for all <span class="math inline">\(x\in Xd\)</span>.</p>
+</div>
 </section>
-<section id="markov-chains-14" class="slide level2">
+<section id="markov-chains-17" class="slide level2">
 <h2>Markov Chains</h2>
 
-<img data-src="BSMM_8740_lec_09_files/figure-revealjs/periods-recap-1.png" width="480" class="r-stretch quarto-figure-center"><p class="caption">MC with cycle</p></section>
+<img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-11-1.png" width="480" class="r-stretch quarto-figure-center"><p class="caption">MC with cycle</p></section>
 <section id="markov-chain-monte-carlo" class="slide level2">
 <h2>Markov Chain Monte Carlo</h2>
-<p>Suppose have complicated, high-dimensional density <span class="math inline">\(\pi = cg\)</span> and we want samples <span class="math inline">\(X_1, X_2,\dots \sim \pi\)</span>. (Then can do Monte Carlo.)</p>
-<p>Define a Markovchain (dependent random process) <span class="math inline">\(X_0, X_1,X_2\dots\)</span> in such a way that for large enough <span class="math inline">\(n\)</span>, <span class="math inline">\(X_n\sim \pi\)</span>.</p>
+<div style="font-size: xx-large">
+<p>Suppose have complicated, high-dimensional density <span class="math inline">\(\pi = cg\)</span> and we want samples <span class="math inline">\(X_1, X_2,\dots \sim \pi\)</span>. (Then we can do Monte Carlo.)</p>
+<p>Define a Markov chain (dependent random process) <span class="math inline">\(X_0, X_1,X_2\dots\)</span> in such a way that for large enough <span class="math inline">\(n\)</span>, <span class="math inline">\(X_n\sim \pi\)</span>.</p>
 <p>Then we can estimate <span class="math inline">\(\mathbb{E}_{\pi}(h) ≡ \int h(x) \pi(x) dx\)</span> by:</p>
 <p><span class="math display">\[
 \mathbb{E}_{\pi}[h] \approx \frac{1}{M-B}\sum_{i=B+1}^{M}
 \]</span></p>
 <p>where <span class="math inline">\(B\)</span> (“burn-in”) is chosen large enough so <span class="math inline">\(X_B\sim\pi\)</span>, and <span class="math inline">\(M\)</span> is chosen large enough to get good Monte Carlo estimates.</p>
+</div>
 </section>
 <section id="mcmc-metropolis-algo" class="slide level2">
 <h2>MCMC Metropolis Algo</h2>
+<div style="font-size: xx-large">
 <ol type="1">
 <li>choose some initial value <span class="math inline">\(X_0\)</span>, then</li>
-<li>given <span class="math inline">\(X_{n-1}\)</span>, choose a proposal state <span class="math inline">\(Y_n\sim \textrm{MVN}(X_{n-1},\sigma^2\textrm{I})\)</span> for some fixed <span class="math inline">\(\sigma^2&gt;0\)</span></li>
+<li>given <span class="math inline">\(X_{n-1}\)</span>, choose a proposal state <span class="math inline">\(Y_n\sim \textrm{MVN}(X_{n-1},\sigma^2\textrm{I})\)</span>, for some fixed <span class="math inline">\(\sigma^2&gt;0\)</span></li>
 <li>let <span class="math inline">\(A_n=\pi(Y_n)/\pi(X_{n-1}=g(Y_n)/g(X_{n-1})\)</span> and <span class="math inline">\(U_n\sim\textrm{U}[0,1]\)</span>, then</li>
 <li>id <span class="math inline">\(U_n&lt;A_n\)</span> set <span class="math inline">\(X_n=Y_n\)</span> (“accept”), otherwise set $X_n = X_{n-1} ) “reject”</li>
 <li>repeat for <span class="math inline">\(n=1,2,3,\ldots,M\)</span></li>
 </ol>
 <p>This version is called random-walk Metropolis</p>
+</div>
 </section>
 <section id="mcmc-metropolis-algo-1" class="slide level2">
 <h2>MCMC Metropolis Algo</h2>
-<div class="cell">
 <details class="code-fold">
 <summary>a simple Metropolis algorithm in one dimension</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>g <span class="ot">=</span> <span class="cf">function</span>(y) {</span>
@@ -2088,70 +1266,547 @@ p_{ij}(n) = \sum_{k_1, k_2, \dots, k_{n-1} \in \mathcal S} p_{ik_1} p_{k_1k_2} \
 <span id="cb12-27"><a></a>    hlist[i] <span class="ot">=</span> <span class="fu">h</span>(X);</span>
 <span id="cb12-28"><a></a>}</span>
 <span id="cb12-29"><a></a></span>
-<span id="cb12-30"><a></a><span class="fu">cat</span>(<span class="st">"ran Metropolis algorithm for"</span>, M, <span class="st">"iterations, with burn-in"</span>, B, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-30"><a></a>u <span class="ot">=</span> <span class="fu">mean</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M])</span>
+<span id="cb12-31"><a></a>se1 <span class="ot">=</span>  <span class="fu">sd</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M]) <span class="sc">/</span> <span class="fu">sqrt</span>(M<span class="sc">-</span>B)</span>
+<span id="cb12-32"><a></a>varfact <span class="ot">&lt;-</span> <span class="cf">function</span>(xxx) { <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">acf</span>(xxx, <span class="at">plot=</span><span class="cn">FALSE</span>)<span class="sc">$</span>acf) <span class="sc">-</span> <span class="dv">1</span> }</span>
+<span id="cb12-33"><a></a>thevarfact <span class="ot">=</span> <span class="fu">varfact</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M])</span>
+<span id="cb12-34"><a></a>se <span class="ot">=</span> se1 <span class="sc">*</span> <span class="fu">sqrt</span>( thevarfact )</span>
+<span id="cb12-35"><a></a></span>
+<span id="cb12-36"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb12-37"><a></a>  <span class="at">measure =</span> <span class="fu">c</span>(<span class="st">"iterations"</span>,<span class="st">"burn-in"</span>,<span class="st">"mean of h"</span>,<span class="st">"iid se"</span>,<span class="st">"varfact"</span>,<span class="st">"true se"</span>,<span class="st">"95% CI lb"</span>,<span class="st">"95% CI ub"</span>)</span>
+<span id="cb12-38"><a></a>  , <span class="at">value =</span> <span class="fu">c</span>(M,B,u,se1,thevarfact,se,u<span class="fl">-1.96</span><span class="sc">*</span>se,u<span class="fl">+1.96</span><span class="sc">*</span>se)</span>
+<span id="cb12-39"><a></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-40"><a></a>gt<span class="sc">::</span><span class="fu">gt</span>(<span class="st">"measure"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-41"><a></a>gt<span class="sc">::</span><span class="fu">fmt_number</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-42"><a></a>gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>()</span>
+<span id="cb12-43"><a></a><span class="co">#cat("ran Metropolis algorithm for", M, "iterations, with burn-in", B, "\n");</span></span>
+<span id="cb12-44"><a></a><span class="co">#cat("acceptance rate =", numaccept/M, "\n");</span></span>
+<span id="cb12-45"><a></a><span class="co">#u = mean(hlist[(B+1):M])</span></span>
+<span id="cb12-46"><a></a><span class="co">#cat("mean of h is about", u, "\n")</span></span>
+<span id="cb12-47"><a></a></span>
+<span id="cb12-48"><a></a><span class="co">#se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)</span></span>
+<span id="cb12-49"><a></a><span class="co">#cat("iid standard error would be about", se1, "\n")</span></span>
+<span id="cb12-50"><a></a></span>
+<span id="cb12-51"><a></a><span class="co">#varfact &lt;- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }</span></span>
+<span id="cb12-52"><a></a><span class="co">#thevarfact = varfact(hlist[(B+1):M])</span></span>
+<span id="cb12-53"><a></a><span class="co">#se = se1 * sqrt( thevarfact )</span></span>
+<span id="cb12-54"><a></a><span class="co">#cat("varfact = ", thevarfact, "\n")</span></span>
+<span id="cb12-55"><a></a><span class="co">#cat("true standard error is about", se, "\n")</span></span>
+<span id="cb12-56"><a></a><span class="co">#cat("approximate 95% confidence interval is (", u - 1.96 * se, ",",</span></span>
+<span id="cb12-57"><a></a><span class="co">#                       u + 1.96 * se, ")\n\n")</span></span>
+<span id="cb12-58"><a></a><span class="co"># acf(xlist)</span></span>
+<span id="cb12-59"><a></a><span class="co">#plot(xlist, type='l')</span></span>
+<span id="cb12-60"><a></a></span>
+<span id="cb12-61"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xlist), <span class="at">y=</span>xlist) <span class="sc">|&gt;</span> </span>
+<span id="cb12-62"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>y)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>ran Metropolis algorithm for 11000 iterations, with burn-in 1000 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">cat</span>(<span class="st">"acceptance rate ="</span>, numaccept<span class="sc">/</span>M, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>acceptance rate = 0.1046 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a>u <span class="ot">=</span> <span class="fu">mean</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M])</span>
-<span id="cb16-2"><a></a><span class="fu">cat</span>(<span class="st">"mean of h is about"</span>, u, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>mean of h is about 0.773 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>se1 <span class="ot">=</span>  <span class="fu">sd</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M]) <span class="sc">/</span> <span class="fu">sqrt</span>(M<span class="sc">-</span>B)</span>
-<span id="cb18-2"><a></a><span class="fu">cat</span>(<span class="st">"iid standard error would be about"</span>, se1, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>iid standard error would be about 0.001658 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>varfact <span class="ot">&lt;-</span> <span class="cf">function</span>(xxx) { <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">acf</span>(xxx, <span class="at">plot=</span><span class="cn">FALSE</span>)<span class="sc">$</span>acf) <span class="sc">-</span> <span class="dv">1</span> }</span>
-<span id="cb20-2"><a></a>thevarfact <span class="ot">=</span> <span class="fu">varfact</span>(hlist[(B<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>M])</span>
-<span id="cb20-3"><a></a>se <span class="ot">=</span> se1 <span class="sc">*</span> <span class="fu">sqrt</span>( thevarfact )</span>
-<span id="cb20-4"><a></a><span class="fu">cat</span>(<span class="st">"varfact = "</span>, thevarfact, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>varfact =  21.02 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">cat</span>(<span class="st">"true standard error is about"</span>, se, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>true standard error is about 0.007601 </code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">cat</span>(<span class="st">"approximate 95% confidence interval is ("</span>, u <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se, <span class="st">","</span>,</span>
-<span id="cb24-2"><a></a>                        u <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se, <span class="st">")</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>approximate 95% confidence interval is ( 0.7581 , 0.7879 )</code></pre>
-</div>
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="fu">plot</span>(xlist, <span class="at">type=</span><span class="st">'l'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="quarto-layout-row">
+<div id="qogpyngwtd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+#qogpyngwtd table {
+  font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-<details class="code-fold">
-<summary>a simple Metropolis algorithm in one dimension</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="co"># acf(xlist)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+#qogpyngwtd thead, #qogpyngwtd tbody, #qogpyngwtd tfoot, #qogpyngwtd tr, #qogpyngwtd td, #qogpyngwtd th {
+  border-style: none;
+}
+
+#qogpyngwtd p {
+  margin: 0;
+  padding: 0;
+}
+
+#qogpyngwtd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #FFFFFF;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qogpyngwtd .gt_title {
+  color: #333333;
+  font-size: 24px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qogpyngwtd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qogpyngwtd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qogpyngwtd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qogpyngwtd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qogpyngwtd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qogpyngwtd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qogpyngwtd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qogpyngwtd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qogpyngwtd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qogpyngwtd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qogpyngwtd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qogpyngwtd .gt_row {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #F6F7F7;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qogpyngwtd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 80%;
+  font-weight: bolder;
+  text-transform: uppercase;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qogpyngwtd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qogpyngwtd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qogpyngwtd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qogpyngwtd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qogpyngwtd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qogpyngwtd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qogpyngwtd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_striped {
+  background-color: #FAFAFA;
+}
+
+#qogpyngwtd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qogpyngwtd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qogpyngwtd .gt_sourcenote {
+  font-size: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qogpyngwtd .gt_left {
+  text-align: left;
+}
+
+#qogpyngwtd .gt_center {
+  text-align: center;
+}
+
+#qogpyngwtd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qogpyngwtd .gt_font_normal {
+  font-weight: normal;
+}
+
+#qogpyngwtd .gt_font_bold {
+  font-weight: bold;
+}
+
+#qogpyngwtd .gt_font_italic {
+  font-style: italic;
+}
+
+#qogpyngwtd .gt_super {
+  font-size: 65%;
+}
+
+#qogpyngwtd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qogpyngwtd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qogpyngwtd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qogpyngwtd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qogpyngwtd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qogpyngwtd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qogpyngwtd .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qogpyngwtd .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qogpyngwtd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th class="gt_col_heading gt_columns_bottom_border gt_left" style="text-align: left;" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="value" class="gt_col_heading gt_columns_bottom_border gt_right" style="text-align: left;" data-quarto-table-cell-role="th" scope="col">value</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">iterations</td>
+<td class="gt_row gt_right" style="text-align: left;" headers="stub_1_1 value">11,000.00</td>
+</tr>
+<tr class="even">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">burn-in</td>
+<td class="gt_row gt_right gt_striped" style="text-align: left;" headers="stub_1_2 value">1,000.00</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">mean of h</td>
+<td class="gt_row gt_right" style="text-align: left;" headers="stub_1_3 value">0.77</td>
+</tr>
+<tr class="even">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">iid se</td>
+<td class="gt_row gt_right gt_striped" style="text-align: left;" headers="stub_1_4 value">0.00</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">varfact</td>
+<td class="gt_row gt_right" style="text-align: left;" headers="stub_1_5 value">21.02</td>
+</tr>
+<tr class="even">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">true se</td>
+<td class="gt_row gt_right gt_striped" style="text-align: left;" headers="stub_1_6 value">0.01</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">95% CI lb</td>
+<td class="gt_row gt_right" style="text-align: left;" headers="stub_1_7 value">0.76</td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" style="text-align: left;" data-quarto-table-cell-role="th" scope="row">95% CI ub</td>
+<td class="gt_row gt_right gt_striped" style="text-align: left;" headers="stub_1_8 value">0.79</td>
+</tr>
+</tbody>
+</table>
+
 </div>
-<img data-src="BSMM_8740_lec_09_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="BSMM_8740_lec_09a_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="need" class="slide level2">
+<h2>Need</h2>
+<p>Balance equation</p>
+</section>
 <section id="more" class="slide level2">
 <h2>More</h2>
 <ul>
@@ -2209,7 +1864,7 @@ p_{ij}(n) = \sum_{k_1, k_2, \dots, k_{n-1} \in \mathcal S} p_{ik_1} p_{k_1k_2} \
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true,"numbers":true},
 'chalkboard': {"buttons":true},
-'multiplex': {"secret":null,"id":"710038e902988cb7","url":"https://reveal-multiplex.glitch.me/"},
+'multiplex': {"secret":null,"id":"a731138a7794c893","url":"https://reveal-multiplex.glitch.me/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
