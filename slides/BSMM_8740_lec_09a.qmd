@@ -87,7 +87,7 @@ event_E_happened <- function( x ) {
   }
 }
 
-# Now MC says that we should generate lots of copies of Z...
+# generate lots of copies of Z...
 NMC <- 10000; # 10000 seems like "a lot".
 rnorm( NMC, mean=1, sd=sqrt(3) ) |> 
   purrr::map_lgl(event_E_happened) |> 
@@ -139,6 +139,7 @@ What defines a good random number generator (RNG) has a long period – how long
 
 ## Random Number Generation
 
+::: {style="font-size: x-large"}
 Recall that $\mathscr{N}(0, 1)$ Normal random variables (mean 0, variance 1) have the probability density function:
 
 $$
@@ -157,6 +158,7 @@ x_{1} & =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
  x_2& =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 \end{align*}
 $$ It can be proved that $x_1$ and $x_2$ are independent $\mathscr{N}(0, 1)$ random variables
+:::
 
 ## Random Number Generation
 
@@ -186,7 +188,9 @@ samples <- matrix(runif(10000), ncol=2) |> data.frame() |>
 samples |> 
   tidyr::pivot_longer(-c(X1,X2)) |> 
   ggplot(aes(x=value, color=name, fill=name)) + 
-  geom_histogram(aes(y=..density..), bins = 60, position="identity", alpha=0.3) + 
+  geom_histogram(
+    aes(y=..density..), bins = 60, position="identity", alpha=0.3
+  ) + 
   labs(x="Value", y="Density") + theme_minimal()
 
 samples |> 
@@ -196,6 +200,7 @@ ggplot(aes(x=y1, y=y2)) + geom_point() + coord_fixed() + theme_minimal()
 
 ## Random Number Generation
 
+::: {style="font-size: x-large"}
 Your computer is only capable of producing pseudorandom numbers. These are made by running a pseudorandom number generator algorithm which is deterministic, e.g.
 
 ```{r}
@@ -210,6 +215,7 @@ rnorm(n=10)
 ```
 
 Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers. That is what “statistical randomness” means!
+:::
 
 ## Central Limit Theorem
 
@@ -227,9 +233,11 @@ $$ where $Z\sim\mathscr{N}(0,1)$
 
 ## MC Methods
 
+::: {style="font-size: x-large"}
 Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
 
 Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
+:::
 
 ## MC Methods
 
@@ -252,7 +260,7 @@ Monte Carlo replaces the work of computing an integral (i.e., an expectation) wi
 
 ## MC Methods
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 This idea can be pushed still further. Suppose that we want to compute an integral
 
 $$
@@ -268,7 +276,7 @@ $$ where $h(x)=g(x)/f(x)$ and $X\sim f$
 
 ## MC Methods
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 Now suppose we are given $h(x)$ and we want to compute $\mathbb{E}[h(X)]$ where $X\sim f,\,x\in D$. So we need to sample from $f$, but what if we could not do that directly?
 
 If there were some other distribution $g(x)$ we could sample from, such that $g(x)>0,\,x\in D$, then
@@ -284,7 +292,7 @@ $$
 
 ## MC Methods
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 This is called importance sampling (IS).
 
 1.  draw iid $x_1,x_2,\ldots,x_n$ from g and calculate the importance weight $$
@@ -315,7 +323,10 @@ se_h  <- sqrt(var_h)
 
 tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |> 
   gt::gt() |> 
-  gt::fmt_number(decimals=4)
+  gt::fmt_number(decimals=4) |> 
+  gt::tab_options( table.font.size = gt::px(20) ) |>  
+  #gt::tab_header(title = )
+  gt::as_raw_html()
 ```
 
 ## MC Methods
@@ -323,7 +334,7 @@ tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |>
 #### unknown normalizing constant
 
 ::: {style="font-size: x-large"}
-Suppose that $q(x)>0;\;x\in D$ and $\int_Dq(x)dx=Z_q<\infty$ The $q()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{Z_q}q(x)$.
+Suppose that $q(x)>0;\;x\in D$ and $\int_Dq(x)dx=Z_q<\infty$. Here $q()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{Z_q}q(x)$.
 
 Using IS, let $g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-normalized density with $Z_r$ possibly unknown.
 
@@ -337,13 +348,15 @@ Using IS, let $g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-norm
 
 #### unknown normalizing constant
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 since
 
 $$
 \begin{align*}
 \frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}\right]=\int\frac{q(X)}{r(X)}g(x)dx=\frac{Z_{q}}{Z_{r}}\\
-\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]=\int\frac{q(X)}{r(X)}g(x)h(x)dx=\frac{1}{Z_{r}}\int g(x)h(x)dx
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]\\
+ & =\int\frac{q(X)}{r(X)}g(x)h(x)dx\\
+ & =\frac{1}{Z_{r}}\int g(x)h(x)dx
 \end{align*}
 $$
 :::
@@ -352,12 +365,14 @@ $$
 
 #### repeating the prior example, but un-normalized
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 Estimate $\mathbb E_f(X)$ where $f(x) = e^{-\frac{x^2}{2}};\;x\ge 0$ (this is the half-Normal distribution, un-normalized)
 :::
 
 ```{r}
 #| echo: true
+#| code-fold: true
+#| code-summary: calculation of some kind
 # un-normalized weights
 n <- 5000
 X <- rexp(n, rate=2)
@@ -369,7 +384,10 @@ se_h2  <- sqrt(var_h2)
 
 tibble::tibble(mean = mu_h2,  variance = var_h2, 'standard error' = se_h2) |> 
   gt::gt() |> 
-  gt::fmt_number(decimals=4)
+  gt::fmt_number(decimals=4) |> 
+  gt::tab_options( table.font.size = gt::px(20) ) |>  
+  #gt::tab_header(title = )
+  gt::as_raw_html()
 ```
 
 ## MC Methods
@@ -377,17 +395,15 @@ tibble::tibble(mean = mu_h2,  variance = var_h2, 'standard error' = se_h2) |>
 #### rejection sampling procedure
 
 ::: {style="font-size: x-large"}
-Assume we have an un-normalized $g(x)$, i.e. $\pi(x)=cg(x)$ but $c$ is unknown.
-
-We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h]$
-
-Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ ( or $cKf(x)\ge \pi(x)$).
+-   Assume we have an un-normalized $g(x)$, i.e. $\pi(x)=cg(x)$ but $c$ is unknown.
+-   We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h]$
+-   Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ ( or $cKf(x)\ge \pi(x)$).
 
 Then use the following procedure:
 
--   sample $X\sim f$ and $U\sim \mathrm{uniform}[0,1]$
--   if $U\le\frac{g(X)}{Kf(x)}$, the accept X as a draw from $\pi$
--   otherwise reject the sample and repeat
+1.  sample $X\sim f$ and $U\sim \mathrm{uniform}[0,1]$
+2.  if $U\le\frac{g(X)}{Kf(x)}$, the accept X as a draw from $\pi$
+3.  otherwise reject the sample and repeat
 :::
 
 ## MC Methods
@@ -414,7 +430,11 @@ $$
 -   and so
 
 $$
-\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
+\begin{align*}
+\mathbb{E}_{f}\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right] & =\mathbb{E}_{f}\left[\frac{g(X)}{Kf(X)}\right]\\
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{Kf(X)}f(x)dx\\
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{K}dx
+\end{align*}
 $$
 :::
 
@@ -441,7 +461,7 @@ $$
 
 #### rejection sampling
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 $$
 \mathbb{P}\left(X\le y|U\le\frac{g(X)}{Kf(X)}\right)=\frac{\int_{-\infty}^{y}\frac{g(x)}{K}dx}{\int_{-\infty}^\infty\frac{g(X)}{K}dx}=\int_{-\infty}^{y}\pi(x)dx
 $$
@@ -451,8 +471,8 @@ $$
 
 #### rejection sampling
 
--   consider random variable $X$ with pdf/pmf $q(x)>0;\;x\in D$ which is difficult to sample from
--   we will sample from $q$ using a proposal pdf/pmf $f$ which we can sample from
+-   consider a random variable $X$ with pdf/pmf $q(x)>0;\;x\in D$, which is **difficult to sample** from
+-   we will sample from $q$ using a proposal pdf/pmf $f$ which **we can sample from**
 -   if we can find a constant $K$ such that $q(x)\le Kf(x); \forall x\in D$. Alternatively $\frac{q(x)}{f(x)}\le K$
 -   then there is a rejection method that returns $X\sim q$
 
@@ -514,7 +534,7 @@ $$
 $$
 :::
 
-[^1]: The **geometric distribution** is a discrete distribution that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
+[^1]: The **geometric distribution** is a discrete pmf that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
 
 ## MC Methods
 
@@ -553,24 +573,31 @@ $$ In practice this means we can ignore the normalizing constants if we can find
 
 ## MC Methods
 
-::: {style="font-size: x-large"}
-Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
+::: {style="font-size: xx-large"}
+Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$.
+
+Monte Carlo methods avoid doing any integration or summation over the pdf/pmf and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
 
 Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
 :::
 
 ## Stochastic processes
 
+::: {style="font-size: xx-large"}
 A stochastic process, which we will usually write as $(X_n)$, is an indexed sequence of random variables that are (usually) dependent on each other.
 
 Each random variable $X_n$ takes a value in a state space $\mathcal S$ which is the set of possible values for the process. As with usual random variables, the state space $\mathcal S$ can be discrete or continuous. A discrete state space denotes a set of distinct possible outcomes, which can be finite or countably infinite. For example, $\mathcal S = \{\text{Heads},\text{Tails}\}$ is the state space for a single coin flip, while in the case of counting insurance claims, the state space would be the nonnegative integers $\mathcal S = \mathbb Z_+ = \{0,1,2,\dots\}$.
+:::
 
 ## Stochastic processes
 
-Further, the process has an index set that puts the random variables that make up the process in order. The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by $n = 0,1,2,\dots$, while continuous time denotes a process monitored constantly over time, often denoted by $t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}$.
+Further, the process has an index set that puts the random variables that make up the process in order.
+
+The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by $n = 0,1,2,\dots$, while continuous time denotes a process monitored constantly over time, often denoted by $t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}$.
 
 ## Markov property
 
+::: {style="font-size: xx-large"}
 Think of a simple board game where we roll a dice and move that many squares forward on the board. Suppose we are currently on the square $X_n$. Then what can we say about which square $X_{n+1}$ we move to on our next turn?
 
 -   $X_{n+1}$ is random, since it depends on the roll of the dice.
@@ -578,11 +605,14 @@ Think of a simple board game where we roll a dice and move that many squares for
 -   Given the square $X_n$ we are now, $X_{n+1}$ doesn't depend any further on which sequence of squares $X_0, X_1, \dots, X_{n-1}$ we used to get here.
 
 The third point is called the Markov property or memoryless property. We say "memoryless", because we only need to remember what square we've reached, not which squares we used to get here. The stochastic process before this moment has no bearing on the future, given where we are now. A mathematical way to say this is that "the past and the future are conditionally independent given the present."
+:::
 
 ## Markov Chains
 
 ::: {style="font-size: xx-large"}
-Consider the following **simple random walk** on the integers $\mathbb Z$: We start at $0$, then at each time step, we go up by one with probability $p$ and down by one with probability $q = 1-p$. When $p = q = \frac12$, we're equally as likely to go up as down, and we call this the **simple symmetric random walk**.
+Consider the following **simple random walk** on the integers $\mathbb Z$:
+
+We start at $0$, then at each time step, we go up by one with probability $p$ and down by one with probability $q = 1-p$. When $p = q = \frac12$, we're equally as likely to go up as down, and we call this the **simple symmetric random walk**.
 
 The simple random walk is a simple but very useful model for lots of processes, like stock prices, sizes of populations, or positions of gas particles. (In many modern models, however, these have been replaced by more complicated continuous time and space models.) The simple random walk is sometimes called the "drunkard's walk", suggesting it could model a drunk person trying to stagger home.
 :::
@@ -667,7 +697,7 @@ For the random walk (and also the gambler's ruin), the transition probabilities 
 ## Markov Chains
 
 ::: {style="font-size: xx-large"}
-Let's write $p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)$ for the transition probabilities, which are independent of $n$. We must have $p_{ij} \geq 0$, since it is a probability, and we must also have $\sum_j p_{ij} = 1$ for all states $i$, as this is the sum of the probabilities of all the places you can move to from state i.
+Write $p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)$ for the transition probabilities, which are independent of $n$. We must have $p_{ij} \geq 0$, since it is a probability, and we must also have $\sum_j p_{ij} = 1$ for all states $i$, as this is the sum of the probabilities of all the places you can move to from state i.
 
 When the state space is finite (and even sometimes when it's not), it's convenient to write the transition probabilities $(p_{ij})$ as a matrix $\mathsf P$, called the transition matrix, whose $(i,j)$th entry is $p_{ij}$. Then the condition that $\sum_j p_{ij} = 1$ is the condition that each of the rows of $\mathsf P$ add up to $1$.
 :::
@@ -733,7 +763,7 @@ $$
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 In the second equality, we used the Markov property to mean conditional probabilities like $\mathbb P(X_{n+2} = 1 \mid X_{n+1} = k)$ did not have to depend on $X_n$.
 
 Another way to think of this as we summing the probabilities of all length-2 paths from 1 to 1, which are $1\to 0\to 1$ with probability $\beta\alpha$ and $1 \to 1 \to 1$ with probability $(1-\beta)^2$
@@ -741,7 +771,7 @@ Another way to think of this as we summing the probabilities of all length-2 pat
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 In the above example, we calculated a two-step transition probability $p_{ij}(2) = \mathbb P (X_{n+2} = j \mid X_n = i)$ by conditioning on the first step. That is, by considering all the possible intermediate steps $k$, we have
 
 $$ 
@@ -880,8 +910,10 @@ This version is called random-walk Metropolis
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: a simple Metropolis algorithm in one dimension
-
+#| code-summary: "a simple Metropolis algorithm in one dimension"
+#| layout-ncol: 2
+#| layout-align: center
+#| fig-height: 8
 g = function(y) {
     if ( (y<0) || (y>1) )
 	return(0)
@@ -911,27 +943,46 @@ for (i in 1:M) {
     hlist[i] = h(X);
 }
 
-cat("ran Metropolis algorithm for", M, "iterations, with burn-in", B, "\n");
-cat("acceptance rate =", numaccept/M, "\n");
 u = mean(hlist[(B+1):M])
-cat("mean of h is about", u, "\n")
-
 se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)
-cat("iid standard error would be about", se1, "\n")
-
 varfact <- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }
 thevarfact = varfact(hlist[(B+1):M])
 se = se1 * sqrt( thevarfact )
-cat("varfact = ", thevarfact, "\n")
-cat("true standard error is about", se, "\n")
-cat("approximate 95% confidence interval is (", u - 1.96 * se, ",",
-						u + 1.96 * se, ")\n\n")
 
-plot(xlist, type='l')
+tibble::tibble(
+  measure = c("iterations","burn-in","mean of h","iid se","varfact","true se","95% CI lb","95% CI ub")
+  , value = c(M,B,u,se1,thevarfact,se,u-1.96*se,u+1.96*se)
+) |> 
+gt::gt("measure") |> 
+gt::fmt_number() |> 
+gtExtras::gt_theme_espn()
+
+#cat("ran Metropolis algorithm for", M, "iterations, with burn-in", B, "\n");
+#cat("acceptance rate =", numaccept/M, "\n");
+#u = mean(hlist[(B+1):M])
+#cat("mean of h is about", u, "\n")
+
+#se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)
+#cat("iid standard error would be about", se1, "\n")
+
+#varfact <- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }
+#thevarfact = varfact(hlist[(B+1):M])
+#se = se1 * sqrt( thevarfact )
+#cat("varfact = ", thevarfact, "\n")
+#cat("true standard error is about", se, "\n")
+#cat("approximate 95% confidence interval is (", u - 1.96 * se, ",",
+#						u + 1.96 * se, ")\n\n")
 # acf(xlist)
+#plot(xlist, type='l')
 
+tibble::tibble(x=1:length(xlist), y=xlist) |> 
+  ggplot(aes(x=x,y=y)) + geom_line()
 
 ```
+
+## Need
+
+Balance equation
 
 ## More
 
