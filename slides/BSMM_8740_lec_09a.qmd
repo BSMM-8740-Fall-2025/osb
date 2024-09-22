@@ -980,6 +980,40 @@ tibble::tibble(x=1:length(xlist), y=xlist) |>
 
 ```
 
+## MCMC Metropolis-Hastings Algo
+
+Metropolis algorithm requires that the state transition probabilities are symmetric, so the proposal distribution is symmetric.
+
+if $q(x,y) \gg q(y,x)$ the the Metropolis chain would spend too much time at $y$ and not enought at $x$, so it accepts fewer moves $x\rightarrow y$
+
+## MCMC Metropolis-Hastings Algo
+
+Replace
+
+$$
+A_n = \frac{\pi(Y_n)}{\pi(X_{n-1})}\;\mathrm{with}\; A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}
+$$
+
+and the algorithm is still valid even is $q$ is not symmetric.
+
+We do require that $q(x,y)>0\;\textrm{iff}\; q(y,x)>0$
+
+## MCMC Metropolis-Hastings Algo 
+
+Why is this valid?
+
+For metropolis, th key was that the Markov chain was reversible, i.e. $\pi(x)\mathbb{P}(x,y)=\pi(y)\mathbb{P}(y,x)$
+
+If instead $A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}$, with acceptance probability $\alpha(x,y)=\min\left[1,\frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}\right]$, then
+
+$$
+\begin{align*}
+q(x,y)\alpha(x,y)\pi(x) & =q(x,y)\min\left[1,\frac{\pi(y)q(y,x)}{\pi(x)q(x,y)}\right]\pi(x)\\
+ & =\min\left[\pi(x)q(x,y),\pi(y)q(y,x)\right]
+\end{align*}$$
+
+and $\pi(x)\mathbb{P}(x,y)$ is still symmetric, even if $q$ wasn't
+
 ## Need
 
 Balance equation
