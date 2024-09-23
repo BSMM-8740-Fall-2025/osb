@@ -1,6 +1,6 @@
 ---
 title: "Regression methods"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 4]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 3]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
@@ -63,7 +63,7 @@ The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e
 
 ## Taylor Series
 
-The decomposition of a function of a single variable $x$ into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:
+The decomposition of a function $f$ of a single variable $x$ into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:
 
 ::: {style="font-size: xx-large"}
 $$
@@ -109,7 +109,7 @@ which decomposes a function of two variables into a sum of simpler functions, e.
 
 ## Linear regression models
 
-For one co-variate, If the mean function is smooth (i.e. not changing rapidly with the co-variate) then $\mu^{(n)}$ will be decreasing in $n$, and furthermore $\beta_n$ decreases as $1/n!$, so SLR models in one co-variate typically use only the first two or at most three $\beta$ coefficients.
+For one co-variate, if the mean function is smooth (i.e. not changing rapidly with the co-variate) then $\mu^{(n)}$ will be decreasing in $n$, and furthermore $\beta_n$ decreases as $1/n!$, so SLR models in one co-variate typically use only the first two or at most three $\beta$ coefficients.
 
 Thus the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
 
@@ -122,7 +122,7 @@ For multiple co-variates, If the mean function is smooth (i.e. not changing rapi
 ## Linear regression models
 
 ::: callout-note
-It is common to add the unit constant to the covariate vector $x=(1,x_1,x_2,\ldots)$ so that the coefficient vector is $\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)$, and the model can be expressed as a vector equation: \$y=\\mathbf{\\beta}\\cdot \\mathbf{x}[^2]\$\$.
+It is common to add the unit constant to the covariate vector $x=(1,x_1,x_2,\ldots)$ so that the coefficient vector is $\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)$, and the model can be expressed[^2] as a vector equation: $y=\mathbf{\beta}\cdot \mathbf{x}$.
 :::
 
 [^2]: sometime written as $\beta'\mathbf{x}$
@@ -139,16 +139,35 @@ The likelihood of multiple observations is the product of the likelihoods for ea
 
 ## Linear regression models
 
-To fit the 1D linear regression model given $N$ data samples, we minimize the negative log-likelihood on the training set.
+To fit the 1D linear regression model given $N$ data samples, we minimize the negative log-likelihood (NLL) on the training set.
 
+::: {style="font-size: xx-large"}
 $$
 \begin{align*}
-\text{NLL}\left(\beta,\sigma^{2}\right) & =\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
- & =-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
+\text{NLL}\left(\beta,\sigma^{2}\right) & =-\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
+ & =\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
 \end{align*}
 $$
+:::
 
-where the predicted response is $\hat{y}\equiv\beta'x_{n}$. This is the maximum likelihood method.
+where the predicted response is $\hat{y}\equiv\beta'x_{n}$. This is also the maximum likelihood estimation (MLE) method.
+
+## Linear regression models
+
+Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing
+
+-   the **mean squared error** $\text{MSE}\left(\beta\right) = \frac{1}{N}\text{RSS}\left(\beta\right)$
+-   the **root mean squared error** $\text{RMSE}\left(\beta\right) = \sqrt{\text{MSE}\left(\beta\right)}$
+
+## Aside: empirical risk minimization
+
+The MLE can be generalized by replacing the NLL ($\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)$) with any other loss function to get
+
+$$
+\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
+$$
+
+This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.
 
 ## Linear regression models
 
@@ -175,7 +194,7 @@ $$
 
 where error term $u_i$ is a sample from $\mathscr{N}\left(0,\sigma^{2}\right)$ which in turn implies $\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0$
 
-The independence of the covariates and the errors is a testable assumption.
+The independence of the covariates and the errors/residuals is a testable assumption.
 
 ## Linear regression models
 
@@ -222,6 +241,7 @@ $$
 
 Substituting the expression for $\hat{\beta}_{0}$ in the independence equation
 
+::: {style="font-size: xx-large"}
 $$
 \begin{align*}
 \frac{1}{N}\sum_{i-1}^{N}x_{i}\left(y_{i}-\left(\bar{y}-\hat{\beta}_{1}\bar{x}\right)-\hat{\beta}_{1}x_{i}\right) & =0\\
@@ -229,6 +249,7 @@ $$
 \frac{1}{N}\sum_{i-1}^{N}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) & =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2
 \end{align*}
 $$
+:::
 
 ## Linear regression models
 
@@ -251,7 +272,7 @@ $$
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right) = \frac{\text{cov}(X,Y)}{\text{var}(X)}
 $$
 
-There are algorithmic issues with computing $\left(X'X\right)^{-1}$ though.
+There are algorithmic issues with computing $\left(X'X\right)^{-1}$ though, so we could instead start with $X\beta=y$ and write $\hat{\mathbf{\beta}}_{OLS}=X^{-1}y$ .
 
 ## Linear regression algorithms
 
@@ -286,6 +307,12 @@ QR <- qr(A)
 #| echo: true
 #| message: false
 Q <- qr.Q(QR); Q
+```
+
+```{r}
+#| echo: true
+#| message: false
+Q %*% t(Q) |> round()
 ```
 
 ## R
@@ -342,40 +369,26 @@ b <- crossprod(Q, y); b
 backsolve(R, b)
 ```
 
-## Linear regression models
+## Collinearity
 
-Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing
+-   One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors.
 
--   the **mean squared error** $\text{MSE}\left(\beta\right) = \frac{1}{N}\text{RSS}\left(\beta\right)$
--   the **root mean squared error** $\text{RMSE}\left(\beta\right) = \sqrt{\text{MSE}\left(\beta\right)}$
-
-::: callout-note
-The minimum NLL estimate is also the maximum likelihood estimate (MLE)
-:::
-
-## Aside: empirical risk minimization
-
-The MLE can be generalized by replacing the NLL ($\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)$) with any other loss function to get
-
-$$
-\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
-$$
-
-This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.
-
-## Need bridge here
+-   While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.
 
 ## Collinearity
 
-One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors. While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.
+-   Data collection methods, constraints on the fitted regression model, model specification error, an overdefined model, may be some potential sources of multicollinearity.
+
+-   In other cases it is an artifact caused by creating new predictors from other predictors.
 
 ## Collinearity
 
-Data collection methods, constraints on the fitted regression model, model specification error, an overdefined model, may be some potential sources of multicollinearity. In other cases it is an artifact caused by creating new predictors from other predictors.
+The problem of collinearity has potentially serious effect on the regression estimates such as:
 
-## Collinearity
-
-The problem of collinearity has potentially serious effect on the regression estimates such as implausible coefficient signs, impossible inversion of matrix $X'X$ as it becomes near or exactly singular, large magnitude of coefficients in absolute value, large variance or standard errors with wider confidence intervals.
+-   implausible coefficient signs,
+-   impossible inversion of matrix $X'X$ as it becomes near or exactly singular,
+-   large magnitude of coefficients in absolute value,
+-   large variance or standard errors with wider confidence intervals.
 
 ## Collinearity
 
@@ -453,15 +466,29 @@ So adding more terms or more covariates may reduce bias by improving the mean es
 -   This model captures the essential patterns without fitting the noise, resulting in good generalization to new data.
 :::
 
+## Bias vs Variance
+
+The following regression models techniques with the higher variance that follows from a large number of covariates by adding a bit of bias. The variance is reduced by penalizing covariate coefficients, shrinking then towards zero.
+
+The resulting simpler models may not fully capture the patterns in the data, thus underfitting the data.
+
 ## Ridge Regression
 
+::: {style="font-size: xx-large"}
 Ridge regression is an example of a penalized regression model; in this case the magnitude of the weights are penalized by adding the $\ell_2$ norm of the weights to the loss function. In particular, the ridge regression weights are:
 
 $$
 \hat{\beta}_{\text{ridge}}=\arg\!\min\text{RSS}\left(\beta\right)+\lambda\left\Vert \beta\right\Vert _{2}^{2}
 $$
 
-where $\lambda$ is the strength of the regularizer term.
+where $\lambda$ is the strength of the penalty term.
+
+The Ridge objective function is
+
+$$
+\mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert_2^2
+$$
+:::
 
 ## Ridge Regression
 
@@ -560,19 +587,19 @@ model$beta %>%
 
 ## Lasso Regression
 
+::: {style="font-size: xx-large"}
 Lasso regression is another example of a penalized regression model; in this case both the magnitude of the weights and the number of parameters are penalized by using the $\ell_1$ norm of the weights to the loss function of the lasso regression. In particular, the lasso regression weights are:
 
 $$
 \hat{\beta}_{\text{lasso}}=\arg\!\min\text{RSS}\left(\beta\right)+\lambda\left\Vert \beta\right\Vert _{1}
 $$
 
-## Lasso Regression
-
 The Lasso objective function is
 
 $$
 \mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
 $$
+:::
 
 ## Lasso Regression Example
 
@@ -834,7 +861,7 @@ Linear Regression (Binomial Distribution)
 
 ## Logistic
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Logistic Regression (binomial Distribution)
 
 -   **Response Variable**: Binary (0 or 1)
@@ -851,7 +878,7 @@ Poisson Regression (Poisson Distribution)
 -   **Response Variable**: Count data (non-negative integers)
 -   **Link Function**: Log ($(g(\mu) = \log(\mu)$))
 -   **Example**: Predicting the number of insurance claims in a year based on driver age, vehicle type, etc.
--   **Formula**: $(\log(\lambda) = \beta\_0 + \beta\_1 X_1 + \beta\_2 X_2 + \ldots)$, where $(\lambda)$ is the expected count.
+-   **Formula**: $(\log(\lambda) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where $(\lambda)$ is the expected count.
 :::
 
 ## Gamma
@@ -927,7 +954,9 @@ As a simple example, consider a continuous response variable $y$ with two covari
 
 $$
 \hat{y} = \hat{f}(x_1,x_2)=\sum_{i=1}^{3}c_1\times I_{(x_1,x_2)\in R_i}
-$$ Tree algorithm differ in how they grow the regression tree, i.e. partition the space of the covariates.
+$$
+
+Tree algorithms differ in how they grow the regression tree, i.e. partition the space of the covariates.
 
 ## Regression with trees
 
@@ -947,7 +976,7 @@ By pruning these lower level nodes, we can introduce a little bit of bias in our
 
 ## Regression with trees
 
-As with penalized linear regression, we can us a complexity parameter $\alpha$ to penalize the number of terminal nodes of the tree ($T$), like the lasso $L_1$ norm penalty, and find the smallest tree with lowest penalized error, i.e. the minimizing the following objective function:
+As with penalized linear regression, we can use a complexity parameter $\alpha$ to penalize the number of terminal nodes of the tree ($T$), like the lasso $L_1$ norm penalty, and find the smallest tree with lowest penalized error, i.e. the minimizing the following objective function:
 
 $$
 \text{SSE}+\alpha\left|T\right|
@@ -982,7 +1011,7 @@ Bagging combines and averages multiple models. Averaging across multiple trees r
 
 ## Regression with trees (Bagging)
 
-Bagging combines and averages multiple models. Averaging across multiple trees reduces the variability of any one tree and reduces overfitting, improving predictive performance.
+Bagging combines and averages multiple tree models. Averaging across multiple trees reduces the variability of any one tree and reduces overfitting, improving predictive performance.
 
 ## Regression with trees (Bagging)
 
@@ -1094,7 +1123,9 @@ We will work with `XGBoost` in today's lab.
 
 ## Kernel Regression
 
-Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables. Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.
+Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables.
+
+Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.
 
 ## Kernel Regression
 
@@ -1153,18 +1184,21 @@ plt_fit <- function(bandwidth = 10, support = seq(5,110,1)){
 ## B = 5
 
 ```{r}
+#| fig-height: 4
 plt_fit(bandwidth = 5)
 ```
 
 ## B=10
 
 ```{r}
+#| fig-height: 4
 plt_fit(bandwidth = 10)
 ```
 
 ## B=15
 
 ```{r}
+#| fig-height: 4
 plt_fit(bandwidth = 15)
 ```
 :::
@@ -1189,7 +1223,7 @@ Regression with neural nets involves using artificial neural networks (ANNs) to 
 
 ## Regression with ANNs: Components
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 1.  **Neurons**:
     -   The building blocks of neural networks. Each neuron takes an input, processes it, and passes the output to the next layer.
 2.  **Layers**:
@@ -1203,7 +1237,7 @@ Regression with neural nets involves using artificial neural networks (ANNs) to 
 
 ## Regression with ANNs: Components
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 4.  **Activation Functions**:
     -   Functions applied to the output of each neuron in hidden layers to introduce non-linearity. Common activation functions include ReLU (Rectified Linear Unit), sigmoid, and tanh.
 5.  **Loss Function**:
@@ -1261,7 +1295,6 @@ Architecture of an ANN
 #| echo: true
 #| warning: false
 #| message: false
-# layout-nrow: 3
 #| code-line-numbers: "1|3-4|6-11|13-17|19-25|27-28|30-39"
 #| code-fold: true
 set.seed(500)
