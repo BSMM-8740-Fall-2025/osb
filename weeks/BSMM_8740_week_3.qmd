@@ -5,7 +5,7 @@ editor: visual
 ---
 
 ::: callout-important
--   Due date: Lab 3  - Sunday, Sept 29, 5pm ET
+-   Due date: Lab 3 - Sunday, Sept 29, 5pm ET
 :::
 
 ## Prepare
