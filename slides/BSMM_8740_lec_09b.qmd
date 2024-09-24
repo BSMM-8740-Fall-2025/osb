@@ -87,7 +87,7 @@ event_E_happened <- function( x ) {
   }
 }
 
-# generate lots of copies of Z...
+# Now MC says that we should generate lots of copies of Z...
 NMC <- 10000; # 10000 seems like "a lot".
 rnorm( NMC, mean=1, sd=sqrt(3) ) |> 
   purrr::map_lgl(event_E_happened) |> 
@@ -139,7 +139,6 @@ What defines a good random number generator (RNG) has a long period – how long
 
 ## Random Number Generation
 
-::: {style="font-size: x-large"}
 Recall that $\mathscr{N}(0, 1)$ Normal random variables (mean 0, variance 1) have the probability density function:
 
 $$
@@ -158,7 +157,6 @@ x_{1} & =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
  x_2& =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
 \end{align*}
 $$ It can be proved that $x_1$ and $x_2$ are independent $\mathscr{N}(0, 1)$ random variables
-:::
 
 ## Random Number Generation
 
@@ -188,9 +186,7 @@ samples <- matrix(runif(10000), ncol=2) |> data.frame() |>
 samples |> 
   tidyr::pivot_longer(-c(X1,X2)) |> 
   ggplot(aes(x=value, color=name, fill=name)) + 
-  geom_histogram(
-    aes(y=..density..), bins = 60, position="identity", alpha=0.3
-  ) + 
+  geom_histogram(aes(y=..density..), bins = 60, position="identity", alpha=0.3) + 
   labs(x="Value", y="Density") + theme_minimal()
 
 samples |> 
@@ -200,7 +196,6 @@ ggplot(aes(x=y1, y=y2)) + geom_point() + coord_fixed() + theme_minimal()
 
 ## Random Number Generation
 
-::: {style="font-size: x-large"}
 Your computer is only capable of producing pseudorandom numbers. These are made by running a pseudorandom number generator algorithm which is deterministic, e.g.
 
 ```{r}
@@ -215,7 +210,6 @@ rnorm(n=10)
 ```
 
 Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers. That is what “statistical randomness” means!
-:::
 
 ## Central Limit Theorem
 
@@ -233,11 +227,9 @@ $$ where $Z\sim\mathscr{N}(0,1)$
 
 ## MC Methods
 
-::: {style="font-size: x-large"}
 Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
 
 Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
-:::
 
 ## MC Methods
 
@@ -260,7 +252,7 @@ Monte Carlo replaces the work of computing an integral (i.e., an expectation) wi
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 This idea can be pushed still further. Suppose that we want to compute an integral
 
 $$
@@ -276,7 +268,7 @@ $$ where $h(x)=g(x)/f(x)$ and $X\sim f$
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Now suppose we are given $h(x)$ and we want to compute $\mathbb{E}[h(X)]$ where $X\sim f,\,x\in D$. So we need to sample from $f$, but what if we could not do that directly?
 
 If there were some other distribution $g(x)$ we could sample from, such that $g(x)>0,\,x\in D$, then
@@ -292,7 +284,7 @@ $$
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 This is called importance sampling (IS).
 
 1.  draw iid $x_1,x_2,\ldots,x_n$ from g and calculate the importance weight $$
@@ -323,10 +315,7 @@ se_h  <- sqrt(var_h)
 
 tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |> 
   gt::gt() |> 
-  gt::fmt_number(decimals=4) |> 
-  gt::tab_options( table.font.size = gt::px(20) ) |>  
-  #gt::tab_header(title = )
-  gt::as_raw_html()
+  gt::fmt_number(decimals=4)
 ```
 
 ## MC Methods
@@ -334,7 +323,7 @@ tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |>
 #### unknown normalizing constant
 
 ::: {style="font-size: x-large"}
-Suppose that $q(x)>0;\;x\in D$ and $\int_Dq(x)dx=Z_q<\infty$. Here $q()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{Z_q}q(x)$.
+Suppose that $q(x)>0;\;x\in D$ and $\int_Dq(x)dx=Z_q<\infty$ The $q()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{Z_q}q(x)$.
 
 Using IS, let $g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-normalized density with $Z_r$ possibly unknown.
 
@@ -348,15 +337,13 @@ Using IS, let $g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-norm
 
 #### unknown normalizing constant
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 since
 
 $$
 \begin{align*}
 \frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}\right]=\int\frac{q(X)}{r(X)}g(x)dx=\frac{Z_{q}}{Z_{r}}\\
-\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]\\
- & =\int\frac{q(X)}{r(X)}g(x)h(x)dx\\
- & =\frac{1}{Z_{r}}\int g(x)h(x)dx
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]=\int\frac{q(X)}{r(X)}g(x)h(x)dx=\frac{1}{Z_{r}}\int g(x)h(x)dx
 \end{align*}
 $$
 :::
@@ -365,14 +352,12 @@ $$
 
 #### repeating the prior example, but un-normalized
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Estimate $\mathbb E_f(X)$ where $f(x) = e^{-\frac{x^2}{2}};\;x\ge 0$ (this is the half-Normal distribution, un-normalized)
 :::
 
 ```{r}
 #| echo: true
-#| code-fold: true
-#| code-summary: calculation of some kind
 # un-normalized weights
 n <- 5000
 X <- rexp(n, rate=2)
@@ -384,10 +369,7 @@ se_h2  <- sqrt(var_h2)
 
 tibble::tibble(mean = mu_h2,  variance = var_h2, 'standard error' = se_h2) |> 
   gt::gt() |> 
-  gt::fmt_number(decimals=4) |> 
-  gt::tab_options( table.font.size = gt::px(20) ) |>  
-  #gt::tab_header(title = )
-  gt::as_raw_html()
+  gt::fmt_number(decimals=4)
 ```
 
 ## MC Methods
@@ -395,15 +377,17 @@ tibble::tibble(mean = mu_h2,  variance = var_h2, 'standard error' = se_h2) |>
 #### rejection sampling procedure
 
 ::: {style="font-size: x-large"}
--   Assume we have an un-normalized $g(x)$, i.e. $\pi(x)=cg(x)$ but $c$ is unknown.
--   We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h]$
--   Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ ( or $cKf(x)\ge \pi(x)$).
+Assume we have an un-normalized $g(x)$, i.e. $\pi(x)=cg(x)$ but $c$ is unknown.
+
+We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h]$
+
+Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ ( or $cKf(x)\ge \pi(x)$).
 
 Then use the following procedure:
 
-1.  sample $X\sim f$ and $U\sim \mathrm{uniform}[0,1]$
-2.  if $U\le\frac{g(X)}{Kf(x)}$, the accept X as a draw from $\pi$
-3.  otherwise reject the sample and repeat
+-   sample $X\sim f$ and $U\sim \mathrm{uniform}[0,1]$
+-   if $U\le\frac{g(X)}{Kf(x)}$, the accept X as a draw from $\pi$
+-   otherwise reject the sample and repeat
 :::
 
 ## MC Methods
@@ -430,11 +414,7 @@ $$
 -   and so
 
 $$
-\begin{align*}
-\mathbb{E}_{f}\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right] & =\mathbb{E}_{f}\left[\frac{g(X)}{Kf(X)}\right]\\
- & =\int_{-\infty}^{\infty}\frac{g(X)}{Kf(X)}f(x)dx\\
- & =\int_{-\infty}^{\infty}\frac{g(X)}{K}dx
-\end{align*}
+\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
 $$
 :::
 
@@ -461,7 +441,7 @@ $$
 
 #### rejection sampling
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 $$
 \mathbb{P}\left(X\le y|U\le\frac{g(X)}{Kf(X)}\right)=\frac{\int_{-\infty}^{y}\frac{g(x)}{K}dx}{\int_{-\infty}^\infty\frac{g(X)}{K}dx}=\int_{-\infty}^{y}\pi(x)dx
 $$
@@ -471,8 +451,8 @@ $$
 
 #### rejection sampling
 
--   consider a random variable $X$ with pdf/pmf $q(x)>0;\;x\in D$, which is **difficult to sample** from
--   we will sample from $q$ using a proposal pdf/pmf $f$ which **we can sample from**
+-   consider random variable $X$ with pdf/pmf $q(x)>0;\;x\in D$ which is difficult to sample from
+-   we will sample from $q$ using a proposal pdf/pmf $f$ which we can sample from
 -   if we can find a constant $K$ such that $q(x)\le Kf(x); \forall x\in D$. Alternatively $\frac{q(x)}{f(x)}\le K$
 -   then there is a rejection method that returns $X\sim q$
 
@@ -534,7 +514,7 @@ $$
 $$
 :::
 
-[^1]: The **geometric distribution** is a discrete pmf that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
+[^1]: The **geometric distribution** is a discrete distribution that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
 
 ## MC Methods
 
@@ -573,31 +553,24 @@ $$ In practice this means we can ignore the normalizing constants if we can find
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
-Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$.
-
-Monte Carlo methods avoid doing any integration or summation over the pdf/pmf and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
+::: {style="font-size: x-large"}
+Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
 
 Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
 :::
 
 ## Stochastic processes
 
-::: {style="font-size: xx-large"}
 A stochastic process, which we will usually write as $(X_n)$, is an indexed sequence of random variables that are (usually) dependent on each other.
 
 Each random variable $X_n$ takes a value in a state space $\mathcal S$ which is the set of possible values for the process. As with usual random variables, the state space $\mathcal S$ can be discrete or continuous. A discrete state space denotes a set of distinct possible outcomes, which can be finite or countably infinite. For example, $\mathcal S = \{\text{Heads},\text{Tails}\}$ is the state space for a single coin flip, while in the case of counting insurance claims, the state space would be the nonnegative integers $\mathcal S = \mathbb Z_+ = \{0,1,2,\dots\}$.
-:::
 
 ## Stochastic processes
 
-Further, the process has an index set that puts the random variables that make up the process in order.
-
-The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by $n = 0,1,2,\dots$, while continuous time denotes a process monitored constantly over time, often denoted by $t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}$.
+Further, the process has an index set that puts the random variables that make up the process in order. The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by $n = 0,1,2,\dots$, while continuous time denotes a process monitored constantly over time, often denoted by $t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}$.
 
 ## Markov property
 
-::: {style="font-size: xx-large"}
 Think of a simple board game where we roll a dice and move that many squares forward on the board. Suppose we are currently on the square $X_n$. Then what can we say about which square $X_{n+1}$ we move to on our next turn?
 
 -   $X_{n+1}$ is random, since it depends on the roll of the dice.
@@ -605,14 +578,11 @@ Think of a simple board game where we roll a dice and move that many squares for
 -   Given the square $X_n$ we are now, $X_{n+1}$ doesn't depend any further on which sequence of squares $X_0, X_1, \dots, X_{n-1}$ we used to get here.
 
 The third point is called the Markov property or memoryless property. We say "memoryless", because we only need to remember what square we've reached, not which squares we used to get here. The stochastic process before this moment has no bearing on the future, given where we are now. A mathematical way to say this is that "the past and the future are conditionally independent given the present."
-:::
 
 ## Markov Chains
 
 ::: {style="font-size: xx-large"}
-Consider the following **simple random walk** on the integers $\mathbb Z$:
-
-We start at $0$, then at each time step, we go up by one with probability $p$ and down by one with probability $q = 1-p$. When $p = q = \frac12$, we're equally as likely to go up as down, and we call this the **simple symmetric random walk**.
+Consider the following **simple random walk** on the integers $\mathbb Z$: We start at $0$, then at each time step, we go up by one with probability $p$ and down by one with probability $q = 1-p$. When $p = q = \frac12$, we're equally as likely to go up as down, and we call this the **simple symmetric random walk**.
 
 The simple random walk is a simple but very useful model for lots of processes, like stock prices, sizes of populations, or positions of gas particles. (In many modern models, however, these have been replaced by more complicated continuous time and space models.) The simple random walk is sometimes called the "drunkard's walk", suggesting it could model a drunk person trying to stagger home.
 :::
@@ -667,57 +637,42 @@ p0+p1+p3
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 We can write this as a stochastic process $(X_n)$ with discrete time $n = \{0,1,2,\dots\} = \mathbb Z_+$ and discrete state space $\mathcal S = \mathbb Z$, where $X_0 = 0$ and, for $n \geq 0$, we have $$ X_{n+1} = \begin{cases} X_n + 1 & \text{with probability $p$,} \\
                              X_n - 1 & \text{with probability $q$.} \end{cases} $$
 
 It's clear from this definition that $X_{n+1}$ (the future) depends on $X_n$ (the present), but, given $X_n$, does not depend on $X_{n-1}, \dots, X_1, X_0$ (the past). Thus the Markov property holds, and the simple random walk is a discrete time Markov process or Markov chain.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 So far we've seen a a few examples of stochastic processes in discrete time and discrete space with the Markov memoryless property. Now we will develop the theory more generally.
 
 To define a so-called "Markov chain", we first need to say where we start from, and second what the probabilities of transitions from one state to another are.
 
 In our examples of the simple random walk and gambler's ruin, we specified the start point $X_0 = i$ exactly, but we could pick the start point at random according to some distribution $\lambda_i = \mathbb P(X_0 = i)$.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
 After that, we want to know the transition probabilities $\mathbb P(X_{n+1} = j \mid X_n = i)$ for $i,j \in \mathcal S$. Here, because of the Markov property, the transition probability only needs to condition on the state we're in now $X_n = i$, and not on the whole history of the process.
 
 In the case of the simple random walk, for example, we had initial distribution $$ \lambda_i = \mathbb P(X_0 = i) = \begin{cases} 1 & \text{if $i = 0$} \\ 0 & \text{otherwise} \end{cases} $$ and transition probabilities $$ \mathbb P(X_{n+1} = j \mid X_n = i) = \begin{cases} p & \text{if $j = i+1$} \\ q & \text{if $j = i-1$} \\ 0 & \text{otherwise.} \end{cases} $$
 
 For the random walk (and also the gambler's ruin), the transition probabilities $\mathbb P(X_{n+1} = j \mid X_n = i)$ don't depend on $n$; in other words, the transition probabilities stay the same over time. A Markov process with this property is called time homogeneous. We will always consider time homogeneous processes from now on (unless we say otherwise).
-:::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
-Write $p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)$ for the transition probabilities, which are independent of $n$. We must have $p_{ij} \geq 0$, since it is a probability, and we must also have $\sum_j p_{ij} = 1$ for all states $i$, as this is the sum of the probabilities of all the places you can move to from state i.
+Let's write $p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)$ for the transition probabilities, which are independent of $n$. We must have $p_{ij} \geq 0$, since it is a probability, and we must also have $\sum_j p_{ij} = 1$ for all states $i$, as this is the sum of the probabilities of all the places you can move to from state i.
 
 When the state space is finite (and even sometimes when it's not), it's convenient to write the transition probabilities $(p_{ij})$ as a matrix $\mathsf P$, called the transition matrix, whose $(i,j)$th entry is $p_{ij}$. Then the condition that $\sum_j p_{ij} = 1$ is the condition that each of the rows of $\mathsf P$ add up to $1$.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 Consider a simple two-state Markov chain with state space $\mathcal S = \{0,1\}$ and transition matrix $$ \mathsf P = \begin{pmatrix} p_{00} & p_{01} \\ p_{10} & p_{11} \end{pmatrix} = \begin{pmatrix} 1-\alpha & \alpha \\ \beta & 1-\beta \end{pmatrix}  $$ for some $0 < \alpha, \beta < 1$. Note that the rows of $\mathsf P$ add up to $1$, as they must.
 
 We can illustrate $\mathsf P$ by a transition diagram, where the blobs are the states and the arrows give the transition probabilities. (We don't draw the arrow if $p_{ij} = 0$.) In this case, our transition diagram looks like this:
-:::
 
 ## Markov Chains
 
-```{r, engine = 'tikz'}
-#| echo: false
-#| fig-align: center
-#| fig-width: 4
-#| fig-cap: Transition diagram for the two-state Markov chain
-#| cache: true
+```{tikz twostate, echo=FALSE, fig.align="center", fig.width=4, fig.cap="Transition diagram for the two-state Markov chain", cache = TRUE}
 \usetikzlibrary{automata}
 \begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
 \node[state] (0) at (0,0) {0};
@@ -732,13 +687,10 @@ We can illustrate $\mathsf P$ by a transition diagram, where the blobs are the s
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 We can use this as a simple model of customer churn, for example. If the customer has closed their account (state 0) on one period, then with probability $\alpha$ we will be able to entice them to open their account again (state 1) by the next period; while if the customer has an account (state 1), then with probability $\beta$ they will have closed their account (state 0) by the next period.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
 ::: {#printer .example}
 *If the customer has an account on period n, what's the probability they also have an account on period n+2?*
 
@@ -758,20 +710,12 @@ $$
   &= \beta\alpha + (1-\beta)^2 .
 \end{align*} 
 $$
-:::
-:::
 
-## Markov Chains
-
-::: {style="font-size: xx-large"}
 In the second equality, we used the Markov property to mean conditional probabilities like $\mathbb P(X_{n+2} = 1 \mid X_{n+1} = k)$ did not have to depend on $X_n$.
 
 Another way to think of this as we summing the probabilities of all length-2 paths from 1 to 1, which are $1\to 0\to 1$ with probability $\beta\alpha$ and $1 \to 1 \to 1$ with probability $(1-\beta)^2$
 :::
 
-## Markov Chains
-
-::: {style="font-size: xx-large"}
 In the above example, we calculated a two-step transition probability $p_{ij}(2) = \mathbb P (X_{n+2} = j \mid X_n = i)$ by conditioning on the first step. That is, by considering all the possible intermediate steps $k$, we have
 
 $$ 
@@ -781,11 +725,9 @@ $$
 But this is exactly the formula for multiplying the matrix $\mathsf P$ with itself! In other words, $p_{ij}(2) = \sum_{k} p_{ik}p_{kj}$ is the $(i,j)$th entry of the matrix square $\mathsf P^2 = \mathsf{PP}$. If we write $\mathsf P(2)  = (p_{ij}(2))$ for the matrix of two-step transition probabilities, we have $\mathsf P(2) = \mathsf P^2$.
 
 More generally, we see that this rule holds over multiple steps, provided we sum over all the possible paths $i\to k_1 \to k_2 \to \cdots \to k_{n-1} \to j$ of length $n$ from $i$ to $j$.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 ::: {#thm-n-step .theorem}
 Let $(X_n)$ be a Markov chain with state space $\mathcal S$ and transition matrix $\mathsf P = (p_{ij})$. For $i,j \in \mathcal S$, write $$ p_{ij}(n) = \mathbb P(X_n = j \mid X_0 = i) $$ for the $n$-step transition probability. Then
 
@@ -795,62 +737,46 @@ $$
 
 In particular, $p_{ij}(n)$ is the $(i,j)$th element of the matrix power $\mathsf P^n$, and the matrix of $n$-step transition probabilities is given by $\mathsf P(n) = \mathsf P^n$.
 :::
-:::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
 The so-called **Chapman--Kolmogorov equations** follow immediately from this.
 
 ::: {#c-k .theorem name="Chapman–Kolmogorov equations"}
 Let $(X_n)$ be a Markov chain with state space $\mathcal S$ and transition matrix $\mathsf P = (p_{ij})$. Then, for non-negative integers $n,m$, we have $$ p_{ij}(n+m) = \sum_{k \in \mathcal S} p_{ik}(n)p_{kj}(m) , $$ or, in matrix notation, $\mathsf P(n+m) = \mathsf P(n)\mathsf P(m)$.
 :::
-:::
 
-## Markov Chains
-
-::: {style="font-size: xx-large"}
 In other words, a trip of length $n + m$ from $i$ to $j$ is a trip of length $n$ from $i$ to some other state $k$, then a trip of length $m$ from $k$ back to $j$, and this intermediate stop $k$ can be any state, so we have to sum the probabilities.
 
 Of course, once we know that $\mathsf P(n) = \mathsf P^n$ is given by the matrix power, it's clear to see that $\mathsf P(n+m) = \mathsf P^{n+m} = \mathsf P^n \mathsf P^m = \mathsf P(n)\mathsf P(m)$.
-:::
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
 If we start from a state given by a distribution $\boldsymbol \pi = (\pi_i)$, then after step 1 the probability we're in state $j$ is $\sum_i \pi_i p_{ij}$. So if $\pi_j = \sum_i \pi_i p_{ij}$, we stay in this distribution forever. We call such a distribution a stationary distribution. We again recognise this formula as a matrix-vector multiplication, so this is $\boldsymbol \pi = \boldsymbol \pi\mathsf P$, where $\boldsymbol \pi$ is a *row* vector.
 
 ::: definition
 Let $(X_n)$ be a Markov chain on a state space $\mathcal S$ with transition matrix $\mathsf P$. Let $\boldsymbol \pi = (\pi_i)$ be a distribution on $\mathcal S$, in that $\pi_i \geq 0$ for all $i \in \mathcal S$ and $\sum_{i \in \mathcal S} \pi_i = 1$. We call $\boldsymbol \pi$ a **stationary distribution** if
 
 $$
-\pi_j = \sum_{i\in \mathcal S} \pi_i p_{ij} \quad \text{for all $j \in \mathcal S$} 
+\pi_j =* \sum_{i\in \mathcal S} \pi_i p_{ij} \quad \text{for all $j \in \mathcal S$} 
 $$
 
 or, equivalently, if $\boldsymbol \pi = \boldsymbol \pi\mathsf P$.
 :::
 
 Note that we're saying the *distribution* $\mathbb P(X_n = i)$ stays the same; the Markov chain $(X_n)$ itself will keep moving. One way to think is that if we started off a thousand Markov chains, choosing each starting position to be $i$ with probability $\pi_i$, then (roughly) $1000 \pi_j$ of them would be in state $j$ at any time in the future -- but not necessarily the same ones each time.
-:::
 
 ## Markov Chains
 
 #### properties
 
-::: {style="font-size: xx-large"}
 A Markov Chain is **irreducible** if you have positive probability of eventually getting from anywhere to anywhere else.
 
-A Markov Chain is **aperiodic** if there are no forced cycles, i.e. there do not exist disjoint non-empty subsets $X_1,X_2,...,X_d$ for $d≥2$,such that $P(x,Xi+1)=1$ for all $x\in Xi (1≤i≤d−1)$,and $P(x,X1)=1$ for all $x\in Xd$.
-:::
+A Markov Chain is **aperiodic** if there are no forced cycles, i.e. there do not exist disjoint non-empty subsets X1,X2,...,Xd ford≥2,suchthatP(x,Xi+1)=1 forallx∈Xi (1≤i≤d−1),andP(x,X1)=1forallx∈Xd. \[Diagram.\]
 
 ## Markov Chains
 
-```{r, engine = 'tikz'}
-#| echo: false
-#| fig-align: center
-#| fig-width: 5
-#| fig-cap: MC with cycle
-#| cache: true
+```{tikz periods-recap, echo=FALSE, fig.align="center", fig.width=5, fig.cap="MC with cycle", cache = TRUE}
 \usetikzlibrary{automata}
 		\begin{tikzpicture}[scale=0.8]
 		\node[state] (1) at (0,0) {$2$};
@@ -879,10 +805,9 @@ A Markov Chain is **aperiodic** if there are no forced cycles, i.e. there do not
 
 ## Markov Chain Monte Carlo
 
-::: {style="font-size: xx-large"}
-Suppose have complicated, high-dimensional density $\pi = cg$ and we want samples $X_1, X_2,\dots \sim \pi$. (Then we can do Monte Carlo.)
+Suppose have complicated, high-dimensional density $\pi = cg$ and we want samples $X_1, X_2,\dots \sim \pi$. (Then can do Monte Carlo.)
 
-Define a Markov chain (dependent random process) $X_0, X_1,X_2\dots$ in such a way that for large enough $n$, $X_n\sim \pi$.
+Define a Markovchain (dependent random process) $X_0, X_1,X_2\dots$ in such a way that for large enough $n$, $X_n\sim \pi$.
 
 Then we can estimate $\mathbb{E}_{\pi}(h) ≡ \int h(x) \pi(x) dx$ by:
 
@@ -891,29 +816,24 @@ $$
 $$
 
 where $B$ (“burn-in”) is chosen large enough so $X_B\sim\pi$, and $M$ is chosen large enough to get good Monte Carlo estimates.
-:::
 
 ## MCMC Metropolis Algo
 
-::: {style="font-size: xx-large"}
 1.  choose some initial value $X_0$, then
-2.  given $X_{n-1}$, choose a proposal state $Y_n\sim \textrm{MVN}(X_{n-1},\sigma^2\textrm{I})$, for some fixed $\sigma^2>0$
+2.  given $X_{n-1}$, choose a proposal state $Y_n\sim \textrm{MVN}(X_{n-1},\sigma^2\textrm{I})$ for some fixed $\sigma^2>0$
 3.  let $A_n=\pi(Y_n)/\pi(X_{n-1}=g(Y_n)/g(X_{n-1})$ and $U_n\sim\textrm{U}[0,1]$, then
 4.  id $U_n<A_n$ set $X_n=Y_n$ ("accept"), otherwise set \$X_n = X\_{n-1} ) "reject"
 5.  repeat for $n=1,2,3,\ldots,M$
 
 This version is called random-walk Metropolis
-:::
 
 ## MCMC Metropolis Algo
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: "a simple Metropolis algorithm in one dimension"
-#| layout-ncol: 2
-#| layout-align: center
-#| fig-height: 8
+#| code-summary: a simple Metropolis algorithm in one dimension
+
 g = function(y) {
     if ( (y<0) || (y>1) )
 	return(0)
@@ -943,80 +863,27 @@ for (i in 1:M) {
     hlist[i] = h(X);
 }
 
+cat("ran Metropolis algorithm for", M, "iterations, with burn-in", B, "\n");
+cat("acceptance rate =", numaccept/M, "\n");
 u = mean(hlist[(B+1):M])
+cat("mean of h is about", u, "\n")
+
 se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)
+cat("iid standard error would be about", se1, "\n")
+
 varfact <- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }
 thevarfact = varfact(hlist[(B+1):M])
 se = se1 * sqrt( thevarfact )
+cat("varfact = ", thevarfact, "\n")
+cat("true standard error is about", se, "\n")
+cat("approximate 95% confidence interval is (", u - 1.96 * se, ",",
+						u + 1.96 * se, ")\n\n")
 
-tibble::tibble(
-  measure = c("iterations","burn-in","mean of h","iid se","varfact","true se","95% CI lb","95% CI ub")
-  , value = c(M,B,u,se1,thevarfact,se,u-1.96*se,u+1.96*se)
-) |> 
-gt::gt("measure") |> 
-gt::fmt_number() |> 
-gtExtras::gt_theme_espn()
-
-#cat("ran Metropolis algorithm for", M, "iterations, with burn-in", B, "\n");
-#cat("acceptance rate =", numaccept/M, "\n");
-#u = mean(hlist[(B+1):M])
-#cat("mean of h is about", u, "\n")
-
-#se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)
-#cat("iid standard error would be about", se1, "\n")
-
-#varfact <- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }
-#thevarfact = varfact(hlist[(B+1):M])
-#se = se1 * sqrt( thevarfact )
-#cat("varfact = ", thevarfact, "\n")
-#cat("true standard error is about", se, "\n")
-#cat("approximate 95% confidence interval is (", u - 1.96 * se, ",",
-#						u + 1.96 * se, ")\n\n")
+plot(xlist, type='l')
 # acf(xlist)
-#plot(xlist, type='l')
 
-tibble::tibble(x=1:length(xlist), y=xlist) |> 
-  ggplot(aes(x=x,y=y)) + geom_line()
 
 ```
-
-## MCMC Metropolis-Hastings Algo
-
-Metropolis algorithm requires that the state transition probabilities are symmetric, so the proposal distribution is symmetric.
-
-if $q(x,y) \gg q(y,x)$ the the Metropolis chain would spend too much time at $y$ and not enought at $x$, so it accepts fewer moves $x\rightarrow y$
-
-## MCMC Metropolis-Hastings Algo
-
-Replace
-
-$$
-A_n = \frac{\pi(Y_n)}{\pi(X_{n-1})}\;\mathrm{with}\; A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}
-$$
-
-and the algorithm is still valid even is $q$ is not symmetric.
-
-We do require that $q(x,y)>0\;\textrm{iff}\; q(y,x)>0$
-
-## MCMC Metropolis-Hastings Algo 
-
-Why is this valid?
-
-For metropolis, th key was that the Markov chain was reversible, i.e. $\pi(x)\mathbb{P}(x,y)=\pi(y)\mathbb{P}(y,x)$
-
-If instead $A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}$, with acceptance probability $\alpha(x,y)=\min\left[1,\frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}\right]$, then
-
-$$
-\begin{align*}
-q(x,y)\alpha(x,y)\pi(x) & =q(x,y)\min\left[1,\frac{\pi(y)q(y,x)}{\pi(x)q(x,y)}\right]\pi(x)\\
- & =\min\left[\pi(x)q(x,y),\pi(y)q(y,x)\right]
-\end{align*}$$
-
-and $\pi(x)\mathbb{P}(x,y)$ is still symmetric, even if $q$ wasn't
-
-## Need
-
-Balance equation
 
 ## More
 
