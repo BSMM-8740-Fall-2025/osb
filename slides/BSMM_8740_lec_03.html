@@ -388,10 +388,10 @@
     }
   </style>
 <meta property="og:title" content="Regression methods – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 3]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="Regression methods – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 4]">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 3]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -402,7 +402,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Regression methods</h1>
-  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 4]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 3]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -439,7 +439,7 @@ L.L. Odette
 </section>
 <section id="taylor-series" class="slide level2">
 <h2>Taylor Series</h2>
-<p>The decomposition of a function of a single variable <span class="math inline">\(x\)</span> into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:</p>
+<p>The decomposition of a function <span class="math inline">\(f\)</span> of a single variable <span class="math inline">\(x\)</span> into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:</p>
 <div style="font-size: xx-large">
 <p><span class="math display">\[
 f(x;x_0)=\sum_{n=0}\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
@@ -481,7 +481,7 @@ f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{
 </section>
 <section id="linear-regression-models-3" class="slide level2">
 <h2>Linear regression models</h2>
-<p>For one co-variate, If the mean function is smooth (i.e.&nbsp;not changing rapidly with the co-variate) then <span class="math inline">\(\mu^{(n)}\)</span> will be decreasing in <span class="math inline">\(n\)</span>, and furthermore <span class="math inline">\(\beta_n\)</span> decreases as <span class="math inline">\(1/n!\)</span>, so SLR models in one co-variate typically use only the first two or at most three <span class="math inline">\(\beta\)</span> coefficients.</p>
+<p>For one co-variate, if the mean function is smooth (i.e.&nbsp;not changing rapidly with the co-variate) then <span class="math inline">\(\mu^{(n)}\)</span> will be decreasing in <span class="math inline">\(n\)</span>, and furthermore <span class="math inline">\(\beta_n\)</span> decreases as <span class="math inline">\(1/n!\)</span>, so SLR models in one co-variate typically use only the first two or at most three <span class="math inline">\(\beta\)</span> coefficients.</p>
 <p>Thus the likelihood of observing <span class="math inline">\(Y=y\)</span> is conditional on the predictor values <span class="math inline">\(x\)</span> and parameters <span class="math inline">\(\theta=\{\beta_0,\beta_1,\sigma^2\}\)</span>:</p>
 <p><span class="math inline">\(\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}\)</span> are the <em>parameters</em> of the model, where <span class="math inline">\(\beta_0\)</span> is a constant and <span class="math inline">\(\beta_1\)</span> is the co-variate <em>weight</em> or <em>regression</em> coefficient.</p>
 </section>
@@ -500,7 +500,7 @@ f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>It is common to add the unit constant to the covariate vector <span class="math inline">\(x=(1,x_1,x_2,\ldots)\)</span> so that the coefficient vector is <span class="math inline">\(\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)\)</span>, and the model can be expressed as a vector equation: $y=\mathbf{\beta}\cdot \mathbf{x}<sup>1</sup>$$.</p>
+<p>It is common to add the unit constant to the covariate vector <span class="math inline">\(x=(1,x_1,x_2,\ldots)\)</span> so that the coefficient vector is <span class="math inline">\(\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)\)</span>, and the model can be expressed<sup>1</sup> as a vector equation: <span class="math inline">\(y=\mathbf{\beta}\cdot \mathbf{x}\)</span>.</p>
 </div>
 </div>
 </div>
@@ -515,16 +515,34 @@ f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{
 </section>
 <section id="linear-regression-models-7" class="slide level2">
 <h2>Linear regression models</h2>
-<p>To fit the 1D linear regression model given <span class="math inline">\(N\)</span> data samples, we minimize the negative log-likelihood on the training set.</p>
+<p>To fit the 1D linear regression model given <span class="math inline">\(N\)</span> data samples, we minimize the negative log-likelihood (NLL) on the training set.</p>
+<div style="font-size: xx-large">
 <p><span class="math display">\[
 \begin{align*}
-\text{NLL}\left(\beta,\sigma^{2}\right) &amp; =\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
-&amp; =-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
+\text{NLL}\left(\beta,\sigma^{2}\right) &amp; =-\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
+&amp; =\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
 \end{align*}
 \]</span></p>
-<p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>. This is the maximum likelihood method.</p>
+</div>
+<p>where the predicted response is <span class="math inline">\(\hat{y}\equiv\beta'x_{n}\)</span>. This is also the maximum likelihood estimation (MLE) method.</p>
 </section>
 <section id="linear-regression-models-8" class="slide level2">
+<h2>Linear regression models</h2>
+<p>Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing</p>
+<ul>
+<li>the <strong>mean squared error</strong> <span class="math inline">\(\text{MSE}\left(\beta\right) = \frac{1}{N}\text{RSS}\left(\beta\right)\)</span></li>
+<li>the <strong>root mean squared error</strong> <span class="math inline">\(\text{RMSE}\left(\beta\right) = \sqrt{\text{MSE}\left(\beta\right)}\)</span></li>
+</ul>
+</section>
+<section id="aside-empirical-risk-minimization" class="slide level2">
+<h2>Aside: empirical risk minimization</h2>
+<p>The MLE can be generalized by replacing the NLL (<span class="math inline">\(\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)\)</span>) with any other loss function to get</p>
+<p><span class="math display">\[
+\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
+\]</span></p>
+<p>This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.</p>
+</section>
+<section id="linear-regression-models-9" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Focusing on just the coefficients <span class="math inline">\(\beta\)</span>, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS)<sup>1</sup> with coefficient estimates <span class="math inline">\(\hat\beta\)</span> :</p>
 <p><span class="math display">\[
@@ -534,7 +552,7 @@ f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{
 \end{align*}
 \]</span></p>
 <aside><ol class="aside-footnotes"><li id="fn3"><p>i.e.&nbsp;minimizing the squared prediction error, aka ordinary least squares.</p></li></ol></aside></section>
-<section id="linear-regression-models-9" class="slide level2">
+<section id="linear-regression-models-10" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols">Ordinary least squares (OLS)</h4>
 <p>Note that, given the assumption that the data generation process is Normal/Gaussian, we can write our regression equation in terms of individual observations as</p>
@@ -542,9 +560,9 @@ f(x,y;x_0,y_0) &amp; =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{
 y_i=\beta_0+\beta_1 x_i + u_i
 \]</span></p>
 <p>where error term <span class="math inline">\(u_i\)</span> is a sample from <span class="math inline">\(\mathscr{N}\left(0,\sigma^{2}\right)\)</span> which in turn implies <span class="math inline">\(\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0\)</span></p>
-<p>The independence of the covariates and the errors is a testable assumption.</p>
+<p>The independence of the covariates and the errors/residuals is a testable assumption.</p>
 </section>
-<section id="linear-regression-models-10" class="slide level2">
+<section id="linear-regression-models-11" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-1">Ordinary least squares (OLS)</h4>
 <p>It follows independence of the covariates and the errors that</p>
@@ -555,7 +573,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-11" class="slide level2">
+<section id="linear-regression-models-12" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-2">Ordinary least squares (OLS)</h4>
 <p>Writing these equations in terms of our samples (where <span class="math inline">\(\hat{\beta}_{0}, \hat{\beta}_{1}\)</span> are our coefficient estimates)</p>
@@ -566,7 +584,7 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-12" class="slide level2">
+<section id="linear-regression-models-13" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-3">Ordinary least squares (OLS)</h4>
 <p>From the first equation</p>
@@ -577,10 +595,11 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-13" class="slide level2">
+<section id="linear-regression-models-14" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-4">Ordinary least squares (OLS)</h4>
 <p>Substituting the expression for <span class="math inline">\(\hat{\beta}_{0}\)</span> in the independence equation</p>
+<div style="font-size: xx-large">
 <p><span class="math display">\[
 \begin{align*}
 \frac{1}{N}\sum_{i-1}^{N}x_{i}\left(y_{i}-\left(\bar{y}-\hat{\beta}_{1}\bar{x}\right)-\hat{\beta}_{1}x_{i}\right) &amp; =0\\
@@ -588,8 +607,9 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \frac{1}{N}\sum_{i-1}^{N}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) &amp; =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2
 \end{align*}
 \]</span></p>
+</div>
 </section>
-<section id="linear-regression-models-14" class="slide level2">
+<section id="linear-regression-models-15" class="slide level2">
 <h2>Linear regression models</h2>
 <h4 id="ordinary-least-squares-ols-5">Ordinary least squares (OLS)</h4>
 <p>So as long as <span class="math inline">\(\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2\ne 0\)</span></p>
@@ -600,13 +620,13 @@ y_i=\beta_0+\beta_1 x_i + u_i
 \end{align*}
 \]</span></p>
 </section>
-<section id="linear-regression-models-15" class="slide level2">
+<section id="linear-regression-models-16" class="slide level2">
 <h2>Linear regression models</h2>
 <p>Similarly, in the vector equation, the minimum of the RSS is solved by (assuming <span class="math inline">\(N&gt;D\)</span>):</p>
 <p><span class="math display">\[
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right) = \frac{\text{cov}(X,Y)}{\text{var}(X)}
 \]</span></p>
-<p>There are algorithmic issues with computing <span class="math inline">\(\left(X'X\right)^{-1}\)</span> though.</p>
+<p>There are algorithmic issues with computing <span class="math inline">\(\left(X'X\right)^{-1}\)</span> though, so we could instead start with <span class="math inline">\(X\beta=y\)</span> and write <span class="math inline">\(\hat{\mathbf{\beta}}_{OLS}=X^{-1}y\)</span> .</p>
 </section>
 <section id="linear-regression-algorithms" class="slide level2">
 <h2>Linear regression algorithms</h2>
@@ -640,10 +660,19 @@ Q'QR\beta &amp; = Q'y\\
 [3,] -0.9128709  0.4082483  2.593051e-16</code></pre>
 </div>
 </div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="sc">&gt;</span> Q <span class="sc">%*%</span> <span class="fu">t</span>(Q) <span class="sc">|&gt;</span> <span class="fu">round</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1</code></pre>
+</div>
+</div>
 </div>
 <div id="tabset-1-2">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="sc">&gt;</span> R <span class="ot">&lt;-</span> <span class="fu">qr.R</span>(QR); R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="sc">&gt;</span> R <span class="ot">&lt;-</span> <span class="fu">qr.R</span>(QR); R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          [,1]      [,2]      [,3]
 [1,] -5.477226 -7.302967 -4.381780
@@ -654,7 +683,7 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 <div id="tabset-1-3">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="sc">&gt;</span> Q <span class="sc">%*%</span> R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> Q <span class="sc">%*%</span> R</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3]
 [1,]    1    2    3
@@ -670,15 +699,15 @@ Q'QR\beta &amp; = Q'y\\
 <h2>Linear regression algorithms</h2>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8" data-code-line-numbers="1|2-3|5-6|8-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> <span class="co"># A linear system of equations y = Ax</span></span>
-<span id="cb8-2"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">"matrix A</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb8-3"><a></a><span class="sc">&gt;</span> A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>, .<span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span>), <span class="at">nrow=</span><span class="dv">3</span>); A</span>
-<span id="cb8-4"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector x</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb8-5"><a></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>); x</span>
-<span id="cb8-6"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector y</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb8-7"><a></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> A <span class="sc">%*%</span> x ; y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10" data-code-line-numbers="1|2-3|5-6|8-9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="sc">&gt;</span> <span class="co"># A linear system of equations y = Ax</span></span>
+<span id="cb10-2"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">"matrix A</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb10-3"><a></a><span class="sc">&gt;</span> A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>, .<span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span>), <span class="at">nrow=</span><span class="dv">3</span>); A</span>
+<span id="cb10-4"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector x</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb10-5"><a></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">2</span>); x</span>
+<span id="cb10-6"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"vector y</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb10-7"><a></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> A <span class="sc">%*%</span> x ; y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout-nrow="3">
+<div class="cell quarto-layout-panel" data-layout-nrow="3" data-layout-align="center">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <pre><code>matrix A</code></pre>
@@ -714,21 +743,21 @@ Q'QR\beta &amp; = Q'y\\
 <section id="linear-regression-algorithms-3" class="slide level2">
 <h2>Linear regression algorithms</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15" data-code-line-numbers="1-4|6-7|9-10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> <span class="co"># Compute the QR decomposition of A</span></span>
-<span id="cb15-2"><a></a><span class="er">&gt;</span> QR <span class="ot">&lt;-</span> <span class="fu">qr</span>(A)</span>
-<span id="cb15-3"><a></a><span class="sc">&gt;</span> Q <span class="ot">&lt;-</span> <span class="fu">qr.Q</span>(QR)</span>
-<span id="cb15-4"><a></a><span class="sc">&gt;</span> R <span class="ot">&lt;-</span> <span class="fu">qr.R</span>(QR)</span>
-<span id="cb15-5"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb15-6"><a></a><span class="er">&gt;</span> <span class="co"># Compute b=Q'y</span></span>
-<span id="cb15-7"><a></a><span class="er">&gt;</span> b <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Q, y); b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17" data-code-line-numbers="1-4|6-7|9-10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> <span class="co"># Compute the QR decomposition of A</span></span>
+<span id="cb17-2"><a></a><span class="er">&gt;</span> QR <span class="ot">&lt;-</span> <span class="fu">qr</span>(A)</span>
+<span id="cb17-3"><a></a><span class="sc">&gt;</span> Q <span class="ot">&lt;-</span> <span class="fu">qr.Q</span>(QR)</span>
+<span id="cb17-4"><a></a><span class="sc">&gt;</span> R <span class="ot">&lt;-</span> <span class="fu">qr.R</span>(QR)</span>
+<span id="cb17-5"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb17-6"><a></a><span class="er">&gt;</span> <span class="co"># Compute b=Q'y</span></span>
+<span id="cb17-7"><a></a><span class="er">&gt;</span> b <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Q, y); b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           [,1]
 [1,]  0.2672612
 [2,]  2.1472519
 [3,] -0.5638092</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17" data-code-line-numbers="1-4|6-7|9-10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> <span class="co"># Solve the upper triangular system Rx=b</span></span>
-<span id="cb17-2"><a></a><span class="er">&gt;</span> <span class="fu">backsolve</span>(R, b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19" data-code-line-numbers="1-4|6-7|9-10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="sc">&gt;</span> <span class="co"># Solve the upper triangular system Rx=b</span></span>
+<span id="cb19-2"><a></a><span class="er">&gt;</span> <span class="fu">backsolve</span>(R, b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1]
 [1,]    1
@@ -737,49 +766,29 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 </div>
 </section>
-<section id="linear-regression-models-16" class="slide level2">
-<h2>Linear regression models</h2>
-<p>Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing</p>
-<ul>
-<li>the <strong>mean squared error</strong> <span class="math inline">\(\text{MSE}\left(\beta\right) = \frac{1}{N}\text{RSS}\left(\beta\right)\)</span></li>
-<li>the <strong>root mean squared error</strong> <span class="math inline">\(\text{RMSE}\left(\beta\right) = \sqrt{\text{MSE}\left(\beta\right)}\)</span></li>
-</ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>The minimum NLL estimate is also the maximum likelihood estimate (MLE)</p>
-</div>
-</div>
-</div>
-</section>
-<section id="aside-empirical-risk-minimization" class="slide level2">
-<h2>Aside: empirical risk minimization</h2>
-<p>The MLE can be generalized by replacing the NLL (<span class="math inline">\(\ell\left(y_{n},\theta;x_{n}\right)=-\log\pi\left(y_n|x_n,\theta\right)\)</span>) with any other loss function to get</p>
-<p><span class="math display">\[
-\mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
-\]</span></p>
-<p>This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.</p>
-</section>
-<section id="need-bridge-here" class="slide level2">
-<h2>Need bridge here</h2>
-</section>
 <section id="collinearity" class="slide level2">
 <h2>Collinearity</h2>
-<p>One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors. While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.</p>
+<ul>
+<li><p>One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors.</p></li>
+<li><p>While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.</p></li>
+</ul>
 </section>
 <section id="collinearity-1" class="slide level2">
 <h2>Collinearity</h2>
-<p>Data collection methods, constraints on the fitted regression model, model specification error, an overdefined model, may be some potential sources of multicollinearity. In other cases it is an artifact caused by creating new predictors from other predictors.</p>
+<ul>
+<li><p>Data collection methods, constraints on the fitted regression model, model specification error, an overdefined model, may be some potential sources of multicollinearity.</p></li>
+<li><p>In other cases it is an artifact caused by creating new predictors from other predictors.</p></li>
+</ul>
 </section>
 <section id="collinearity-2" class="slide level2">
 <h2>Collinearity</h2>
-<p>The problem of collinearity has potentially serious effect on the regression estimates such as implausible coefficient signs, impossible inversion of matrix <span class="math inline">\(X'X\)</span> as it becomes near or exactly singular, large magnitude of coefficients in absolute value, large variance or standard errors with wider confidence intervals.</p>
+<p>The problem of collinearity has potentially serious effect on the regression estimates such as:</p>
+<ul>
+<li>implausible coefficient signs,</li>
+<li>impossible inversion of matrix <span class="math inline">\(X'X\)</span> as it becomes near or exactly singular,</li>
+<li>large magnitude of coefficients in absolute value,</li>
+<li>large variance or standard errors with wider confidence intervals.</li>
+</ul>
 </section>
 <section id="collinearity-3" class="slide level2">
 <h2>Collinearity</h2>
@@ -863,13 +872,24 @@ Q'QR\beta &amp; = Q'y\\
 </div>
 </div>
 </section>
+<section id="bias-vs-variance-2" class="slide level2">
+<h2>Bias vs Variance</h2>
+<p>The following regression models techniques with the higher variance that follows from a large number of covariates by adding a bit of bias. The variance is reduced by penalizing covariate coefficients, shrinking then towards zero.</p>
+<p>The resulting simpler models may not fully capture the patterns in the data, thus underfitting the data.</p>
+</section>
 <section id="ridge-regression" class="slide level2">
 <h2>Ridge Regression</h2>
+<div style="font-size: xx-large">
 <p>Ridge regression is an example of a penalized regression model; in this case the magnitude of the weights are penalized by adding the <span class="math inline">\(\ell_2\)</span> norm of the weights to the loss function. In particular, the ridge regression weights are:</p>
 <p><span class="math display">\[
 \hat{\beta}_{\text{ridge}}=\arg\!\min\text{RSS}\left(\beta\right)+\lambda\left\Vert \beta\right\Vert _{2}^{2}
 \]</span></p>
-<p>where <span class="math inline">\(\lambda\)</span> is the strength of the regularizer term.</p>
+<p>where <span class="math inline">\(\lambda\)</span> is the strength of the penalty term.</p>
+<p>The Ridge objective function is</p>
+<p><span class="math display">\[
+\mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert_2^2
+\]</span></p>
+</div>
 </section>
 <section id="ridge-regression-1" class="slide level2">
 <h2>Ridge Regression</h2>
@@ -888,21 +908,21 @@ Q'QR\beta &amp; = Q'y\\
 <section id="ridge-regression-example" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19" data-code-line-numbers="2|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="sc">&gt;</span> <span class="co">#define response variable</span></span>
-<span id="cb19-2"><a></a><span class="er">&gt;</span> y <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(hp)</span>
-<span id="cb19-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb19-4"><a></a><span class="er">&gt;</span> <span class="co">#define matrix of predictor variables</span></span>
-<span id="cb19-5"><a></a><span class="er">&gt;</span> x <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, wt, drat, qsec) <span class="sc">%&gt;%</span> <span class="fu">data.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21" data-code-line-numbers="2|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="sc">&gt;</span> <span class="co">#define response variable</span></span>
+<span id="cb21-2"><a></a><span class="er">&gt;</span> y <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(hp)</span>
+<span id="cb21-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb21-4"><a></a><span class="er">&gt;</span> <span class="co">#define matrix of predictor variables</span></span>
+<span id="cb21-5"><a></a><span class="er">&gt;</span> x <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, wt, drat, qsec) <span class="sc">%&gt;%</span> <span class="fu">data.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="ridge-regression-example-1" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20" data-code-line-numbers="1-2|4-5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="sc">&gt;</span> <span class="co"># fit ridge regression model</span></span>
-<span id="cb20-2"><a></a><span class="er">&gt;</span> model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">0</span>)</span>
-<span id="cb20-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb20-4"><a></a><span class="er">&gt;</span> <span class="co"># get coefficients when lambda = 7.6</span></span>
-<span id="cb20-5"><a></a><span class="er">&gt;</span> <span class="fu">coef</span>(model, <span class="at">s =</span> <span class="fl">7.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22" data-code-line-numbers="1-2|4-5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> <span class="co"># fit ridge regression model</span></span>
+<span id="cb22-2"><a></a><span class="er">&gt;</span> model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">0</span>)</span>
+<span id="cb22-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb22-4"><a></a><span class="er">&gt;</span> <span class="co"># get coefficients when lambda = 7.6</span></span>
+<span id="cb22-5"><a></a><span class="er">&gt;</span> <span class="fu">coef</span>(model, <span class="at">s =</span> <span class="fl">7.6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>5 x 1 sparse Matrix of class "dgCMatrix"
                       s1
@@ -919,83 +939,82 @@ qsec        -18.48934710</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>glmnet example</summary>
-<div class="sourceCode cell-code" id="cb22" data-code-line-numbers="1-2|4-5|7-8|9|10|11|12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="sc">&gt;</span> <span class="co"># perform k-fold cross-validation to find optimal lambda value</span></span>
-<span id="cb22-2"><a></a><span class="er">&gt;</span> cv_model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">0</span>)</span>
-<span id="cb22-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb22-4"><a></a><span class="er">&gt;</span> <span class="co"># find optimal lambda value that minimizes test MSE</span></span>
-<span id="cb22-5"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> cv_model<span class="sc">$</span>lambda.min</span>
-<span id="cb22-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb22-7"><a></a><span class="er">&gt;</span> <span class="co"># produce plot of test MSE by lambda value</span></span>
-<span id="cb22-8"><a></a><span class="er">&gt;</span> cv_model <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb22-9"><a></a><span class="sc">+</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
-<span id="cb22-10"><a></a><span class="sc">+</span>   <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">fill =</span> <span class="st">"#00ABFD"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb22-11"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb22-12"><a></a><span class="sc">+</span>   <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>best_lambda) <span class="sc">+</span></span>
-<span id="cb22-13"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
-<span id="cb22-14"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
-<span id="cb22-15"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
-<span id="cb22-16"><a></a><span class="sc">+</span>            <span class="st">"The best lambda value is {scales::number(best_lambda, accuracy=0.01)}"</span></span>
-<span id="cb22-17"><a></a><span class="sc">+</span>          )</span>
-<span id="cb22-18"><a></a><span class="sc">+</span>   ) <span class="sc">+</span></span>
-<span id="cb22-19"><a></a><span class="sc">+</span>   ggplot2<span class="sc">::</span><span class="fu">scale_x_log10</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24" data-code-line-numbers="1-2|4-5|7-8|9|10|11|12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> <span class="co"># perform k-fold cross-validation to find optimal lambda value</span></span>
+<span id="cb24-2"><a></a><span class="er">&gt;</span> cv_model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">0</span>)</span>
+<span id="cb24-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb24-4"><a></a><span class="er">&gt;</span> <span class="co"># find optimal lambda value that minimizes test MSE</span></span>
+<span id="cb24-5"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> cv_model<span class="sc">$</span>lambda.min</span>
+<span id="cb24-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb24-7"><a></a><span class="er">&gt;</span> <span class="co"># produce plot of test MSE by lambda value</span></span>
+<span id="cb24-8"><a></a><span class="er">&gt;</span> cv_model <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a></a><span class="sc">+</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb24-10"><a></a><span class="sc">+</span>   <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">fill =</span> <span class="st">"#00ABFD"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-11"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb24-12"><a></a><span class="sc">+</span>   <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>best_lambda) <span class="sc">+</span></span>
+<span id="cb24-13"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
+<span id="cb24-14"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
+<span id="cb24-15"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
+<span id="cb24-16"><a></a><span class="sc">+</span>            <span class="st">"The best lambda value is {scales::number(best_lambda, accuracy=0.01)}"</span></span>
+<span id="cb24-17"><a></a><span class="sc">+</span>          )</span>
+<span id="cb24-18"><a></a><span class="sc">+</span>   ) <span class="sc">+</span></span>
+<span id="cb24-19"><a></a><span class="sc">+</span>   ggplot2<span class="sc">::</span><span class="fu">scale_x_log10</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="ridge-regression-example-3" class="slide level2">
 <h2>Ridge Regression Example</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>glmnet coefficients</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="sc">&gt;</span> model<span class="sc">$</span>beta <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a></a><span class="sc">+</span>   <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb23-3"><a></a><span class="sc">+</span>   <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb23-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb23-5"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">add_column</span>(<span class="at">lambda =</span> model<span class="sc">$</span>lambda, <span class="at">.before =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-6"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>lambda, <span class="at">names_to =</span> <span class="st">'parameter'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-7"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>value, <span class="at">color=</span>parameter)) <span class="sc">+</span></span>
-<span id="cb23-8"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb23-9"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">2000</span>) <span class="sc">+</span></span>
-<span id="cb23-10"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
-<span id="cb23-11"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
-<span id="cb23-12"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
-<span id="cb23-13"><a></a><span class="sc">+</span>            <span class="st">"Parameters as a function of lambda"</span></span>
-<span id="cb23-14"><a></a><span class="sc">+</span>          )</span>
-<span id="cb23-15"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="sc">&gt;</span> model<span class="sc">$</span>beta <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a></a><span class="sc">+</span>   <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a></a><span class="sc">+</span>   <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-5"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">add_column</span>(<span class="at">lambda =</span> model<span class="sc">$</span>lambda, <span class="at">.before =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-6"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>lambda, <span class="at">names_to =</span> <span class="st">'parameter'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-7"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>value, <span class="at">color=</span>parameter)) <span class="sc">+</span></span>
+<span id="cb25-8"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb25-9"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">2000</span>) <span class="sc">+</span></span>
+<span id="cb25-10"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
+<span id="cb25-11"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
+<span id="cb25-12"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
+<span id="cb25-13"><a></a><span class="sc">+</span>            <span class="st">"Parameters as a function of lambda"</span></span>
+<span id="cb25-14"><a></a><span class="sc">+</span>          )</span>
+<span id="cb25-15"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression" class="slide level2">
 <h2>Lasso Regression</h2>
+<div style="font-size: xx-large">
 <p>Lasso regression is another example of a penalized regression model; in this case both the magnitude of the weights and the number of parameters are penalized by using the <span class="math inline">\(\ell_1\)</span> norm of the weights to the loss function of the lasso regression. In particular, the lasso regression weights are:</p>
 <p><span class="math display">\[
 \hat{\beta}_{\text{lasso}}=\arg\!\min\text{RSS}\left(\beta\right)+\lambda\left\Vert \beta\right\Vert _{1}
 \]</span></p>
-</section>
-<section id="lasso-regression-1" class="slide level2">
-<h2>Lasso Regression</h2>
 <p>The Lasso objective function is</p>
 <p><span class="math display">\[
 \mathscr{L}\left(\beta,\lambda\right)=\text{NLL}+\lambda\left\Vert \beta\right\Vert _{1}
 \]</span></p>
+</div>
 </section>
 <section id="lasso-regression-example" class="slide level2">
 <h2>Lasso Regression Example</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>lasso model</summary>
-<div class="sourceCode cell-code" id="cb24" data-code-line-numbers="1-2|4-5|7-8|10-11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="sc">&gt;</span> <span class="co"># define response variable</span></span>
-<span id="cb24-2"><a></a><span class="er">&gt;</span> y <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(hp)</span>
-<span id="cb24-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb24-4"><a></a><span class="er">&gt;</span> <span class="co"># define matrix of predictor variables</span></span>
-<span id="cb24-5"><a></a><span class="er">&gt;</span> x <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, wt, drat, qsec) <span class="sc">%&gt;%</span> <span class="fu">data.matrix</span>()</span>
-<span id="cb24-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb24-7"><a></a><span class="er">&gt;</span> <span class="co"># fit ridge regression model</span></span>
-<span id="cb24-8"><a></a><span class="er">&gt;</span> model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">1</span>)</span>
-<span id="cb24-9"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb24-10"><a></a><span class="er">&gt;</span> <span class="co"># get coefficients when lambda = 3.53</span></span>
-<span id="cb24-11"><a></a><span class="er">&gt;</span> <span class="fu">coef</span>(model, <span class="at">s =</span> <span class="fl">3.53</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26" data-code-line-numbers="1-2|4-5|7-8|10-11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="sc">&gt;</span> <span class="co"># define response variable</span></span>
+<span id="cb26-2"><a></a><span class="er">&gt;</span> y <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">pull</span>(hp)</span>
+<span id="cb26-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb26-4"><a></a><span class="er">&gt;</span> <span class="co"># define matrix of predictor variables</span></span>
+<span id="cb26-5"><a></a><span class="er">&gt;</span> x <span class="ot">&lt;-</span> mtcars <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, wt, drat, qsec) <span class="sc">%&gt;%</span> <span class="fu">data.matrix</span>()</span>
+<span id="cb26-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb26-7"><a></a><span class="er">&gt;</span> <span class="co"># fit ridge regression model</span></span>
+<span id="cb26-8"><a></a><span class="er">&gt;</span> model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb26-9"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb26-10"><a></a><span class="er">&gt;</span> <span class="co"># get coefficients when lambda = 3.53</span></span>
+<span id="cb26-11"><a></a><span class="er">&gt;</span> <span class="fu">coef</span>(model, <span class="at">s =</span> <span class="fl">3.53</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>5 x 1 sparse Matrix of class "dgCMatrix"
@@ -1013,53 +1032,53 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>lasso example</summary>
-<div class="sourceCode cell-code" id="cb26" data-code-line-numbers="2|5|8|9|10|11|12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="sc">&gt;</span> <span class="co">#perform k-fold cross-validation to find optimal lambda value</span></span>
-<span id="cb26-2"><a></a><span class="er">&gt;</span> cv_model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">1</span>)</span>
-<span id="cb26-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb26-4"><a></a><span class="er">&gt;</span> <span class="co">#find optimal lambda value that minimizes test MSE</span></span>
-<span id="cb26-5"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> cv_model<span class="sc">$</span>lambda.min</span>
-<span id="cb26-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb26-7"><a></a><span class="er">&gt;</span> <span class="co">#produce plot of test MSE by lambda value</span></span>
-<span id="cb26-8"><a></a><span class="er">&gt;</span> cv_model <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb26-9"><a></a><span class="sc">+</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
-<span id="cb26-10"><a></a><span class="sc">+</span>   <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">fill =</span> <span class="st">"#00ABFD"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb26-11"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb26-12"><a></a><span class="sc">+</span>   <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>best_lambda) <span class="sc">+</span></span>
-<span id="cb26-13"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Lasso Regression'</span></span>
-<span id="cb26-14"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
-<span id="cb26-15"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
-<span id="cb26-16"><a></a><span class="sc">+</span>            <span class="st">"The best lambda value is {scales::number(best_lambda, accuracy=0.01)}"</span></span>
-<span id="cb26-17"><a></a><span class="sc">+</span>          )</span>
-<span id="cb26-18"><a></a><span class="sc">+</span>   ) <span class="sc">+</span></span>
-<span id="cb26-19"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="fu">exp</span>(<span class="dv">4</span>)) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">scale_x_log10</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28" data-code-line-numbers="2|5|8|9|10|11|12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="sc">&gt;</span> <span class="co">#perform k-fold cross-validation to find optimal lambda value</span></span>
+<span id="cb28-2"><a></a><span class="er">&gt;</span> cv_model <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb28-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb28-4"><a></a><span class="er">&gt;</span> <span class="co">#find optimal lambda value that minimizes test MSE</span></span>
+<span id="cb28-5"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> cv_model<span class="sc">$</span>lambda.min</span>
+<span id="cb28-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb28-7"><a></a><span class="er">&gt;</span> <span class="co">#produce plot of test MSE by lambda value</span></span>
+<span id="cb28-8"><a></a><span class="er">&gt;</span> cv_model <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb28-9"><a></a><span class="sc">+</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb28-10"><a></a><span class="sc">+</span>   <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">fill =</span> <span class="st">"#00ABFD"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb28-11"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb28-12"><a></a><span class="sc">+</span>   <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>best_lambda) <span class="sc">+</span></span>
+<span id="cb28-13"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Lasso Regression'</span></span>
+<span id="cb28-14"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
+<span id="cb28-15"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
+<span id="cb28-16"><a></a><span class="sc">+</span>            <span class="st">"The best lambda value is {scales::number(best_lambda, accuracy=0.01)}"</span></span>
+<span id="cb28-17"><a></a><span class="sc">+</span>          )</span>
+<span id="cb28-18"><a></a><span class="sc">+</span>   ) <span class="sc">+</span></span>
+<span id="cb28-19"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="fu">exp</span>(<span class="dv">4</span>)) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">scale_x_log10</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lasso-regression-example-2" class="slide level2">
 <h2>Lasso Regression Example</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>lasso coefficients</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="sc">&gt;</span> model <span class="sc">%&gt;%</span></span>
-<span id="cb27-2"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from=</span>term, <span class="at">values_from=</span>estimate) <span class="sc">%&gt;%</span></span>
-<span id="cb27-4"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(step,dev.ratio, <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb27-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate_all</span>(dplyr<span class="sc">::</span>coalesce, <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-6"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>lambda, <span class="at">names_to =</span> <span class="st">'parameter'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-7"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>value, <span class="at">color=</span>parameter)) <span class="sc">+</span></span>
-<span id="cb27-8"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb27-9"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">70</span>) <span class="sc">+</span></span>
-<span id="cb27-10"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
-<span id="cb27-11"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
-<span id="cb27-12"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
-<span id="cb27-13"><a></a><span class="sc">+</span>            <span class="st">"Parameters as a function of lambda"</span></span>
-<span id="cb27-14"><a></a><span class="sc">+</span>          )</span>
-<span id="cb27-15"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="sc">&gt;</span> model <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from=</span>term, <span class="at">values_from=</span>estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(step,dev.ratio, <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-5"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate_all</span>(dplyr<span class="sc">::</span>coalesce, <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-6"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="sc">-</span>lambda, <span class="at">names_to =</span> <span class="st">'parameter'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-7"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y=</span>value, <span class="at">color=</span>parameter)) <span class="sc">+</span></span>
+<span id="cb29-8"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb29-9"><a></a><span class="sc">+</span>   <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb29-10"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Ridge Regression'</span></span>
+<span id="cb29-11"><a></a><span class="sc">+</span>        , <span class="at">subtitle =</span> </span>
+<span id="cb29-12"><a></a><span class="sc">+</span>          stringr<span class="sc">::</span><span class="fu">str_glue</span>(</span>
+<span id="cb29-13"><a></a><span class="sc">+</span>            <span class="st">"Parameters as a function of lambda"</span></span>
+<span id="cb29-14"><a></a><span class="sc">+</span>          )</span>
+<span id="cb29-15"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-14-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="elastic-net-regression" class="slide level2">
 <h2>Elastic Net Regression</h2>
 <p>Elastic Net regression is a hybrid of ridge and lasso regression.</p>
@@ -1074,43 +1093,43 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>elastic net example</summary>
-<div class="sourceCode cell-code" id="cb28" data-code-line-numbers="5-9|10-13|15|16-17|18-29|33-35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="sc">&gt;</span> <span class="co"># set length of data and seed for reproducability</span></span>
-<span id="cb28-2"><a></a><span class="er">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb28-3"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">2467</span>)</span>
-<span id="cb28-4"><a></a><span class="sc">&gt;</span> <span class="co"># create the dataset</span></span>
-<span id="cb28-5"><a></a><span class="er">&gt;</span> dat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb28-6"><a></a><span class="sc">+</span>   <span class="at">a =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
-<span id="cb28-7"><a></a><span class="sc">+</span>   , <span class="at">b =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
-<span id="cb28-8"><a></a><span class="sc">+</span>   , <span class="at">c =</span> <span class="fu">sort</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T))</span>
-<span id="cb28-9"><a></a><span class="sc">+</span> ) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-10"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb28-11"><a></a><span class="sc">+</span>     <span class="at">z =</span> (a<span class="sc">*</span>b)<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> c <span class="sc">+</span> <span class="fu">sample</span>(<span class="sc">-</span><span class="dv">10</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
-<span id="cb28-12"><a></a><span class="sc">+</span>     , <span class="at">.before =</span> <span class="dv">1</span></span>
-<span id="cb28-13"><a></a><span class="sc">+</span>   )</span>
-<span id="cb28-14"><a></a><span class="sc">&gt;</span> <span class="co"># cross validate to get the best alpha</span></span>
-<span id="cb28-15"><a></a><span class="er">&gt;</span> alpha_dat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>( <span class="at">alpha =</span> <span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="fl">0.01</span>) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb28-17"><a></a><span class="sc">+</span>     <span class="at">mse =</span></span>
-<span id="cb28-18"><a></a><span class="sc">+</span>       purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb28-19"><a></a><span class="sc">+</span>         alpha</span>
-<span id="cb28-20"><a></a><span class="sc">+</span>         , (\(a){</span>
-<span id="cb28-21"><a></a><span class="sc">+</span>           cvg <span class="ot">&lt;-</span> </span>
-<span id="cb28-22"><a></a><span class="sc">+</span>            glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(</span>
-<span id="cb28-23"><a></a><span class="sc">+</span>              <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
-<span id="cb28-24"><a></a><span class="sc">+</span>              , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
-<span id="cb28-25"><a></a><span class="sc">+</span>              , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
-<span id="cb28-26"><a></a><span class="sc">+</span>              , <span class="at">gamma =</span> a</span>
-<span id="cb28-27"><a></a><span class="sc">+</span>           )</span>
-<span id="cb28-28"><a></a><span class="sc">+</span>           <span class="fu">min</span>(cvg<span class="sc">$</span>cvm)</span>
-<span id="cb28-29"><a></a><span class="sc">+</span>         })</span>
-<span id="cb28-30"><a></a><span class="sc">+</span>       )</span>
-<span id="cb28-31"><a></a><span class="sc">+</span>   ) </span>
-<span id="cb28-32"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb28-33"><a></a><span class="er">&gt;</span> best_alpha <span class="ot">&lt;-</span> alpha_dat <span class="sc">%&gt;%</span> </span>
-<span id="cb28-34"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(mse <span class="sc">==</span> <span class="fu">min</span>(mse)) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-35"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">pull</span>(alpha)</span>
-<span id="cb28-36"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb28-37"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">"best alpha:"</span>, best_alpha)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30" data-code-line-numbers="5-9|10-13|15|16-17|18-29|33-35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="sc">&gt;</span> <span class="co"># set length of data and seed for reproducability</span></span>
+<span id="cb30-2"><a></a><span class="er">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb30-3"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">2467</span>)</span>
+<span id="cb30-4"><a></a><span class="sc">&gt;</span> <span class="co"># create the dataset</span></span>
+<span id="cb30-5"><a></a><span class="er">&gt;</span> dat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb30-6"><a></a><span class="sc">+</span>   <span class="at">a =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
+<span id="cb30-7"><a></a><span class="sc">+</span>   , <span class="at">b =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
+<span id="cb30-8"><a></a><span class="sc">+</span>   , <span class="at">c =</span> <span class="fu">sort</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T))</span>
+<span id="cb30-9"><a></a><span class="sc">+</span> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-10"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb30-11"><a></a><span class="sc">+</span>     <span class="at">z =</span> (a<span class="sc">*</span>b)<span class="sc">/</span><span class="dv">2</span> <span class="sc">+</span> c <span class="sc">+</span> <span class="fu">sample</span>(<span class="sc">-</span><span class="dv">10</span><span class="sc">:</span><span class="dv">10</span>, n, <span class="at">replace =</span> T)<span class="sc">/</span><span class="dv">10</span></span>
+<span id="cb30-12"><a></a><span class="sc">+</span>     , <span class="at">.before =</span> <span class="dv">1</span></span>
+<span id="cb30-13"><a></a><span class="sc">+</span>   )</span>
+<span id="cb30-14"><a></a><span class="sc">&gt;</span> <span class="co"># cross validate to get the best alpha</span></span>
+<span id="cb30-15"><a></a><span class="er">&gt;</span> alpha_dat <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>( <span class="at">alpha =</span> <span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="fl">0.01</span>) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb30-17"><a></a><span class="sc">+</span>     <span class="at">mse =</span></span>
+<span id="cb30-18"><a></a><span class="sc">+</span>       purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb30-19"><a></a><span class="sc">+</span>         alpha</span>
+<span id="cb30-20"><a></a><span class="sc">+</span>         , (\(a){</span>
+<span id="cb30-21"><a></a><span class="sc">+</span>           cvg <span class="ot">&lt;-</span> </span>
+<span id="cb30-22"><a></a><span class="sc">+</span>            glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(</span>
+<span id="cb30-23"><a></a><span class="sc">+</span>              <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
+<span id="cb30-24"><a></a><span class="sc">+</span>              , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
+<span id="cb30-25"><a></a><span class="sc">+</span>              , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
+<span id="cb30-26"><a></a><span class="sc">+</span>              , <span class="at">gamma =</span> a</span>
+<span id="cb30-27"><a></a><span class="sc">+</span>           )</span>
+<span id="cb30-28"><a></a><span class="sc">+</span>           <span class="fu">min</span>(cvg<span class="sc">$</span>cvm)</span>
+<span id="cb30-29"><a></a><span class="sc">+</span>         })</span>
+<span id="cb30-30"><a></a><span class="sc">+</span>       )</span>
+<span id="cb30-31"><a></a><span class="sc">+</span>   ) </span>
+<span id="cb30-32"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb30-33"><a></a><span class="er">&gt;</span> best_alpha <span class="ot">&lt;-</span> alpha_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb30-34"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">filter</span>(mse <span class="sc">==</span> <span class="fu">min</span>(mse)) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-35"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">pull</span>(alpha)</span>
+<span id="cb30-36"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb30-37"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">"best alpha:"</span>, best_alpha)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>best alpha: 0.64</code></pre>
@@ -1119,28 +1138,28 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>elastic net example, part 2</summary>
-<div class="sourceCode cell-code" id="cb30" data-code-line-numbers="1-6|8-9|11-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="sc">&gt;</span> elastic_cv <span class="ot">&lt;-</span> </span>
-<span id="cb30-2"><a></a><span class="sc">+</span>   glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(</span>
-<span id="cb30-3"><a></a><span class="sc">+</span>     <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
-<span id="cb30-4"><a></a><span class="sc">+</span>     , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
-<span id="cb30-5"><a></a><span class="sc">+</span>     , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
-<span id="cb30-6"><a></a><span class="sc">+</span>     , <span class="at">gamma =</span> best_alpha)</span>
-<span id="cb30-7"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb30-8"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> elastic_cv<span class="sc">$</span>lambda.min</span>
-<span id="cb30-9"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"best lambda:"</span>, best_lambda)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32" data-code-line-numbers="1-6|8-9|11-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="sc">&gt;</span> elastic_cv <span class="ot">&lt;-</span> </span>
+<span id="cb32-2"><a></a><span class="sc">+</span>   glmnet<span class="sc">::</span><span class="fu">cv.glmnet</span>(</span>
+<span id="cb32-3"><a></a><span class="sc">+</span>     <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
+<span id="cb32-4"><a></a><span class="sc">+</span>     , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
+<span id="cb32-5"><a></a><span class="sc">+</span>     , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
+<span id="cb32-6"><a></a><span class="sc">+</span>     , <span class="at">gamma =</span> best_alpha)</span>
+<span id="cb32-7"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb32-8"><a></a><span class="er">&gt;</span> best_lambda <span class="ot">&lt;-</span> elastic_cv<span class="sc">$</span>lambda.min</span>
+<span id="cb32-9"><a></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">"best lambda:"</span>, best_lambda)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>best lambda: 0.01015384</code></pre>
 </div>
 <details class="code-fold">
 <summary>elastic net example, part 2</summary>
-<div class="sourceCode cell-code" id="cb32" data-code-line-numbers="1-6|8-9|11-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="sc">&gt;</span> elastic_mod <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(</span>
-<span id="cb32-2"><a></a><span class="sc">+</span>   <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
-<span id="cb32-3"><a></a><span class="sc">+</span>   , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
-<span id="cb32-4"><a></a><span class="sc">+</span>   , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
-<span id="cb32-5"><a></a><span class="sc">+</span>   , <span class="at">gamma =</span> best_alpha, <span class="at">lambda =</span> best_lambda)</span>
-<span id="cb32-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb32-7"><a></a><span class="er">&gt;</span> elastic_mod <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34" data-code-line-numbers="1-6|8-9|11-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="sc">&gt;</span> elastic_mod <span class="ot">&lt;-</span> glmnet<span class="sc">::</span><span class="fu">glmnet</span>(</span>
+<span id="cb34-2"><a></a><span class="sc">+</span>   <span class="at">x =</span> dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() </span>
+<span id="cb34-3"><a></a><span class="sc">+</span>   , <span class="at">y =</span> dat<span class="sc">$</span>z </span>
+<span id="cb34-4"><a></a><span class="sc">+</span>   , <span class="at">family =</span> <span class="st">"gaussian"</span></span>
+<span id="cb34-5"><a></a><span class="sc">+</span>   , <span class="at">gamma =</span> best_alpha, <span class="at">lambda =</span> best_lambda)</span>
+<span id="cb34-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb34-7"><a></a><span class="er">&gt;</span> elastic_mod <span class="sc">%&gt;%</span> broom<span class="sc">::</span><span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 5
@@ -1158,13 +1177,13 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>elastic net example, part 3</summary>
-<div class="sourceCode cell-code" id="cb34" data-code-line-numbers="1|3-5|7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="sc">&gt;</span> pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_mod, dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>())</span>
-<span id="cb34-2"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb34-3"><a></a><span class="er">&gt;</span> rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>( (pred <span class="sc">-</span> dat<span class="sc">$</span>z)<span class="sc">^</span><span class="dv">2</span> ))</span>
-<span id="cb34-4"><a></a><span class="sc">&gt;</span> R2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="fu">sum</span>((dat<span class="sc">$</span>z <span class="sc">-</span> pred )<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">sum</span>((dat<span class="sc">$</span>z <span class="sc">-</span> <span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb34-5"><a></a><span class="sc">&gt;</span> mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((dat<span class="sc">$</span>z <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb34-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb34-7"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">" RMSE:"</span>, rmse, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">"R-squared:"</span>, R2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">"MSE:"</span>, mse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36" data-code-line-numbers="1|3-5|7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="sc">&gt;</span> pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_mod, dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>z) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>())</span>
+<span id="cb36-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb36-3"><a></a><span class="er">&gt;</span> rmse <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>( (pred <span class="sc">-</span> dat<span class="sc">$</span>z)<span class="sc">^</span><span class="dv">2</span> ))</span>
+<span id="cb36-4"><a></a><span class="sc">&gt;</span> R2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="fu">sum</span>((dat<span class="sc">$</span>z <span class="sc">-</span> pred )<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">sum</span>((dat<span class="sc">$</span>z <span class="sc">-</span> <span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb36-5"><a></a><span class="sc">&gt;</span> mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((dat<span class="sc">$</span>z <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb36-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb36-7"><a></a><span class="er">&gt;</span> <span class="fu">cat</span>(<span class="st">" RMSE:"</span>, rmse, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">"R-squared:"</span>, R2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">"MSE:"</span>, mse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> RMSE: 0.5817823 
@@ -1175,17 +1194,17 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>elastic net example, part 4</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> </span>
-<span id="cb36-2"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb36-3"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">add_column</span>(<span class="at">pred =</span> pred[,<span class="dv">1</span>]) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-5"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ID, <span class="at">y=</span>z)) <span class="sc">+</span></span>
-<span id="cb36-6"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb36-7"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>pred),<span class="at">color=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="sc">&gt;</span> dat <span class="sc">%&gt;%</span> </span>
+<span id="cb38-2"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb38-3"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">add_column</span>(<span class="at">pred =</span> pred[,<span class="dv">1</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-5"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ID, <span class="at">y=</span>z)) <span class="sc">+</span></span>
+<span id="cb38-6"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb38-7"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>pred),<span class="at">color=</span><span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-18-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="generalized-linear-models" class="slide level2">
 <h2>Generalized Linear Models</h2>
 <p>A <strong>generalized linear model</strong> (<strong>GLM</strong>) is a flexible generalization of ordinary linear regression.</p>
@@ -1250,7 +1269,7 @@ qsec        -18.944318</code></pre>
 </div>
 </div>
 <div id="tabset-5-2">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p>Logistic Regression (binomial Distribution)</p>
 <ul>
 <li><strong>Response Variable</strong>: Binary (0 or 1)</li>
@@ -1267,7 +1286,7 @@ qsec        -18.944318</code></pre>
 <li><strong>Response Variable</strong>: Count data (non-negative integers)</li>
 <li><strong>Link Function</strong>: Log (<span class="math inline">\((g(\mu) = \log(\mu)\)</span>))</li>
 <li><strong>Example</strong>: Predicting the number of insurance claims in a year based on driver age, vehicle type, etc.</li>
-<li><strong>Formula</strong>: <span class="math inline">\((\log(\lambda) = \beta\_0 + \beta\_1 X_1 + \beta\_2 X_2 + \ldots)\)</span>, where <span class="math inline">\((\lambda)\)</span> is the expected count.</li>
+<li><strong>Formula</strong>: <span class="math inline">\((\log(\lambda) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)\)</span>, where <span class="math inline">\((\lambda)\)</span> is the expected count.</li>
 </ul>
 </div>
 </div>
@@ -1337,7 +1356,7 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="sc">&gt;</span> dat <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="sc">&gt;</span> dat <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>There are many methodologies for constructing regression trees but one of the oldest is known as the <strong>c</strong>lassification <strong>a</strong>nd <strong>r</strong>egression <strong>t</strong>ree (CART) approach.</p>
@@ -1348,7 +1367,8 @@ qsec        -18.944318</code></pre>
 <p>As a simple example, consider a continuous response variable <span class="math inline">\(y\)</span> with two covariates <span class="math inline">\(x_1,x_2\)</span> and the support of <span class="math inline">\(x_1,x_2\)</span> partitioned into three regions. Then we write the tree regression model for <span class="math inline">\(y\)</span> as:</p>
 <p><span class="math display">\[
 \hat{y} = \hat{f}(x_1,x_2)=\sum_{i=1}^{3}c_1\times I_{(x_1,x_2)\in R_i}
-\]</span> Tree algorithm differ in how they grow the regression tree, i.e.&nbsp;partition the space of the covariates.</p>
+\]</span></p>
+<p>Tree algorithms differ in how they grow the regression tree, i.e.&nbsp;partition the space of the covariates.</p>
 </section>
 <section id="regression-with-trees-2" class="slide level2">
 <h2>Regression with trees</h2>
@@ -1365,7 +1385,7 @@ qsec        -18.944318</code></pre>
 </section>
 <section id="regression-with-trees-4" class="slide level2">
 <h2>Regression with trees</h2>
-<p>As with penalized linear regression, we can us a complexity parameter <span class="math inline">\(\alpha\)</span> to penalize the number of terminal nodes of the tree (<span class="math inline">\(T\)</span>), like the lasso <span class="math inline">\(L_1\)</span> norm penalty, and find the smallest tree with lowest penalized error, i.e.&nbsp;the minimizing the following objective function:</p>
+<p>As with penalized linear regression, we can use a complexity parameter <span class="math inline">\(\alpha\)</span> to penalize the number of terminal nodes of the tree (<span class="math inline">\(T\)</span>), like the lasso <span class="math inline">\(L_1\)</span> norm penalty, and find the smallest tree with lowest penalized error, i.e.&nbsp;the minimizing the following objective function:</p>
 <p><span class="math display">\[
 \text{SSE}+\alpha\left|T\right|
 \]</span></p>
@@ -1397,7 +1417,7 @@ qsec        -18.944318</code></pre>
 </section>
 <section id="regression-with-trees-bagging-1" class="slide level2">
 <h2>Regression with trees (Bagging)</h2>
-<p>Bagging combines and averages multiple models. Averaging across multiple trees reduces the variability of any one tree and reduces overfitting, improving predictive performance.</p>
+<p>Bagging combines and averages multiple tree models. Averaging across multiple trees reduces the variability of any one tree and reduces overfitting, improving predictive performance.</p>
 </section>
 <section id="regression-with-trees-bagging-2" class="slide level2">
 <h2>Regression with trees (Bagging)</h2>
@@ -1507,7 +1527,8 @@ qsec        -18.944318</code></pre>
 </section>
 <section id="kernel-regression" class="slide level2">
 <h2>Kernel Regression</h2>
-<p>Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables. Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.</p>
+<p>Kernel Regression is a non-parametric technique in machine learning used to estimate the relationship between a dependent variable and one or more independent variables.</p>
+<p>Unlike linear regression, Kernel Regression does not assume a specific form for the relationship between the variables. Instead, it uses a weighted average of nearby observed data points to make predictions.</p>
 </section>
 <section id="kernel-regression-1" class="slide level2">
 <h2>Kernel Regression</h2>
@@ -1537,36 +1558,36 @@ qsec        -18.944318</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="sc">&gt;</span> <span class="co">#Kernel regression</span></span>
-<span id="cb38-2"><a></a><span class="er">&gt;</span> <span class="co"># from https://towardsdatascience.com/kernel-regression-made-easy-to-understand-86caf2d2b844</span></span>
-<span id="cb38-3"><a></a><span class="er">&gt;</span> Kdata <span class="ot">&lt;-</span> </span>
-<span id="cb38-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb38-5"><a></a><span class="sc">+</span>     <span class="at">Area =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">22</span>,<span class="dv">33</span>,<span class="dv">44</span>,<span class="dv">50</span>,<span class="dv">56</span>,<span class="dv">67</span>,<span class="dv">70</span>,<span class="dv">78</span>,<span class="dv">89</span>,<span class="dv">90</span>,<span class="dv">100</span>)</span>
-<span id="cb38-6"><a></a><span class="sc">+</span>     , <span class="at">RiverFlow =</span> <span class="fu">c</span>(<span class="dv">2337</span>,<span class="dv">2750</span>,<span class="dv">2301</span>,<span class="dv">2500</span>,<span class="dv">1700</span>,<span class="dv">2100</span>,<span class="dv">1100</span>,<span class="dv">1750</span>,<span class="dv">1000</span>,<span class="dv">1642</span>, <span class="dv">2000</span>,<span class="dv">1932</span>)</span>
-<span id="cb38-7"><a></a><span class="sc">+</span>   )</span>
-<span id="cb38-8"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb38-9"><a></a><span class="er">&gt;</span> <span class="co">#function to calculate Gaussian kernel</span></span>
-<span id="cb38-10"><a></a><span class="er">&gt;</span> gausinKernel <span class="ot">&lt;-</span> <span class="cf">function</span>(x,b){<span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span>(x<span class="sc">/</span>b)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>pi))}</span>
-<span id="cb38-11"><a></a><span class="sc">&gt;</span> <span class="co">#plotting function</span></span>
-<span id="cb38-12"><a></a><span class="er">&gt;</span> plt_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">bandwidth =</span> <span class="dv">10</span>, <span class="at">support =</span> <span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">110</span>,<span class="dv">1</span>)){</span>
-<span id="cb38-13"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x_hat =</span> support) <span class="sc">|&gt;</span> </span>
-<span id="cb38-14"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb38-15"><a></a><span class="sc">+</span>     <span class="at">y_hat =</span></span>
-<span id="cb38-16"><a></a><span class="sc">+</span>       purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
-<span id="cb38-17"><a></a><span class="sc">+</span>         x_hat</span>
-<span id="cb38-18"><a></a><span class="sc">+</span>         , (</span>
-<span id="cb38-19"><a></a><span class="sc">+</span>         \(x){</span>
-<span id="cb38-20"><a></a><span class="sc">+</span>           K <span class="ot">&lt;-</span> <span class="fu">gausinKernel</span>(Kdata<span class="sc">$</span>Area<span class="sc">-</span>x, bandwidth)</span>
-<span id="cb38-21"><a></a><span class="sc">+</span>           <span class="fu">sum</span>( Kdata<span class="sc">$</span>RiverFlow <span class="sc">*</span> K<span class="sc">/</span><span class="fu">sum</span>(K) )</span>
-<span id="cb38-22"><a></a><span class="sc">+</span>         })</span>
-<span id="cb38-23"><a></a><span class="sc">+</span>       )</span>
-<span id="cb38-24"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
-<span id="cb38-25"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x_hat, <span class="at">y=</span>y_hat)) <span class="sc">+</span> </span>
-<span id="cb38-26"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>(<span class="at">color=</span><span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb38-27"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> Kdata, <span class="fu">aes</span>(<span class="at">x=</span>Area, <span class="at">y=</span>RiverFlow), <span class="at">size=</span><span class="dv">4</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb38-28"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Kernel regression"</span>, <span class="at">subtitle =</span> stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"bandwith = {bandwidth}; data = red | fit = blue"</span>) ) <span class="sc">+</span></span>
-<span id="cb38-29"><a></a><span class="sc">+</span>   <span class="fu">theme_minimal</span>()</span>
-<span id="cb38-30"><a></a><span class="sc">+</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="sc">&gt;</span> <span class="co">#Kernel regression</span></span>
+<span id="cb40-2"><a></a><span class="er">&gt;</span> <span class="co"># from https://towardsdatascience.com/kernel-regression-made-easy-to-understand-86caf2d2b844</span></span>
+<span id="cb40-3"><a></a><span class="er">&gt;</span> Kdata <span class="ot">&lt;-</span> </span>
+<span id="cb40-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb40-5"><a></a><span class="sc">+</span>     <span class="at">Area =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">22</span>,<span class="dv">33</span>,<span class="dv">44</span>,<span class="dv">50</span>,<span class="dv">56</span>,<span class="dv">67</span>,<span class="dv">70</span>,<span class="dv">78</span>,<span class="dv">89</span>,<span class="dv">90</span>,<span class="dv">100</span>)</span>
+<span id="cb40-6"><a></a><span class="sc">+</span>     , <span class="at">RiverFlow =</span> <span class="fu">c</span>(<span class="dv">2337</span>,<span class="dv">2750</span>,<span class="dv">2301</span>,<span class="dv">2500</span>,<span class="dv">1700</span>,<span class="dv">2100</span>,<span class="dv">1100</span>,<span class="dv">1750</span>,<span class="dv">1000</span>,<span class="dv">1642</span>, <span class="dv">2000</span>,<span class="dv">1932</span>)</span>
+<span id="cb40-7"><a></a><span class="sc">+</span>   )</span>
+<span id="cb40-8"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb40-9"><a></a><span class="er">&gt;</span> <span class="co">#function to calculate Gaussian kernel</span></span>
+<span id="cb40-10"><a></a><span class="er">&gt;</span> gausinKernel <span class="ot">&lt;-</span> <span class="cf">function</span>(x,b){<span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">*</span>(x<span class="sc">/</span>b)<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">*</span>pi))}</span>
+<span id="cb40-11"><a></a><span class="sc">&gt;</span> <span class="co">#plotting function</span></span>
+<span id="cb40-12"><a></a><span class="er">&gt;</span> plt_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">bandwidth =</span> <span class="dv">10</span>, <span class="at">support =</span> <span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">110</span>,<span class="dv">1</span>)){</span>
+<span id="cb40-13"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x_hat =</span> support) <span class="sc">|&gt;</span> </span>
+<span id="cb40-14"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb40-15"><a></a><span class="sc">+</span>     <span class="at">y_hat =</span></span>
+<span id="cb40-16"><a></a><span class="sc">+</span>       purrr<span class="sc">::</span><span class="fu">map_dbl</span>(</span>
+<span id="cb40-17"><a></a><span class="sc">+</span>         x_hat</span>
+<span id="cb40-18"><a></a><span class="sc">+</span>         , (</span>
+<span id="cb40-19"><a></a><span class="sc">+</span>         \(x){</span>
+<span id="cb40-20"><a></a><span class="sc">+</span>           K <span class="ot">&lt;-</span> <span class="fu">gausinKernel</span>(Kdata<span class="sc">$</span>Area<span class="sc">-</span>x, bandwidth)</span>
+<span id="cb40-21"><a></a><span class="sc">+</span>           <span class="fu">sum</span>( Kdata<span class="sc">$</span>RiverFlow <span class="sc">*</span> K<span class="sc">/</span><span class="fu">sum</span>(K) )</span>
+<span id="cb40-22"><a></a><span class="sc">+</span>         })</span>
+<span id="cb40-23"><a></a><span class="sc">+</span>       )</span>
+<span id="cb40-24"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
+<span id="cb40-25"><a></a><span class="sc">+</span>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x_hat, <span class="at">y=</span>y_hat)) <span class="sc">+</span> </span>
+<span id="cb40-26"><a></a><span class="sc">+</span>   <span class="fu">geom_line</span>(<span class="at">color=</span><span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb40-27"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> Kdata, <span class="fu">aes</span>(<span class="at">x=</span>Area, <span class="at">y=</span>RiverFlow), <span class="at">size=</span><span class="dv">4</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb40-28"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Kernel regression"</span>, <span class="at">subtitle =</span> stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"bandwith = {bandwidth}; data = red | fit = blue"</span>) ) <span class="sc">+</span></span>
+<span id="cb40-29"><a></a><span class="sc">+</span>   <span class="fu">theme_minimal</span>()</span>
+<span id="cb40-30"><a></a><span class="sc">+</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="panel-tabset">
@@ -1577,7 +1598,7 @@ qsec        -18.944318</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1588,7 +1609,7 @@ qsec        -18.944318</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1599,7 +1620,7 @@ qsec        -18.944318</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1629,7 +1650,7 @@ qsec        -18.944318</code></pre>
 </section>
 <section id="regression-with-anns-components" class="slide level2">
 <h2>Regression with ANNs: Components</h2>
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <ol type="1">
 <li><strong>Neurons</strong>:
 <ul>
@@ -1651,7 +1672,7 @@ qsec        -18.944318</code></pre>
 </section>
 <section id="regression-with-anns-components-1" class="slide level2">
 <h2>Regression with ANNs: Components</h2>
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <ol start="4" type="1">
 <li><strong>Activation Functions</strong>:
 <ul>
@@ -1727,48 +1748,48 @@ qsec        -18.944318</code></pre>
 <section id="regression-with-anns-example" class="slide level2">
 <h2>Regression with ANNs: example</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="sc">&gt;</span> <span class="co"># layout-nrow: 3</span></span>
-<span id="cb39-2"><a></a><span class="er">&gt;</span> <span class="co">#| code-line-numbers: "1|3-4|6-11|13-17|19-25|27-28|30-39"</span></span>
-<span id="cb39-3"><a></a><span class="er">&gt;</span> <span class="co">#| code-fold: true</span></span>
-<span id="cb39-4"><a></a><span class="er">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">500</span>)</span>
-<span id="cb39-5"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-6"><a></a><span class="er">&gt;</span> <span class="co"># Boston dataset from MASS</span></span>
-<span id="cb39-7"><a></a><span class="er">&gt;</span> data <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span>
-<span id="cb39-8"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb39-9"><a></a><span class="er">&gt;</span> <span class="co"># Normalize the data</span></span>
-<span id="cb39-10"><a></a><span class="er">&gt;</span> maxs <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(max) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
-<span id="cb39-11"><a></a><span class="sc">&gt;</span> mins <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
-<span id="cb39-12"><a></a><span class="sc">&gt;</span> data_scaled <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb39-13"><a></a><span class="sc">+</span>   <span class="fu">scale</span>(<span class="at">center =</span> mins, <span class="at">scale =</span> maxs <span class="sc">-</span> mins) <span class="sc">%&gt;%</span> </span>
-<span id="cb39-14"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
-<span id="cb39-15"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-16"><a></a><span class="er">&gt;</span> <span class="co"># Split the data into training and testing set</span></span>
-<span id="cb39-17"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> data_scaled <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> .<span class="dv">75</span>)</span>
-<span id="cb39-18"><a></a><span class="sc">&gt;</span> <span class="co"># extracting training data and test data as two seperate dataframes</span></span>
-<span id="cb39-19"><a></a><span class="er">&gt;</span> data_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
-<span id="cb39-20"><a></a><span class="sc">&gt;</span> data_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(data_split)</span>
-<span id="cb39-21"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb39-22"><a></a><span class="er">&gt;</span> nn <span class="ot">&lt;-</span> data_train <span class="sc">%&gt;%</span> </span>
-<span id="cb39-23"><a></a><span class="sc">+</span>   neuralnet<span class="sc">::</span><span class="fu">neuralnet</span>(</span>
-<span id="cb39-24"><a></a><span class="sc">+</span>     medv <span class="sc">~</span> .</span>
-<span id="cb39-25"><a></a><span class="sc">+</span>     , <span class="at">data =</span> .</span>
-<span id="cb39-26"><a></a><span class="sc">+</span>     , <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">3</span>)</span>
-<span id="cb39-27"><a></a><span class="sc">+</span>     , <span class="at">linear.output =</span> <span class="cn">TRUE</span></span>
-<span id="cb39-28"><a></a><span class="sc">+</span>   )</span>
-<span id="cb39-29"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-30"><a></a><span class="er">&gt;</span> <span class="co"># Predict on test data</span></span>
-<span id="cb39-31"><a></a><span class="er">&gt;</span> pr.nn <span class="ot">&lt;-</span> neuralnet<span class="sc">::</span><span class="fu">compute</span>( nn, data_test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>medv) )</span>
-<span id="cb39-32"><a></a><span class="sc">&gt;</span>   </span>
-<span id="cb39-33"><a></a><span class="er">&gt;</span> <span class="co"># Compute mean squared error</span></span>
-<span id="cb39-34"><a></a><span class="er">&gt;</span> pr.nn_ <span class="ot">&lt;-</span> </span>
-<span id="cb39-35"><a></a><span class="sc">+</span>   pr.nn<span class="sc">$</span>net.result <span class="sc">*</span> </span>
-<span id="cb39-36"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span></span>
-<span id="cb39-37"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
-<span id="cb39-38"><a></a><span class="sc">&gt;</span> test.r <span class="ot">&lt;-</span> </span>
-<span id="cb39-39"><a></a><span class="sc">+</span>   data_test<span class="sc">$</span>medv <span class="sc">*</span> </span>
-<span id="cb39-40"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span> </span>
-<span id="cb39-41"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
-<span id="cb39-42"><a></a><span class="sc">&gt;</span> MSE.nn <span class="ot">&lt;-</span> <span class="fu">sum</span>((test.r <span class="sc">-</span> pr.nn_)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">nrow</span>(data_test)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41" data-code-line-numbers="1|3-4|6-11|13-17|19-25|27-28|30-39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">500</span>)</span>
+<span id="cb41-2"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb41-3"><a></a><span class="er">&gt;</span> <span class="co"># Boston dataset from MASS</span></span>
+<span id="cb41-4"><a></a><span class="er">&gt;</span> data <span class="ot">&lt;-</span> MASS<span class="sc">::</span>Boston</span>
+<span id="cb41-5"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb41-6"><a></a><span class="er">&gt;</span> <span class="co"># Normalize the data</span></span>
+<span id="cb41-7"><a></a><span class="er">&gt;</span> maxs <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(max) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
+<span id="cb41-8"><a></a><span class="sc">&gt;</span> mins <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">summarise_all</span>(min) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>() <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>()</span>
+<span id="cb41-9"><a></a><span class="sc">&gt;</span> data_scaled <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb41-10"><a></a><span class="sc">+</span>   <span class="fu">scale</span>(<span class="at">center =</span> mins, <span class="at">scale =</span> maxs <span class="sc">-</span> mins) <span class="sc">%&gt;%</span> </span>
+<span id="cb41-11"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb41-12"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb41-13"><a></a><span class="er">&gt;</span> <span class="co"># Split the data into training and testing set</span></span>
+<span id="cb41-14"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> data_scaled <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> .<span class="dv">75</span>)</span>
+<span id="cb41-15"><a></a><span class="sc">&gt;</span> <span class="co"># extracting training data and test data as two seperate dataframes</span></span>
+<span id="cb41-16"><a></a><span class="er">&gt;</span> data_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
+<span id="cb41-17"><a></a><span class="sc">&gt;</span> data_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(data_split)</span>
+<span id="cb41-18"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb41-19"><a></a><span class="er">&gt;</span> nn <span class="ot">&lt;-</span> data_train <span class="sc">%&gt;%</span> </span>
+<span id="cb41-20"><a></a><span class="sc">+</span>   neuralnet<span class="sc">::</span><span class="fu">neuralnet</span>(</span>
+<span id="cb41-21"><a></a><span class="sc">+</span>     medv <span class="sc">~</span> .</span>
+<span id="cb41-22"><a></a><span class="sc">+</span>     , <span class="at">data =</span> .</span>
+<span id="cb41-23"><a></a><span class="sc">+</span>     , <span class="at">hidden =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">3</span>)</span>
+<span id="cb41-24"><a></a><span class="sc">+</span>     , <span class="at">linear.output =</span> <span class="cn">TRUE</span></span>
+<span id="cb41-25"><a></a><span class="sc">+</span>   )</span>
+<span id="cb41-26"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb41-27"><a></a><span class="er">&gt;</span> <span class="co"># Predict on test data</span></span>
+<span id="cb41-28"><a></a><span class="er">&gt;</span> pr.nn <span class="ot">&lt;-</span> neuralnet<span class="sc">::</span><span class="fu">compute</span>( nn, data_test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>medv) )</span>
+<span id="cb41-29"><a></a><span class="sc">&gt;</span>   </span>
+<span id="cb41-30"><a></a><span class="er">&gt;</span> <span class="co"># Compute mean squared error</span></span>
+<span id="cb41-31"><a></a><span class="er">&gt;</span> pr.nn_ <span class="ot">&lt;-</span> </span>
+<span id="cb41-32"><a></a><span class="sc">+</span>   pr.nn<span class="sc">$</span>net.result <span class="sc">*</span> </span>
+<span id="cb41-33"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span></span>
+<span id="cb41-34"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
+<span id="cb41-35"><a></a><span class="sc">&gt;</span> test.r <span class="ot">&lt;-</span> </span>
+<span id="cb41-36"><a></a><span class="sc">+</span>   data_test<span class="sc">$</span>medv <span class="sc">*</span> </span>
+<span id="cb41-37"><a></a><span class="sc">+</span>   (<span class="fu">max</span>(data<span class="sc">$</span>medv) <span class="sc">-</span> <span class="fu">min</span>(data<span class="sc">$</span>medv)) <span class="sc">+</span> </span>
+<span id="cb41-38"><a></a><span class="sc">+</span>   <span class="fu">min</span>(data<span class="sc">$</span>medv)</span>
+<span id="cb41-39"><a></a><span class="sc">&gt;</span> MSE.nn <span class="ot">&lt;-</span> <span class="fu">sum</span>((test.r <span class="sc">-</span> pr.nn_)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">nrow</span>(data_test)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="regression-with-neural-nets-3" class="slide level2">
@@ -1788,7 +1809,7 @@ qsec        -18.944318</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-24-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_03_files/figure-revealjs/unnamed-chunk-25-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>

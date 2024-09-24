@@ -480,7 +480,7 @@ L.L. Odette
 <span id="cb3-14"><a></a>  <span class="fu">sum</span>()<span class="sc">/</span>NMC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5934</code></pre>
+<pre><code>[1] 0.5922</code></pre>
 </div>
 </div>
 </section>
@@ -1802,6 +1802,32 @@ p_{ij}(n) = \sum_{k_1, k_2, \dots, k_{n-1} \in \mathcal S} p_{ik_1} p_{k_1k_2} \
 </div>
 </div>
 </div>
+</section>
+<section id="mcmc-metropolis-hastings-algo" class="slide level2">
+<h2>MCMC Metropolis-Hastings Algo</h2>
+<p>Metropolis algorithm requires that the state transition probabilities are symmetric, so the proposal distribution is symmetric.</p>
+<p>if <span class="math inline">\(q(x,y) \gg q(y,x)\)</span> the the Metropolis chain would spend too much time at <span class="math inline">\(y\)</span> and not enought at <span class="math inline">\(x\)</span>, so it accepts fewer moves <span class="math inline">\(x\rightarrow y\)</span></p>
+</section>
+<section id="mcmc-metropolis-hastings-algo-1" class="slide level2">
+<h2>MCMC Metropolis-Hastings Algo</h2>
+<p>Replace</p>
+<p><span class="math display">\[
+A_n = \frac{\pi(Y_n)}{\pi(X_{n-1})}\;\mathrm{with}\; A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}
+\]</span></p>
+<p>and the algorithm is still valid even is <span class="math inline">\(q\)</span> is not symmetric.</p>
+<p>We do require that <span class="math inline">\(q(x,y)&gt;0\;\textrm{iff}\; q(y,x)&gt;0\)</span></p>
+</section>
+<section id="mcmc-metropolis-hastings-algo-2" class="slide level2">
+<h2>MCMC Metropolis-Hastings Algo</h2>
+<p>Why is this valid?</p>
+<p>For metropolis, th key was that the Markov chain was reversible, i.e.&nbsp;<span class="math inline">\(\pi(x)\mathbb{P}(x,y)=\pi(y)\mathbb{P}(y,x)\)</span></p>
+<p>If instead <span class="math inline">\(A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}\)</span>, with acceptance probability <span class="math inline">\(\alpha(x,y)=\min\left[1,\frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}\right]\)</span>, then</p>
+<p><span class="math display">\[
+\begin{align*}
+q(x,y)\alpha(x,y)\pi(x) &amp; =q(x,y)\min\left[1,\frac{\pi(y)q(y,x)}{\pi(x)q(x,y)}\right]\pi(x)\\
+&amp; =\min\left[\pi(x)q(x,y),\pi(y)q(y,x)\right]
+\end{align*}\]</span></p>
+<p>and <span class="math inline">\(\pi(x)\mathbb{P}(x,y)\)</span> is still symmetric, even if <span class="math inline">\(q\)</span> wasn’t</p>
 </section>
 <section id="need" class="slide level2">
 <h2>Need</h2>
