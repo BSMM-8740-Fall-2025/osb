@@ -388,10 +388,10 @@
     }
   </style>
 <meta property="og:title" content="The Tidymodels Framework – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 5]">
+<meta property="og:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="The Tidymodels Framework – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 5]">
+<meta name="twitter:description" content="BSMM8740-2-R-2023F [WEEK - 4]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -402,7 +402,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">The Tidymodels Framework</h1>
-  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 5]</p>
+  <p class="subtitle">BSMM8740-2-R-2023F [WEEK - 4]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -473,7 +473,7 @@ L.L. Odette
 <ol type="1">
 <li>The results are always a tibble.</li>
 <li>The column names of the tibble are always predictable.</li>
-<li>There are always as many rows in the tibble as there are in the input data set, and in the same order.</li>
+<li>There are always as many rows in the result tibble as there are in the input data set, and in the same order.</li>
 </ol>
 </section>
 <section id="tidymodels-6" class="slide level2">
@@ -489,7 +489,7 @@ L.L. Odette
 <h2>Tidymodels: parsnip</h2>
 <p>We’ve seen how the form of the arguments to linear models in R can be very different<sup>1</sup>.</p>
 <p>Parsnip is one of the tidymodels packages that provides a standardized interface across models.</p>
-<p>We look at how to fit and predict with parsnip in the next few slides, given data has been preprocessed.</p>
+<p>We look at how to fit and predict with parsnip in the next few slides, given data that has been preprocessed.</p>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>e.g.&nbsp;<code>stats::lm</code> takes a formula, while <code>glmnet::glmnet</code> takes separate outcome and co-variate matrices</p></li></ol></aside></section>
 <section id="fitting-with-parsnip" class="slide level2">
 <h2>Fitting with parsnip</h2>
@@ -546,6 +546,7 @@ Computational engine: glmnet </code></pre>
 <ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">lm</a></li><li><a href="#tabset-2-2">glmnet</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
+<div style="font-size: x-large">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> parsnip<span class="sc">::</span><span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">%&gt;%</span> </span>
@@ -561,7 +562,9 @@ stats::lm(formula = missing_arg(), data = missing_arg(), weights = missing_arg()
 </div>
 </div>
 </div>
+</div>
 <div id="tabset-2-2">
+<div style="font-size: x-large">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="sc">&gt;</span> parsnip<span class="sc">::</span><span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"glmnet"</span>) <span class="sc">%&gt;%</span> </span>
@@ -578,6 +581,7 @@ Computational engine: glmnet
 Model fit template:
 glmnet::glmnet(x = missing_arg(), y = missing_arg(), weights = missing_arg(), 
     family = "gaussian")</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -620,14 +624,14 @@ stats::lm(formula = Sale_Price ~ Longitude + Latitude, data = data)
 
 Coefficients:
 (Intercept)    Longitude     Latitude  
- -129256526      -799425      1298357  </code></pre>
+ -126207818      -756950      1320472  </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb12" data-code-line-numbers="2|4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> lm_form_fit <span class="sc">%&gt;%</span> parsnip<span class="sc">::</span><span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> stats<span class="sc">::</span><span class="fu">vcov</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              (Intercept)    Longitude      Latitude
-(Intercept)  4.581834e+13 349609110864 -311167837928
-Longitude    3.496091e+11   3649100509    -187847920
-Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
+(Intercept)  4.605986e+13 348628053369 -319101390582
+Longitude    3.486281e+11   3654272580    -152978681
+Latitude    -3.191014e+11   -152978681    7250639155</code></pre>
 </div>
 </div>
 </section>
@@ -679,7 +683,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 <div class="sourceCode cell-code" id="cb15" data-code-line-numbers="1-3|4-5|6-13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> <span class="co"># preprocessing not specified; a formula is sufficient</span></span>
 <span id="cb15-2"><a></a><span class="er">&gt;</span> lm_wflow <span class="sc">%&lt;&gt;%</span> </span>
 <span id="cb15-3"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_formula</span>(Sale_Price <span class="sc">~</span> Longitude <span class="sc">+</span> Latitude)</span>
-<span id="cb15-4"><a></a><span class="sc">&gt;</span> <span class="co"># fit the model ( can be witten as fit(lm_wflow, ames_train) )</span></span>
+<span id="cb15-4"><a></a><span class="sc">&gt;</span> <span class="co"># fit the model ( can be written as fit(lm_wflow, ames_train) )</span></span>
 <span id="cb15-5"><a></a><span class="er">&gt;</span> lm_fit <span class="ot">&lt;-</span> lm_wflow <span class="sc">%&gt;%</span> parsnip<span class="sc">::</span><span class="fu">fit</span>(ames_train)</span>
 <span id="cb15-6"><a></a><span class="sc">&gt;</span> <span class="co"># tidy up the fitted coefficients</span></span>
 <span id="cb15-7"><a></a><span class="er">&gt;</span> lm_fit <span class="sc">%&gt;%</span></span>
@@ -688,7 +692,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 <span id="cb15-10"><a></a><span class="sc">+</span>   <span class="co"># tidy up the fit results</span></span>
 <span id="cb15-11"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb15-12"><a></a><span class="sc">+</span>   <span class="co"># show the first n rows</span></span>
-<span id="cb15-13"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-13"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
@@ -764,7 +768,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 </section>
 <section id="workflows-use-of-formulas-1" class="slide level2">
 <h2>Workflows use of formulas</h2>
-<p>If a random forest model is fit using the <code>ranger</code> or <code>randomForest</code> packages, the workflow knows predictors columns that are factors should be left as is (not converted to dummy vaiables).</p>
+<p>If a random forest model is fit using the <code>ranger</code> or <code>randomForest</code> packages, the workflow knows predictor columns that are factors should be left as is (not converted to dummy vaiables).</p>
 <p>By contrast, a boosted tree created with the <code>xgboost</code> package requires the user to create dummy variables from factor predictors (since <code>xgboost::xgb.train()</code> will not). A workflow using xgboost will create the indicator columns for this engine. Also note that a different engine for boosted trees, C5.0, does not require dummy variables so none are made by the workflow.</p>
 </section>
 <section id="workflows-special-formulas" class="slide level2">
@@ -864,6 +868,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 </section>
 <section id="tidymodels-evaluation" class="slide level2">
 <h2>Tidymodels: evaluation</h2>
+<div style="font-size: xx-large">
 <p>Once we’ve settled on a final model there is a convenience function called&nbsp;<code>last_fit()</code>&nbsp;that will <em>fit</em> the model to the entire training set and <em>evaluate</em> it with the testing set. Notice that <code>last_fit()</code> takes a data split as an input, not a dataframe.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb30" data-code-line-numbers="1-2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="sc">&gt;</span> <span class="co"># pull </span></span>
@@ -894,6 +899,7 @@ Latitude    -3.111678e+11   -187847920    6984153672</code></pre>
 1  5.22 train/test split     2       5.02 Preprocessor1_Model1
 2  5.21 train/test split     4       5.39 Preprocessor1_Model1
 3  5.28 train/test split     5       5.28 Preprocessor1_Model1</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1134,9 +1140,10 @@ Prediction Class1 Class2
 <section id="tidymodels-yardstick-7" class="slide level2">
 <h2>Tidymodels: yardstick</h2>
 <h3 id="classification-metrics-class-probabilities">Classification metrics: class probabilities</h3>
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52" data-code-line-numbers="1-6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="sc">&gt;</span> two_class_curve <span class="ot">&lt;-</span> </span>
+<div class="sourceCode cell-code" id="cb52" data-code-line-numbers="1-6|8-11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="sc">&gt;</span> two_class_curve <span class="ot">&lt;-</span> </span>
 <span id="cb52-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(</span>
 <span id="cb52-3"><a></a><span class="sc">+</span>     modeldata<span class="sc">::</span>two_class_example</span>
 <span id="cb52-4"><a></a><span class="sc">+</span>     , truth</span>
@@ -1145,22 +1152,13 @@ Prediction Class1 Class2
 <span id="cb52-7"><a></a><span class="sc">&gt;</span> </span>
 <span id="cb52-8"><a></a><span class="er">&gt;</span> parsnip<span class="sc">::</span><span class="fu">autoplot</span>(two_class_curve) <span class="sc">+</span></span>
 <span id="cb52-9"><a></a><span class="sc">+</span>   <span class="fu">labs</span>(</span>
-<span id="cb52-10"><a></a><span class="sc">+</span>     <span class="at">title =</span> stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"roc_auc = {yardstick::roc_auc(modeldata::two_class_example, truth, Class1)[1,3]}"</span>) </span>
-<span id="cb52-11"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb52-10"><a></a><span class="sc">+</span>     <span class="at">title =</span> stringr<span class="sc">::</span><span class="fu">str_glue</span>(<span class="st">"roc_auc = {round(yardstick::roc_auc(modeldata::two_class_example, truth, Class1)[1,3],4)}"</span>) </span>
+<span id="cb52-11"><a></a><span class="sc">+</span>     , <span class="at">subtitle =</span> <span class="st">"There are other functions that use probability estimates, including gain_curve, lift_curve, and pr_curve."</span></span>
+<span id="cb52-12"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell quarto-layout-panel" data-layout-align="center" data-layout="[100]" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="BSMM_8740_lec_04_files/figure-revealjs/unnamed-chunk-27-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
+
 </div>
-</div>
-</div>
-</div>
-<p>There are other functions that use probability estimates, including <code>gain_curve</code>, <code>lift_curve</code>, and <code>pr_curve</code>.</p>
-</section>
+<img data-src="BSMM_8740_lec_04_files/figure-html/unnamed-chunk-27-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="tidymodels-yardstick-8" class="slide level2">
 <h2>Tidymodels: yardstick</h2>
 <h3 id="regression-metrics-multi-class-targets">Regression metrics: multi-class targets</h3>
@@ -4682,17 +4680,19 @@ Prediction Class1 Class2
 <div class="sourceCode cell-code" id="cb56" data-code-line-numbers="1-4|7-9|11-14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a><span class="sc">&gt;</span> <span class="co"># multi-class estimates for probability metrics</span></span>
 <span id="cb56-2"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(obs, VF, F, M, L)</span>
 <span id="cb56-3"><a></a><span class="sc">&gt;</span> <span class="co"># multi-class estimates with estimator (one of "hand_till", "macro", or "macro_weighted")</span></span>
-<span id="cb56-4"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(obs, VF, F, M, L, <span class="at">estimator =</span> <span class="st">"macro_weighted"</span>)</span>
-<span id="cb56-5"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb56-6"><a></a><span class="er">&gt;</span> <span class="co"># show metrics by groups (re-sampling in this case)</span></span>
-<span id="cb56-7"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> </span>
-<span id="cb56-8"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(Resample) <span class="sc">%&gt;%</span> </span>
-<span id="cb56-9"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">accuracy</span>(obs, pred)</span>
-<span id="cb56-10"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb56-11"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> </span>
-<span id="cb56-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(Resample) <span class="sc">%&gt;%</span> </span>
-<span id="cb56-13"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(obs, VF, F, M, L) <span class="sc">%&gt;%</span> </span>
-<span id="cb56-14"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb56-4"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(</span>
+<span id="cb56-5"><a></a><span class="sc">+</span>   obs, VF, F, M, L, <span class="at">estimator =</span> <span class="st">"macro_weighted"</span></span>
+<span id="cb56-6"><a></a><span class="sc">+</span> )</span>
+<span id="cb56-7"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb56-8"><a></a><span class="er">&gt;</span> <span class="co"># show metrics by groups (re-sampling in this case)</span></span>
+<span id="cb56-9"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> </span>
+<span id="cb56-10"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(Resample) <span class="sc">%&gt;%</span> </span>
+<span id="cb56-11"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">accuracy</span>(obs, pred)</span>
+<span id="cb56-12"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb56-13"><a></a><span class="er">&gt;</span> hpc_cv <span class="sc">%&gt;%</span> </span>
+<span id="cb56-14"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">group_by</span>(Resample) <span class="sc">%&gt;%</span> </span>
+<span id="cb56-15"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(obs, VF, F, M, L) <span class="sc">%&gt;%</span> </span>
+<span id="cb56-16"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="tidymodels-performance-evaluation" class="slide level2">
@@ -5342,7 +5342,7 @@ Prediction Class1 Class2
 <section id="sampling-time-variables" class="slide level2">
 <h2>Sampling: time variables</h2>
 <p>With time variables, random sampling is not the best choice. The rsample package contains a function called <code>initial_time_split()</code> that is very similar to <code>initial_split()</code> .</p>
-<p>The <code>prop</code> argument denotes what proportion of the first part of the data should be used as the training set; the function assumes that the data have been pre-sorted in an appropriate order.</p>
+<p>The <code>prop</code> argument denotes what proportion of the first part of the data should be used as the training set; the function assumes that the data have been pre-sorted by time in an appropriate order.</p>
 </section>
 <section id="sampling-validation-sets" class="slide level2">
 <h2>Sampling: validation sets</h2>
@@ -5398,9 +5398,11 @@ Prediction Class1 Class2
 </section>
 <section id="resampling-repeated-cv" class="slide level2">
 <h2>Resampling: repeated cv</h2>
+<div style="font-size: xx-large">
 <p>The most important variation on cross-validation is repeated <em>V</em>-fold cross-validation. Repeated V-fold cv, reduce noise in the estimate by using more data, i.e.&nbsp;averaging more <em>V</em> statistics.</p>
 <p>R repetitions of V-fold cross-validation reduces the standard error variance by a factor of <span class="math inline">\(1/\sqrt{\text{R}}\)</span>.</p>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a><span class="sc">&gt;</span> rsample<span class="sc">::</span><span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>, <span class="at">repeats =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a><span class="sc">&gt;</span> rsample<span class="sc">::</span><span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>, <span class="at">repeats =</span> <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -5486,16 +5488,14 @@ Prediction Class1 Class2
 <h2>Resampling: time variables</h2>
 <p>For a year’s worth of data, suppose that six sets of 30-day blocks define the analysis set. For assessment sets of 30 days with a 29-day skip, we can use the&nbsp;<strong>rsample</strong>&nbsp;package to specify:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a><span class="sc">&gt;</span> <span class="co">#eval: false</span></span>
-<span id="cb78-2"><a></a><span class="er">&gt;</span> <span class="co">#| code-line-numbers: "2|3-8"</span></span>
-<span id="cb78-3"><a></a><span class="er">&gt;</span> time_slices <span class="ot">&lt;-</span> </span>
-<span id="cb78-4"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">365</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb78-5"><a></a><span class="sc">+</span>   rsample<span class="sc">::</span><span class="fu">rolling_origin</span>(</span>
-<span id="cb78-6"><a></a><span class="sc">+</span>     <span class="at">initial =</span> <span class="dv">6</span> <span class="sc">*</span> <span class="dv">30</span></span>
-<span id="cb78-7"><a></a><span class="sc">+</span>     , <span class="at">assess =</span> <span class="dv">30</span></span>
-<span id="cb78-8"><a></a><span class="sc">+</span>     , <span class="at">skip =</span> <span class="dv">29</span></span>
-<span id="cb78-9"><a></a><span class="sc">+</span>     , <span class="at">cumulative =</span> <span class="cn">FALSE</span></span>
-<span id="cb78-10"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78" data-code-line-numbers="2|3-8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a><span class="sc">&gt;</span> time_slices <span class="ot">&lt;-</span> </span>
+<span id="cb78-2"><a></a><span class="sc">+</span>   tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">365</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb78-3"><a></a><span class="sc">+</span>   rsample<span class="sc">::</span><span class="fu">rolling_origin</span>(</span>
+<span id="cb78-4"><a></a><span class="sc">+</span>     <span class="at">initial =</span> <span class="dv">6</span> <span class="sc">*</span> <span class="dv">30</span></span>
+<span id="cb78-5"><a></a><span class="sc">+</span>     , <span class="at">assess =</span> <span class="dv">30</span></span>
+<span id="cb78-6"><a></a><span class="sc">+</span>     , <span class="at">skip =</span> <span class="dv">29</span></span>
+<span id="cb78-7"><a></a><span class="sc">+</span>     , <span class="at">cumulative =</span> <span class="cn">FALSE</span></span>
+<span id="cb78-8"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="resampling-time-variables-4" class="slide level2">
@@ -5548,25 +5548,31 @@ Prediction Class1 Class2
 </div>
 </div>
 </section>
-<section id="tidymodels-performance-evaluation-4" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
-<p><strong>Evaluation</strong>:</p>
+<section id="tidymodels-7" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
+<div style="font-size: xx-large">
 <ol type="1">
 <li>During resampling, the analysis set is used to preprocess the data, apply the pre-processing to itself, and use these processed data to fit the model.</li>
 <li>The pre-processing statistics produced by the analysis set are applied to the assessment set. The predictions from the assessment set estimate performance on new data.</li>
 </ol>
 <p>This sequence repeats for every resample.</p>
+</div>
 </section>
-<section id="tidymodels-performance-evaluation-5" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
+<section id="tidymodels-8" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
+<div style="font-size: xx-large">
 <p>Any of the resampling methods discussed here can be used to evaluate the modeling process (including preprocessing, model fitting, etc). These methods are effective because different groups of data are used to train the model and assess the model. To reiterate, the process to use resampling is:</p>
 <ol type="1">
 <li><p>During resampling, the analysis set is used to preprocess the data, apply the preprocessing to itself, and use these processed data to fit the model.</p></li>
 <li><p>The preprocessing statistics produced by the analysis set are applied to the assessment set. The predictions from the assessment set estimate performance on new data.</p></li>
 </ol>
+</div>
 </section>
-<section id="tidymodels-performance-evaluation-6" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
+<section id="tidymodels-9" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>The function <code>tune::fit_resamples</code> is like <code>parsnip::fit</code> with a resamples argument instead of a data argument:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb83" data-code-line-numbers="2|4|6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a><span class="sc">&gt;</span> <span class="co">#</span></span>
@@ -5577,18 +5583,18 @@ Prediction Class1 Class2
 <span id="cb83-6"><a></a><span class="er">&gt;</span> workflow   <span class="sc">%&gt;%</span> tune<span class="sc">::</span><span class="fu">fit_resamples</span>(          resamples, ...)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="tidymodels-performance-evaluation-7" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
-<p><strong>Evaluation</strong>:</p>
+<section id="tidymodels-10" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>Optional arguments are:</p>
 <ul>
 <li><p><strong>metrics</strong>: A metric set of performance statistics to compute. By default, regression models use RMSE and R<sup>2</sup> while classification models compute the area under the ROC curve and overall accuracy.</p></li>
 <li><p><strong>control</strong>: A list created by <strong>tune::control_resamples()</strong> with various options.</p></li>
 </ul>
 </section>
-<section id="tidymodels-performance-evaluation-8" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
-<p><strong>Evaluation</strong>:</p>
+<section id="tidymodels-11" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>Control arguments are:</p>
 <ul>
 <li><strong><code>verbose</code></strong>: A logical for printing logging.</li>
@@ -5596,8 +5602,9 @@ Prediction Class1 Class2
 <li><strong><code>save_pred</code></strong>: A logical for saving the assessment set predictions.</li>
 </ul>
 </section>
-<section id="tidymodels-performance-evaluation-9" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
+<section id="tidymodels-12" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>Save the predictions in order to visualize the model fit and residuals:</p>
 <details class="code-fold">
 <summary>Code</summary>
@@ -5632,8 +5639,9 @@ Prediction Class1 Class2
 </div>
 </div>
 </section>
-<section id="tidymodels-performance-evaluation-10" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
+<section id="tidymodels-13" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>The return value is a tibble similar to the input resamples, along with some extra columns:</p>
 <ul>
 <li><code>.metrics</code> is a list column of tibbles containing the assessment set performance statistics.</li>
@@ -5641,8 +5649,9 @@ Prediction Class1 Class2
 <li><code>.predictions</code> is present when <code>save_pred = TRUE</code>. This list column contains tibbles with the out-of-sample predictions.</li>
 </ul>
 </section>
-<section id="tidymodels-performance-evaluation-11" class="slide level2">
-<h2>Tidymodels: performance evaluation</h2>
+<section id="tidymodels-14" class="slide level2">
+<h2>Tidymodels</h2>
+<p><strong>Performance evaluation</strong>:</p>
 <p>While the list columns may look daunting, they can be easily reconfigured using <code>tidyr</code> or with convenience functions that <code>tidymodels</code> provides. For example, to return the performance metrics in a more usable format:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb86" data-code-line-numbers="1|3|5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a></a><span class="sc">&gt;</span> rf_res <span class="sc">%&gt;%</span> tune<span class="sc">::</span><span class="fu">collect_metrics</span>()</span>
@@ -5668,7 +5677,8 @@ Prediction Class1 Class2
 </section>
 <section id="tidymodels-parallelism-1" class="slide level2">
 <h2>Tidymodels: parallelism</h2>
-<p>For <code>fit_resamples()</code> and other functions in tune, parallel processing occurs when the user registers a parallel backend package. These R packages define how to execute parallel processing.</p>
+<p>For <code>fit_resamples()</code> and other functions in tune, parallel processing occurs when the user registers a parallel backend package.</p>
+<p>These R backend packages define how to execute parallel processing.</p>
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
@@ -5900,44 +5910,6 @@ Prediction Class1 Class2
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
