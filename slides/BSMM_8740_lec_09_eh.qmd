@@ -233,72 +233,77 @@ $$ where $Z\sim\mathscr{N}(0,1)$
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
-Suppose we need to compute an expectation $\mathbb{E}[h(Z)]$ for some random variable $Z$ and some function $h:\mathbb{R}\to\mathbb{R}$.
-
-Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[h(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mh(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[h(Z)]$.
+::: {style="font-size: x-large"}
+Suppose we need to compute an expectation $\mathbb{E}[g(Z)]$ for some random variable $Z$ and some function $g:\mathbb{R}\to\mathbb{R}$. Monte Carlo methods avoid doing any integration or summation and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[g(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mg(z_i)$. The law of large numbers states that this sample mean should be close to $\mathbb{E}[g(Z)]$.
 
 Said another way, Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
 :::
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
+We can use Monte Carlo to estimate probabilities of the form $\mathbb{P}\left[E\right]$ by approximating expectations of the form $\mathbb{E}[1_{X\in E}]$.
+
 If $X\sim\mathscr{N}(\mu,\sigma)$ and we want to compute $\mathbb{E}[\log|X|]$, we could set up and solve the integral
 
 $$
-\mathbb{E}\left[\log |X|\right]
+\mathbb{E} \log |X|
 = \int_{-\infty}^\infty \left( \log |t| \right) f( t; \mu, \sigma) dt
 = \int_{-\infty}^\infty \frac{ \log |t| }{ \sqrt{2\pi \sigma^2} }
                   \exp\left\{ \frac{ -(t-\mu)^2 }{ 2\sigma^2 } \right\}dt
 $$
 
 Alternatively, we could just draw lots of Monte Carlo replicates $X_1,X_2,\cdots,X_M$ from a normal with mean $\mu$ and variance $\sigma^2$, and look at the sample mean $M^{-1}\sum_{i=1}^M\log|x_i|$, once again appealing to the law of large numbers to ensure that this sample mean is close to its expectation.
+
+Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
+:::
+
+## MC Methods start here
+
+::: {style="font-size: x-large"}
+This idea can be pushed still further. Suppose that we want to compute an integral
+
+$$
+\int_Dh(x)dx
+$$ where $D$ is some domain of integration and $h(.)$ is a function.
+
+Let $g(x)$ be the density of some random variable with $g(x)>0, \forall x\in D$. In other words, $g$ is the density of a random variable supported on $D$. Then we can rewrite the integral as
+
+$$
+\int_Dh(x)dx = \int_D\frac{h(x)}{g(x)}g(x)dx = \mathbb{E}_g[w(x)]
+$$ where $w(x)=h(x)/g(x)$ and $X\sim g$
 :::
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
-Suppose that we want to compute an integral
+::: {style="font-size: x-large"}
+Suppose we are given $h(x)$ and we want to compute $\mathbb{E}[h(X)]$ where $X\sim g,\,x\in D$. So we need to sample from $g$, but what if we could not do that directly?
 
-$$
-\int_Dg(x)dx
-$$ where $D$ is some domain of integration and $g(.)$ is a function.
-
-Let $f(x)$ be the density of some random variable with $f(x)>0, \forall x\in D$. Then we can rewrite the integral as
-
-$$
-\int_Dg(x)dx = \int_D\frac{g(x)}{f(x)}f(x)dx = \mathbb{E}[h(x)]
-$$ where $h(x)=g(x)/f(x)$ and $X\sim f$
-:::
-
-## MC Methods
-
-::: {style="font-size: xx-large"}
-Similarly, if we are given $h(x)$ and we want to compute $\mathbb{E}_f[h(X)]$ where $X\sim f,\,x\in D$. What if we could not sample from $f$ directly?
-
-If there were some other distribution $g(x)$ we could sample from, such that $g(x)>0,\,x\in D$, then
+If there were some other distribution $f(x)$ we could sample from, such that $f(x)>0,\,x\in D$, then
 
 $$
 \begin{align*}
-\mathbb{E}_{f}\left[h(x)\right] & =\int_{D}h(x)f(x)dx\\
- & =\int_{S}h(x)\frac{f(x)}{g(x)}g(x)dx=\mathbb{E}_{g}\left[h(x)\frac{f(x)}{g(x)}\right]\\
- & =\frac{1}{n}\sum_{i=1}^{n}h(x_{i})\frac{f(x_{i})}{g(x_{i})}\quad x_{i}\sim g
+\mathbb{E}_{g}\left[h(x)\right] & =\int_{D}h(x)g(x)dx\\
+ & =\int_{S}h(x)\frac{g(x)}{f(x)}f(x)dx=\mathbb{E}_f\left[h(x)\frac{g(x)}{f(x)}\right]\\
+ & =\frac{1}{n}\sum_{i=1}^{n}h(x_{i})\frac{g(x_{i})}{f(x_{i})}\quad x_{i}\sim f
 \end{align*}
 $$
 :::
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 This is called importance sampling (IS).
 
-1.  draw iid $x_1,x_2,\ldots,x_n$ from g and calculate the importance weight $$
-    w(x_i)=\frac{f(x_{i})}{g(x_{i})}
-    $$
-2.  estimate $\mathbb{E}_f\left[h(X)\right]$ by $$
-    \hat{\mu}_h=\frac{1}{n}\sum_{i=1}^nw(x_i)h(x_i)
-    $$
+1.  draw iid $x_1,x_2,\ldots,x_n$ from $f$ and calculate the importance weight
+
+$$
+w(x_i)=\frac{g(x_{i})}{f(x_{i})}
+$$ 2. estimate $\mathbb{E}_g(h)$ by
+
+$$
+\hat{\mu}_h=\frac{1}{n}\sum_{i=1}^nw(x_i)h(x_i)
+$$
 :::
 
 ## MC Methods
@@ -311,8 +316,6 @@ Estimate $\mathbb E_f(X)$ where $f(x) = \sqrt{2/\pi}e^{-\frac{x^2}{2}};\;x\ge 0$
 
 ```{r}
 #| echo: true
-#| code-fold: true
-#| code-summary: integrate the half-normal
 n <- 5000
 X <- rexp(n, rate=2)
 W <- exp(-0.5 * X^2 + 2*X) / sqrt(2 * pi)
@@ -334,12 +337,16 @@ tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |>
 #### unknown normalizing constant
 
 ::: {style="font-size: x-large"}
-Suppose that $q(x)>0;\;x\in D$ and $\int_Dq(x)dx=Z_q<\infty$. Here $q()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{Z_q}q(x)$.
+Suppose that $g(x)>0;\;x\in D$ and $\int_Dg(x)dx=c<\infty$. Here $g()$ is an un-normalized density on $D$ whereas the corresponding normalized density is $\frac{1}{c}q(x)$.
 
-Using IS, let $g(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-normalized density with $Z_r$ possibly unknown.
+Now we want to compute $I=\int h(x)\pi(x)dx = I=\int h(x)cg(x)dx = \frac{\int h(x)g(x)dx}{\int g(x)dx}$, but $c=\frac{1}{\int g(x)dx}$ might be hard to compute
 
-1.  Draw $x_1,x_2,\ldots,x_n$ from $g(x)$ and calculate importance weights $w(x_i)=g(x_i)/r(x_i)$
-2.  Estimate $\mathbb{E}_f\left[h(X)\right]$ by $$
+Using IS, let $f(x) = \frac{1}{Z_r}r(x);\;Z_r=\int r(x)dx$, so $r$ is an un-normalized density with $Z_r$ possibly unknown.
+
+1.  Draw $x_1,x_2,\ldots,x_n$ from $f(x)$ and calculate importance weights $w(x_i)=g(x_i)/f(x_i)$
+2.  $\int h(x)g(x)dx\approx\frac{1}{M}\sum_{i=1}^Mh(x_i)g(x_i)/f(x_i)$\
+3.  $\int g(x)dx\approx\frac{1}{M}\sum_{i=1}^Mg(x_i)/f(x_i)$\
+4.  Estimate $\mathbb{E}_f\left[h(X)g(X)/f(X)\right]$ by $$
     \hat{\mu_h}=\frac{\sum_{i=1}^nw(x_i)h(x_i)}{\sum_{i=1}^nw(x_i)}
     $$
 :::
@@ -394,15 +401,15 @@ tibble::tibble(mean = mu_h2,  variance = var_h2, 'standard error' = se_h2) |>
 
 #### rejection sampling procedure
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   Assume we have an un-normalized $g(x)$, i.e. $\pi(x)=cg(x)$ but $c$ is unknown.
--   We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h(X)]$.
--   Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ (or $cKf(x)\ge \pi(x)$).
+-   We want to generate iid samples $x_1,x_2,\ldots,x_M\sim \pi$ to estimate $\mathbb{E}_\pi[h]$
+-   Now assume we have an easily sampled density $f$, and known $K>0$, such that $Kf(x)\ge g(x),\;\forall x$, i.e. $Kf(x)\ge \pi(x)/c$ ( or $cKf(x)\ge \pi(x)$).
 
 Then use the following procedure:
 
 1.  sample $X\sim f$ and $U\sim \mathrm{uniform}[0,1]$
-2.  if $U\le\frac{g(X)}{Kf(x)}$, the accept $X$ as a draw from $\pi$
+2.  if $U\le\frac{g(X)}{Kf(x)}$, the accept X as a draw from $\pi$
 3.  otherwise reject the sample and repeat
 :::
 
@@ -416,7 +423,7 @@ Then use the following procedure:
 -   and so
 
 $$
-\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(x)}{Kf(x)}f(x)dx=\int_{-\infty}^\infty\frac{g(x)}{K}dx
+\mathbb{E}_f\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right]=\mathbb{E}_f\left[\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^\infty\frac{g(X)}{Kf(X)}f(x)dx=\int_{-\infty}^\infty\frac{g(X)}{K}dx
 $$
 :::
 
@@ -424,7 +431,7 @@ $$
 
 #### rejection sampling
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   Since $0\le\frac{g(x)}{Kf(x)}\le 1$ we know that $\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)=\frac{g(x)}{Kf(x)}$
 
 -   and so
@@ -432,8 +439,8 @@ $$
 $$
 \begin{align*}
 \mathbb{E}_{f}\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right] & =\mathbb{E}_{f}\left[\frac{g(X)}{Kf(X)}\right]\\
- & =\int_{-\infty}^{\infty}\frac{g(x)}{Kf(x)}f(x)dx\\
- & =\int_{-\infty}^{\infty}\frac{g(x)}{K}dx
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{Kf(X)}f(x)dx\\
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{K}dx
 \end{align*}
 $$
 :::
