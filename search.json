@@ -4237,7 +4237,7 @@
     "href": "slides/BSMM_8740_lec_04.html#fitting-with-parsnip-5",
     "title": "The Tidymodels Framework",
     "section": "Fitting with parsnip",
-    "text": "Fitting with parsnip\nModel results can be extracted from the fit object\n\n&gt; lm_form_fit %&gt;% parsnip::extract_fit_engine()\n\n\nCall:\nstats::lm(formula = Sale_Price ~ Longitude + Latitude, data = data)\n\nCoefficients:\n(Intercept)    Longitude     Latitude  \n -126207818      -756950      1320472  \n\n&gt; lm_form_fit %&gt;% parsnip::extract_fit_engine() %&gt;% stats::vcov()\n\n              (Intercept)    Longitude      Latitude\n(Intercept)  4.605986e+13 348628053369 -319101390582\nLongitude    3.486281e+11   3654272580    -152978681\nLatitude    -3.191014e+11   -152978681    7250639155"
+    "text": "Fitting with parsnip\nModel results can be extracted from the fit object\n\n&gt; lm_form_fit %&gt;% parsnip::extract_fit_engine()\n\n\nCall:\nstats::lm(formula = Sale_Price ~ Longitude + Latitude, data = data)\n\nCoefficients:\n(Intercept)    Longitude     Latitude  \n -127160747      -810128      1224692  \n\n&gt; lm_form_fit %&gt;% parsnip::extract_fit_engine() %&gt;% stats::vcov()\n\n              (Intercept)    Longitude      Latitude\n(Intercept)  4.617683e+13 352230419127 -313864238779\nLongitude    3.522304e+11   3715470669    -102398652\nLatitude    -3.138642e+11   -102398652    7238737081"
   },
   {
     "objectID": "slides/BSMM_8740_lec_04.html#fitting-with-parsnip-6",
@@ -4678,7 +4678,7 @@
     "href": "slides/BSMM_8740_lec_04.html#recap",
     "title": "The Tidymodels Framework",
     "section": "Recap",
-    "text": "Recap\n\nIn this section we have worked with the tidymodels package to build a workflow that facilitates building and evaluating multiple models.\nCombined with the recipes package we now have a complete data modeling framework.\n\n\n\n\n\nbsmm-8740-fall-2023.github.io/osb"
+    "text": "Recap\n\nIn this section we have worked with the tidymodels package to build a workflow that facilitates building and evaluating multiple models.\nCombined with the recipes package we now have a complete data modeling framework.\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
   },
   {
     "objectID": "index.html",
