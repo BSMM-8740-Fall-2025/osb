@@ -1,6 +1,6 @@
 ---
 title: "Time series methods"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 6]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"

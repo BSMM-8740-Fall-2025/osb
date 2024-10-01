@@ -1,6 +1,6 @@
 ---
 title: "Classification & clustering methods"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 6]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 5]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
@@ -62,7 +62,7 @@ They usually require less time to make predictions.
 
 ### Example eager learners are:
 
-::: panel-tabset
+::::::::: panel-tabset
 ## LR
 
 ::: {style="font-size: xx-large"}
@@ -122,7 +122,7 @@ They usually require less time to make predictions.
 -   **Advantages**: High accuracy, effective at handling various data types.
 -   **Disadvantages**: Computationally intensive, requires careful tuning.
 :::
-:::
+:::::::::
 
 ## Lazy Learners
 
@@ -132,7 +132,7 @@ They usually require less time to make predictions.
 
 Example lazy learners are:
 
-::: panel-tabset
+::::: panel-tabset
 ## KNN
 
 ::: {style="font-size: xx-large"}
@@ -152,7 +152,7 @@ Example lazy learners are:
 -   **Advantages**: Flexible, can adapt to complex patterns locally.
 -   **Disadvantages**: Computationally expensive, sensitive to the choice of kernel and bandwidth parameters.
 :::
-:::
+:::::
 
 ## Comparing Eager and Lazy Learners
 
@@ -199,7 +199,7 @@ It follows that $\pi = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}}$, which i
 
 ## Binary Logistic Regression
 
-::: columns
+::::: columns
 ::: {.column width="40%"}
 ```{r}
 tibble::tibble(eta = seq(-5,5,0.2)) %>% dplyr::mutate(pi = 1/(1+exp(-eta))) %>% 
@@ -214,7 +214,7 @@ $$\begin{align*}
  & =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{\frac{e^{-\eta}}{1+e^{-\eta}}}\right)=\log\left(e^{\eta}\right)=\eta
 \end{align*}$$
 :::
-:::
+:::::
 
 ## Binary Logistic Regression
 
@@ -253,7 +253,7 @@ $$
 
 ### Accuracy:
 
-::: panel-tabset
+::::::::: panel-tabset
 ## Usefulness
 
 ::: {style="font-size: x-large"}
@@ -270,7 +270,7 @@ $$
 Accuracy has several limitations, especially in the context of imbalanced datasets:
 :::
 
-::: panel-tabset
+:::::: panel-tabset
 ## Imbalance
 
 ::: {style="font-size: x-large"}
@@ -294,8 +294,8 @@ Accuracy has several limitations, especially in the context of imbalanced datase
 
 -   **Detailed Performance**: Accuracy does not provide insight into the specific types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes, which is crucial for understanding and improving the model.
 :::
-:::
-:::
+::::::
+:::::::::
 
 ## Binary Classifier metrics
 
@@ -412,7 +412,7 @@ training_results %>% dplyr::slice_head(n=6)
 
 ## Example: compute the AUC
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
@@ -439,7 +439,7 @@ training_results %>%
 
 ```
 :::
-:::
+:::::
 
 ## Binary Classifier
 
@@ -820,7 +820,7 @@ Illustration of SVM large-margin principle
 
 ## SVM Classification:
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
 -   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}=0$, for a vector $w$ perpendicular to the boundary[^3].
 
@@ -832,13 +832,13 @@ Illustration of SVM large-margin principle
 ::: {.column width="50%"}
 ![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
 :::
-:::
+:::::
 
 [^3]: any point $x$ on the red line satisfies $w^\top x+w_0=0$
 
 ## SVM Classification:
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
 -   Since $f\left(x_{\bot}\right)=w^{\top}x_{\bot}+w_{0}=0$, we have $f\left(x\right)=r\left\Vert w\right\Vert$.
 
@@ -850,7 +850,7 @@ Illustration of SVM large-margin principle
 ::: {.column width="50%"}
 ![](images/lec-6/Murphy_Figure_17.13_A.png){fig-align="center"}
 :::
-:::
+:::::
 
 ## SVM Classification:
 
@@ -864,7 +864,7 @@ $$
 
 ## SVM Classification:
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
 If there is no solution to the objective we can add slack variables $\xi_n\ge0$ to replace the hard constraints that $f_n\hat{y}_n\ge1$ with the soft margin constraints that $f_n\hat{y}_n\ge1-\xi_n$.
 
@@ -879,11 +879,11 @@ $$
 ::: {.column width="50%"}
 ![](images/lec-6/Murphy_Figure_17.13_B.png){fig-alt="Murphy fig 17.13(b)" fig-align="center" width="299"}
 :::
-:::
+:::::
 
 ## SVM: data not separable
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
 If the data is not separable:
 
@@ -895,7 +895,7 @@ If the data is not separable:
 ::: {.column width="50%"}
 ![](images/lec-6/Sebastian_Raschka.png){fig-align="center" width="600"}
 :::
-:::
+:::::
 
 ## SVM Classification: Support Vectors
 
@@ -942,16 +942,16 @@ The RBF kernel is $K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\r
 ## SVM Classification: Comparisons
 
 ::: {style="font-size: large"}
-| Feature                 | Linear SVM                                               | Polynomial SVM                              | RBF SVM                                                   |
-|-------------------------|----------------------------------------------------------|---------------------------------------------|-----------------------------------------------------------|
-| **Kernel Function**     | Linear                                                   | Polynomial                                  | Radial Basis Function                                     |
-| **Equation**            | $w \cdot x + b$                                          | $(w \cdot x + b)^d$                         | $\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$ |
-| **Complexity**          | Low                                                      | Medium to High (depending on $d$)           | High                                                      |
-| **Interpretability**    | High                                                     | Medium                                      | Low                                                       |
-| **Computational Cost**  | Low                                                      | Medium to High (higher with increasing $d$) | High                                                      |
-| **Flexibility**         | Low                                                      | Medium to High                              | High                                                      |
-| **Risk of Overfitting** | Low                                                      | Medium to High (higher with increasing $d$) | Medium to High (depends on $\gamma$ and $C$)              |
-| **Typical Use Cases**   | Linearly separable, high-dimensional spaces (e.g., text) | Data with polynomial relationships          | Highly non-linear data, complex patterns                  |
+| Feature | Linear SVM | Polynomial SVM | RBF SVM |
+|----------------|--------------------|----------------|--------------------|
+| **Kernel Function** | Linear | Polynomial | Radial Basis Function |
+| **Equation** | $w \cdot x + b$ | $(w \cdot x + b)^d$ | $\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$ |
+| **Complexity** | Low | Medium to High (depending on $d$) | High |
+| **Interpretability** | High | Medium | Low |
+| **Computational Cost** | Low | Medium to High (higher with increasing $d$) | High |
+| **Flexibility** | Low | Medium to High | High |
+| **Risk of Overfitting** | Low | Medium to High (higher with increasing $d$) | Medium to High (depends on $\gamma$ and $C$) |
+| **Typical Use Cases** | Linearly separable, high-dimensional spaces (e.g., text) | Data with polynomial relationships | Highly non-linear data, complex patterns |
 :::
 
 ## SVM Classification Best Practices
