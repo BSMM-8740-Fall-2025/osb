@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Lab Git – BSMM-8740 - Fall 2024</title>
+<title>Exam-like questions – BSMM-8740 - Fall 2024</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -63,6 +29,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../supplemental/PCA_and_component_selection.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -103,12 +70,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<meta property="og:title" content="Lab Git – BSMM-8740 - Fall 2024">
+<meta property="og:title" content="Exam-like questions – BSMM-8740 - Fall 2024">
 <meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
-<meta name="twitter:title" content="Lab Git – BSMM-8740 - Fall 2024">
+<meta name="twitter:title" content="Exam-like questions – BSMM-8740 - Fall 2024">
 <meta name="twitter:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
-<meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/labs/images/twitter-card.png">
+<meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/supplemental/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -122,7 +89,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Lab Git</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../supplemental/smd.html">Supplemental notes</a></li><li class="breadcrumb-item"><a href="../supplemental/exam_questions.html">Sample exam questions</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -303,13 +270,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">Supplemental notes</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../supplemental/smd.html" class="sidebar-item-text sidebar-link">
@@ -384,7 +351,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../supplemental/exam_questions.html" class="sidebar-item-text sidebar-link">
+  <a href="../supplemental/exam_questions.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Sample exam questions</span></a>
   </div>
 </li>
@@ -400,33 +367,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link" data-scroll-target="#learning-goals">Learning goals</a></li>
-  </ul></li>
-  <li><a href="#lets-git-started" id="toc-lets-git-started" class="nav-link" data-scroll-target="#lets-git-started">Let’s Git Started</a>
-  <ul class="collapse">
-  <li><a href="#register-a-github-account" id="toc-register-a-github-account" class="nav-link" data-scroll-target="#register-a-github-account">1. Register a Github account</a></li>
-  <li><a href="#git-already-installed" id="toc-git-already-installed" class="nav-link" data-scroll-target="#git-already-installed">2. Git already installed?</a></li>
-  <li><a href="#introduce-yourself-to-git" id="toc-introduce-yourself-to-git" class="nav-link" data-scroll-target="#introduce-yourself-to-git">3. Introduce yourself to Git</a></li>
-  <li><a href="#set-up-personal-access-tokens-for-https" id="toc-set-up-personal-access-tokens-for-https" class="nav-link" data-scroll-target="#set-up-personal-access-tokens-for-https">4. Set up personal access tokens for HTTPS</a></li>
-  <li><a href="#how-git-works" id="toc-how-git-works" class="nav-link" data-scroll-target="#how-git-works">5. How Git works</a></li>
-  <li><a href="#clone-the-repo-start-new-rstudio-project" id="toc-clone-the-repo-start-new-rstudio-project" class="nav-link" data-scroll-target="#clone-the-repo-start-new-rstudio-project">Clone the repo &amp; start new RStudio project</a></li>
-  <li><a href="#r-and-r-studio" id="toc-r-and-r-studio" class="nav-link" data-scroll-target="#r-and-r-studio">R and R Studio</a></li>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link" data-scroll-target="#yaml">YAML</a></li>
-  <li><a href="#committing-changes" id="toc-committing-changes" class="nav-link" data-scroll-target="#committing-changes">Committing changes</a></li>
-  <li><a href="#push-changes" id="toc-push-changes" class="nav-link" data-scroll-target="#push-changes">Push changes</a></li>
-  </ul></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#notes-on-quizes-midterms-and-the-final-exam" id="toc-notes-on-quizes-midterms-and-the-final-exam" class="nav-link active" data-scroll-target="#notes-on-quizes-midterms-and-the-final-exam">Notes on quizes, midterms and the final exam</a></li>
+  <li><a href="#conceptual-questions" id="toc-conceptual-questions" class="nav-link" data-scroll-target="#conceptual-questions">Conceptual Questions</a></li>
+  <li><a href="#applied-questions" id="toc-applied-questions" class="nav-link" data-scroll-target="#applied-questions">Applied Questions</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/labs/BSMM_8740_lab_git.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/supplemental/exam_questions.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../supplemental/smd.html">Supplemental notes</a></li><li class="breadcrumb-item"><a href="../supplemental/exam_questions.html">Sample exam questions</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Lab Git</h1>
+<h1 class="title">Exam-like questions</h1>
 </div>
 
 
@@ -443,263 +395,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This lab is designed to reinforce your use of git and GitHub, the collaboration and version control system that we will be using throughout the course.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Git is a version control system (like “Track Changes” features from Microsoft Word but more powerful) and GitHub is the home for your Git-based projects on the internet (like DropBox but much better).</p>
-</div>
-</div>
-<p>Today we begin with an introductions to GIT followed by exercises in the fundamental building blocks of R and RStudio: the interface, reading in data, and basic commands.</p>
-<section id="learning-goals" class="level3">
-<h3 class="anchored" data-anchor-id="learning-goals">Learning goals</h3>
-<p>By the end of the lab, you will…</p>
-<ul>
-<li>Have practiced version control using GitHub</li>
-<li>Be familiar with the workflow using R, RStudio, Git, and GitHub</li>
-</ul>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>To access Github from the lab, you will need to make sure you are logged in as follows:</p>
-<ul>
-<li>username: <strong>.\daladmin</strong></li>
-<li>password: <strong>Business507!</strong></li>
-</ul>
-</div>
-</div>
-</section>
-</section>
-<section id="lets-git-started" class="level2">
-<h2 class="anchored" data-anchor-id="lets-git-started">Let’s Git Started</h2>
-<section id="register-a-github-account" class="level3">
-<h3 class="anchored" data-anchor-id="register-a-github-account">1. Register a Github account</h3>
-<p>Register an account with GitHub. It’s free!</p>
-<ul>
-<li><a href="https://github.com" class="uri">https://github.com</a></li>
-</ul>
-<section id="username-advice" class="level4">
-<h4 class="anchored" data-anchor-id="username-advice">Username advice</h4>
-<ul>
-<li>Incorporate your actual name! People like to know who they’re dealing with. Also it makes your username easier for people to guess or remember.</li>
-<li>Shorter is better than longer.</li>
-<li>Make it timeless. Don’t highlight your current university, employer, or place of residence, e.g.&nbsp;JennyFromTheBlock.</li>
-</ul>
-<p>You can change your username later, but better to get this right the first time.</p>
-<ul>
-<li><p><a href="https://help.github.com/articles/changing-your-github-username/" class="uri">https://help.github.com/articles/changing-your-github-username/</a></p></li>
-<li><p><a href="https://help.github.com/articles/what-happens-when-i-change-my-username/" class="uri">https://help.github.com/articles/what-happens-when-i-change-my-username/</a></p></li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>We will be switching between the console and the terminal, in this lab and others. The <strong>Console</strong> is where you can execute R code, while the <strong>Terminal</strong> is where you can execute system functions like git.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Screen Shot 2023-09-12 at 12.25.57 PM.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="300"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="git-already-installed" class="level3">
-<h3 class="anchored" data-anchor-id="git-already-installed">2. Git already installed?</h3>
-<p>Go to the <strong>Terminal</strong> tab in RStudio and enter <code>git --version</code> to see its version:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>git <span class="sc">--</span>version</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>If this instruction gives an error, it’s possible that git is not installed on your machine. If so, let your instructor know.</p>
-</section>
-<section id="introduce-yourself-to-git" class="level3">
-<h3 class="anchored" data-anchor-id="introduce-yourself-to-git">3. Introduce yourself to Git</h3>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>make sure that the package <code>usethis</code> has been installed. You can check under the packages tab in the file &amp; plots viewer (e.g., do a search).</p>
-</div>
-</div>
-<p>You can set your Git user name and email from within R (i.e.&nbsp;go back to the <strong>Console</strong> tab):</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">use_git_config</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># user.name does not have to be your GitHub user name</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">user.name =</span> <span class="st">"Jane Doe"</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># user.email MUST be the email associated with your GitHub account.</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  , <span class="at">user.email =</span> <span class="st">"jane@example.org"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Your commits will be labelled with this user name, so make it informative to potential collaborators and future you.</p>
-</div>
-</div>
-</section>
-<section id="set-up-personal-access-tokens-for-https" class="level3">
-<h3 class="anchored" data-anchor-id="set-up-personal-access-tokens-for-https">4. Set up personal access tokens for HTTPS</h3>
-<p>The password that you use to login to GitHub’s website is NOT an acceptable credential when talking to GitHub as a Git server. You can learn more in their blog post <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">Token authentication requirements for Git operations</a>.</p>
-<p>The recommendation to use a personal access token (PAT) is exactly what we cover here. First you need to create your PAT, and you can do this from R (in the <strong>Console</strong>):</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_github_token</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The <code>usethis</code> approach takes you to a pre-filled form with pre-selected some recommended scopes, which you can look over and adjust before clicking “Generate token”.</p>
-<p>It is a very good idea to describe the token’s purpose in the <em>Note</em> field, because one day you might have multiple PATs. We recommend naming each token after its use case, such as the computer or project you are using it for, e.g.&nbsp;“personal-macbook-air” or “lab1-course-8740”. In the future, you will find yourself staring at this list of tokens, because inevitably you’ll need to re-generate or delete one of them. Make it easy to figure out which token you’ve come here to fiddle with.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If this is your first time generating a PAT, just accept the defaults and scroll to the bottom of the page and click the green <strong>Generate token</strong> button.</p>
-</div>
-</div>
-<section id="click-generate-token." class="level5">
-<h5 class="anchored" data-anchor-id="click-generate-token."><strong>4.1 Click “Generate token”</strong>.</h5>
-<p>You won’t be able to see this token again, so don’t close or navigate away from this browser window until you store the PAT. Copy the PAT to the clipboard or a text file in RStudio.</p>
-<p>Treat this PAT like a password! Do not ever hard-wire your PAT into your code! A PAT should always be retrieved implicitly, for example, from the Git credential store, a safe place, where command line Git, RStudio, and R packages can discover it.</p>
-</section>
-<section id="save-your-pat" class="level5">
-<h5 class="anchored" data-anchor-id="save-your-pat">4.2 Save your PAT</h5>
-<ul>
-<li>Copy the generated PAT to a secure, long-term system for storing secrets, like 1Password or LastPass.</li>
-<li>email it to yourself.</li>
-<li>copy it onto a piece of scrap paper.</li>
-</ul>
-</section>
-<section id="store-your-pat-in-the-git-credential-store" class="level5">
-<h5 class="anchored" data-anchor-id="store-your-pat-in-the-git-credential-store">4.3 Store your PAT in the Git credential store</h5>
-<p>Finally, we store the PAT in a safe place where command line Git, RStudio, and R packages can discover it. To do this call <code>gitcreds::gitcreds_set()</code>. If you don’t have a PAT stored already, it will prompt you to enter your PAT. Paste!</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gitcreds<span class="sc">::</span><span class="fu">gitcreds_set</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Instead of saving your PAT you could just <a href="https://happygitwithr.com/https-pat#regenerate-pat">re-generate the PAT each lab session and re-store it</a>. If you accept the default 30-day expiration period, this is a workflow you’ll be using often anyway.</p>
-<p>On github.com, assuming you’re signed in, you can manage your personal access tokens from <a href="https://github.com/settings/tokens" class="uri">https://github.com/settings/tokens</a>, also reachable via <em>Settings &gt; Developer settings &gt; Personal access tokens</em>.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Given that the machines start from the same initial state each lab session, you will follow the above steps to initial your machine at the start of each lab session.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="how-git-works" class="level3">
-<h3 class="anchored" data-anchor-id="how-git-works">5. How Git works</h3>
-<p>Git has three storages locally: a Working directory, Staging Area, and a Local repository.</p>
-<p>𝟭. 𝗪𝗼𝗿𝗸𝗶𝗻𝗴 𝗗𝗶𝗿𝗲𝗰𝘁𝗼𝗿𝘆 - is where you work, and your files live (“untracked”). GIT is not aware of these files.</p>
-<p>𝟮. 𝗦𝘁𝗮𝗴𝗶𝗻𝗴 𝗔𝗿𝗲𝗮 - When you stage your changes, GIT will start tracking and saving your changes with files. These changes are stored in the .git directory.</p>
-<p>𝟯. 𝗟𝗼𝗰𝗮𝗹 𝗥𝗲𝗽𝗼𝘀𝗶𝘁𝗼𝗿𝘆 - is the area where everything is saved (commits) in the .git directory. So, when you want to move your files from Staging Area to Local Repository, you can use the git commit command. After this, your Staging area will be empty. If you want to see what is in the Local repository, try git log.</p>
-<p>The workflow looks like this:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../images/git_workflow.jpeg" class="img-fluid figure-img" width="374"></p>
-<figcaption>Git workflow</figcaption>
-</figure>
-</div>
-<p>You are now ready interact with GitHub via RStudio!</p>
-</section>
-<section id="clone-the-repo-start-new-rstudio-project" class="level3">
-<h3 class="anchored" data-anchor-id="clone-the-repo-start-new-rstudio-project">Clone the repo &amp; start new RStudio project</h3>
+<section id="notes-on-quizes-midterms-and-the-final-exam" class="level2">
+<h2 class="anchored" data-anchor-id="notes-on-quizes-midterms-and-the-final-exam">Notes on quizes, midterms and the final exam</h2>
+<p>Each quiz, midterm and the final exam will consist of two parts:</p>
 <ol type="1">
-<li><p>First make sure you are logged into your own Github account on a web browser.</p></li>
-<li><p>Next, in a new browser tab, go to the course organization site at <a href="https://github.com/BSMM-8740-Fall-2023/" title="Course GitHub organization">BSMM-8740-Fall-2023</a> on GitHub. Click on the repo <strong>BSMM-lab-1</strong>. It contains the starter documents you need to complete the lab.</p></li>
-<li><p>Click on the green <strong>Use this template</strong> button and select <em>Create a new repository</em>. This will make a copy of <strong>BSMM-lab-1</strong> in your own github account.</p></li>
-<li><p>Next, go back to your Github acount and select your copy of <strong>BSMM-lab-1</strong>. Click on the green <strong>CODE</strong> button, select <strong>Use HTTPS</strong> (this might already be selected by default, and if it is, you’ll see the text <strong>Clone with HTTPS</strong>). Click on the clipboard icon to copy the repo URL.</p></li>
-<li><p>In RStudio, go to <em>File</em> ➛ <em>New Project</em> ➛<em>Version Control</em> ➛ <em>Git</em>.</p></li>
-<li><p>Copy and paste the URL of your assignment repo (the clipboard copy you made in step 4) into the dialog box <em>Repository URL</em>. The project directory name should be automatically populated, but <strong>make sure you select a directory</strong> in <em>Create project as a subdirectory of</em>.</p></li>
-<li><p>Finally, click <em>Create Project</em>, and the files from your GitHub repo will be displayed in the <em>Files</em> pane in RStudio.</p></li>
-<li><p>Click <em>bsmm-lab-1.qmd</em> to open the template R Markdown file. This is where you will write up your code and narrative for the lab.</p></li>
+<li><strong>Part 1 - Conceptual:</strong> Simple questions designed to evaluate your familiarity with the written course notes.</li>
+<li><strong>Part 2 - Applied:</strong> Data analysis in RStudio (like a usual lab, but simpler).</li>
 </ol>
 </section>
-<section id="r-and-r-studio" class="level3">
-<h3 class="anchored" data-anchor-id="r-and-r-studio">R and R Studio</h3>
-<p>Below are the components of the RStudio IDE.</p>
-<p><img src="images/lab-1/rstudio.png" class="img-fluid" alt="RStudio IDE"></p>
-<p>Below are the components of a Quarto (.qmd) file.</p>
-<p><img src="images/lab-1/quarto.png" class="img-fluid" alt="Quarto document"></p>
+<section id="conceptual-questions" class="level2">
+<h2 class="anchored" data-anchor-id="conceptual-questions">Conceptual Questions</h2>
+<p>Here are examples of the conceptual questions that might be asked:</p>
+<p>What is the primary difference between inner_join() and left_join()? a) inner_join() keeps all rows from both tables, left_join() keeps all rows from the left table b) inner_join() keeps only matching rows, left_join() keeps all rows from the left table c) inner_join() is faster, left_join() is more accurate d) There is no difference</p>
+<p>In the context of tidy data, which of the following is NOT a principle? a) Every column is a measurement b) Every row is an observation c) Every cell is a single value d) Every dataset has multiple tables</p>
+<p>What does the <code>step_dummy()</code> function in recipes do? a) Remove duplicate rows b) Create dummy variables for categorical predictors c) Impute missing values d) Scale numeric variables</p>
+<p>Which of the following is NOT a step in the typical Tidymodels workflow? a) Data splitting b) Model specification c) Model training d) Database querying</p>
 </section>
-<section id="yaml" class="level3">
-<h3 class="anchored" data-anchor-id="yaml">YAML</h3>
-<p>The top portion of your R Markdown file (between the three dashed lines) is called <strong>YAML</strong>. It stands for “YAML Ain’t Markup Language”. It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Open the Quarto (`<code>.qmd`</code>) file in your project, change the author name to your name, and render the document. Examine the rendered HTML document in the <em>Files</em> pane.</p>
-</div>
-</div>
-</section>
-<section id="committing-changes" class="level3">
-<h3 class="anchored" data-anchor-id="committing-changes">Committing changes</h3>
-<p>Now, go to the Git pane in your RStudio instance. This will be in the top right hand corner in a separate tab.</p>
-<p>If you have made changes to your *.qmd file, you should see it listed here. Click on it to select it in this list and then click on <strong>Diff</strong>. This shows you the <em>diff</em>erence between the last committed state of the document and its current state including changes. You should see deletions in red and additions in green.</p>
-<p>If you’re happy with these changes, we’ll prepare the changes to be pushed to your remote repository. First, <strong>stage</strong> your changes by checking the appropriate box on the files you want to prepare. Next, write a meaningful commit message (for instance, “updated author name”) in the <strong>Commit message</strong> box. Finally, click <strong>Commit</strong>. Note that every commit needs to have a commit message associated with it.</p>
-<p>You don’t have to commit after every change, as this would get quite tedious. You should commit states that are <em>meaningful to you</em> for inspection, comparison, or restoration.</p>
-<p>In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.</p>
-</section>
-<section id="push-changes" class="level3">
-<h3 class="anchored" data-anchor-id="push-changes">Push changes</h3>
-<p>Now that you have made an update and committed this change, it’s time to push these changes to your repo on GitHub.</p>
-<p>In order to push your changes to GitHub, you must have <strong>staged</strong> your <strong>commit</strong> to be pushed. click on <strong>Push</strong>.</p>
-<p>Now let’s make sure all the changes went to GitHub. Go to your GitHub repo and refresh the page. You should see your commit message next to the updated files. If you see this, all your changes are on GitHub and you’re good to go!</p>
-<p>More on the basic use of git <a href="https://happygitwithr.com/git-intro">here</a>.</p>
-</section>
-</section>
-<section id="section" class="level1">
-<h1></h1>
+<section id="applied-questions" class="level2">
+<h2 class="anchored" data-anchor-id="applied-questions">Applied Questions</h2>
+<p>Here are examples of the applied questions that might be asked:</p>
+<p>Using the <code>ggplot2::diamonds</code> dataset. Using tidyverse functions: a) Create a new variable called ‘size’ that is the product of x, y, and z. b) Filter out any diamonds with a price greater than $10,000 or less than $500. c) Fit a multiple regression model predicting price based on carat, cut, and size. d) Use broom::augment() to add residuals and fitted values to your dataset.</p>
+<p>Using the <code>datasets::mtcars</code> dataset, create a linear regression model to predict mpg based on wt and hp. Use the tidyverse and broom packages to: a) Create a tibble with only the mpg, wt, and hp columns. b) Fit the linear model. c) Extract the model coefficients and their p-values into a tidy tibble.</p>
 
 
 </section>
@@ -1269,6 +985,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../supplemental/PCA_and_component_selection.html" class="pagination-link" aria-label="PCA and component selection">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">PCA and component selection</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -1277,7 +1002,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/labs/BSMM_8740_lab_git.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/supplemental/exam_questions.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This design is modified from <a href="https://sta210-s22.github.io/website/">a course at Duke</a>.</p>
 </div>
