@@ -110,6 +110,8 @@ website:
             text: Bias-Variance Trade offs
           - href: supplemental/PCA_and_component_selection.qmd
             text: PCA and component selection
+          - href: supplemental/exam_questions.qmd
+            text: Sample exam questions
 
 
 format:

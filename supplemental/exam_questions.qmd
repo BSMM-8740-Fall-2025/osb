@@ -1,0 +1,53 @@
+---
+title: "Exam-like questions"
+---
+
+## Notes on quizes, midterms and the final exam
+
+Each quiz, midterm and the final exam will consist of two parts:
+
+1.  **Part 1 - Conceptual:** Simple questions designed to evaluate your familiarity with the written course notes.
+2.  **Part 2 - Applied:** Data analysis in RStudio (like a usual lab, but simpler).
+
+## Conceptual Questions
+
+Here are examples of the conceptual questions that might be asked:
+
+What is the primary difference between inner_join() and left_join()?
+a) inner_join() keeps all rows from both tables, left_join() keeps all rows from the left table
+b) inner_join() keeps only matching rows, left_join() keeps all rows from the left table
+c) inner_join() is faster, left_join() is more accurate
+d) There is no difference
+
+In the context of tidy data, which of the following is NOT a principle?
+a) Every column is a measurement
+b) Every row is an observation
+c) Every cell is a single value
+d) Every dataset has multiple tables
+
+What does the `step_dummy()` function in recipes do?
+a) Remove duplicate rows
+b) Create dummy variables for categorical predictors
+c) Impute missing values
+d) Scale numeric variables
+
+Which of the following is NOT a step in the typical Tidymodels workflow?
+a) Data splitting
+b) Model specification
+c) Model training
+d) Database querying
+
+## Applied Questions
+
+Here are examples of the applied questions that might be asked:
+
+Using the `ggplot2::diamonds` dataset. Using tidyverse functions:
+a) Create a new variable called 'size' that is the product of x, y, and z.
+b) Filter out any diamonds with a price greater than \$10,000 or less than \$500.
+c) Fit a multiple regression model predicting price based on carat, cut, and size.
+d) Use broom::augment() to add residuals and fitted values to your dataset.
+
+Using the `datasets::mtcars` dataset, create a linear regression model to predict mpg based on wt and hp. Use the tidyverse and broom packages to:
+a) Create a tibble with only the mpg, wt, and hp columns.
+b) Fit the linear model.
+c) Extract the model coefficients and their p-values into a tidy tibble.
