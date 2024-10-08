@@ -110,6 +110,8 @@ website:
             text: Bias-Variance Trade offs
           - href: supplemental/PCA_and_component_selection.qmd
             text: PCA and component selection
+          - href: https://journals.sagepub.com/doi/epub/10.1177/00491241221099552
+            text: A Crash Course in Good and Bad Controls
           - href: supplemental/exam_questions.qmd
             text: Sample exam questions
 
