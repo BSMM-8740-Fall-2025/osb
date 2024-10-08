@@ -1067,6 +1067,130 @@ $$
 A_n = \frac{\pi(Y_n)q(X_{n-1})}{\pi(X_{n-1})q(Y_n)}
 $$
 
+## Bayes
+
+```{r}
+#| echo: true
+#| eval: false
+trueA = 5
+trueB = 0
+trueSd = 10
+sampleSize = 31
+ 
+x = (-(sampleSize-1)/2):((sampleSize-1)/2)
+y =  trueA * x + trueB + rnorm(n=sampleSize,mean=0,sd=trueSd)
+ 
+likelihood = function(param){
+  a = param[1]
+  b = param[2]
+  sd = param[3]
+ 
+  pred = a*x + b
+  singlelikelihoods = dnorm(y, mean = pred, sd = sd, log = T)
+  sumll = sum(singlelikelihoods)
+  return(sumll)
+}
+ 
+prior = function(param){
+  a = param[1]
+  b = param[2]
+  sd = param[3]
+  aprior = dunif(a, min=0, max=10, log = T)
+  bprior = dnorm(b, sd = 5, log = T)
+  sdprior = dunif(sd, min=0, max=30, log = T)
+  return(aprior+bprior+sdprior)
+}
+ 
+proposalfunction = function(param){
+  return(rnorm(3,mean = param, sd= c(0.1,0.5,0.3)))
+}
+ 
+run_metropolis_MCMC = function(startvalue, iterations){
+  chain = array(dim = c(iterations+1,3))
+  chain[1,] = startvalue
+  for (i in 1:iterations){
+    proposal = proposalfunction(chain[i,])
+ 
+    probab = exp(likelihood(proposal)+ prior(proposal) - likelihood(chain[i,])- prior(chain[i,]))
+    if (runif(1) < probab){
+      chain[i+1,] = proposal
+    }else{
+      chain[i+1,] = chain[i,]
+    }
+  }
+  return(mcmc(chain))
+}
+```
+
+```{r}
+#| echo: true
+#| eval: false
+
+set.seed(8740)
+b0 = 0; b1 = 5; sigma = 10; sampleSize = 31
+
+data <- 
+  tibble::tibble(
+    x = (-(sampleSize-1)/2):((sampleSize-1)/2)
+    , y =  b0 + b1 * x + rnorm(n=sampleSize, mean=0, sd=sigma)
+  )
+
+
+likelihood = function(param, x, y){
+  pred = param[2] + param[1] * x 
+  singlelikelihoods = dnorm(y, mean = pred, sd = param[3], log = T)
+  sumll = sum(singlelikelihoods)
+  # return the log of the product of probabilities (data)
+  return(sumll)
+}
+
+prior = function(param){
+  aprior = dunif(param[1], min=0, max=10, log = T)
+  bprior = dnorm(param[2], sd = 5, log = T)
+  sdprior = dunif(param[3], min=0, max=30, log = T)
+  # return the log of the product of probabilities (parameters)
+  return(aprior+bprior+sdprior)
+}
+
+proposalfunction = function(param){
+  return( rnorm(3, mean = param, sd= c(0.1,0.5,0.3)) )
+}
+
+run_metropolis_MCMC = function(startvalue, iterations, data){
+  # initialize
+  chain = array(dim = c(iterations+1,3))
+  chain[1,] <- startvalue
+  # x = data$x, y = data$y
+  
+  for (i in 1:iterations){
+    proposal = proposalfunction(chain[i,])
+    probab = 
+      exp(
+        likelihood(proposal, data$x, data$y) + 
+        prior(proposal) - 
+        likelihood(chain[i,], data$x, data$y) - 
+        prior(chain[i,])
+      )
+    if (runif(1) < probab){
+      chain[i+1,] = proposal
+    }else{
+      chain[i+1,] = chain[i,]
+    }
+  }
+  # return(mcmc(chain))
+  return(chain)
+}
+
+startvalue = c(4,2,8)
+chain = run_metropolis_MCMC(startvalue, 20000, data)
+
+mcm_chain <- coda::mcmc(chain)
+summary(mcm_chain)
+plot(mcm_chain)
+
+
+```
+
 ## Need
 
 Balance equation

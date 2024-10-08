@@ -65,7 +65,7 @@ They usually require less time to make predictions.
 ::::::::: panel-tabset
 ## LR
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Logistic Regression**:
 
 -   **Overview**: A statistical method for binary classification that models the probability of a binary outcome based on one or more predictor variables.
@@ -75,7 +75,7 @@ They usually require less time to make predictions.
 
 ## DT
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Decision Trees**:
 
 -   **Overview**: A model that splits the data into subsets based on feature values, resulting in a tree structure where each leaf node represents a class label.
@@ -85,7 +85,7 @@ They usually require less time to make predictions.
 
 ## RF
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Random Forests**:
 
 -   **Overview**: An ensemble method that builds multiple decision trees and aggregates their predictions to improve accuracy and reduce overfitting.
@@ -95,7 +95,7 @@ They usually require less time to make predictions.
 
 ## SVM
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Support Vector Machines (SVM)**:
 
 -   **Overview**: A model that finds the hyperplane that best separates the classes in the feature space.
@@ -105,7 +105,7 @@ They usually require less time to make predictions.
 
 ## ANN
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Neural Networks**:
 
 -   **Overview**: Models inspired by the human brain, consisting of layers of interconnected neurons that learn to map inputs to outputs.
@@ -115,7 +115,7 @@ They usually require less time to make predictions.
 
 ## GMB
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Gradient Boosting Machines (GBM)**:
 
 -   **Overview**: An ensemble technique that builds trees sequentially, where each new tree corrects errors made by the previous ones.
@@ -135,7 +135,7 @@ Example lazy learners are:
 ::::: panel-tabset
 ## KNN
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **k-Nearest Neighbors (k-NN)**:
 
 -   **Overview**: Predicts the class of a query instance based on the majority class among its k nearest neighbors in the training data.
@@ -145,7 +145,7 @@ Example lazy learners are:
 
 ## Case-based
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Case-based Learning**:
 
 -   **Overview**: Makes predictions by fitting simple models (like linear regression) to localized regions of the data.
@@ -163,6 +163,11 @@ Example lazy learners are:
 -   **Model Interpretability**:
     -   Eager learners like decision trees and logistic regression are generally more interpretable.
     -   Lazy learners like k-NN are less interpretable as they rely on instance-based comparisons.
+:::
+
+## Comparing Eager and Lazy Learners
+
+::: {style="font-size: x-large"}
 -   **Handling of High-Dimensional Data**:
     -   Eager learners like SVMs and neural networks can handle high-dimensional data effectively.
     -   Lazy learners like k-NN can struggle with the curse of dimensionality.
@@ -183,7 +188,9 @@ Example lazy learners are:
 
 ## Binary Logistic Regression
 
-Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ takes values in $\{0,1\}$ (e.g., yes/no, success/failure). This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
+Logistic regression is a Generalized Linear Model where the dependent (categorical) variable $y$ is binary, i.e. takes values in $\{0,1\}$ (e.g., yes/no, success/failure).
+
+This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.
 
 Logistic regression is an example of supervised learning.
 
@@ -191,7 +198,7 @@ Logistic regression is an example of supervised learning.
 
 For the logistic GLM:
 
--   the distribution of the observations is Binomial with parameter $\pi\equiv\mathbb{P}(Y=1|\eta)$
+-   the distribution of the observations is Binomial with parameter $\pi\equiv\mathbb{P}(\left.Y=1\right|\eta)$
 -   the explanatory variables are linear in the parameters: $\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n$
 -   the link function is the logit: $\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})$
 
@@ -202,8 +209,9 @@ It follows that $\pi = \frac{e^\eta}{1+e^\eta} = \frac{1}{1+e^{-\eta}}$, which i
 ::::: columns
 ::: {.column width="40%"}
 ```{r}
+#| fig-height: 10
 tibble::tibble(eta = seq(-5,5,0.2)) %>% dplyr::mutate(pi = 1/(1+exp(-eta))) %>% 
-ggplot(aes(x=eta, y=pi)) + geom_point()
+ggplot(aes(x=eta, y=pi)) + geom_point() + theme_bw(base_size = 38)
 ```
 :::
 
@@ -218,7 +226,11 @@ $$\begin{align*}
 
 ## Binary Logistic Regression
 
-The term $\frac{\pi}{1-\pi}$ is called the the odds-ratio. By its definition $\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}$
+The term $\frac{\pi}{1-\pi}$ is called the the odds-ratio. By its definition:
+
+$$
+\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}
+$$
 
 So if $x_1$ changes by one unit ($x_1\rightarrow x_1+1$), then the odds ratio changes by $e^{\beta_1}$.
 
@@ -259,9 +271,9 @@ $$
 ::: {style="font-size: x-large"}
 **Accuracy** is a useful metric in evaluating classification models under certain conditions:
 
-1.  **Balanced Datasets**: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy will give a good sense of how often the model correctly predicts the classes.
+1.  **Balanced Datasets**: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy is a good measure of whether the model correctly predicts the classes.
 
-2.  **General Performance**: When you want a quick, overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure. It tells you the proportion of correct predictions out of all predictions made.
+2.  **General Performance**: For an overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure, giving the proportion of correct predictions out of all predictions made.
 :::
 
 ## Limitations
@@ -276,7 +288,7 @@ Accuracy has several limitations, especially in the context of imbalanced datase
 ::: {style="font-size: x-large"}
 **Imbalanced Datasets**:
 
--   **False Sense of Performance**: In datasets where one class significantly outnumbers the other, accuracy can be misleading. For example, if 95% of the samples belong to class A and only 5% to class B, a model that always predicts class A will have a high accuracy (95%) but will fail to identify any instances of class B correctly.
+-   **False Sense of Performance**: When one class significantly outnumbers the other, accuracy can be misleading: if 95% of the samples belong to class A and only 5% to class B, always predicting class A will have a high accuracy (95%) but may fail to correctly identify any instances of class B.
 :::
 
 ## Importance
@@ -284,7 +296,7 @@ Accuracy has several limitations, especially in the context of imbalanced datase
 ::: {style="font-size: x-large"}
 **Ignoring Class Importance**:
 
--   **Precision and Recall**: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal. For instance, in medical diagnosis, a false negative might be much more serious than a false positive.
+-   **Precision and Recall**: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal, e.g., in medical diagnosis, a false -ve might be much more serious than a false +ve.
 :::
 
 ## Behaviour
@@ -292,19 +304,19 @@ Accuracy has several limitations, especially in the context of imbalanced datase
 ::: {style="font-size: x-large"}
 **Lack of Insight into Model Behavior**:
 
--   **Detailed Performance**: Accuracy does not provide insight into the specific types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes, which is crucial for understanding and improving the model.
+-   **Detailed Performance**: Accuracy give no insight into the types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes - crucial for understanding and improving the model.
 :::
 ::::::
 :::::::::
 
 ## Binary Classifier metrics
 
-### Accuracy: limitation examples
+### Accuracy: examples of limitation
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Fraud Detection:
 
--   Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99%. However, it fails to identify any fraudulent transactions, making it useless for fraud detection purposes.
+-   Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99% but fails to identify fraudulent transactions, making it useless for fraud detection purposes.
 
 Spam Detection:
 
@@ -315,7 +327,7 @@ Spam Detection:
 
 ### Precision
 
-Accuracy measure the percent of positive predictions that are correct:
+Precision measures the percent of positive predictions that are correct (true positives / all positives predicted):
 
 $$
 \frac{\text{TP}}{\text{TP}+\text{FP}}
@@ -323,17 +335,21 @@ $$
 
 ## Binary Classifier metrics
 
-### Recall / Sensitivity
+#### Recall / Sensitivity
 
-Measures the success at predicting the first class
+::: {style="font-size: large"}
+Measures the success at predicting the first class (true positives predicted / actual positives):
+:::
 
 $$
 \frac{\text{TP}}{\text{TP}+\text{FN}}\qquad\text{(True Positive Rate - TPR)}
 $$
 
-### Recall / Specificity
+#### Recall / Specificity
 
-Measures the success at predicting the second class
+::: {style="font-size: large"}
+Measures the success at predicting the second class (true negatives predicted / actual negative):
+:::
 
 $$
 \frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
@@ -343,7 +359,7 @@ $$
 
 Receiver Operating Characteristic (ROC) curve & the Area Under the Curve (AUC)
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   **ROC Curve**: Plot of the true positive rate (Recall) against the false positive rate (1 - Specificity) at various threshold settings.
 
 -   **AUC**: The area under the ROC curve, representing the probability that the model ranks a randomly chosen positive instance higher than a randomly chosen negative instance.
@@ -416,6 +432,7 @@ training_results %>% dplyr::slice_head(n=6)
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
+#| fig-height: 10
 
 training_results %>% 
   yardstick::roc_curve(
@@ -423,7 +440,7 @@ training_results %>%
     , .pred_No
   ) %>% 
   autoplot() + 
-  theme_bw(base_size = 18) 
+  theme_bw(base_size = 38) 
 ```
 :::
 
@@ -454,7 +471,7 @@ training_results %>%
 
 **Classification Threshold Impact**
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 **True Positives (TP) and False Positives (FP)**:
 
 -   **Lower Threshold**: A lower threshold increases the number of instances classified as positive, which increases both true positives and false positives.
@@ -474,18 +491,20 @@ training_results %>%
 
 ### ROC Curve and AUC
 
+::: {style="font-size: x-large"}
 1.  **ROC Curve**:
     -   The ROC curve plots the true positive rate (TPR, or recall) against the false positive rate (FPR) at various threshold settings.
     -   Each point on the ROC curve represents a TPR/FPR pair corresponding to a specific threshold.
 2.  **AUC (Area Under the Curve)**:
     -   The AUC represents the model's ability to discriminate between positive and negative classes across all threshold values.
     -   A higher AUC indicates better overall performance.
+:::
 
 ## Binary Classifier: optimal threshold
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 1.  **Business Context**:
-    -   The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in a medical diagnosis, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).
+    -   The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in fraud prediction, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).
 2.  **Maximize Specific Metrics**:
     -   You can choose a threshold that maximizes a specific metric such as F1 score, which balances precision and recall.
     -   Alternatively, you might want to maximize precision, recall, or minimize a cost function that accounts for both false positives and false negatives.
@@ -498,7 +517,7 @@ training_results %>%
 
 ## Binary Classifier: threshold examples
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 ### Example Scenario
 
 **Fraud Detection**: - In fraud detection, missing a fraudulent transaction (false negative) might be more costly than flagging a legitimate transaction as fraud (false positive). - You might choose a lower threshold to ensure higher sensitivity (recall), even if it means a higher false positive rate, thereby catching more fraudulent transactions.
@@ -526,7 +545,7 @@ $$
 
 This method starts with Bayes rule:
 
-for $K$ classes and $N$ features, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
+for $K$ classes and an observation $x$ consisting of $N$ features $\{x_1,\ldots,x_N\}$, since $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]$ is equal to $\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$, we can write
 
 $$
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
@@ -556,9 +575,11 @@ The different naive Bayes classifiers differ mainly by the assumptions they make
 
 If our features are all ordinal, then
 
--   The class probabilities are simply the frequency of instances that belong to each class divided by the total number of instances.
+-   The class probabilities[^3] are simply the frequency of observations that belong to each class divided by the total number of observations.
 
--   The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of instances with that class value.
+-   The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of measurements with that class value.
+
+[^3]: i.e. empirical probabilities
 
 ## Naive Bayes Classification
 
@@ -673,7 +694,7 @@ training_results_nb %>% yardstick::roc_curve(.pred_No, truth = default) %>% auto
 
 The k-nearest neighbors algorithm, also known as KNN or k-NN, is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point.
 
-It is typically used as a classification algorithm, working off the assumption that similar points can be found near one another.
+It is typically used as a classification algorithm, working off the assumption that similar class predictions can be made by predictors near one another.
 
 ## Nearest Neighbour Classification
 
@@ -691,12 +712,12 @@ The k value in the k-NN algorithm determines how many neighbors will be checked 
 
 -   Euclidean: $\text{d}(x,y)=\sqrt{\sum_i(y_i- x_i)^2}$
 -   Manhattan: $\text{d}(x,y)=\sum_{i}\left|y_{i}-x_{i}\right|$
--   Minkowski: $\text{d}(x,y)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}$
+-   Minkowski: $\text{d}(x,y;p)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}$
 
 ## KNN Classification: algorithm
 
 1.  Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.
-2.  Calculate the distance between the point you want to classify and all the points in the training set.
+2.  Calculate the distance between the observation you want to classify and all the observations in the training set.
 3.  Select the K nearest neighbors based on the distances calculated.
 4.  Assign the label of the majority class to the new data point.
 5.  Repeat steps 2 to 4 for all the data points in the test set.
@@ -759,7 +780,7 @@ In the context of k-Nearest Neighbors (kNN) classification, while the general ev
 -   **Large Datasets**:
     -   **Misuse**: kNN stores all training data and calculates all distances during prediction, & can be computationally expensive.
     -   **Impact**: It becomes slow and impractical for large datasets.
-    -   **Solution**: Use approximate kNN techniques or consider other algorithms better suited for large datasets.
+    -   **Solution**: Approximate kNN techniques or other algorithms suited for large datasets.
 -   **Imbalanced Datasets**:
     -   **Misuse**: kNN can be biased towards the majority class in imbalanced datasets because the majority class neighbors dominate.
     -   **Impact**: Low recall for minority class, & to poor performance in e.g. fraud detection or rare disease diagnosis.
@@ -774,7 +795,7 @@ In the context of k-Nearest Neighbors (kNN) classification, while the general ev
     -   **Impact**: A small ( k ) can make the model sensitive to noise (overfitting), while a large ( k ) can oversmooth the decision boundary (underfitting).
     -   **Solution**: Use cross-validation to choose the optimal ( k ) and experiment with different distance metrics (e.g., Euclidean, Manhattan).
 -   **Scalability**:
-    -   **Misuse**: kNN does not scale well to datasets with a large number of features or samples without optimization.
+    -   **Misuse**: without optimization, kNN does not scale well to datasets with a large number of features or samples.
     -   **Impact**: Slow predictions and high memory usage.
     -   **Solution**: Use k-d trees, ball trees, or locality-sensitive hashing to speed up nearest neighbor searches.
 :::
@@ -822,7 +843,7 @@ Illustration of SVM large-margin principle
 
 ::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
--   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}=0$, for a vector $w$ perpendicular to the boundary[^3].
+-   Let our decision boundary be given by $f\left(x\right)=w^{\top}x+w_{0}=0$, for a vector $w$ perpendicular to the boundary[^4].
 
 -   We can express any point as $x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }$
 
@@ -834,7 +855,7 @@ Illustration of SVM large-margin principle
 :::
 :::::
 
-[^3]: any point $x$ on the red line satisfies $w^\top x+w_0=0$
+[^4]: any point $x$ on the red line satisfies $w^\top x+w_0=0$
 
 ## SVM Classification:
 
@@ -943,7 +964,7 @@ The RBF kernel is $K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\r
 
 ::: {style="font-size: large"}
 | Feature | Linear SVM | Polynomial SVM | RBF SVM |
-|----------------|--------------------|----------------|--------------------|
+|------------------|------------------|------------------|------------------|
 | **Kernel Function** | Linear | Polynomial | Radial Basis Function |
 | **Equation** | $w \cdot x + b$ | $(w \cdot x + b)^d$ | $\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$ |
 | **Complexity** | Low | Medium to High (depending on $d$) | High |
@@ -1043,9 +1064,9 @@ The RBF kernel is $K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\r
 
 ## Clustering
 
-*Classification* and *clustering* serve different purposes in machine learning. *Classification* is a supervised learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.
+*Classification* and *clustering* serve different purposes in machine learning. *Classification* is a [supervised]{.underline} learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.
 
-*Clustering*, on the other hand, is an unsupervised learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.
+*Clustering*, on the other hand, is an [unsupervised]{.underline} learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.
 
 ## Clustering
 
@@ -1079,7 +1100,7 @@ The basic k-means algorithm has the following steps.
 1.  pick the number of clusters k
 2.  Choose *k* observations in the dataset. These locations in space are declared to be the **initial centroids**.
 3.  Assign each observation to the nearest **centroid**.
-4.  Compute the new **centroids** of each cluster.
+4.  Compute the new **centroids** of each cluster (the mean of each measurement over all observations in the cluster).
 5.  Repeat steps 3 and 4 until the **centroids** do not change.
 :::
 
@@ -1093,7 +1114,9 @@ There are three common methods for selecting initial centers:
 
 ## K-means Clustering
 
-Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic. That is, running the clustering twice on the same data may not result in the same cluster assignments.
+Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic.
+
+Running the clustering twice on the same data may not result in the same cluster assignments.
 
 ## K-means Example
 
@@ -1103,8 +1126,8 @@ Because the initial conditions are based on random selection in both approaches,
 #| eval: false
 #| code-line-numbers: "1-3|5-10|11-12|14-22"
 # create recipe for 2-D clustering
-cluster_recipe <- data %>% 
-  recipes::recipe(~ x1 + x2, data = .)
+cluster_recipe <- data |> 
+  recipes::recipe(~ x1 + x2, data = _)
 
 # specify the workflows
 all_workflows <- 
@@ -1113,10 +1136,10 @@ all_workflows <-
     models = list(tidyclust::k_means( num_clusters = parsnip::tune() ) )
   )
 # create bootstrap samples
-dat_resamples <- data %>% rsample::bootstraps(apparent = TRUE)
+dat_resamples <- data |> rsample::bootstraps(apparent = TRUE)
 
 tuned_results <-
-   all_workflows %>% 
+   all_workflows |> 
    workflow_map(
       fn = "tune_cluster"
       , resamples = dat_resamples
@@ -1126,30 +1149,57 @@ tuned_results <-
    )
 ```
 
+## K-means Example
+
 ```{r}
-#| echo: false
+#| echo: true
 #| code-fold: true
-#| eval: false
+#| eval: true
 set.seed(8740)
 
 centers <- tibble::tibble(
   cluster = factor(1:4), 
   num_points = c(100, 150, 50, 90),  # number points in each cluster
   x1 = c(5, 0, -3, -4),              # x1 coordinate of cluster center
-  x2 = c(-1, 1, -2, 1.5)               # x2 coordinate of cluster center
+  x2 = c(-1, 1, -2, 1.5),               # x2 coordinate of cluster center
 )
 
 labelled_points <- 
-  centers %>%
+  centers |>
   dplyr::mutate(
     x1 = purrr::map2(num_points, x1, rnorm),
     x2 = purrr::map2(num_points, x2, rnorm)
-  ) %>% 
-  dplyr::select(-num_points) %>% 
+  ) |> 
+  dplyr::select(-num_points) |> 
   tidyr::unnest(cols = c(x1, x2))
 
-ggplot(labelled_points, aes(x1, x2, color = cluster)) +
-  geom_point(alpha = 0.3)
+p <- ggplot(labelled_points, aes(x1, x2, color = cluster)) +
+  geom_point(alpha = 0.3) + 
+  geom_point(data = centers, size = 10, shape = "o")
+p
+```
+
+## K-means Example
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-line-numbers: "1-3|4-5|6-9|10-13|14-15"
+# create recipe
+labelled_points_recipe <- labelled_points |> 
+  recipes::recipe(~ x1 + x2, data = _)
+# create model spec
+kmeans_spec <- tidyclust::k_means( num_clusters = 4 )
+# create workflow
+wflow <- workflows::workflow() |>
+  workflows::add_model(kmeans_spec) |>
+  workflows::add_recipe(labelled_points_recipe)
+# fit workflow & extract centroids
+cluster_centers <- wflow |>
+  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids() |> 
+  dplyr::mutate( cluster = stringr::str_extract(.cluster,"\\d") )
+# plot
+p + geom_point(data = cluster_centers, size = 10, shape = "x")
 ```
 
 ```{r}
@@ -1158,17 +1208,27 @@ ggplot(labelled_points, aes(x1, x2, color = cluster)) +
 #| eval: false
 # penguins <- modeldata::penguins
 # 
-# labelled_points <- penguins %>%
-#   dplyr::select(bill_length_mm, bill_depth_mm) %>%
-#   tidyr::drop_na() %>%
+# labelled_points <- penguins |>
+#   dplyr::select(bill_length_mm, bill_depth_mm) |>
+#   tidyr::drop_na() |>
 #   # shuffle rows
 #   dplyr::slice_sample( n = nrow(penguins) )
 
 # create recipe
-labelled_points_recipe <- labelled_points %>% 
-  recipes::recipe(~ x1 + x2, data = .)
-
-
+labelled_points_recipe <- labelled_points |> 
+  recipes::recipe(~ x1 + x2, data = _)
+# create model spec
+kmeans_spec <- tidyclust::k_means( num_clusters = 4 )
+# create workflow
+wflow <- workflows::workflow() |>
+  workflows::add_model(kmeans_spec) |>
+  workflows::add_recipe(labelled_points_recipe)
+# fit workflow & extract centroids
+cluster_centers <- wflow |>
+  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids() |> 
+  dplyr::mutate( cluster = stringr::str_extract(.cluster,"\\d") )
+# plot
+p + geom_point(data = cluster_centers, size = 10, shape = "x")
 ```
 
 ```{r}
@@ -1182,35 +1242,43 @@ labelled_points
 #| echo: false
 #| code-fold: true
 #| eval: false
-kmeans_spec <- tidyclust::k_means( num_clusters = 3 )
+kmeans_spec <- tidyclust::k_means( num_clusters = 4 )
 ```
 
 ```{r}
 #| echo: false
 #| code-fold: true
 #| eval: false
-wflow <- workflows::workflow() %>%
-  workflows::add_model(kmeans_spec) %>%
+wflow <- workflows::workflow() |>
+  workflows::add_model(kmeans_spec) |>
   workflows::add_recipe(labelled_points_recipe)
 
 set.seed(8740)
-labelled_points_resamples <- labelled_points %>% rsample::bootstraps(apparent = TRUE)
+labelled_points_resamples <- labelled_points |> rsample::bootstraps(apparent = TRUE)
 ```
 
 ```{r}
 #| echo: false
 #| code-fold: true
 #| eval: false
-wflow %>%
-  parsnip::fit(labelled_points) %>% 
+cluster_centers <- wflow |>
+  parsnip::fit(labelled_points) |> 
   broom::tidy()
+
+wflow |>
+  parsnip::fit(labelled_points) |> broom::augment(new_data = labelled_points)
 ```
 
 ```{r}
 #| echo: false
 #| eval: false
-wflow %>%
-  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids()
+cluster_centers <- wflow |>
+  parsnip::fit(labelled_points) %>% tidyclust::extract_centroids() |> 
+  dplyr::mutate( cluster = stringr::str_extract(.cluster,"\\d") )
+
+p 
+
+p + geom_point(data = centers, size = 10, shape = "o") + geom_point(data = cluster_centers, size = 10, shape = "x")
 ```
 
 ```{r}
@@ -1299,7 +1367,7 @@ all_workflows %>%
 #| eval: false
 tune_results <-
    all_workflows %>% 
-   workflow_map(
+   workflowsets::workflow_map(
       fn = "tune_cluster"
       , resamples = labelled_points_resamples
       , grid = dials::grid_regular(dials::num_clusters(), levels = 10)
