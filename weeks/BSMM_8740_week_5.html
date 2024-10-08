@@ -352,6 +352,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="https://journals.sagepub.com/doi/epub/10.1177/00491241221099552" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A Crash Course in Good and Bad Controls</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../supplemental/exam_questions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sample exam questions</span></a>
   </div>
@@ -371,6 +377,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
+  <li><a href="#podcast" id="toc-podcast" class="nav-link" data-scroll-target="#podcast">Podcast</a></li>
+  <li><a href="#study" id="toc-study" class="nav-link" data-scroll-target="#study">Study</a>
+  <ul class="collapse">
+  <li><a href="#short-answer-questions" id="toc-short-answer-questions" class="nav-link" data-scroll-target="#short-answer-questions">Short Answer Questions</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_5.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -427,12 +438,55 @@ Important
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
 <p>⌨️ <a href="labs/BSMM_8740_lab_5.html">Lab 5 - Classification &amp; Clustering Methods</a></p>
+</section>
+<section id="podcast" class="level2">
+<h2 class="anchored" data-anchor-id="podcast">Podcast</h2>
+<p><a href="https://notebooklm.google.com/notebook/b5ecc0dc-375c-4b0a-99e5-64c2d413f84d/audio">Listen here</a></p>
+</section>
+<section id="study" class="level2">
+<h2 class="anchored" data-anchor-id="study">Study</h2>
+<section id="short-answer-questions" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-questions">Short Answer Questions</h3>
+<p><strong>Instructions</strong>: Answer the following questions in 2-3 sentences each.</p>
+<ol type="1">
+<li>What is the key difference between eager learners and lazy learners in classification?</li>
+<li>Provide an example of a situation where accuracy might be a misleading metric for evaluating a binary classifier.</li>
+<li>Explain how adjusting the classification threshold in a binary classifier affects the trade-off between sensitivity and specificity.</li>
+<li>What is the main assumption made by Naive Bayes classification, and why is it considered “naive”?</li>
+<li>How does the choice of ‘k’ affect the performance of a k-Nearest Neighbors (k-NN) classifier?</li>
+<li>What is the concept of a “margin” in Support Vector Machine (SVM) classification, and why is maximizing it desirable?</li>
+<li>Describe two common kernel functions used in SVM classification and their applications.</li>
+<li>What is the curse of dimensionality, and how does it impact k-NN classification?</li>
+<li>What is the fundamental difference between classification and clustering in machine learning?</li>
+<li>Briefly explain the steps involved in the k-means clustering algorithm.</li>
+</ol>
+<p><strong>Short Answer Key</strong></p>
+<ol type="1">
+<li>Eager learners (e.g., logistic regression, decision trees) learn a model from the training data before making predictions, while lazy learners (e.g., k-NN) memorize the training data and classify new instances based on similarity to stored instances.</li>
+<li>In a highly imbalanced dataset (e.g., fraud detection), a model that always predicts the majority class will have high accuracy but fail to identify the minority class, which is often of greater interest.</li>
+<li>Lowering the classification threshold increases sensitivity (recall) but decreases specificity, leading to more true positives but also more false positives. Raising the threshold has the opposite effect.</li>
+<li>Naive Bayes assumes that all features are conditionally independent, given the class label. This assumption is often unrealistic in real-world data, hence the term “naive.”</li>
+<li>A small ‘k’ can make k-NN sensitive to noise (overfitting), while a large ‘k’ can oversmooth the decision boundary (underfitting). The optimal ‘k’ depends on the dataset and is typically found through cross-validation.</li>
+<li>The margin in SVM is the distance between the separating hyperplane and the nearest data points (support vectors) of each class. Maximizing the margin aims to improve the classifier’s generalization ability and reduce overfitting.</li>
+<li>The Radial Basis Function (RBF) kernel is commonly used for non-linear classification problems. The polynomial kernel maps data into a higher-dimensional space and can model non-linear relationships between features.</li>
+<li>The curse of dimensionality refers to the phenomenon where distances between points become less meaningful as the number of dimensions increases. In high-dimensional spaces, k-NN can struggle to find meaningful nearest neighbors.</li>
+<li>Classification is a supervised learning task where the goal is to predict predefined labels for data points. Clustering is an unsupervised learning task where the goal is to discover natural groupings or structures in data without predefined labels.</li>
+<li>The k-means algorithm initializes ‘k’ centroids randomly. Then, it iteratively assigns each data point to the nearest centroid and recalculates the centroids until convergence (centroids no longer change significantly).</li>
+</ol>
+<p><strong>Essay Questions</strong></p>
+<ol type="1">
+<li>Compare and contrast eager learning and lazy learning algorithms for classification. Discuss their strengths, weaknesses, and situations where one might be preferred over the other.</li>
+<li>Explain the concepts of precision and recall in the context of binary classification. Discuss how these metrics are affected by changes in the classification threshold and provide examples of applications where each metric might be prioritized.</li>
+<li>Describe the Naive Bayes classification algorithm in detail, including its underlying assumptions and the calculation of conditional probabilities. Discuss its advantages, limitations, and potential applications.</li>
+<li>Explain the workings of Support Vector Machines (SVMs) for classification. Describe the concepts of support vectors, margins, and kernel functions. Compare and contrast linear, polynomial, and radial basis function (RBF) kernels in SVM.</li>
+</ol>
 <p><br><br></p>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

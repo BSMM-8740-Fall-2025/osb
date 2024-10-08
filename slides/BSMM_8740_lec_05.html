@@ -445,7 +445,7 @@ L.L. Odette
 <ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">LR</a></li><li><a href="#tabset-1-2">DT</a></li><li><a href="#tabset-1-3">RF</a></li><li><a href="#tabset-1-4">SVM</a></li><li><a href="#tabset-1-5">ANN</a></li><li><a href="#tabset-1-6">GMB</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Logistic Regression</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: A statistical method for binary classification that models the probability of a binary outcome based on one or more predictor variables.</li>
@@ -455,7 +455,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-1-2">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Decision Trees</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: A model that splits the data into subsets based on feature values, resulting in a tree structure where each leaf node represents a class label.</li>
@@ -465,7 +465,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-1-3">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Random Forests</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: An ensemble method that builds multiple decision trees and aggregates their predictions to improve accuracy and reduce overfitting.</li>
@@ -475,7 +475,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-1-4">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Support Vector Machines (SVM)</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: A model that finds the hyperplane that best separates the classes in the feature space.</li>
@@ -485,7 +485,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-1-5">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Neural Networks</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: Models inspired by the human brain, consisting of layers of interconnected neurons that learn to map inputs to outputs.</li>
@@ -495,7 +495,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-1-6">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Gradient Boosting Machines (GBM)</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: An ensemble technique that builds trees sequentially, where each new tree corrects errors made by the previous ones.</li>
@@ -518,7 +518,7 @@ L.L. Odette
 <ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">KNN</a></li><li><a href="#tabset-2-2">Case-based</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>k-Nearest Neighbors (k-NN)</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: Predicts the class of a query instance based on the majority class among its k nearest neighbors in the training data.</li>
@@ -528,7 +528,7 @@ L.L. Odette
 </div>
 </div>
 <div id="tabset-2-2">
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <p><strong>Case-based Learning</strong>:</p>
 <ul>
 <li><strong>Overview</strong>: Makes predictions by fitting simple models (like linear regression) to localized regions of the data.</li>
@@ -554,6 +554,13 @@ L.L. Odette
 <li>Eager learners like decision trees and logistic regression are generally more interpretable.</li>
 <li>Lazy learners like k-NN are less interpretable as they rely on instance-based comparisons.</li>
 </ul></li>
+</ul>
+</div>
+</section>
+<section id="comparing-eager-and-lazy-learners-1" class="slide level2">
+<h2>Comparing Eager and Lazy Learners</h2>
+<div style="font-size: x-large">
+<ul>
 <li><strong>Handling of High-Dimensional Data</strong>:
 <ul>
 <li>Eager learners like SVMs and neural networks can handle high-dimensional data effectively.</li>
@@ -587,14 +594,15 @@ L.L. Odette
 </section>
 <section id="binary-logistic-regression" class="slide level2">
 <h2>Binary Logistic Regression</h2>
-<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> takes values in <span class="math inline">\(\{0,1\}\)</span> (e.g., yes/no, success/failure). This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
+<p>Logistic regression is a Generalized Linear Model where the dependent (categorical) variable <span class="math inline">\(y\)</span> is binary, i.e.&nbsp;takes values in <span class="math inline">\(\{0,1\}\)</span> (e.g., yes/no, success/failure).</p>
+<p>This can be interpreted as identifying two classes, and logistic regression provides a prediction for class membership based on a linear combination of the explanatory variables.</p>
 <p>Logistic regression is an example of supervised learning.</p>
 </section>
 <section id="binary-logistic-regression-1" class="slide level2">
 <h2>Binary Logistic Regression</h2>
 <p>For the logistic GLM:</p>
 <ul>
-<li>the distribution of the observations is Binomial with parameter <span class="math inline">\(\pi\equiv\mathbb{P}(Y=1|\eta)\)</span></li>
+<li>the distribution of the observations is Binomial with parameter <span class="math inline">\(\pi\equiv\mathbb{P}(\left.Y=1\right|\eta)\)</span></li>
 <li>the explanatory variables are linear in the parameters: <span class="math inline">\(\eta=\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n\)</span></li>
 <li>the link function is the logit: <span class="math inline">\(\eta=\text{logit}(\pi) = \log(\frac{\pi}{1-\pi})\)</span></li>
 </ul>
@@ -623,7 +631,10 @@ L.L. Odette
 </section>
 <section id="binary-logistic-regression-3" class="slide level2">
 <h2>Binary Logistic Regression</h2>
-<p>The term <span class="math inline">\(\frac{\pi}{1-\pi}\)</span> is called the the odds-ratio. By its definition <span class="math inline">\(\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}\)</span></p>
+<p>The term <span class="math inline">\(\frac{\pi}{1-\pi}\)</span> is called the the odds-ratio. By its definition:</p>
+<p><span class="math display">\[
+\frac{\pi}{1-\pi}=e^{\beta_0+\beta_1 x_1+\beta_2 x_2+\beta_2 x_2\ldots+\beta_n x_n}
+\]</span></p>
 <p>So if <span class="math inline">\(x_1\)</span> changes by one unit (<span class="math inline">\(x_1\rightarrow x_1+1\)</span>), then the odds ratio changes by <span class="math inline">\(e^{\beta_1}\)</span>.</p>
 </section>
 <section id="binary-classifier-metrics" class="slide level2">
@@ -672,8 +683,8 @@ L.L. Odette
 <div style="font-size: x-large">
 <p><strong>Accuracy</strong> is a useful metric in evaluating classification models under certain conditions:</p>
 <ol type="1">
-<li><p><strong>Balanced Datasets</strong>: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy will give a good sense of how often the model correctly predicts the classes.</p></li>
-<li><p><strong>General Performance</strong>: When you want a quick, overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure. It tells you the proportion of correct predictions out of all predictions made.</p></li>
+<li><p><strong>Balanced Datasets</strong>: When the classes in the dataset are roughly equal in number, accuracy can be a reliable indicator of model performance. For example, if you have a dataset where 50% of the samples are class A and 50% are class B, accuracy is a good measure of whether the model correctly predicts the classes.</p></li>
+<li><p><strong>General Performance</strong>: For an overall sense of a model’s performance, accuracy provides a straightforward, easy-to-understand measure, giving the proportion of correct predictions out of all predictions made.</p></li>
 </ol>
 </div>
 </div>
@@ -688,7 +699,7 @@ L.L. Odette
 <div style="font-size: x-large">
 <p><strong>Imbalanced Datasets</strong>:</p>
 <ul>
-<li><strong>False Sense of Performance</strong>: In datasets where one class significantly outnumbers the other, accuracy can be misleading. For example, if 95% of the samples belong to class A and only 5% to class B, a model that always predicts class A will have a high accuracy (95%) but will fail to identify any instances of class B correctly.</li>
+<li><strong>False Sense of Performance</strong>: When one class significantly outnumbers the other, accuracy can be misleading: if 95% of the samples belong to class A and only 5% to class B, always predicting class A will have a high accuracy (95%) but may fail to correctly identify any instances of class B.</li>
 </ul>
 </div>
 </div>
@@ -696,7 +707,7 @@ L.L. Odette
 <div style="font-size: x-large">
 <p><strong>Ignoring Class Importance</strong>:</p>
 <ul>
-<li><strong>Precision and Recall</strong>: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal. For instance, in medical diagnosis, a false negative might be much more serious than a false positive.</li>
+<li><strong>Precision and Recall</strong>: Accuracy does not take into account the importance of different classes or the costs of different types of errors (false positives and false negatives). In many business contexts, these costs are not equal, e.g., in medical diagnosis, a false -ve might be much more serious than a false +ve.</li>
 </ul>
 </div>
 </div>
@@ -704,7 +715,7 @@ L.L. Odette
 <div style="font-size: x-large">
 <p><strong>Lack of Insight into Model Behavior</strong>:</p>
 <ul>
-<li><strong>Detailed Performance</strong>: Accuracy does not provide insight into the specific types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes, which is crucial for understanding and improving the model.</li>
+<li><strong>Detailed Performance</strong>: Accuracy give no insight into the types of errors the model is making. Precision and recall, on the other hand, offer more detailed information about the performance on individual classes - crucial for understanding and improving the model.</li>
 </ul>
 </div>
 </div>
@@ -716,11 +727,11 @@ L.L. Odette
 </section>
 <section id="binary-classifier-metrics-3" class="slide level2">
 <h2>Binary Classifier metrics</h2>
-<h3 id="accuracy-limitation-examples">Accuracy: limitation examples</h3>
-<div style="font-size: xx-large">
+<h3 id="accuracy-examples-of-limitation">Accuracy: examples of limitation</h3>
+<div style="font-size: x-large">
 <p>Fraud Detection:</p>
 <ul>
-<li>Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99%. However, it fails to identify any fraudulent transactions, making it useless for fraud detection purposes.</li>
+<li>Scenario: Suppose you have a dataset with 1,000 transactions, of which 990 are legitimate and 10 are fraudulent. A model that always predicts “legitimate” will have an accuracy of 99% but fails to identify fraudulent transactions, making it useless for fraud detection purposes.</li>
 </ul>
 <p>Spam Detection:</p>
 <ul>
@@ -731,20 +742,24 @@ L.L. Odette
 <section id="binary-classifier-metrics-4" class="slide level2">
 <h2>Binary Classifier metrics</h2>
 <h3 id="precision">Precision</h3>
-<p>Accuracy measure the percent of positive predictions that are correct:</p>
+<p>Precision measures the percent of positive predictions that are correct (true positives / all positives predicted):</p>
 <p><span class="math display">\[
 \frac{\text{TP}}{\text{TP}+\text{FP}}
 \]</span></p>
 </section>
 <section id="binary-classifier-metrics-5" class="slide level2">
 <h2>Binary Classifier metrics</h2>
-<h3 id="recall-sensitivity">Recall / Sensitivity</h3>
-<p>Measures the success at predicting the first class</p>
+<h4 id="recall-sensitivity">Recall / Sensitivity</h4>
+<div style="font-size: large">
+<p>Measures the success at predicting the first class (true positives predicted / actual positives):</p>
+</div>
 <p><span class="math display">\[
 \frac{\text{TP}}{\text{TP}+\text{FN}}\qquad\text{(True Positive Rate - TPR)}
 \]</span></p>
-<h3 id="recall-specificity">Recall / Specificity</h3>
-<p>Measures the success at predicting the second class</p>
+<h4 id="recall-specificity">Recall / Specificity</h4>
+<div style="font-size: large">
+<p>Measures the success at predicting the second class (true negatives predicted / actual negative):</p>
+</div>
 <p><span class="math display">\[
 \frac{\text{TN}}{\text{TN}+\text{FP}}\qquad\text{(True Negative Rate - TNR)}
 \]</span></p>
@@ -752,7 +767,7 @@ L.L. Odette
 <section id="binary-classifier-metrics-6" class="slide level2">
 <h2>Binary Classifier metrics</h2>
 <p>Receiver Operating Characteristic (ROC) curve &amp; the Area Under the Curve (AUC)</p>
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <ul>
 <li><p><strong>ROC Curve</strong>: Plot of the true positive rate (Recall) against the false positive rate (1 - Specificity) at various threshold settings.</p></li>
 <li><p><strong>AUC</strong>: The area under the ROC curve, representing the probability that the model ranks a randomly chosen positive instance higher than a randomly chosen negative instance.</p>
@@ -839,7 +854,7 @@ L.L. Odette
 <span id="cb4-4"><a></a><span class="sc">+</span>     , .pred_No</span>
 <span id="cb4-5"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-6"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>() <span class="sc">+</span> </span>
-<span id="cb4-7"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-7"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">38</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -876,7 +891,7 @@ L.L. Odette
 <section id="binary-classifier-1" class="slide level2">
 <h2>Binary Classifier</h2>
 <p><strong>Classification Threshold Impact</strong></p>
-<div style="font-size: x-large">
+<div style="font-size: large">
 <p><strong>True Positives (TP) and False Positives (FP)</strong>:</p>
 <ul>
 <li><strong>Lower Threshold</strong>: A lower threshold increases the number of instances classified as positive, which increases both true positives and false positives.</li>
@@ -896,6 +911,7 @@ L.L. Odette
 <section id="binary-classifier-2" class="slide level2">
 <h2>Binary Classifier</h2>
 <h3 id="roc-curve-and-auc">ROC Curve and AUC</h3>
+<div style="font-size: x-large">
 <ol type="1">
 <li><strong>ROC Curve</strong>:
 <ul>
@@ -908,14 +924,15 @@ L.L. Odette
 <li>A higher AUC indicates better overall performance.</li>
 </ul></li>
 </ol>
+</div>
 </section>
 <section id="binary-classifier-optimal-threshold" class="slide level2">
 <h2>Binary Classifier: optimal threshold</h2>
-<div style="font-size: x-large">
+<div style="font-size: large">
 <ol type="1">
 <li><strong>Business Context</strong>:
 <ul>
-<li>The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in a medical diagnosis, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).</li>
+<li>The optimal threshold depends on the specific costs of false positives and false negatives in the business context. For example, in fraud prediction, the cost of missing a positive case (false negative) might be much higher than a false alarm (false positive).</li>
 </ul></li>
 <li><strong>Maximize Specific Metrics</strong>:
 <ul>
@@ -936,7 +953,7 @@ L.L. Odette
 </section>
 <section id="binary-classifier-threshold-examples" class="slide level2">
 <h2>Binary Classifier: threshold examples</h2>
-<div style="font-size: xx-large">
+<div style="font-size: x-large">
 <h3 id="example-scenario">Example Scenario</h3>
 <p><strong>Fraud Detection</strong>: - In fraud detection, missing a fraudulent transaction (false negative) might be more costly than flagging a legitimate transaction as fraud (false positive). - You might choose a lower threshold to ensure higher sensitivity (recall), even if it means a higher false positive rate, thereby catching more fraudulent transactions.</p>
 <h3 id="conclusion">Conclusion</h3>
@@ -961,7 +978,7 @@ L.L. Odette
 <section id="naive-bayes-classification-1" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>This method starts with Bayes rule:</p>
-<p>for <span class="math inline">\(K\)</span> classes and <span class="math inline">\(N\)</span> features, since <span class="math inline">\(\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]\)</span> is equal to <span class="math inline">\(\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]\)</span>, we can write</p>
+<p>for <span class="math inline">\(K\)</span> classes and an observation <span class="math inline">\(x\)</span> consisting of <span class="math inline">\(N\)</span> features <span class="math inline">\(\{x_1,\ldots,x_N\}\)</span>, since <span class="math inline">\(\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]\)</span> is equal to <span class="math inline">\(\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]\)</span>, we can write</p>
 <p><span class="math display">\[
 \mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}
 \]</span></p>
@@ -986,10 +1003,10 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <h2>Naive Bayes Classification</h2>
 <p>If our features are all ordinal, then</p>
 <ul>
-<li><p>The class probabilities are simply the frequency of instances that belong to each class divided by the total number of instances.</p></li>
-<li><p>The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of instances with that class value.</p></li>
+<li><p>The class probabilities<sup>1</sup> are simply the frequency of observations that belong to each class divided by the total number of observations.</p></li>
+<li><p>The conditional probabilities are the frequency of each feature value for a given class value divided by the frequency of measurements with that class value.</p></li>
 </ul>
-</section>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>i.e.&nbsp;empirical probabilities</p></li></ol></aside></section>
 <section id="naive-bayes-classification-5" class="slide level2">
 <h2>Naive Bayes Classification</h2>
 <p>If any features are numeric, we can estimate conditional probabilities by assuming that the numeric features have a Gaussian distribution for each class</p>
@@ -1145,7 +1162,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <section id="nearest-neighbour-classification" class="slide level2">
 <h2>Nearest Neighbour Classification</h2>
 <p>The k-nearest neighbors algorithm, also known as KNN or k-NN, is a non-parametric, supervised learning classifier, which uses proximity to make classifications or predictions about the grouping of an individual data point.</p>
-<p>It is typically used as a classification algorithm, working off the assumption that similar points can be found near one another.</p>
+<p>It is typically used as a classification algorithm, working off the assumption that similar class predictions can be made by predictors near one another.</p>
 </section>
 <section id="nearest-neighbour-classification-1" class="slide level2">
 <h2>Nearest Neighbour Classification</h2>
@@ -1162,14 +1179,14 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <ul>
 <li>Euclidean: <span class="math inline">\(\text{d}(x,y)=\sqrt{\sum_i(y_i- x_i)^2}\)</span></li>
 <li>Manhattan: <span class="math inline">\(\text{d}(x,y)=\sum_{i}\left|y_{i}-x_{i}\right|\)</span></li>
-<li>Minkowski: <span class="math inline">\(\text{d}(x,y)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}\)</span></li>
+<li>Minkowski: <span class="math inline">\(\text{d}(x,y;p)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}\)</span></li>
 </ul>
 </section>
 <section id="knn-classification-algorithm" class="slide level2">
 <h2>KNN Classification: algorithm</h2>
 <ol type="1">
 <li>Choose the value of K, which is the number of nearest neighbors that will be used to make the prediction.</li>
-<li>Calculate the distance between the point you want to classify and all the points in the training set.</li>
+<li>Calculate the distance between the observation you want to classify and all the observations in the training set.</li>
 <li>Select the K nearest neighbors based on the distances calculated.</li>
 <li>Assign the label of the majority class to the new data point.</li>
 <li>Repeat steps 2 to 4 for all the data points in the test set.</li>
@@ -1254,7 +1271,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <ul>
 <li><strong>Misuse</strong>: kNN stores all training data and calculates all distances during prediction, &amp; can be computationally expensive.</li>
 <li><strong>Impact</strong>: It becomes slow and impractical for large datasets.</li>
-<li><strong>Solution</strong>: Use approximate kNN techniques or consider other algorithms better suited for large datasets.</li>
+<li><strong>Solution</strong>: Approximate kNN techniques or other algorithms suited for large datasets.</li>
 </ul></li>
 <li><strong>Imbalanced Datasets</strong>:
 <ul>
@@ -1277,7 +1294,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </ul></li>
 <li><strong>Scalability</strong>:
 <ul>
-<li><strong>Misuse</strong>: kNN does not scale well to datasets with a large number of features or samples without optimization.</li>
+<li><strong>Misuse</strong>: without optimization, kNN does not scale well to datasets with a large number of features or samples.</li>
 <li><strong>Impact</strong>: Slow predictions and high memory usage.</li>
 <li><strong>Solution</strong>: Use k-d trees, ball trees, or locality-sensitive hashing to speed up nearest neighbor searches.</li>
 </ul></li>
@@ -1352,7 +1369,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </figure>
 </div>
 </div></div>
-<aside><ol class="aside-footnotes"><li id="fn3"><p>any point <span class="math inline">\(x\)</span> on the red line satisfies <span class="math inline">\(w^\top x+w_0=0\)</span></p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn4"><p>any point <span class="math inline">\(x\)</span> on the red line satisfies <span class="math inline">\(w^\top x+w_0=0\)</span></p></li></ol></aside></section>
 <section id="svm-classification-2" class="slide level2">
 <h2>SVM Classification:</h2>
 <div class="columns">
@@ -1455,10 +1472,10 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div style="font-size: large">
 <table class="caption-top">
 <colgroup>
-<col style="width: 22%">
-<col style="width: 27%">
-<col style="width: 22%">
-<col style="width: 27%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1610,8 +1627,8 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </section>
 <section id="clustering" class="slide level2">
 <h2>Clustering</h2>
-<p><em>Classification</em> and <em>clustering</em> serve different purposes in machine learning. <em>Classification</em> is a supervised learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.</p>
-<p><em>Clustering</em>, on the other hand, is an unsupervised learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.</p>
+<p><em>Classification</em> and <em>clustering</em> serve different purposes in machine learning. <em>Classification</em> is a <u>supervised</u> learning technique used for predicting predefined labels, requiring labeled data and focusing on accuracy and interpretability.</p>
+<p><em>Clustering</em>, on the other hand, is an <u>unsupervised</u> learning technique used for discovering natural groupings in data, requiring no labeled data and focusing on exploratory data analysis and pattern discovery. Understanding the strengths and limitations of each method is crucial for applying them effectively to solve real-world problems.</p>
 </section>
 <section id="clustering-1" class="slide level2">
 <h2>Clustering</h2>
@@ -1644,7 +1661,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <li>pick the number of clusters k</li>
 <li>Choose <em>k</em> observations in the dataset. These locations in space are declared to be the <strong>initial centroids</strong>.</li>
 <li>Assign each observation to the nearest <strong>centroid</strong>.</li>
-<li>Compute the new <strong>centroids</strong> of each cluster.</li>
+<li>Compute the new <strong>centroids</strong> of each cluster (the mean of each measurement over all observations in the cluster).</li>
 <li>Repeat steps 3 and 4 until the <strong>centroids</strong> do not change.</li>
 </ol>
 </div>
@@ -1660,7 +1677,8 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </section>
 <section id="k-means-clustering-3" class="slide level2">
 <h2>K-means Clustering</h2>
-<p>Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic. That is, running the clustering twice on the same data may not result in the same cluster assignments.</p>
+<p>Because the initial conditions are based on random selection in both approaches, the k-means algorithm is not deterministic.</p>
+<p>Running the clustering twice on the same data may not result in the same cluster assignments.</p>
 </section>
 <section id="k-means-example" class="slide level2">
 <h2>K-means Example</h2>
@@ -1668,8 +1686,8 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12" data-code-line-numbers="1-3|5-10|11-12|14-22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe for 2-D clustering</span></span>
-<span id="cb12-2"><a></a><span class="er">&gt;</span> cluster_recipe <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb12-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> .)</span>
+<span id="cb12-2"><a></a><span class="er">&gt;</span> cluster_recipe <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
 <span id="cb12-4"><a></a><span class="sc">&gt;</span> </span>
 <span id="cb12-5"><a></a><span class="er">&gt;</span> <span class="co"># specify the workflows</span></span>
 <span id="cb12-6"><a></a><span class="er">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
@@ -1678,10 +1696,10 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <span id="cb12-9"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
 <span id="cb12-10"><a></a><span class="sc">+</span>   )</span>
 <span id="cb12-11"><a></a><span class="sc">&gt;</span> <span class="co"># create bootstrap samples</span></span>
-<span id="cb12-12"><a></a><span class="er">&gt;</span> dat_resamples <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-12"><a></a><span class="er">&gt;</span> dat_resamples <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb12-13"><a></a><span class="sc">&gt;</span> </span>
 <span id="cb12-14"><a></a><span class="er">&gt;</span> tuned_results <span class="ot">&lt;-</span></span>
-<span id="cb12-15"><a></a><span class="sc">+</span>    all_workflows <span class="sc">%&gt;%</span> </span>
+<span id="cb12-15"><a></a><span class="sc">+</span>    all_workflows <span class="sc">|&gt;</span> </span>
 <span id="cb12-16"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
 <span id="cb12-17"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
 <span id="cb12-18"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> dat_resamples</span>
@@ -1692,6 +1710,61 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 </details>
 </div>
 </section>
+<section id="k-means-example-1" class="slide level2">
+<h2>K-means Example</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
+<span id="cb13-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb13-3"><a></a><span class="er">&gt;</span> centers <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb13-4"><a></a><span class="sc">+</span>   <span class="at">cluster =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>), </span>
+<span id="cb13-5"><a></a><span class="sc">+</span>   <span class="at">num_points =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">50</span>, <span class="dv">90</span>),  <span class="co"># number points in each cluster</span></span>
+<span id="cb13-6"><a></a><span class="sc">+</span>   <span class="at">x1 =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">4</span>),              <span class="co"># x1 coordinate of cluster center</span></span>
+<span id="cb13-7"><a></a><span class="sc">+</span>   <span class="at">x2 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="fl">1.5</span>),               <span class="co"># x2 coordinate of cluster center</span></span>
+<span id="cb13-8"><a></a><span class="sc">+</span> )</span>
+<span id="cb13-9"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb13-10"><a></a><span class="er">&gt;</span> labelled_points <span class="ot">&lt;-</span> </span>
+<span id="cb13-11"><a></a><span class="sc">+</span>   centers <span class="sc">|&gt;</span></span>
+<span id="cb13-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb13-13"><a></a><span class="sc">+</span>     <span class="at">x1 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x1, rnorm),</span>
+<span id="cb13-14"><a></a><span class="sc">+</span>     <span class="at">x2 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x2, rnorm)</span>
+<span id="cb13-15"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
+<span id="cb13-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>num_points) <span class="sc">|&gt;</span> </span>
+<span id="cb13-17"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(x1, x2))</span>
+<span id="cb13-18"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb13-19"><a></a><span class="er">&gt;</span> p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(labelled_points, <span class="fu">aes</span>(x1, x2, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
+<span id="cb13-20"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
+<span id="cb13-21"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"o"</span>)</span>
+<span id="cb13-22"><a></a><span class="sc">&gt;</span> p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="k-means-example-2" class="slide level2">
+<h2>K-means Example</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14" data-code-line-numbers="1-3|4-5|6-9|10-13|14-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe</span></span>
+<span id="cb14-2"><a></a><span class="er">&gt;</span> labelled_points_recipe <span class="ot">&lt;-</span> labelled_points <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
+<span id="cb14-4"><a></a><span class="sc">&gt;</span> <span class="co"># create model spec</span></span>
+<span id="cb14-5"><a></a><span class="er">&gt;</span> kmeans_spec <span class="ot">&lt;-</span> tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> <span class="dv">4</span> )</span>
+<span id="cb14-6"><a></a><span class="sc">&gt;</span> <span class="co"># create workflow</span></span>
+<span id="cb14-7"><a></a><span class="er">&gt;</span> wflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(kmeans_spec) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(labelled_points_recipe)</span>
+<span id="cb14-10"><a></a><span class="sc">&gt;</span> <span class="co"># fit workflow &amp; extract centroids</span></span>
+<span id="cb14-11"><a></a><span class="er">&gt;</span> cluster_centers <span class="ot">&lt;-</span> wflow <span class="sc">|&gt;</span></span>
+<span id="cb14-12"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(labelled_points) <span class="sc">%&gt;%</span> tidyclust<span class="sc">::</span><span class="fu">extract_centroids</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-13"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>( <span class="at">cluster =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(.cluster,<span class="st">"</span><span class="sc">\\</span><span class="st">d"</span>) )</span>
+<span id="cb14-14"><a></a><span class="sc">&gt;</span> <span class="co"># plot</span></span>
+<span id="cb14-15"><a></a><span class="er">&gt;</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> cluster_centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="hierarchical-clustering" class="slide level2">
 <h2>Hierarchical Clustering</h2>
 <p><em>Hierarchical Clustering</em>, sometimes called <em>Agglomerative Clustering</em>, is a method of <em>unsupervised</em> learning that produces a <em>dendrogram</em>, which can be used to partition observations into clusters (see <a href="https://tidyclust.tidymodels.org/articles/hier_clust.html">tidyclust</a>)</p>
