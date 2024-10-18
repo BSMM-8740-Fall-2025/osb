@@ -1219,7 +1219,7 @@ parallel::detectCores(logical = TRUE)
 
 ## Tidymodels: parallelism
 
-For `fit_resamples()` and other functions in tune, parallel processing occurs when the user registers a parallel backend package. 
+For `fit_resamples()` and other functions in tune, parallel processing occurs when the user registers a parallel backend package.
 
 These R backend packages define how to execute parallel processing.
 

@@ -964,7 +964,7 @@ The RBF kernel is $K(x, x') = \exp\left(-\gamma \left\Vert x - x'\right\Vert^2\r
 
 ::: {style="font-size: large"}
 | Feature | Linear SVM | Polynomial SVM | RBF SVM |
-|------------------|------------------|------------------|------------------|
+|----|----|----|----|
 | **Kernel Function** | Linear | Polynomial | Radial Basis Function |
 | **Equation** | $w \cdot x + b$ | $(w \cdot x + b)^d$ | $\exp\left(-\gamma \left\Vert x - x'\right\Vert^2\right)$ |
 | **Complexity** | Low | Medium to High (depending on $d$) | High |

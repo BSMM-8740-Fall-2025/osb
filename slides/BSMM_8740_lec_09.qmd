@@ -1633,7 +1633,10 @@ smry$statistics |> tibble::as_tibble() |>
   dplyr::bind_cols(smry$quantiles |> tibble::as_tibble()) |>
   tibble::add_column(param = c('beta1','beta0','sigma')) |> 
   gt::gt("param") |> 
-  gtExtras::gt_theme_espn()
+  gt::tab_spanner(label = "percentiles", columns = ends_with("%")) |> 
+  gt::tab_options( table.font.size = gt::px(48) ) %>% 
+  gtExtras::gt_theme_espn() |>
+  gt::as_raw_html()
   
 ```
 
@@ -1772,16 +1775,14 @@ plot(mcm_chain)
 
 ```
 
-## Need
-
-Balance equation
-
 ## More
 
--   Read [Bayes Rules!](https://www.bayesrulesbook.com/)
--   Read [Think Bayes](http://allendowney.github.io/ThinkBayes2/index.html)
--   Read [Statistical Rethinking](https://github.com/rmcelreath/stat_rethinking_2022)
+-   The Random Walk Metropolis: [Linking Theory and Practice Through a Case Study](https://arxiv.org/pdf/1011.6217)
+-   “The Metropolis-Hastings Algorithm.” April 12, 2023. <https://blog.djnavarro.net/posts/2023-04-12_metropolis-hastings/>.
+-   [Why Metropolis–Hastings Works](https://gregorygundersen.com/blog/2019/11/02/metropolis-hastings/)
 
 ## Recap
 
--   We've had the smallest possible taste of statistical programming using Bayes theorem and sampling methods, in the context of adressing the limitations of off-the-shelf implementations of statistical methods and algorithms.
+-   The week we've introduced Monte Carlo (MC) methods for sampling from probability distributions, including using those sample to estimate expected values.
+-   We discus importance sampling, rejection sampling, and Markov Chain Monte Carlo (MCMC) methods, particularily the particularly the Metropolis and Metropolis-Hastings methods.
+-   Finally, we applied the Metropolis-Hastings methods in Bayesian analytics, generating Bayesian estimates for the parameters of linear regression.

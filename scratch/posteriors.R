@@ -234,3 +234,17 @@ mcm_chain <- coda::mcmc(chain)
 summary(mcm_chain)
 plot(mcm_chain)
 
+mcm_chain <- coda::mcmc(chain)
+smry <- summary(mcm_chain)
+smry$statistics |> tibble::as_tibble() |>
+  dplyr::bind_cols(smry$quantiles |> tibble::as_tibble()) |>
+  tibble::add_column(param = c('beta1','beta0','sigma')) |>
+  gt::gt("param") |>
+  gt::tab_spanner(label = "percentiles", columns = ends_with("%")) |>
+  #gt::opt_table_font( size = "60px" ) |>
+  gt::tab_options(table.font.size = "60px") |>
+  gtExtras::gt_theme_espn()
+
+|>
+  gt::as_raw_html()
+
