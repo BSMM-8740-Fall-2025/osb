@@ -24,13 +24,51 @@ Due date: Lab 6 - Sunday, Oct 27, 5pm ET
 
 🖥️ [Lecture 6 - Time Series Methods](/slides/BSMM_8740_lec_06.html)
 
-## Practice
-
-📋 [Quiz 1 Solutions](/ae/q1soln.html)
-
 ## Perform
 
 ⌨️ [Lab 6 - Time Series Methods](labs/BSMM_8740_lab_6.html)
+
+## Podcast
+
+[Listen here](https://notebooklm.google.com/notebook/2d123a52-aa80-4ae5-b402-03f8177508b0/audio)
+
+## Study
+
+### Short Answer Questions
+
+**Instructions**: Answer the following questions in 2-3 sentences each.
+
+1.  What is a time series and why is it a separate area of study?
+2.  What are the key characteristics of economic and financial time series?
+3.  Describe the difference between deterministic and stochastic processes.
+4.  What are the defining characteristics of a white noise process?
+5.  Explain the concept of a random walk and how it differs from a random walk with drift.
+6.  Define a Markov chain and state its key properties.
+7.  Describe the key features of an autoregressive (AR) process.
+8.  What are the conditions for stationarity in an AR process?
+9.  Explain the difference between the autocorrelation function (ACF) and the partial autocorrelation function (PACF).
+10. What are the components of an ARIMA model, and what does each component represent?
+
+**Short-Answer Answer Key**
+
+1.  A time series is a collection of data points indexed in time order. It is a separate area of study because it often exhibits serial correlation, violating assumptions of simple linear regression.
+2.  Economic and financial time series typically exhibit serial correlation, meaning past values influence present and future values. Changes in one period can impact future periods, and shocks can affect variables over successive quarters.
+3.  Deterministic processes produce the same output from a given starting point, while stochastic processes involve randomness and are described by statistical distributions.
+4.  A white noise process is characterized by serially uncorrelated random variables with zero mean and constant variance. They are often assumed to be independent and identically distributed.
+5.  A random walk is a stochastic process where the current value is equal to the previous value plus a random shock. A random walk with drift includes a constant term, introducing a trend component.
+6.  A Markov chain is a stochastic process where the probability of transitioning to the next state depends only on the current state (Markov Property). It's characterized by a state space and a transition matrix governing probabilities between states.
+7.  An AR process models the current value as a linear function of its past values. The order of the AR process (AR(p)) indicates the number of lagged values used. The errors are typically assumed to be white noise.
+8.  For an AR process to be stationary, its statistical properties must remain constant over time. This typically requires the roots of the characteristic equation, derived from the autoregressive parameters, to lie outside the unit circle.
+9.  The ACF measures the correlation between a time series and its lagged values. The PACF measures the correlation between a time series and its lagged values after removing the influence of intermediate lags.
+10. An ARIMA model combines autoregression (AR), differencing (I), and moving average (MA) components. AR captures the relationship with lagged values, I makes the series stationary, and MA models the relationship with past forecast errors.
+
+**Essay Questions**
+
+-   Discuss the importance of stationarity in time series analysis. Explain how to identify and address non-stationarity in a time series.
+-   Compare and contrast AR, MA, and ARMA processes. Provide examples of real-world phenomena that can be modeled by each process.
+-   Explain the concept of exponential smoothing and its different variations. Discuss the strengths and limitations of exponential smoothing models.
+-   Describe the steps involved in building a time series forecasting model using the tidymodels and timetk frameworks in R. Provide an example using a real-world dataset.
+-   Discuss the challenges and considerations in evaluating the performance of time series forecasting models. Explain different performance metrics and their interpretations.
 
 <br><br>
 

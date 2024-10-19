@@ -927,8 +927,6 @@ timetk::tk_make_holiday_sequence(
 
 ## Time series - `timetk::`
 
-### timeseries transformations
-
 ::: panel-tabset
 ## raw
 
@@ -1222,7 +1220,7 @@ splits |>
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: using recipes to enginer features
+#| code-summary: using recipes to engineer features
 #| message: false
 time_rec <- dat |> 
   recipes::recipe(optins ~ ., data = rsample::training(splits)) |> 
@@ -1244,7 +1242,7 @@ time_rec |> recipes::prep(training = rsample::training(splits)) |>
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| message: false
 # process engineering with workflows: ARIMA model
 model_spec_arima <- modeltime::arima_reg() |>
@@ -1349,4 +1347,4 @@ refit_tbl |>
 
 -   In this section we have worked with the `tidymodels` and `timetk` packages to build a workflow that facilitates building and evaluating multiple models.
 
--   Combined with the recipes package we now have a complete data modeling framework for timeseries
+-   Combined with the recipes package we now have a complete data modeling framework for timeseries.
