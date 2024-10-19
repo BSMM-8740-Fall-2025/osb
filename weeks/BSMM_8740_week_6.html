@@ -376,8 +376,12 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
-  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice">Practice</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
+  <li><a href="#podcast" id="toc-podcast" class="nav-link" data-scroll-target="#podcast">Podcast</a></li>
+  <li><a href="#study" id="toc-study" class="nav-link" data-scroll-target="#study">Study</a>
+  <ul class="collapse">
+  <li><a href="#short-answer-questions" id="toc-short-answer-questions" class="nav-link" data-scroll-target="#short-answer-questions">Short Answer Questions</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_6.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -428,19 +432,59 @@ Important
 <h2 class="anchored" data-anchor-id="participate">Participate</h2>
 <p>🖥️ <a href="../slides/BSMM_8740_lec_06.html">Lecture 6 - Time Series Methods</a></p>
 </section>
-<section id="practice" class="level2">
-<h2 class="anchored" data-anchor-id="practice">Practice</h2>
-<p>📋 <a href="../ae/q1soln.html">Quiz 1 Solutions</a></p>
-</section>
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
 <p>⌨️ <a href="labs/BSMM_8740_lab_6.html">Lab 6 - Time Series Methods</a></p>
+</section>
+<section id="podcast" class="level2">
+<h2 class="anchored" data-anchor-id="podcast">Podcast</h2>
+<p><a href="https://notebooklm.google.com/notebook/2d123a52-aa80-4ae5-b402-03f8177508b0/audio">Listen here</a></p>
+</section>
+<section id="study" class="level2">
+<h2 class="anchored" data-anchor-id="study">Study</h2>
+<section id="short-answer-questions" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-questions">Short Answer Questions</h3>
+<p><strong>Instructions</strong>: Answer the following questions in 2-3 sentences each.</p>
+<ol type="1">
+<li>What is a time series and why is it a separate area of study?</li>
+<li>What are the key characteristics of economic and financial time series?</li>
+<li>Describe the difference between deterministic and stochastic processes.</li>
+<li>What are the defining characteristics of a white noise process?</li>
+<li>Explain the concept of a random walk and how it differs from a random walk with drift.</li>
+<li>Define a Markov chain and state its key properties.</li>
+<li>Describe the key features of an autoregressive (AR) process.</li>
+<li>What are the conditions for stationarity in an AR process?</li>
+<li>Explain the difference between the autocorrelation function (ACF) and the partial autocorrelation function (PACF).</li>
+<li>What are the components of an ARIMA model, and what does each component represent?</li>
+</ol>
+<p><strong>Short-Answer Answer Key</strong></p>
+<ol type="1">
+<li>A time series is a collection of data points indexed in time order. It is a separate area of study because it often exhibits serial correlation, violating assumptions of simple linear regression.</li>
+<li>Economic and financial time series typically exhibit serial correlation, meaning past values influence present and future values. Changes in one period can impact future periods, and shocks can affect variables over successive quarters.</li>
+<li>Deterministic processes produce the same output from a given starting point, while stochastic processes involve randomness and are described by statistical distributions.</li>
+<li>A white noise process is characterized by serially uncorrelated random variables with zero mean and constant variance. They are often assumed to be independent and identically distributed.</li>
+<li>A random walk is a stochastic process where the current value is equal to the previous value plus a random shock. A random walk with drift includes a constant term, introducing a trend component.</li>
+<li>A Markov chain is a stochastic process where the probability of transitioning to the next state depends only on the current state (Markov Property). It’s characterized by a state space and a transition matrix governing probabilities between states.</li>
+<li>An AR process models the current value as a linear function of its past values. The order of the AR process (AR(p)) indicates the number of lagged values used. The errors are typically assumed to be white noise.</li>
+<li>For an AR process to be stationary, its statistical properties must remain constant over time. This typically requires the roots of the characteristic equation, derived from the autoregressive parameters, to lie outside the unit circle.</li>
+<li>The ACF measures the correlation between a time series and its lagged values. The PACF measures the correlation between a time series and its lagged values after removing the influence of intermediate lags.</li>
+<li>An ARIMA model combines autoregression (AR), differencing (I), and moving average (MA) components. AR captures the relationship with lagged values, I makes the series stationary, and MA models the relationship with past forecast errors.</li>
+</ol>
+<p><strong>Essay Questions</strong></p>
+<ul>
+<li>Discuss the importance of stationarity in time series analysis. Explain how to identify and address non-stationarity in a time series.</li>
+<li>Compare and contrast AR, MA, and ARMA processes. Provide examples of real-world phenomena that can be modeled by each process.</li>
+<li>Explain the concept of exponential smoothing and its different variations. Discuss the strengths and limitations of exponential smoothing models.</li>
+<li>Describe the steps involved in building a time series forecasting model using the tidymodels and timetk frameworks in R. Provide an example using a real-world dataset.</li>
+<li>Discuss the challenges and considerations in evaluating the performance of time series forecasting models. Explain different performance metrics and their interpretations.</li>
+</ul>
 <p><br><br></p>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

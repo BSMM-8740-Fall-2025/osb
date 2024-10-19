@@ -6837,22 +6837,33 @@
     ]
   },
   {
-    "objectID": "weeks/BSMM_8740_week_6.html#practice",
-    "href": "weeks/BSMM_8740_week_6.html#practice",
+    "objectID": "weeks/BSMM_8740_week_6.html#perform",
+    "href": "weeks/BSMM_8740_week_6.html#perform",
     "title": "Week 6 - Time Series Methods",
-    "section": "Practice",
-    "text": "Practice\n📋 Quiz 1 Solutions",
+    "section": "Perform",
+    "text": "Perform\n⌨️ Lab 6 - Time Series Methods",
     "crumbs": [
       "Weekly materials",
       "Week 6"
     ]
   },
   {
-    "objectID": "weeks/BSMM_8740_week_6.html#perform",
-    "href": "weeks/BSMM_8740_week_6.html#perform",
+    "objectID": "weeks/BSMM_8740_week_6.html#podcast",
+    "href": "weeks/BSMM_8740_week_6.html#podcast",
     "title": "Week 6 - Time Series Methods",
-    "section": "Perform",
-    "text": "Perform\n⌨️ Lab 6 - Time Series Methods\n\n\nBack to course schedule ⏎",
+    "section": "Podcast",
+    "text": "Podcast\nListen here",
+    "crumbs": [
+      "Weekly materials",
+      "Week 6"
+    ]
+  },
+  {
+    "objectID": "weeks/BSMM_8740_week_6.html#study",
+    "href": "weeks/BSMM_8740_week_6.html#study",
+    "title": "Week 6 - Time Series Methods",
+    "section": "Study",
+    "text": "Study\n\nShort Answer Questions\nInstructions: Answer the following questions in 2-3 sentences each.\n\nWhat is a time series and why is it a separate area of study?\nWhat are the key characteristics of economic and financial time series?\nDescribe the difference between deterministic and stochastic processes.\nWhat are the defining characteristics of a white noise process?\nExplain the concept of a random walk and how it differs from a random walk with drift.\nDefine a Markov chain and state its key properties.\nDescribe the key features of an autoregressive (AR) process.\nWhat are the conditions for stationarity in an AR process?\nExplain the difference between the autocorrelation function (ACF) and the partial autocorrelation function (PACF).\nWhat are the components of an ARIMA model, and what does each component represent?\n\nShort-Answer Answer Key\n\nA time series is a collection of data points indexed in time order. It is a separate area of study because it often exhibits serial correlation, violating assumptions of simple linear regression.\nEconomic and financial time series typically exhibit serial correlation, meaning past values influence present and future values. Changes in one period can impact future periods, and shocks can affect variables over successive quarters.\nDeterministic processes produce the same output from a given starting point, while stochastic processes involve randomness and are described by statistical distributions.\nA white noise process is characterized by serially uncorrelated random variables with zero mean and constant variance. They are often assumed to be independent and identically distributed.\nA random walk is a stochastic process where the current value is equal to the previous value plus a random shock. A random walk with drift includes a constant term, introducing a trend component.\nA Markov chain is a stochastic process where the probability of transitioning to the next state depends only on the current state (Markov Property). It’s characterized by a state space and a transition matrix governing probabilities between states.\nAn AR process models the current value as a linear function of its past values. The order of the AR process (AR(p)) indicates the number of lagged values used. The errors are typically assumed to be white noise.\nFor an AR process to be stationary, its statistical properties must remain constant over time. This typically requires the roots of the characteristic equation, derived from the autoregressive parameters, to lie outside the unit circle.\nThe ACF measures the correlation between a time series and its lagged values. The PACF measures the correlation between a time series and its lagged values after removing the influence of intermediate lags.\nAn ARIMA model combines autoregression (AR), differencing (I), and moving average (MA) components. AR captures the relationship with lagged values, I makes the series stationary, and MA models the relationship with past forecast errors.\n\nEssay Questions\n\nDiscuss the importance of stationarity in time series analysis. Explain how to identify and address non-stationarity in a time series.\nCompare and contrast AR, MA, and ARMA processes. Provide examples of real-world phenomena that can be modeled by each process.\nExplain the concept of exponential smoothing and its different variations. Discuss the strengths and limitations of exponential smoothing models.\nDescribe the steps involved in building a time series forecasting model using the tidymodels and timetk frameworks in R. Provide an example using a real-world dataset.\nDiscuss the challenges and considerations in evaluating the performance of time series forecasting models. Explain different performance metrics and their interpretations.\n\n\n\nBack to course schedule ⏎",
     "crumbs": [
       "Weekly materials",
       "Week 6"
@@ -8351,7 +8362,7 @@
     "href": "slides/BSMM_8740_lec_06.html#time-series---timetk-8",
     "title": "Time series methods",
     "section": "Time series - timetk::",
-    "text": "Time series - timetk::\ntimeseries transformations\n\nrawbox-cox transformed\n\n\n\n\nplot raw windspeed data\n&gt; # plot wind speed\n&gt; timetk::bike_sharing_daily |&gt; \n+   timetk::plot_time_series(dteday, windspeed, .title = \"Time Series - Raw\")\n\n\n\n\n\n\n\n\n\n\nplot transformed windspeed data\n&gt; # plot transformed speed\n&gt; timetk::bike_sharing_daily |&gt; \n+   timetk::plot_time_series(\n+     dteday\n+     , timetk::box_cox_vec(windspeed, lambda=\"auto\",  silent = T)\n+     , .title = \"Time Series - Box Cox Tranformed\")"
+    "text": "Time series - timetk::\n\nrawbox-cox transformed\n\n\n\n\nplot raw windspeed data\n&gt; # plot wind speed\n&gt; timetk::bike_sharing_daily |&gt; \n+   timetk::plot_time_series(dteday, windspeed, .title = \"Time Series - Raw\")\n\n\n\n\n\n\n\n\n\n\nplot transformed windspeed data\n&gt; # plot transformed speed\n&gt; timetk::bike_sharing_daily |&gt; \n+   timetk::plot_time_series(\n+     dteday\n+     , timetk::box_cox_vec(windspeed, lambda=\"auto\",  silent = T)\n+     , .title = \"Time Series - Box Cox Tranformed\")"
   },
   {
     "objectID": "slides/BSMM_8740_lec_06.html#time-series---timetk-9",
@@ -8435,14 +8446,14 @@
     "href": "slides/BSMM_8740_lec_06.html#feature-engineering-w-recipes",
     "title": "Time series methods",
     "section": "Feature engineering w/ recipes",
-    "text": "Feature engineering w/ recipes\n\n\nusing recipes to enginer features\n&gt; time_rec &lt;- dat |&gt; \n+   recipes::recipe(optins ~ ., data = rsample::training(splits)) |&gt; \n+   timetk::step_log_interval(optins, limit_lower = 0, offset = 1) |&gt; \n+   recipes::step_normalize(recipes::all_outcomes()) |&gt; \n+   timetk::step_timeseries_signature(optin_time) |&gt; \n+   timetk::step_fourier(optin_time, period = c(7,14,30,90,365), K=2)\n&gt; \n&gt; time_rec |&gt; recipes::prep(training = rsample::training(splits)) |&gt; \n+   recipes::bake(new_data = NULL) |&gt; \n+   timetk::plot_time_series_regression(\n+     .date_var = optin_time\n+     , .formula = optins ~ .\n+     , .show_summary = FALSE\n+   )\n\n\n$optins\n[1] 0\n\n$optins\n[1] 400"
+    "text": "Feature engineering w/ recipes\n\n\nusing recipes to engineer features\n&gt; time_rec &lt;- dat |&gt; \n+   recipes::recipe(optins ~ ., data = rsample::training(splits)) |&gt; \n+   timetk::step_log_interval(optins, limit_lower = 0, offset = 1) |&gt; \n+   recipes::step_normalize(recipes::all_outcomes()) |&gt; \n+   timetk::step_timeseries_signature(optin_time) |&gt; \n+   timetk::step_fourier(optin_time, period = c(7,14,30,90,365), K=2)\n&gt; \n&gt; time_rec |&gt; recipes::prep(training = rsample::training(splits)) |&gt; \n+   recipes::bake(new_data = NULL) |&gt; \n+   timetk::plot_time_series_regression(\n+     .date_var = optin_time\n+     , .formula = optins ~ .\n+     , .show_summary = FALSE\n+   )\n\n\n$optins\n[1] 0\n\n$optins\n[1] 400"
   },
   {
     "objectID": "slides/BSMM_8740_lec_06.html#workflows",
     "href": "slides/BSMM_8740_lec_06.html#workflows",
     "title": "Time series methods",
     "section": "Workflows",
-    "text": "Workflows\n\n\nCode\n&gt; # process engineering with workflows: ARIMA model\n&gt; model_spec_arima &lt;- modeltime::arima_reg() |&gt;\n+     parsnip::set_engine(\"auto_arima\")\n&gt; \n&gt; recipe_spec_fourier &lt;- \n+   recipes::recipe(\n+     optins ~ optin_time\n+     , data = rsample::training(splits)\n+   ) |&gt;\n+     timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) \n&gt; \n&gt; workflow_fit_arima &lt;- workflows::workflow() |&gt;\n+   workflows::add_recipe(recipe_spec_fourier) |&gt;\n+   workflows::add_model(model_spec_arima) |&gt;\n+   parsnip::fit(rsample::training(splits))"
+    "text": "Workflows\n\n&gt; # process engineering with workflows: ARIMA model\n&gt; model_spec_arima &lt;- modeltime::arima_reg() |&gt;\n+     parsnip::set_engine(\"auto_arima\")\n&gt; \n&gt; recipe_spec_fourier &lt;- \n+   recipes::recipe(\n+     optins ~ optin_time\n+     , data = rsample::training(splits)\n+   ) |&gt;\n+     timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) \n&gt; \n&gt; workflow_fit_arima &lt;- workflows::workflow() |&gt;\n+   workflows::add_recipe(recipe_spec_fourier) |&gt;\n+   workflows::add_model(model_spec_arima) |&gt;\n+   parsnip::fit(rsample::training(splits))"
   },
   {
     "objectID": "slides/BSMM_8740_lec_06.html#workflows-1",
@@ -8477,7 +8488,7 @@
     "href": "slides/BSMM_8740_lec_06.html#recap",
     "title": "Time series methods",
     "section": "Recap",
-    "text": "Recap\n\nIn this section we have worked with the tidymodels and timetk packages to build a workflow that facilitates building and evaluating multiple models.\nCombined with the recipes package we now have a complete data modeling framework for timeseries\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
+    "text": "Recap\n\nIn this section we have worked with the tidymodels and timetk packages to build a workflow that facilitates building and evaluating multiple models.\nCombined with the recipes package we now have a complete data modeling framework for timeseries.\n\n\n\n\n\nbsmm-8740-fall-2024.github.io/osb"
   },
   {
     "objectID": "slides/BSMM_8740_lec_02.html#recap-of-last-lecture",
