@@ -955,7 +955,7 @@ To get some intuition about controlling for X, let’s remember the case when al
 If that is the case, regression partitions the data into the dummy cells and computes the mean difference between test and control. Effectively we are calculating doing
 
 $$
-E[Y|D=1] - E[Y|D=0] | X=x]$
+E[Y|D=1] - E[Y|D=0] | X=x]
 $$
 
 where $x$ is a dummy cell (all dummies set to 1, for example).
@@ -1849,6 +1849,7 @@ $$
 ::: {style="font-size: x-large"}
 where the left hand side is the counterfactual trend. Now, we can replace the estimated counterfactual in the treatment effect definition
 :::
+
 $E[Y^1(1)|D=1] - E[Y^0(1)|D=1]$
 
 $$

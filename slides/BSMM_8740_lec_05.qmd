@@ -880,7 +880,7 @@ It is common to scale the vector $w$ and the offset $w_0$ such that $f_n\hat{y}_
 In addition, since minimizing $1/ \left\Vert w\right\Vert$ is equivalent to minimizing $\left\Vert w\right\Vert^2$, we can state the objective as
 
 $$
-\min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
+\min_{w,w_{0}}\frac{1}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
 $$
 
 ## SVM Classification:
