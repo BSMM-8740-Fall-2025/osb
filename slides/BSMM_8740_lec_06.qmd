@@ -97,19 +97,20 @@ $$
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: creating a time series
 set.seed(8740)
 
 dat <- tibble::tibble(
   date = seq(as.Date('2015-04-7'),as.Date('2020-03-22'),'2 weeks')
-) %>% 
-  tibble::rowid_to_column("t") %>% 
+) |> 
+  tibble::rowid_to_column("t") |> 
   dplyr::mutate(
     trend = 1 + 0.05 * t
     , seasonality = 1.5 * cos(pi * t * 0.166)
     , noise = rnorm(length(t))
     , temp = dplyr::lag(noise)
-  ) %>% 
-  tidyr::replace_na(list(temp = 0)) %>% 
+  ) |> 
+  tidyr::replace_na(list(temp = 0)) |> 
   dplyr::mutate(
     noise =
       purrr::map2_dbl(
@@ -117,8 +118,9 @@ dat <- tibble::tibble(
         , temp
         , ~ .x + 0.5 * .y
       )
-  ) %>% 
+  ) |> 
   dplyr::select(-temp)
+dat
 ```
 
 ## Time series: generation
@@ -129,8 +131,8 @@ dat <- tibble::tibble(
 ```{r}
 #| echo: true
 #| code-fold: true
-dat %>% 
-  tidyr::pivot_longer(-c(t, date)) %>% 
+dat |> 
+  tidyr::pivot_longer(-c(t, date)) |> 
   ggplot(aes(x=date, y=value, color=name)) + geom_line(linewidth=1) + 
   labs(
     title = 'trend, seasonality, and noise'
@@ -143,9 +145,9 @@ dat %>%
 ```{r}
 #| echo: true
 #| code-fold: true
-dat %>% 
-  dplyr::mutate(y = trend + seasonality + noise) %>% 
-  ggplot(aes(x=date, y=y)) + geom_line(linewidth=1) +
+dat |> 
+  dplyr::mutate(y = trend + seasonality + noise) |> 
+  ggplot(aes(x=date, y=y)) + geom_line(linewidth=1) + geom_point(color="red") +
   labs(
     title = 'trend + seasonality + noise'
     , subtitle = "deterministic: trend, seasonality | stochastic: noise") + theme_minimal() +
@@ -155,9 +157,9 @@ dat %>%
 
 ## Time series - processes
 
--   Time series is a collection of observations indexed by the date of each realisation
+-   Time series is a collection of observations indexed by the date of each observation
 
--   Using notation that starts at time, $t=1$, and using the end point, $t=T$
+-   Using notation that starts at time, $t=1$, and using the end point, $t=T$ the time series is a set of observations:
 
 $$\{y_1,y_2,y_3,…,y_T\}$$
 
@@ -203,7 +205,7 @@ implications:
 ### Stochastic Processes - Random walk
 
 ::: {style="font-size: 80%"}
--   Random walk would imply that the effect of a shock is permanent. $$y_t=y_{t-1}+\epsilon_t$$
+-   Random walk definition implies that the effect of a shock is permanent. $$y_t=y_{t-1}+\epsilon_t$$
 -   Given the starting value $y_0$, and using recursive substitution, this process could be represented as $$y_t=y_0+\sum_{j=1}^t\epsilon_t$$
 -   Since the effect of past shocks do not dissipate we say it has an infinite memory
 :::
@@ -249,7 +251,7 @@ implications:
 
 3.  **Transition Matrix**:
 
-    -   The transitions are governed by a matrix of probabilities, where each entry $\mathbb{P}_{i,j}$ represents the probability of moving from state $i$ to state $j$.
+    -   The transitions are governed by a matrix of probabilities, where each entry $\mathsf{P}_{i,j}$ represents the probability of moving from state $i$ to state $j$.
 
 4.  **Types**:
 
@@ -258,7 +260,7 @@ implications:
 
 5.  **Applications**:
 
-    -   Weather modeling, queueing theory, board games (like Monopoly), and speech recognition.
+    -   Weather modeling, queueing theory, board games (like Monopoly), speech recognition and speech generation.
 :::
 
 ## Time series - processes
@@ -270,31 +272,41 @@ In the discrete case, given a state transition matrix $A$ and an initial state $
 
 $$
 \begin{align*}
-\pi_1 & = A\pi_0\\
-\pi_2 & = A\pi_1 = A^2\pi_0\\
+\pi_1 & = \pi_0A\\
+\pi_2 & = \pi_1A = \pi_0A^2\\
 &\vdots\\
-\pi_n & = A^n\pi_0
+\pi_n & = \pi_0A^n
 \end{align*}
 $$
 
-If the markov chain has a stationary distribution $\pi^{s}$, then $A\pi^{s}=\pi^{s}$ by definition and $(I-A)\pi^{s}=0$ determines $\pi^{s}$ up to a constant.
+If the markov chain has a stationary distribution $\pi^{s}$, then $\pi^{s}A=\pi^{s}$ by definition and $\pi^{s}(I-A)=0$ determines $\pi^{s}$ up to a constant.
 :::
 
 ## Time series - processes
 
 ### Autoregressive Processes
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 -   In an AR(1) process the current value is a linear function of the previous value.
 
-$$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as $$y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j$$ - The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ with $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
+$$
+y_t=\phi_1 y_{t-1}+\epsilon_t
+$$
+
+-   Fixing the starting value at $y_0=0$, and with repeated substitution, this process could be represented as
+
+$$
+y_t=\sum_{j=1}^t\phi_1^{t-j}\epsilon_j
+$$
+
+-   The distribution of each error term is $\epsilon_t=\mathscr{N}(0,\sigma^2)$ with $\mathbb{E}[\epsilon_i\epsilon_j]=0,\,\forall i\ne j$, and we can generalize to several lags (i.e. an AR(p) model).
 :::
 
 ## Time series - processes
 
 ### Moments of distribution
 
-::: {style="font-size: 80%"}
+::: {style="font-size: large"}
 -   The first moment of a stochastic process is the average of $y_t$ over all possible realisations $$\hat{y}=\mathbb{E}[y_t];\;\;t=1,\ldots,T$$
 -   The second moment is defined as the variance $$\text{var}(y_t)=\mathbb{E}[y_t\times y_t]=\mathbb{E}[y_t- \mathbb{E}[y_t]^2];\;\;t=1,\ldots,T$$
 -   The covariance, for $j$ $$\text{cov}(y_t,y_{t-j})=\mathbb{E}[y_t\times y_{t-j}]=\mathbb{E}[(y_t- \mathbb{E}[y_t])(y_{t-j}- \mathbb{E}[y_{t-j}])];\;\;t=1,\ldots,T$$
@@ -335,7 +347,7 @@ $$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and wi
 
 ### Unconditional moments
 
-::: {style="font-size: 80%"}
+::: {style="font-size: large"}
 -   For the AR(1) model (where $\epsilon_t$ are iid Gausian and $|\phi|<1$) $$y_t=\phi y_{t-1}+\epsilon_t$$
 -   The unconditional moments are (assuming stationarity and $\phi<1$) $$
     \begin{align*}
@@ -365,7 +377,7 @@ $$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and wi
 
 ::: {style="font-size: 80%"}
 -   If neither the mean $\hat{y}$ nor the covariance $\text{cov}(y_t,y_{t-j})$ depend on $t$
--   the the process for $y_t$ is said to be covariance (weakly) stationary, where $\forall t,j$ $$
+-   The the process for $y_t$ is said to be covariance (weakly) stationary, where $\forall t,j$ $$
     \begin{align*}
     \mathbb{E}\left[y_{t}\right] & =\bar{y}\\
     \mathbb{E}\left[\left(y_{t}-\bar{y}\right)\left(y_{t-j}-\bar{y}\right)\right] & =\text{cov}\left(y_{t},y_{t-j}\right)
@@ -384,7 +396,7 @@ $$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and wi
 
 -   The autocovariance function is denoted by $\gamma (j)\equiv\text{cov}(y_t,y_{t-j})$ for $t=1,\ldots,T$
 
--   Th autocovariance function is standardized by dividing each function by the variance, giving the ACF for successive values of $j$
+-   Tha autocovariance function is standardized by dividing each function by the variance, giving the ACF for successive values of $j$
 
     $$\rho(j)\equiv\frac{\gamma(j)}{\gamma(0)}$$
 
@@ -411,6 +423,7 @@ $$y_t=\phi_1 y_{t-1}+\epsilon_t$$ - Fixing the starting value at $y_0=0$, and wi
 #| layout-ncol: 3
 #| echo: true
 #| code-fold: true
+#| code-summary: demonstration of an AR(1) process and its ACF
 library(ggfortify)
 # Parameters for the AR(1) process
 phi = 0.8  # Autoregressive coefficient (should be less than 1 in absolute value)
@@ -427,21 +440,13 @@ for (t in 2:n) {
 }
 
 # Plot the AR(1) series
-# plot(X, type = "l", main = "AR(1) Process", xlab = "Time", ylab = "Value")
-tibble::tibble(y=X, x=1:length(X)) %>% ggplot(aes(x=x, y=y)) + geom_line() + 
+tibble::tibble(y=X, x=1:length(X)) |> ggplot(aes(x=x, y=y)) + geom_line() + 
   labs(title="AR(1) Process", x = "Time", y = "Value")
-
 # Plot the autocorrelation function (ACF)
-#stats::acf(X, main = "Autocorrelation of AR(1) Process")
 autoplot(stats::acf(X, plot = FALSE)) + labs(title = "Autocorrelation of AR(1) Process")
-
 # Plot the autocorrelation function (ACF)
-#stats::pacf(X, main = "Partial Autocorrelation of AR(1) Process")
 autoplot(stats::pacf(X, plot = FALSE)) + labs(title = "Partial Autocorrelation of AR(1) Process")
-
 ```
-
-## 
 
 ## Time series - processes
 
@@ -496,11 +501,11 @@ For the AR(1) process, using the lag operator we can write:
 
 $$
 \begin{align*}
-y_t & = \phi_1 y_{t-1}+\epsilon_t\\
+y_t & = \phi y_{t-1}+\epsilon_t\\
 (1-\phi L)y_t & =  \epsilon_t\\
 y_t & = (1-\phi L)^{-1} \epsilon_t\\
   & = (\sum_{i=0}^\infty\phi^i\mathrm{L}^i)\epsilon_t\\
-  & = \sum_{j=1}^t\phi_1^{t-j}\epsilon_j
+  & = \sum_{j=1}^t\phi^{t-j}\epsilon_j
 \end{align*}
 $$ - EXERCISE: check that the last equality holds.
 :::
@@ -527,7 +532,8 @@ y_{t-2}
 \end{array}\right)
 $$ where the matrix $A$ here is (i.e. AR(2)):
 
-$$A=\left(\begin{array}{cc}
+$$
+A=\left(\begin{array}{cc}
 \phi_{1} & \phi_{2}\\
 1 & 0
 \end{array}\right)
@@ -561,8 +567,6 @@ And we only converge if $A^i\rightarrow0 \;\mathrm{as}\;i\rightarrow\infty$, i.e
 ### Computing determinants
 
 ::: {style="font-size: m"}
-**Definitions**
-
 1.  **Minor**:
     -   The minor $M_{ij}$ of an element $a_{ij}$ in an $n \times n$ matrix $A$ is the determinant of the $(n-1) \times (n-1)$ matrix that results from removing the $i$-th row and $j$-th column from $A$.
 2.  **Cofactor**:
@@ -582,7 +586,7 @@ $$ Similarly, the cofactor expansion along the $j$-th column is: $\det(A) = \sum
 
 ### Computing determinants
 
-The structure of the AR(1) vector process makes it easy to compute the polynomial for the determinant in therms of the coefficients of the process.
+The structure of the AR(1) vector process makes it easy to compute the polynomial for the determinant in terms of the coefficients of the process.
 
 The roots of the polynomial can be computed using `polyroot`, passing in a vector of polynomial coefficients in increasing order. The magnitudes of the eigenvalues can using the base function `Mod`.
 
@@ -622,7 +626,7 @@ and MA() processes can be expressed as AR processes by a similar argument.
 
 ::: {style="font-size: 80%"}
 -   A combination of an AR(1) and a MA(1) process is termed an ARMA(1,1) observation. $$y_t=\phi y_{t-1}+\epsilon_t+\theta\epsilon_{t-1}$$
--   AN ARMA(p,q) process takes the form $$y_t=\sum_{j=1}^p\phi_jy_{t-j}+\epsilon_t+\sum_{i=1}^q\theta_i\epsilon_{t-i}$$
+-   An ARMA(p,q) process takes the form $$y_t=\sum_{j=1}^p\phi_jy_{t-j}+\epsilon_t+\sum_{i=1}^q\theta_i\epsilon_{t-i}$$
 -   This model was popularized by Box & Jenkins, who developed a methodology that may be used to identify the terms that should be included in the model
 :::
 
@@ -671,7 +675,7 @@ The time constant $\tau$ is the amount of time for the smoothed response of a un
 $$
 \begin{align*}
 \alpha & = 1-e^{-\Delta T/\tau}\\
-\tau & = -\frac{\Delta T}{ln(1-\alpha)}
+\tau & = -\frac{\Delta T}{\log(1-\alpha)}
 \end{align*}
 $$
 
@@ -735,8 +739,8 @@ The additive ETS models are shown below, and more detailed discussion can be fou
 
 ```{r}
 #| echo: true
-timetk::bike_sharing_daily %>% 
-  dplyr::slice_head(n=5) %>% 
+timetk::bike_sharing_daily |> 
+  dplyr::slice_head(n=5) |> 
   dplyr::glimpse()
 ```
 
@@ -748,7 +752,7 @@ The `timetk::plot_time_series()` function is a good way to to get a quick timese
 -   pivot (longer) the columns we want to plot
 -   plot
 
-The `timetk::plot_time_series()` function has many options that can be changed.
+The `timetk::plot_time_series()` function has many options that can be used to customize the plot.
 
 ## Time series - plotting
 
@@ -756,9 +760,9 @@ The `timetk::plot_time_series()` function has many options that can be changed.
 #| echo: true
 #| code-fold: true
 #| code-line-numbers: "1|2|3|4-8"
-timetk::bike_sharing_daily %>% 
-  dplyr::select(dteday, casual, registered) %>% 
-  tidyr::pivot_longer(-dteday) %>% 
+timetk::bike_sharing_daily |> 
+  dplyr::select(dteday, casual, registered) |> 
+  tidyr::pivot_longer(-dteday) |> 
   timetk::plot_time_series(
     .date_var = dteday
     , .value = value
@@ -773,8 +777,9 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: time-downscale the bike sharing data
 #| code-line-numbers: "1|2|3-4|5|6-8"
-timetk::bike_sharing_daily %>% 
+timetk::bike_sharing_daily |> 
   timetk::summarise_by_time(
     .date_var = dteday
     , .by = "week"
@@ -793,10 +798,11 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: time-upscale the bike sharing data
 #| code-line-numbers: "1|2|3|4-8"
-timetk::bike_sharing_daily %>% 
-  dplyr::select(dteday, casual) %>% 
-  timetk::pad_by_time(.date_var = dteday, .by = "hour") %>% 
+timetk::bike_sharing_daily |> 
+  dplyr::select(dteday, casual) |> 
+  timetk::pad_by_time(.date_var = dteday, .by = "hour") |> 
   timetk::mutate_by_time(
     .date_var = dteday
     , .by = "day"
@@ -811,13 +817,14 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: filter the bike sharing data by date range
 #| code-line-numbers: "1|2-6"
-timetk::bike_sharing_daily %>%
+timetk::bike_sharing_daily |>
   timetk::filter_by_time(
     .date_var = dteday
     , .start_date="2012-01-15"
     , .end_date = "2012-07-01"
-  ) %>% 
+  ) |> 
   timetk::plot_time_series(.date_var = dteday, casual)
 ```
 
@@ -828,14 +835,15 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: filter the bike sharing data by offset
 #| code-line-numbers: "1|2|3-7"
 require(timetk, quietly = FALSE)
-timetk::bike_sharing_daily %>%
+timetk::bike_sharing_daily |>
   timetk::filter_by_time(
     .date_var = dteday
     , .start_date="2012-01-15"
     , .end_date = "2012-01-15" %+time% "12 weeks"
-  ) %>% 
+  ) |> 
   timetk::plot_time_series(.date_var = dteday, casual)
 ```
 
@@ -846,9 +854,10 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: add columns using a period (rolling window)
 #| code-line-numbers: "1|2|3-10"
-timetk::bike_sharing_daily %>%
-  dplyr::select(dteday, casual) %>% 
+timetk::bike_sharing_daily |>
+  dplyr::select(dteday, casual) |> 
   timetk::mutate_by_time(
     .date_var = dteday
     , .by = "7 days"
@@ -866,8 +875,9 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: add columns that summarize a period (rolling window)
 #| code-line-numbers: "1|2-8"
-timetk::bike_sharing_daily %>%
+timetk::bike_sharing_daily |>
   timetk::summarize_by_time(
     .date_var = dteday
     , .by = "7 days"
@@ -884,6 +894,7 @@ timetk::bike_sharing_daily %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: create a timeseries
 #| code-line-numbers: "1|2-7|8"
 tibble::tibble(
   date = 
@@ -903,13 +914,14 @@ tibble::tibble(
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: add columns for holidays
 timetk::tk_make_holiday_sequence(
   start_date = "2024"
   , end_date = "2026"
   , calendar = "TSX"
 ) %>% 
-  timetk::tk_get_holiday_signature(holiday_pattern = "Thanksgiving",locale_set = "CA", exchange = "TSX") %>% 
-  dplyr::slice_head(n = 6) %>% 
+  timetk::tk_get_holiday_signature(holiday_pattern = "Thanksgiving",locale_set = "CA", exchange = "TSX") |> 
+  dplyr::slice_head(n = 6) |> 
   dplyr::glimpse()
 ```
 
@@ -917,22 +929,32 @@ timetk::tk_make_holiday_sequence(
 
 ### timeseries transformations
 
+::: panel-tabset
+## raw
+
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-line-numbers: "1|2-7|8"
-#| layout-ncol: 2
+#| code-summary: plot raw windspeed data
 # plot wind speed
-timetk::bike_sharing_daily %>% 
+timetk::bike_sharing_daily |> 
   timetk::plot_time_series(dteday, windspeed, .title = "Time Series - Raw")
+```
 
+## box-cox transformed
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: plot transformed windspeed data
 # plot transformed speed
-timetk::bike_sharing_daily %>% 
+timetk::bike_sharing_daily |> 
   timetk::plot_time_series(
     dteday
     , timetk::box_cox_vec(windspeed, lambda="auto",  silent = T)
     , .title = "Time Series - Box Cox Tranformed")
 ```
+:::
 
 ## Time series - `timetk::`
 
@@ -958,44 +980,56 @@ Other common transformations to reduce variance: `log()`, `log1p()` and `sqrt()`
 
 ## Time series - Feature engineering
 
+::: panel-tabset
+## feature engineering
+
 ```{r}
 #| echo: true
 #| code-fold: true
-#| layout-ncol: 2
+#| code-summary: feature engineering
 #| code-line-numbers: "3-5|6-8|12-16"
 #| message: false
 subscribers_tbl   <- readRDS("data/00_data/mailchimp_users.rds")
 
-data_prepared_tbl <- subscribers_tbl %>% 
-  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) %>% 
-  timetk::pad_by_time(.pad_value=0) %>% 
+data_prepared_tbl <- subscribers_tbl |> 
+  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) |> 
+  timetk::pad_by_time(.pad_value=0) |> 
   # preprocessing
-  dplyr::mutate(optins_trans=timetk::log_interval_vec(optins, limit_lower=0, offset=1)) %>% 
-  dplyr::mutate(optins_trans=timetk::standardize_vec(optins_trans)) %>% 
+  dplyr::mutate(optins_trans=timetk::log_interval_vec(optins, limit_lower=0, offset=1)) |> 
+  dplyr::mutate(optins_trans=timetk::standardize_vec(optins_trans)) |> 
   # fix missing vals at start
-  timetk::filter_by_time(.start_date = "2018-07-03") %>% 
+  timetk::filter_by_time(.start_date = "2018-07-03") |> 
   # outliers clean
-  dplyr::mutate(optins_trans_cleaned = timetk::ts_clean_vec(optins_trans, period=7)) %>% 
-  dplyr::mutate(optins_trans=ifelse(optin_time %>% timetk::between_time("2018-11-18","2018-11-20")
+  dplyr::mutate(optins_trans_cleaned = timetk::ts_clean_vec(optins_trans, period=7)) |> 
+  dplyr::mutate(optins_trans=ifelse(optin_time |> timetk::between_time("2018-11-18","2018-11-20")
                              , optins_trans_cleaned
                              , optins_trans
-                             )) %>% 
+                             )) |> 
   dplyr::select(-optins, -optins_trans_cleaned)
-  
-data_prepared_tbl     # show the dt
+# show the dt  
+data_prepared_tbl     
+```
 
-data_prepared_tbl %>% # plot the table
-  tidyr::pivot_longer(contains("trans")) %>% 
+## plot
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: plot the new data
+data_prepared_tbl |> # plot the table
+  tidyr::pivot_longer(contains("trans")) |> 
   timetk::plot_time_series(optin_time,value,name) 
 ```
+:::
 
 ## Date Features
 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: add date features
 data_prep_signature_tbl <- 
-  data_prepared_tbl %>% 
+  data_prepared_tbl |> 
   timetk::tk_augment_timeseries_signature(
     .date_var = optin_time
   ) 
@@ -1003,8 +1037,8 @@ data_prep_signature_tbl <-
 
 ```{r}
 #| echo: false
-data_prep_signature_tbl %>% 
-  dplyr::slice_head(n=4) %>% 
+data_prep_signature_tbl |> 
+  dplyr::slice_head(n=4) |> 
   dplyr::glimpse()
 ```
 
@@ -1013,7 +1047,8 @@ data_prep_signature_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
-data_prep_signature_tbl %>% 
+#| code-summary: add regression
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var = optin_time
     , .formula = optins_trans ~ index.num
@@ -1022,19 +1057,27 @@ data_prep_signature_tbl %>%
 
 ## Non-linear trends
 
+::: panel-tabset
+## B-spline, degree 3
+
 ```{r}
 #| echo: true
 #| code-fold: true
-#| layout-ncol: 2
-data_prep_signature_tbl %>% 
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var = optin_time
     , .formula = optins_trans ~ splines::bs(index.num, degree=3)
     , .show_summary = FALSE
     , .title = "B-spline, degree 3"
   )
+```
 
-data_prep_signature_tbl %>% 
+## Cubic spline, 3 knots
+
+```{r}
+#| echo: true
+#| code-fold: true
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var=optin_time
     , .formula=
@@ -1044,26 +1087,33 @@ data_prep_signature_tbl %>%
     , .show_summary = FALSE
     , .title = "Cubic spline, 3 knots"
   )
-
 ```
+:::
 
 ## Seasonality
+
+::: panel-tabset
+## weekly
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| layout-ncol: 2
 # Weekly Seasonality
-data_prep_signature_tbl %>% 
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var=optin_time
     , .formula=optins_trans ~ wday.lbl + splines::bs(index.num, degree=3)
     , .show_summary = FALSE
     , .title = "Weekday seasonality"
   )
+```
 
-# ** Monthly Seasonality
-data_prep_signature_tbl %>% 
+## monthly
+
+```{r}
+#| echo: true
+#| code-fold: true
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var=optin_time
     , .formula=optins_trans ~ month.lbl + splines::bs(index.num, degree=3)
@@ -1071,19 +1121,21 @@ data_prep_signature_tbl %>%
     , .title = "Monthly seasonality"
   )
 ```
+:::
 
 ## Seasonality
 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: regress with a formula
 # ** Together with Trend
 model_formula_seasonality <- as.formula(
   optins_trans ~ wday.lbl + month.lbl +
     splines::ns(index.num
                 , knots=quantile(index.num, probs=c(0.25, 0.5, 0.75))) + .
 )
-data_prep_signature_tbl %>% 
+data_prep_signature_tbl |> 
   timetk::plot_time_series_regression(
     .date_var=optin_time
     , .formula = model_formula_seasonality
@@ -1097,7 +1149,8 @@ data_prep_signature_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
-data_prep_signature_tbl %>% 
+#| code-summary: show autocorrelations
+data_prep_signature_tbl |> 
   timetk::plot_acf_diagnostics(optin_time,optins_trans)
 ```
 
@@ -1106,11 +1159,12 @@ data_prep_signature_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: add seasonality using sin and cos
 data_prep_fourier_tbl <- 
-  data_prep_signature_tbl %>% 
+  data_prep_signature_tbl |> 
   timetk::tk_augment_fourier(optin_time, .periods=c(7,14,30,90,365), .K=2)
 
-data_prep_fourier_tbl %>% dplyr::slice_head(n=3) %>% dplyr::glimpse()
+data_prep_fourier_tbl |> dplyr::slice_head(n=3) |> dplyr::glimpse()
 ```
 
 ## Visualization
@@ -1118,6 +1172,7 @@ data_prep_fourier_tbl %>% dplyr::slice_head(n=3) %>% dplyr::glimpse()
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: regress with a formula again
 # Model
 model_formula_fourier <- 
   as.formula(
@@ -1127,8 +1182,8 @@ model_formula_fourier <-
   )
 
 # Visualize
-data_prep_fourier_tbl %>% 
-  timetk::filter_by_time(.start_date="2018-09-13") %>% 
+data_prep_fourier_tbl |> 
+  timetk::filter_by_time(.start_date="2018-09-13") |> 
   timetk::plot_time_series_regression(
     .date_var = optin_time
     , .formula = model_formula_fourier
@@ -1142,10 +1197,11 @@ data_prep_fourier_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: test/train splits in timeseries
 #| message: false
-dat <- subscribers_tbl %>% 
-  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) %>% 
-  timetk::pad_by_time(.pad_value=0) %>% 
+dat <- subscribers_tbl |> 
+  timetk::summarize_by_time(optin_time, .by="day", optins=dplyr::n()) |> 
+  timetk::pad_by_time(.pad_value=0) |> 
   timetk::filter_by_time(.start_date = "2018-12-15")
 
 # Split Data 80/20
@@ -1156,8 +1212,8 @@ splits <-
     , assess = "1 months"
   )
 
-splits %>%
-  timetk::tk_time_series_cv_plan() %>%
+splits |>
+  timetk::tk_time_series_cv_plan() |>
   timetk::plot_time_series_cv_plan(.date_var = optin_time, .value = optins)
 ```
 
@@ -1166,16 +1222,17 @@ splits %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: using recipes to enginer features
 #| message: false
-time_rec <- dat %>% 
-  recipes::recipe(optins ~ ., data = rsample::training(splits)) %>% 
-  timetk::step_log_interval(optins, limit_lower = 0, offset = 1) %>% 
-  recipes::step_normalize(recipes::all_outcomes()) %>% 
-  timetk::step_timeseries_signature(optin_time) %>% 
+time_rec <- dat |> 
+  recipes::recipe(optins ~ ., data = rsample::training(splits)) |> 
+  timetk::step_log_interval(optins, limit_lower = 0, offset = 1) |> 
+  recipes::step_normalize(recipes::all_outcomes()) |> 
+  timetk::step_timeseries_signature(optin_time) |> 
   timetk::step_fourier(optin_time, period = c(7,14,30,90,365), K=2)
 
-time_rec %>% recipes::prep(training = rsample::training(splits)) %>% 
-  recipes::bake(new_data = NULL) %>% 
+time_rec |> recipes::prep(training = rsample::training(splits)) |> 
+  recipes::bake(new_data = NULL) |> 
   timetk::plot_time_series_regression(
     .date_var = optin_time
     , .formula = optins ~ .
@@ -1187,21 +1244,22 @@ time_rec %>% recipes::prep(training = rsample::training(splits)) %>%
 
 ```{r}
 #| echo: true
-#| code-fold: false
+#| code-fold: true
 #| message: false
-model_spec_arima <- modeltime::arima_reg() %>%
+# process engineering with workflows: ARIMA model
+model_spec_arima <- modeltime::arima_reg() |>
     parsnip::set_engine("auto_arima")
 
 recipe_spec_fourier <- 
   recipes::recipe(
     optins ~ optin_time
     , data = rsample::training(splits)
-  ) %>%
+  ) |>
     timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) 
 
-workflow_fit_arima <- workflows::workflow() %>%
-  workflows::add_recipe(recipe_spec_fourier) %>%
-  workflows::add_model(model_spec_arima) %>%
+workflow_fit_arima <- workflows::workflow() |>
+  workflows::add_recipe(recipe_spec_fourier) |>
+  workflows::add_model(model_spec_arima) |>
   parsnip::fit(rsample::training(splits))
 
 
@@ -1213,19 +1271,20 @@ workflow_fit_arima <- workflows::workflow() %>%
 #| echo: true
 #| code-fold: false
 #| message: false
-model_spec_lm <- parsnip::linear_reg() %>%
+# process engineering with workflows: linear model
+model_spec_lm <- parsnip::linear_reg() |>
   parsnip::set_engine("lm") 
 
 recipe_spec_linear <- 
   recipes::recipe(
     optins ~ optin_time
     , data = rsample::training(splits)
-  ) %>%
+  ) |>
     timetk::step_fourier(optin_time, period = c(7, 14, 30, 90), K = 1) 
 
-workflow_fit_linear <- workflows::workflow() %>%
-  workflows::add_recipe(recipe_spec_linear) %>%
-  workflows::add_model(model_spec_lm) %>%
+workflow_fit_linear <- workflows::workflow() |>
+  workflows::add_recipe(recipe_spec_linear) |>
+  workflows::add_model(model_spec_lm) |>
   parsnip::fit(rsample::training(splits))
 ```
 
@@ -1234,18 +1293,19 @@ workflow_fit_linear <- workflows::workflow() %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: forecasting with different models
 #| message: false
 models_tbl <- 
   modeltime::modeltime_table(workflow_fit_arima, workflow_fit_linear)
 
-calibration_tbl <- models_tbl %>%
+calibration_tbl <- models_tbl |>
   modeltime::modeltime_calibrate(new_data = rsample::testing(splits))
 
-calibration_tbl %>%
+calibration_tbl |>
   modeltime::modeltime_forecast(
     new_data    = rsample::testing(splits),
     actual_data = dat
-  ) %>%
+  ) |>
   modeltime::plot_modeltime_forecast(
     .legend_max_width = 25, # For mobile screens
     .interactive      = TRUE
@@ -1257,9 +1317,10 @@ calibration_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: evaluate model accuracy with test data
 #| message: false
-calibration_tbl %>%
-  modeltime::modeltime_accuracy() %>%
+calibration_tbl |>
+  modeltime::modeltime_accuracy() |>
   modeltime::table_modeltime_accuracy(
     .interactive = FALSE
   )
@@ -1270,12 +1331,14 @@ calibration_tbl %>%
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: forecast out of sample
 #| message: false
-refit_tbl <- calibration_tbl %>%
+refit_tbl <- calibration_tbl |>
+  # use all the data
   modeltime::modeltime_refit(data = dat)
 
-refit_tbl %>%
-  modeltime::modeltime_forecast(h = "3 months", actual_data = dat) %>%
+refit_tbl |>
+  modeltime::modeltime_forecast(h = "3 months", actual_data = dat) |>
   modeltime::plot_modeltime_forecast(
     .legend_max_width = 12, # For mobile screens
     .interactive      = TRUE
@@ -1286,4 +1349,4 @@ refit_tbl %>%
 
 -   In this section we have worked with the `tidymodels` and `timetk` packages to build a workflow that facilitates building and evaluating multiple models.
 
--   Combined with the recipes package we now have a complete data modeling framework.
+-   Combined with the recipes package we now have a complete data modeling framework for timeseries
