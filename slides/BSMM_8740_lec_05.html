@@ -613,10 +613,12 @@ L.L. Odette
 <div class="columns">
 <div class="column" style="width:40%;">
 <div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="sc">&gt;</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">eta =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">5</span>,<span class="fl">0.2</span>)) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pi =</span> <span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>eta))) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a></a><span class="sc">+</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>eta, <span class="at">y=</span>pi)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">38</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_05_files/figure-html/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -793,43 +795,43 @@ L.L. Odette
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="sc">&gt;</span> data <span class="ot">&lt;-</span> ISLR<span class="sc">::</span>Default <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
-<span id="cb1-2"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
-<span id="cb1-3"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb1-4"><a></a><span class="er">&gt;</span> <span class="co"># split data</span></span>
-<span id="cb1-5"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(data)</span>
-<span id="cb1-6"><a></a><span class="sc">&gt;</span> default_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
-<span id="cb1-7"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb1-8"><a></a><span class="er">&gt;</span> <span class="co"># create a recipe</span></span>
-<span id="cb1-9"><a></a><span class="er">&gt;</span> default_recipe <span class="ot">&lt;-</span> default_train <span class="sc">%&gt;%</span> </span>
-<span id="cb1-10"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="at">formula =</span> default <span class="sc">~</span> student <span class="sc">+</span> balance <span class="sc">+</span> income) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-11"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_dummy</span>(recipes<span class="sc">::</span><span class="fu">all_nominal_predictors</span>())</span>
-<span id="cb1-12"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb1-13"><a></a><span class="er">&gt;</span> <span class="co"># create a linear regression model</span></span>
-<span id="cb1-14"><a></a><span class="er">&gt;</span> default_model <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb1-15"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"glm"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-16"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
-<span id="cb1-17"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb1-18"><a></a><span class="er">&gt;</span> <span class="co"># create a workflow</span></span>
-<span id="cb1-19"><a></a><span class="er">&gt;</span> default_workflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1-20"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(default_recipe) <span class="sc">%&gt;%</span></span>
-<span id="cb1-21"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(default_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="sc">&gt;</span> data <span class="ot">&lt;-</span> ISLR<span class="sc">::</span>Default <span class="sc">%&gt;%</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb2-2"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
+<span id="cb2-3"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb2-4"><a></a><span class="er">&gt;</span> <span class="co"># split data</span></span>
+<span id="cb2-5"><a></a><span class="er">&gt;</span> data_split <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(data)</span>
+<span id="cb2-6"><a></a><span class="sc">&gt;</span> default_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(data_split)</span>
+<span id="cb2-7"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb2-8"><a></a><span class="er">&gt;</span> <span class="co"># create a recipe</span></span>
+<span id="cb2-9"><a></a><span class="er">&gt;</span> default_recipe <span class="ot">&lt;-</span> default_train <span class="sc">%&gt;%</span> </span>
+<span id="cb2-10"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="at">formula =</span> default <span class="sc">~</span> student <span class="sc">+</span> balance <span class="sc">+</span> income) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-11"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">step_dummy</span>(recipes<span class="sc">::</span><span class="fu">all_nominal_predictors</span>())</span>
+<span id="cb2-12"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb2-13"><a></a><span class="er">&gt;</span> <span class="co"># create a linear regression model</span></span>
+<span id="cb2-14"><a></a><span class="er">&gt;</span> default_model <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-15"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"glm"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-16"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb2-17"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb2-18"><a></a><span class="er">&gt;</span> <span class="co"># create a workflow</span></span>
+<span id="cb2-19"><a></a><span class="er">&gt;</span> default_workflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-20"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(default_recipe) <span class="sc">%&gt;%</span></span>
+<span id="cb2-21"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(default_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="example-fit-the-model-using-the-data" class="slide level2">
 <h2>Example: fit the model using the data</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="sc">&gt;</span> <span class="co"># fit the model</span></span>
-<span id="cb2-2"><a></a><span class="er">&gt;</span> lm_fit <span class="ot">&lt;-</span> </span>
-<span id="cb2-3"><a></a><span class="sc">+</span>   default_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(default_train)</span>
-<span id="cb2-5"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb2-6"><a></a><span class="er">&gt;</span> <span class="co"># augment the data with the predictions using the model fit</span></span>
-<span id="cb2-7"><a></a><span class="er">&gt;</span> training_results <span class="ot">&lt;-</span> </span>
-<span id="cb2-8"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit , default_train) </span>
-<span id="cb2-9"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb2-10"><a></a><span class="er">&gt;</span> training_results <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="sc">&gt;</span> <span class="co"># fit the model</span></span>
+<span id="cb3-2"><a></a><span class="er">&gt;</span> lm_fit <span class="ot">&lt;-</span> </span>
+<span id="cb3-3"><a></a><span class="sc">+</span>   default_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(default_train)</span>
+<span id="cb3-5"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb3-6"><a></a><span class="er">&gt;</span> <span class="co"># augment the data with the predictions using the model fit</span></span>
+<span id="cb3-7"><a></a><span class="er">&gt;</span> training_results <span class="ot">&lt;-</span> </span>
+<span id="cb3-8"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit , default_train) </span>
+<span id="cb3-9"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb3-10"><a></a><span class="er">&gt;</span> training_results <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 7
   .pred_class .pred_No .pred_Yes default student balance income
@@ -848,28 +850,28 @@ L.L. Odette
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(</span>
-<span id="cb4-3"><a></a><span class="sc">+</span>     <span class="at">truth =</span> default</span>
-<span id="cb4-4"><a></a><span class="sc">+</span>     , .pred_No</span>
-<span id="cb4-5"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>() <span class="sc">+</span> </span>
-<span id="cb4-7"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">38</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(</span>
+<span id="cb5-3"><a></a><span class="sc">+</span>     <span class="at">truth =</span> default</span>
+<span id="cb5-4"><a></a><span class="sc">+</span>     , .pred_No</span>
+<span id="cb5-5"><a></a><span class="sc">+</span>   ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a></a><span class="sc">+</span>   <span class="fu">autoplot</span>() <span class="sc">+</span> </span>
+<span id="cb5-7"><a></a><span class="sc">+</span>   <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">38</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_05_files/figure-html/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
-<span id="cb5-2"><a></a><span class="sc">+</span>    yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(</span>
-<span id="cb5-3"><a></a><span class="sc">+</span>      <span class="at">truth =</span> default</span>
-<span id="cb5-4"><a></a><span class="sc">+</span>      , .pred_No</span>
-<span id="cb5-5"><a></a><span class="sc">+</span>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="sc">&gt;</span> training_results <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a></a><span class="sc">+</span>    yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(</span>
+<span id="cb6-3"><a></a><span class="sc">+</span>      <span class="at">truth =</span> default</span>
+<span id="cb6-4"><a></a><span class="sc">+</span>      , .pred_No</span>
+<span id="cb6-5"><a></a><span class="sc">+</span>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
@@ -1016,29 +1018,29 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="sc">&gt;</span> <span class="fu">library</span>(discrim)</span>
-<span id="cb7-2"><a></a><span class="sc">&gt;</span> <span class="co"># create a naive bayes classifier</span></span>
-<span id="cb7-3"><a></a><span class="er">&gt;</span> default_model_nb <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">naive_Bayes</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb7-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"klaR"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-5"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
-<span id="cb7-6"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb7-7"><a></a><span class="er">&gt;</span> <span class="co"># create a workflow</span></span>
-<span id="cb7-8"><a></a><span class="er">&gt;</span> default_workflow_nb <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-9"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(default_recipe) <span class="sc">%&gt;%</span></span>
-<span id="cb7-10"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(default_model_nb)</span>
-<span id="cb7-11"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb7-12"><a></a><span class="er">&gt;</span> <span class="co"># fit the model</span></span>
-<span id="cb7-13"><a></a><span class="er">&gt;</span> lm_fit_nb <span class="ot">&lt;-</span> </span>
-<span id="cb7-14"><a></a><span class="sc">+</span>   default_workflow_nb <span class="sc">%&gt;%</span> </span>
-<span id="cb7-15"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(</span>
-<span id="cb7-16"><a></a><span class="sc">+</span>     default_train</span>
-<span id="cb7-17"><a></a><span class="sc">+</span>   , <span class="at">control =</span> </span>
-<span id="cb7-18"><a></a><span class="sc">+</span>     workflows<span class="sc">::</span><span class="fu">control_workflow</span>(parsnip<span class="sc">::</span><span class="fu">control_parsnip</span>(<span class="at">verbosity =</span> <span class="dv">1</span>L))</span>
-<span id="cb7-19"><a></a><span class="sc">+</span>   )</span>
-<span id="cb7-20"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb7-21"><a></a><span class="er">&gt;</span> <span class="co"># augment the data with the predictions using the model fit</span></span>
-<span id="cb7-22"><a></a><span class="er">&gt;</span> training_results_nb <span class="ot">&lt;-</span> </span>
-<span id="cb7-23"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit_nb , default_train) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> <span class="fu">library</span>(discrim)</span>
+<span id="cb8-2"><a></a><span class="sc">&gt;</span> <span class="co"># create a naive bayes classifier</span></span>
+<span id="cb8-3"><a></a><span class="er">&gt;</span> default_model_nb <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">naive_Bayes</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"klaR"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span>
+<span id="cb8-6"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb8-7"><a></a><span class="er">&gt;</span> <span class="co"># create a workflow</span></span>
+<span id="cb8-8"><a></a><span class="er">&gt;</span> default_workflow_nb <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-9"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(default_recipe) <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(default_model_nb)</span>
+<span id="cb8-11"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb8-12"><a></a><span class="er">&gt;</span> <span class="co"># fit the model</span></span>
+<span id="cb8-13"><a></a><span class="er">&gt;</span> lm_fit_nb <span class="ot">&lt;-</span> </span>
+<span id="cb8-14"><a></a><span class="sc">+</span>   default_workflow_nb <span class="sc">%&gt;%</span> </span>
+<span id="cb8-15"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(</span>
+<span id="cb8-16"><a></a><span class="sc">+</span>     default_train</span>
+<span id="cb8-17"><a></a><span class="sc">+</span>   , <span class="at">control =</span> </span>
+<span id="cb8-18"><a></a><span class="sc">+</span>     workflows<span class="sc">::</span><span class="fu">control_workflow</span>(parsnip<span class="sc">::</span><span class="fu">control_parsnip</span>(<span class="at">verbosity =</span> <span class="dv">1</span>L))</span>
+<span id="cb8-19"><a></a><span class="sc">+</span>   )</span>
+<span id="cb8-20"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb8-21"><a></a><span class="er">&gt;</span> <span class="co"># augment the data with the predictions using the model fit</span></span>
+<span id="cb8-22"><a></a><span class="er">&gt;</span> training_results_nb <span class="ot">&lt;-</span> </span>
+<span id="cb8-23"><a></a><span class="sc">+</span>   broom<span class="sc">::</span><span class="fu">augment</span>(lm_fit_nb , default_train) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1049,8 +1051,8 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="tab-content">
 <div id="tabset-5-1">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="sc">&gt;</span> training_results_nb <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(.pred_No, <span class="at">truth =</span> default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="sc">&gt;</span> training_results_nb <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a></a><span class="sc">+</span>   yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(.pred_No, <span class="at">truth =</span> default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   .metric .estimator .estimate
@@ -1064,7 +1066,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_05_files/figure-html/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1196,9 +1198,9 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <h2>KNN Classification: model</h2>
 <p>Our classification workflow only differs by the model, e.g.:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="sc">&gt;</span> default_model_knn <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">nearest_neighbor</span>(<span class="at">neighbors =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"kknn"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-3"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="sc">&gt;</span> default_model_knn <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">nearest_neighbor</span>(<span class="at">neighbors =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"kknn"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -1392,7 +1394,7 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <p>It is common to scale the vector <span class="math inline">\(w\)</span> and the offset <span class="math inline">\(w_0\)</span> such that <span class="math inline">\(f_n\hat{y}_n=1\)</span> for the point nearest the decision boundary, such that <span class="math inline">\(f_n\hat{y}_n\ge1\)</span> for all <span class="math inline">\(n\)</span>.</p>
 <p>In addition, since minimizing <span class="math inline">\(1/ \left\Vert w\right\Vert\)</span> is equivalent to minimizing <span class="math inline">\(\left\Vert w\right\Vert^2\)</span>, we can state the objective as</p>
 <p><span class="math display">\[
-\min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
+\min_{w,w_{0}}\frac{1}{2}\left\Vert w\right\Vert ^{2}\quad\text{s.t.}\quad\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\ge 1, \forall n
 \]</span></p>
 </section>
 <section id="svm-classification-4" class="slide level2">
@@ -1445,10 +1447,10 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="sc">&gt;</span> <span class="co"># show_engines("svm_linear")</span></span>
-<span id="cb11-2"><a></a><span class="er">&gt;</span> default_model_svm <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">svm_linear</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"svm_linear"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> <span class="co"># show_engines("svm_linear")</span></span>
+<span id="cb12-2"><a></a><span class="er">&gt;</span> default_model_svm <span class="ot">&lt;-</span> parsnip<span class="sc">::</span><span class="fu">svm_linear</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_engine</span>(<span class="st">"svm_linear"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-4"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">set_mode</span>(<span class="st">"classification"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1685,28 +1687,28 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12" data-code-line-numbers="1-3|5-10|11-12|14-22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe for 2-D clustering</span></span>
-<span id="cb12-2"><a></a><span class="er">&gt;</span> cluster_recipe <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
-<span id="cb12-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
-<span id="cb12-4"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb12-5"><a></a><span class="er">&gt;</span> <span class="co"># specify the workflows</span></span>
-<span id="cb12-6"><a></a><span class="er">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
-<span id="cb12-7"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
-<span id="cb12-8"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> cluster_recipe),</span>
-<span id="cb12-9"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
-<span id="cb12-10"><a></a><span class="sc">+</span>   )</span>
-<span id="cb12-11"><a></a><span class="sc">&gt;</span> <span class="co"># create bootstrap samples</span></span>
-<span id="cb12-12"><a></a><span class="er">&gt;</span> dat_resamples <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-13"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb12-14"><a></a><span class="er">&gt;</span> tuned_results <span class="ot">&lt;-</span></span>
-<span id="cb12-15"><a></a><span class="sc">+</span>    all_workflows <span class="sc">|&gt;</span> </span>
-<span id="cb12-16"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
-<span id="cb12-17"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
-<span id="cb12-18"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> dat_resamples</span>
-<span id="cb12-19"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
-<span id="cb12-20"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
-<span id="cb12-21"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
-<span id="cb12-22"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13" data-code-line-numbers="1-3|5-10|11-12|14-22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe for 2-D clustering</span></span>
+<span id="cb13-2"><a></a><span class="er">&gt;</span> cluster_recipe <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
+<span id="cb13-4"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb13-5"><a></a><span class="er">&gt;</span> <span class="co"># specify the workflows</span></span>
+<span id="cb13-6"><a></a><span class="er">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
+<span id="cb13-7"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
+<span id="cb13-8"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> cluster_recipe),</span>
+<span id="cb13-9"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
+<span id="cb13-10"><a></a><span class="sc">+</span>   )</span>
+<span id="cb13-11"><a></a><span class="sc">&gt;</span> <span class="co"># create bootstrap samples</span></span>
+<span id="cb13-12"><a></a><span class="er">&gt;</span> dat_resamples <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">bootstraps</span>(<span class="at">apparent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-13"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb13-14"><a></a><span class="er">&gt;</span> tuned_results <span class="ot">&lt;-</span></span>
+<span id="cb13-15"><a></a><span class="sc">+</span>    all_workflows <span class="sc">|&gt;</span> </span>
+<span id="cb13-16"><a></a><span class="sc">+</span>    <span class="fu">workflow_map</span>(</span>
+<span id="cb13-17"><a></a><span class="sc">+</span>       <span class="at">fn =</span> <span class="st">"tune_cluster"</span></span>
+<span id="cb13-18"><a></a><span class="sc">+</span>       , <span class="at">resamples =</span> dat_resamples</span>
+<span id="cb13-19"><a></a><span class="sc">+</span>       , <span class="at">grid =</span> dials<span class="sc">::</span><span class="fu">grid_regular</span>(dials<span class="sc">::</span><span class="fu">num_clusters</span>(), <span class="at">levels =</span> <span class="dv">10</span>)</span>
+<span id="cb13-20"><a></a><span class="sc">+</span>       , <span class="at">metrics =</span> tidyclust<span class="sc">::</span><span class="fu">cluster_metric_set</span>(sse_within_total, sse_total, sse_ratio)</span>
+<span id="cb13-21"><a></a><span class="sc">+</span>       , <span class="at">control =</span> tune<span class="sc">::</span><span class="fu">control_grid</span>(<span class="at">save_pred =</span> <span class="cn">TRUE</span>, <span class="at">extract =</span> identity)</span>
+<span id="cb13-22"><a></a><span class="sc">+</span>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -1715,56 +1717,77 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
-<span id="cb13-2"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb13-3"><a></a><span class="er">&gt;</span> centers <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb13-4"><a></a><span class="sc">+</span>   <span class="at">cluster =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>), </span>
-<span id="cb13-5"><a></a><span class="sc">+</span>   <span class="at">num_points =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">50</span>, <span class="dv">90</span>),  <span class="co"># number points in each cluster</span></span>
-<span id="cb13-6"><a></a><span class="sc">+</span>   <span class="at">x1 =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">4</span>),              <span class="co"># x1 coordinate of cluster center</span></span>
-<span id="cb13-7"><a></a><span class="sc">+</span>   <span class="at">x2 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="fl">1.5</span>),               <span class="co"># x2 coordinate of cluster center</span></span>
-<span id="cb13-8"><a></a><span class="sc">+</span> )</span>
-<span id="cb13-9"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb13-10"><a></a><span class="er">&gt;</span> labelled_points <span class="ot">&lt;-</span> </span>
-<span id="cb13-11"><a></a><span class="sc">+</span>   centers <span class="sc">|&gt;</span></span>
-<span id="cb13-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb13-13"><a></a><span class="sc">+</span>     <span class="at">x1 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x1, rnorm),</span>
-<span id="cb13-14"><a></a><span class="sc">+</span>     <span class="at">x2 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x2, rnorm)</span>
-<span id="cb13-15"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
-<span id="cb13-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>num_points) <span class="sc">|&gt;</span> </span>
-<span id="cb13-17"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(x1, x2))</span>
-<span id="cb13-18"><a></a><span class="sc">&gt;</span> </span>
-<span id="cb13-19"><a></a><span class="er">&gt;</span> p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(labelled_points, <span class="fu">aes</span>(x1, x2, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
-<span id="cb13-20"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
-<span id="cb13-21"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"o"</span>)</span>
-<span id="cb13-22"><a></a><span class="sc">&gt;</span> p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="sc">&gt;</span> <span class="fu">set.seed</span>(<span class="dv">8740</span>)</span>
+<span id="cb14-2"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb14-3"><a></a><span class="er">&gt;</span> centers <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb14-4"><a></a><span class="sc">+</span>   <span class="at">cluster =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>), </span>
+<span id="cb14-5"><a></a><span class="sc">+</span>   <span class="at">num_points =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">50</span>, <span class="dv">90</span>),  <span class="co"># number points in each cluster</span></span>
+<span id="cb14-6"><a></a><span class="sc">+</span>   <span class="at">x1 =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">4</span>),              <span class="co"># x1 coordinate of cluster center</span></span>
+<span id="cb14-7"><a></a><span class="sc">+</span>   <span class="at">x2 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="fl">1.5</span>),               <span class="co"># x2 coordinate of cluster center</span></span>
+<span id="cb14-8"><a></a><span class="sc">+</span> )</span>
+<span id="cb14-9"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb14-10"><a></a><span class="er">&gt;</span> labelled_points <span class="ot">&lt;-</span> </span>
+<span id="cb14-11"><a></a><span class="sc">+</span>   centers <span class="sc">|&gt;</span></span>
+<span id="cb14-12"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb14-13"><a></a><span class="sc">+</span>     <span class="at">x1 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x1, rnorm),</span>
+<span id="cb14-14"><a></a><span class="sc">+</span>     <span class="at">x2 =</span> purrr<span class="sc">::</span><span class="fu">map2</span>(num_points, x2, rnorm)</span>
+<span id="cb14-15"><a></a><span class="sc">+</span>   ) <span class="sc">|&gt;</span> </span>
+<span id="cb14-16"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>num_points) <span class="sc">|&gt;</span> </span>
+<span id="cb14-17"><a></a><span class="sc">+</span>   tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(x1, x2))</span>
+<span id="cb14-18"><a></a><span class="sc">&gt;</span> </span>
+<span id="cb14-19"><a></a><span class="er">&gt;</span> p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(labelled_points, <span class="fu">aes</span>(x1, x2, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
+<span id="cb14-20"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span> </span>
+<span id="cb14-21"><a></a><span class="sc">+</span>   <span class="fu">geom_point</span>(<span class="at">data =</span> centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"o"</span>)</span>
+<span id="cb14-22"><a></a><span class="sc">&gt;</span> p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_05_files/figure-html/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="k-means-example-2" class="slide level2">
 <h2>K-means Example</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14" data-code-line-numbers="1-3|4-5|6-9|10-13|14-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe</span></span>
-<span id="cb14-2"><a></a><span class="er">&gt;</span> labelled_points_recipe <span class="ot">&lt;-</span> labelled_points <span class="sc">|&gt;</span> </span>
-<span id="cb14-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
-<span id="cb14-4"><a></a><span class="sc">&gt;</span> <span class="co"># create model spec</span></span>
-<span id="cb14-5"><a></a><span class="er">&gt;</span> kmeans_spec <span class="ot">&lt;-</span> tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> <span class="dv">4</span> )</span>
-<span id="cb14-6"><a></a><span class="sc">&gt;</span> <span class="co"># create workflow</span></span>
-<span id="cb14-7"><a></a><span class="er">&gt;</span> wflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
-<span id="cb14-8"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(kmeans_spec) <span class="sc">|&gt;</span></span>
-<span id="cb14-9"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(labelled_points_recipe)</span>
-<span id="cb14-10"><a></a><span class="sc">&gt;</span> <span class="co"># fit workflow &amp; extract centroids</span></span>
-<span id="cb14-11"><a></a><span class="er">&gt;</span> cluster_centers <span class="ot">&lt;-</span> wflow <span class="sc">|&gt;</span></span>
-<span id="cb14-12"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(labelled_points) <span class="sc">%&gt;%</span> tidyclust<span class="sc">::</span><span class="fu">extract_centroids</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb14-13"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>( <span class="at">cluster =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(.cluster,<span class="st">"</span><span class="sc">\\</span><span class="st">d"</span>) )</span>
-<span id="cb14-14"><a></a><span class="sc">&gt;</span> <span class="co"># plot</span></span>
-<span id="cb14-15"><a></a><span class="er">&gt;</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> cluster_centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15" data-code-line-numbers="1-3|4-5|6-9|10-13|14-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="sc">&gt;</span> <span class="co"># create recipe</span></span>
+<span id="cb15-2"><a></a><span class="er">&gt;</span> labelled_points_recipe <span class="ot">&lt;-</span> labelled_points <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a></a><span class="sc">+</span>   recipes<span class="sc">::</span><span class="fu">recipe</span>(<span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> _)</span>
+<span id="cb15-4"><a></a><span class="sc">&gt;</span> <span class="co"># create model spec</span></span>
+<span id="cb15-5"><a></a><span class="er">&gt;</span> kmeans_spec <span class="ot">&lt;-</span> tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> <span class="dv">4</span> )</span>
+<span id="cb15-6"><a></a><span class="sc">&gt;</span> <span class="co"># create workflow</span></span>
+<span id="cb15-7"><a></a><span class="er">&gt;</span> wflow <span class="ot">&lt;-</span> workflows<span class="sc">::</span><span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-8"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_model</span>(kmeans_spec) <span class="sc">|&gt;</span></span>
+<span id="cb15-9"><a></a><span class="sc">+</span>   workflows<span class="sc">::</span><span class="fu">add_recipe</span>(labelled_points_recipe)</span>
+<span id="cb15-10"><a></a><span class="sc">&gt;</span> <span class="co"># fit workflow &amp; extract centroids</span></span>
+<span id="cb15-11"><a></a><span class="er">&gt;</span> cluster_centers <span class="ot">&lt;-</span> wflow <span class="sc">|&gt;</span></span>
+<span id="cb15-12"><a></a><span class="sc">+</span>   parsnip<span class="sc">::</span><span class="fu">fit</span>(labelled_points) <span class="sc">%&gt;%</span> tidyclust<span class="sc">::</span><span class="fu">extract_centroids</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb15-13"><a></a><span class="sc">+</span>   dplyr<span class="sc">::</span><span class="fu">mutate</span>( <span class="at">cluster =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(.cluster,<span class="st">"</span><span class="sc">\\</span><span class="st">d"</span>) )</span>
+<span id="cb15-14"><a></a><span class="sc">&gt;</span> <span class="co"># plot</span></span>
+<span id="cb15-15"><a></a><span class="er">&gt;</span> p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> cluster_centers, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">shape =</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_05_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_05_files/figure-html/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"><div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- all_workflows %&gt;% </span></span>
+<span id="cb16-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_map(</span></span>
+<span id="cb16-3"><a></a><span class="er">&gt;</span> <span class="co">#     resamples = train_resamples, grid = 5, verbose = TRUE</span></span>
+<span id="cb16-4"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="sc">&gt;</span> <span class="co"># all_workflows &lt;- </span></span>
+<span id="cb17-2"><a></a><span class="er">&gt;</span> <span class="co">#   workflowsets::workflow_set(</span></span>
+<span id="cb17-3"><a></a><span class="er">&gt;</span> <span class="co">#     preproc = list(base = labelled_points_recipe),</span></span>
+<span id="cb17-4"><a></a><span class="er">&gt;</span> <span class="co">#     models = </span></span>
+<span id="cb17-5"><a></a><span class="er">&gt;</span> <span class="co">#       3:20 %&gt;% purrr::map( ~tidyclust::k_means( num_clusters = .x ) )</span></span>
+<span id="cb17-6"><a></a><span class="er">&gt;</span> <span class="co">#   )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="sc">&gt;</span> all_workflows <span class="ot">&lt;-</span> </span>
+<span id="cb18-2"><a></a><span class="sc">+</span>   workflowsets<span class="sc">::</span><span class="fu">workflow_set</span>(</span>
+<span id="cb18-3"><a></a><span class="sc">+</span>     <span class="at">preproc =</span> <span class="fu">list</span>(<span class="at">base =</span> labelled_points_recipe),</span>
+<span id="cb18-4"><a></a><span class="sc">+</span>     <span class="at">models =</span> <span class="fu">list</span>(tidyclust<span class="sc">::</span><span class="fu">k_means</span>( <span class="at">num_clusters =</span> parsnip<span class="sc">::</span><span class="fu">tune</span>() ) )</span>
+<span id="cb18-5"><a></a><span class="sc">+</span>   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="hierarchical-clustering" class="slide level2">
 <h2>Hierarchical Clustering</h2>
 <p><em>Hierarchical Clustering</em>, sometimes called <em>Agglomerative Clustering</em>, is a method of <em>unsupervised</em> learning that produces a <em>dendrogram</em>, which can be used to partition observations into clusters (see <a href="https://tidyclust.tidymodels.org/articles/hier_clust.html">tidyclust</a>)</p>
@@ -2021,44 +2044,6 @@ C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
