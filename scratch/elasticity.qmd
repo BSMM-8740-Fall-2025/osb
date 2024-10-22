@@ -1,0 +1,743 @@
+---
+title: "Elasticity Calculations"
+author: "L.L. Odette"
+format: html
+page-layout: full
+editor: visual
+code-fold: true
+code-line-numbers: true
+code-block-border-left: "#31BAE9"
+theme: sandstone
+fontsize: 85%
+self-contained: true
+date: 06/30/2023
+---
+
+## Elasticity as calculated by NI
+
+```{r}
+#| label: setup
+#| echo: false
+#| warning: false
+#| output: false
+require(magrittr, quietly = TRUE)
+require(ggplot2, quietly = TRUE)
+require(patchwork, quietly = TRUE)
+```
+
+NI provided the R code for their elasticity analysis (expand the code below) along with the output as a \*.csv file.
+
+```{r}
+#| label: original code (verbatim)
+#| code-fold: true
+#| code-summary: "original code used to calculate elasticity"
+#| eval: false
+
+require(dplyr, quietly = TRUE)
+require(data.table, quietly = TRUE)
+
+# setwd(here::here("dat"))
+
+price_volume_data <- fread(here::here("dat","price_data.csv"))
+
+price_volume_data$`Volume Weighted Price` <- as.integer(price_volume_data$`Volume Weighted Price`)
+price_volume_data$Volume <- as.integer(price_volume_data$Volume)
+
+
+# Retrieve Regression elements
+
+#PN List
+PNs <- out <- lapply(unique(price_volume_data$`Part Number`), function(b){
+  sub_df <- subset(price_volume_data, `Part Number` == b)
+ return(unique(sub_df$`Part Number`))
+})
+
+PNs <- do.call(rbind,PNs)
+PNs <- as.data.frame(PNs)
+PNs <- cbind(PNs , 1:42)
+colnames(PNs) <- c('Part Number', 'List ID')
+
+#Elasticity Coefficients
+
+coef_elasticty <- lapply(unique(price_volume_data$`Part Number`), function(b){
+  sub_df <- subset(price_volume_data, `Part Number` == b)
+  m <- lm(log(Volume) ~ log(`Volume Weighted Price`), data = sub_df)
+  coef(m)
+  
+})
+
+coef_elasticty <- do.call(rbind, coef_elasticty)
+coef_elasticty <- as.data.frame(coef_elasticty)
+coef_elasticty <- cbind(coef_elasticty , 1:42)
+colnames(coef_elasticty) <- c('Intercept', 'Slope - log(Price)' , 'List ID')
+
+
+# P Value
+
+pvalue <- lapply(unique(price_volume_data$`Part Number`), function(b){
+  sub_df <- subset(price_volume_data, `Part Number` == b)
+  m <- lm(log(Volume) ~ log(`Volume Weighted Price`), data = sub_df)
+  lmp <- function (modelobject) {
+    if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+    f <- summary(modelobject)$fstatistic
+    p <- pf(f[1],f[2],f[3],lower.tail=F)
+    attributes(p) <- NULL
+    return(p)
+  }
+  lmp(m)
+ })
+
+pvalue <- do.call(rbind, pvalue)
+pvalue <- as.data.frame(pvalue)
+pvalue <- cbind(pvalue , 1:42)
+colnames(pvalue) <- c('p-value', 'List ID')
+
+# R Squared
+
+r_squared <- lapply(unique(price_volume_data$`Part Number`), function(b){
+  sub_df <- subset(price_volume_data, `Part Number` == b)
+  m <- lm(log(Volume) ~ log(`Volume Weighted Price`), data = sub_df)
+  summary(m)$r.squared
+})
+
+r_squared <- do.call(rbind, r_squared)
+r_squared <- as.data.frame(r_squared)
+r_squared <- cbind(r_squared , 1:42)
+colnames(r_squared) <- c('R-squared', 'List ID')
+
+#Combined Dataset
+
+elasticity_data <- left_join(PNs , coef_elasticty , by = 'List ID')
+elasticity_data <- left_join(elasticity_data , pvalue , by = 'List ID')
+elasticity_data <- left_join(elasticity_data , r_squared , by = 'List ID')
+
+fwrite(elasticity_data , "Price Elastcity Regression Results.csv")
+
+```
+
+```{r}
+data.table(elasticity_data)  |> 
+  gt::gt() |> 
+  gt::tab_header(
+    title = "Estimated elasticities"
+    , subtitle = "lm(log(Volume) ~ log(`Volume Weighted Price`))"
+  ) |> 
+  gt::fmt_number(columns = -c(`Part Number`, `List ID`), decimals = 3) |> 
+#  gt::data_color(columns = `Slope - log(Price)`) |> 
+  gt::tab_style(
+    style = gt::cell_fill(color = "lightgreen", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = `Slope - log(Price)`,
+      rows = `Slope - log(Price)` >= 0
+    )
+  ) |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "red", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = `Slope - log(Price)`,
+      rows = `Slope - log(Price)` < 0
+    ) 
+  )|> 
+  gtExtras::gt_theme_espn()
+```
+
+I was able to replicate their calculation, streamlining their code a bit and providing a bit more functionality (expand the code below).
+
+```{r}
+#| label: PSL re-write
+#| code-fold: true
+#| code-summary: "PSL re-write of elasticity code"
+#| eval: false
+# this is a re-write that is somewhat less verbose
+
+# Load and clean the data   
+file_dir <- "../../data/AWS Source/Price Elasticity Analysis/"
+price_volume_data <- 
+  readr::read_csv( here::here("dat","price_data.csv"), show_col_types = FALSE ) %>% 
+  dplyr::mutate(
+    `Volume Weighted Price` = as.integer(`Volume Weighted Price`)
+    , Volume = as.integer(Volume)
+  )
+
+# Retrieve Regression elements
+
+PNs <- out <- price_volume_data %>% 
+  dplyr::distinct(`Part Number`) %>% 
+  tibble::rowid_to_column("List ID")
+
+#Elasticity Coefficients
+
+PNs %>% 
+  dplyr::mutate(
+    coef = 
+      purrr::map(
+        `Part Number`
+        ,\(x){
+          # fit the linear model
+          m <- price_volume_data %>% dplyr::filter(`Part Number` == x) %>% 
+            lm(log(Volume) ~ log(`Volume Weighted Price`), data = .)
+          
+          m %>% 
+            # pull out the statistics from the fit object
+            stats::coef() %>% 
+            as.list() %>% 
+            # make into a tibble
+            tibble::as_tibble() %>% 
+            # add other stats as separate columns
+            tibble::add_column(
+              'p-value' = m %>% 
+                (\(modelobject){
+                  if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+                  # pull the F statistics
+                  f <- summary(modelobject)$fstatistic
+                  # extract the stats we want (per the original NI code)
+                  p <- stats::pf(f[1],f[2],f[3],lower.tail=F)
+                  attributes(p) <- NULL
+                  return(p)
+                })
+                # include the R^2 stat
+                , 'R-squared' = summary(m)$r.squared
+            )
+        }
+      )
+  ) %>% 
+  tidyr::unnest(coef) |> 
+  gt::gt() |> 
+  gt::tab_header(
+    title = "Estimated elasticities"
+    , subtitle = "lm(log(Volume) ~ log(`Volume Weighted Price`))"
+  ) |> 
+  gt::fmt_number(columns = -c(`Part Number`, `List ID`), decimals = 3) |> 
+  gt::tab_style(
+    style = gt::cell_fill(color = "lightgreen", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = `log(\`Volume Weighted Price\`)`,
+      rows = `log(\`Volume Weighted Price\`)` >= 0
+    )
+  ) |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "red", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = `log(\`Volume Weighted Price\`)`,
+      rows = `log(\`Volume Weighted Price\`)` < 0
+    ) 
+  )|> 
+  gtExtras::gt_theme_espn()
+```
+
+The orifinal code approached the problem by running a regular regression of log(price) against the log of the number of orders (by part number), for a small set of part numbers.
+
+However, a regular regression as used in this model assumes that the data generating process is Gaussian, which may not be the case. What is more problematic is that there are no constraints on the regression coefficients, which may lead to positive elasticity estimates; positive elasticities are impossible per economic theory.
+
+Note that there are quite a few positive elasticities (18 of 42).
+
+I next extended my code to provide a look at the data, plotting both the data and the fitted elasticities.
+
+A sample is shown below (the green points are along the fitted demand curve).
+
+```{r}
+#| label: PSL elasticity results and plots
+#| code-fold: true
+#| code-summary: "Code extracting PSL elasticity results + plots"
+#| eval: true
+#| fig-align: 'center'
+
+price_volume_data <- 
+  readr::read_csv( here::here("dat","price_data.csv"), show_col_types = FALSE) %>% 
+  dplyr::mutate(
+    `Volume Weighted Price` = as.integer(`Volume Weighted Price`)
+    , Volume = as.integer(Volume)
+  )
+
+# Retrieve Regression elements
+
+# Part Number List
+PNs <- out <- price_volume_data %>% 
+  dplyr::distinct(`Part Number`) %>% 
+  tibble::rowid_to_column("List ID")
+
+foo <- PNs %>% 
+  dplyr::mutate(
+    coef = 
+      purrr::map(
+        `Part Number`
+        ,\(x){
+          m <- price_volume_data %>% 
+            dplyr::filter(`Part Number` == x) %>% 
+            dplyr::mutate(
+              `Volume Weighted Price` = `Volume Weighted Price`/mean(`Volume Weighted Price`)
+            ) %>% 
+            lm(log(Volume) ~ log(`Volume Weighted Price`), data = .)
+          
+          m %>% 
+            stats::coef() %>% 
+            as.list() %>% 
+            tibble::as_tibble() %>% 
+            tibble::add_column(
+              'p-value' = m %>% 
+                (\(modelobject){
+                  if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+                  f <- summary(modelobject)$fstatistic
+                  p <- stats::pf(f[1],f[2],f[3],lower.tail=F)
+                  attributes(p) <- NULL
+                  return(p)
+                })
+              , 'R-squared' = summary(m)$r.squared
+            )
+        }
+      )
+    , plot =
+      purrr::map2(
+        `Part Number`
+        , coef
+        , \(x,y){
+          dat1 <- price_volume_data %>% 
+            dplyr::filter(`Part Number` == x) %>% 
+            dplyr::mutate(mean_price = mean(`Volume Weighted Price`))
+          
+          dat2 <- tibble::tibble(
+            price = seq(
+              from = min(dat1$`Volume Weighted Price`)
+              , to = max(dat1$`Volume Weighted Price`)
+              , by = 2
+            )
+          ) %>% 
+            dplyr::mutate(
+              predicted_volume = exp(y$`(Intercept)` + y$`log(\`Volume Weighted Price\`)` * log(price/dat1$mean_price[1]))
+            )
+          
+          dat1 %>% ggplot( aes(x =`Volume Weighted Price`, y = Volume) ) +
+            geom_point() +
+            geom_line(
+              data = dat2
+              , aes(x = price,y = predicted_volume)
+              , linetype = "dotted"
+              , linewidth = 1.5
+              , color = 'green'
+            ) +
+            scale_y_log10() + 
+            scale_x_log10() +
+            ggtitle( stringr::str_glue("Part {x}") ) +
+            theme_minimal(base_size = 12)
+        }
+        
+      )
+  ) 
+
+p1 <- foo %>% 
+  dplyr::slice(5) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p2 <- foo %>% 
+  dplyr::slice(1) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p3 <- foo %>% 
+  dplyr::slice(4) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p4 <- foo %>% 
+  dplyr::slice(3) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+
+(p1 + p2)/(p3 + p4)
+```
+
+## A Bayesian approach to calculating elasticity
+
+### Problem statement
+
+Since elasticity is defined as the percentage change in volume ($\Delta V/V$) for a given percentage change in price ($\Delta p/p$), with elasticity parameter $\beta$ we write:
+
+$$
+\begin{align*}
+\frac{\Delta V}{V} & = \beta\times\frac{\Delta p}{p} \\
+\frac{\partial V}{V} & = \beta\times\frac{\partial p}{p} \\
+\partial\log(V) & = \beta\times\partial\log(p)
+\end{align*}
+$$ {#eq-elasticity}
+
+This is the justification for the log-log regression model, and this model has solution $V = Kp^\beta$, where $K$ is a constant. As written, the value of $K$ is either the volume when $p=1$ which may or may not be useful, or it is the volume when $\beta=0$, which is uninteresting. To make the interpretation of the constant $K$ more useful, the model can be written as
+
+$$
+\partial\log(V) = \beta\times\partial\log(p/p_{\text{baseline}});\qquad V = K\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}
+$$
+
+in which case the constant is interpreted as the volume when the price equals the baseline price; the elasticity parameter $\beta$ is unchanged.
+
+::: callout-note
+## Closing the loop on the derivation
+
+If $V = Kp^\beta$ then $\log(V) = \log(K) + \beta\log(p)$, and $\partial\log(V)/\partial\log(p) = \beta$ as in the last line of equation (@eq-elasticity).
+:::
+
+In this version of the problem there are only two parameters, the constant $\log(K)$ (aka the intercept in the log-log plot of volume vs price plot) and the elasticity $\beta$, the slope of the log-log plot.
+
+### Bayesian model
+
+The Bayesian model for this problem is (to within a scaling constant)
+
+$$
+\begin{align*}
+\pi\left[\left.\left(K,\beta\right)\right|V\right] =\pi\left[\left.V\right|\left(K,\beta\right)\right]\times\pi\left[K\right]\times\pi\left[\beta\right] \\
+\end{align*}
+$$ {#eq-bayes}
+
+In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods in equation (@eq-bayes) to avoid numerical problems arising from the product of small probabilities.
+
+The key choice we need to make in the Bayesian model is the form of the likelihood function for the observed volumes given the parameters. This is a model describing how the observed volume data is generated given the parameters.
+
+Since the volume data is units sold (i.e. integers), we have several options for the likelihood function (e.g. Poisson, Negative Binomial, Binomial, mixture models of various sorts), but the Poisson model is the simplest.
+
+The Poisson model of the data has a single, positive, real-valued rate parameter $\lambda$ which represents the units sold per unit time (a rate), so we can choose:
+
+$$
+\begin{align*}
+\lambda = \exp^{\log(K) + \beta\log(p)}\Rightarrow \log(\lambda) = \log(K) + \beta\log(p)
+\end{align*}
+$$ which gives us the log-log model equivalent to the NI model, with the crucial difference that we have additionally chosen a model for the data-generating process: a Poisson process with parameter $\lambda$.
+
+The [Stan language](https://mc-stan.org/) program implementing this model is given below.
+
+::: callout-note
+## Stan functions
+
+In the Stan code below, the functions **normal_lpdf** and **cauchy_lpdf** implement the Normal and Cauchy log-probability density functions respectively, while **poisson_lpmf** implements the Poisson log-probability mass function and **poisson_rng** implements a Poisson random number generator.
+:::
+
+The prior distributions for the intercept ($\log(K)$) and elasticity ($\beta$) parameters are Normal and half-Cauchy respectively, where the elasticity prior constrains the parameter to be negative, as required.
+
+```{stan output.var='Y'}
+#| label: Stan model
+#| code-fold: true
+#| code-summary: "Poisson model implemented in the Stan language"
+#| eval: false
+data {
+  /* Dimensions */
+  int<lower=1> N; // rows
+
+  /* price vector (integer) */
+  array[N] real P;
+  
+  /* demand vector (integer) */
+  array[N] int<lower=0> Y;
+
+  /* hyperparameters*/
+  real<lower=0> s;       // scale parameter for intercept prior
+  real<lower=0> e_scale; // scale parameter for elasticity prior
+}
+
+parameters {
+  real <upper=0> elasticity;      // elasticities variable < 0 
+  real intercept;                 // intercepts variable
+
+}
+
+transformed parameters {
+  array[N] real log_lambda;       // log volume for likelihoods
+  
+  for (i in 1:N){
+    log_lambda[i] = intercept + elasticity * P[i];
+  }
+  
+}
+
+model {
+  /* Priors on the parameters */
+  target += normal_lpdf(intercept  | 0, s);
+  target += cauchy_lpdf(elasticity | 0, e_scale);
+
+  /* Conditional log-likelihoods for each observed volume */
+  for (i in 1 : N) {
+    target += poisson_lpmf(Y[i] | exp(log_lambda[i]) );
+  }
+}
+
+generated quantities {
+  array[N] int<lower=-1> y_new;  // estimate volumes
+  vector[N] log_lik;             // compute log-likelihood for this model
+  for (i in 1 : N) {
+      y_new[i]   = poisson_rng( exp(log_lambda[i]) );
+      log_lik[i] = poisson_lpmf(Y[i] | exp(log_lambda[i]) );
+  }
+}
+```
+
+In practice we would run the model using different likelihood functions representing different data generating processes, and then pick the one that is 'best' according to some metric. I've only used the Poisson likelihood here.
+
+### Running Stan code
+
+There are several interfaces to Stan that are available in R (e.g. RStan, CmdStanR, RStanArm, and brms). I use CmdStanR in the code below.
+
+This code transforms the data into the form required by Stan, then samples from the posterior distributions for the parameters using Stan. These samples are then saved, and the posterior distributions are plotted.
+
+```{r}
+#| label: cmdstanr results
+#| code-fold: true
+#| code-summary: "R Code to run the Stan model"
+#| eval: false
+# this is a re-write of the NI model using Stan
+
+# load packages
+require(magrittr)
+library(cmdstanr)
+library(posterior)
+library(bayesplot)
+library(webshot2)
+library(patchwork)
+require(ggplot2)
+
+# parameters and checks
+check_cmdstan_toolchain(fix = TRUE, quiet = TRUE)
+color_scheme_set("brightblue")
+cmdstan_path()
+cmdstan_version()
+
+# set parameters
+options(mc.cores = parallel::detectCores())
+rstan::rstan_options(auto_write = TRUE)
+iterations <- 2000
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DATA
+
+# (1) read the price-volume data ----
+
+price_volume_data <- 
+  readr::read_csv( here::here("dat","price_data.csv"), show_col_types = FALSE) %>% 
+  dplyr::mutate(
+    `Volume Weighted Price` = as.integer(`Volume Weighted Price`)
+    , Volume = as.integer(Volume)
+  ) %>% 
+  dplyr::mutate(
+    month = 
+      lubridate::ymd( paste0(`Month of Price Date`,'-01') ) %>% 
+      lubridate::month()
+    , .after = `Month of Price Date`
+  ) %>% 
+  dplyr::group_by(`Part Number`) %>% 
+  tidyr::nest(data = -c(`Part Number`)) %>% 
+  dplyr::ungroup()
+
+# (2) put the price-volume data in the form required by Stan ----
+price_volume_data %<>% 
+  dplyr::mutate(
+    stan_data = 
+      purrr::map(
+        data
+        , (\(x){
+          dat <- x %>% 
+            # note that the mean price is the baseline
+            dplyr::select(volume = Volume, price = `Volume Weighted Price`) %>% 
+            dplyr::mutate(price = log( price/mean(price) ) )
+          
+          print(dim(dat))
+          # format the data
+          list(N = nrow(dat)
+               , P = dat$price
+               , Y   = dat$volume
+               , e_scale = 5
+               , s = 10
+          )
+        }) 
+      )
+  )
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ MODEL
+
+# (3) compile model ----
+
+# set directory for the results
+mod_canonical_dir <- here::here("results/stan/")
+
+# compile the model
+mod_canonical <-
+  cmdstanr::cmdstan_model(
+    # stan_file points to the Stan surce code file
+    stan_file= here::here("stan","cmdstan_example_NI_03.stan")
+    , stanc_options = list("O1")
+  )
+
+# (4) fit model by calling Stan through CmnStanR ----
+
+# splt the dataframe by part number 
+stan_data_lst <- price_volume_data %>% split(~`Part Number`)
+
+fits_lst <- purrr::map(
+  stan_data_lst
+  # run the fit and save the results (returns NA if the fitting has a problem)
+  , purrr::possibly(
+    (\(x){
+      # extract the Stan data
+      dat <- x %>% dplyr::select(stan_data) %>% dplyr::pull(stan_data) %>% purrr::pluck(1)
+      # use variational analysis to initialize the parameter values (this can be dropped)
+      mod_canonical_vb <- mod_canonical$variational(
+        data = dat
+        , seed = 123
+        , iter = 20000
+        , algorithm="fullrank"
+        , output_samples = 1000)
+      # get the summary from variational estimate
+      mod_canonical_vb_summary <- mod_canonical_vb$summary()
+      # pull the initial estimates
+      inits <- list(
+        "elasticity"=NULL, "intercept"=NULL
+      ) %>% purrr::imap(
+        (\(x,y)
+         mod_canonical_vb_summary %>%
+           dplyr::filter(stringr::str_starts(variable, y)) %>%
+           dplyr::pull(mean)
+        )
+      )
+      # use the compiled model to sample the posterior parameer distributions
+      fit_under_100K <- mod_canonical$sample(
+        data = dat,
+        init = list(inits,inits,inits,inits),
+        seed = 123,
+        chains = 4,
+        parallel_chains = 4,
+        iter_warmup = 1000,
+        iter_sampling = 2000,
+        max_treedepth = 15,
+        refresh = 100 # print update every 100 iters
+      )
+    }
+    )
+    , otherwise = NA
+  )
+)
+
+# (5) extract the fit values for the parameter values ----
+results_tbl <- fits_lst %>% 
+  purrr::imap(
+    (\(x,y)
+     if (class(x)[1] == 'logical'){
+       NA
+     }else{
+       posterior::summarise_draws( x ) %>% 
+         dplyr::filter(variable %in% c('elasticity', 'intercept')) %>% 
+         dplyr::mutate(part = y, .before = 1)
+     }
+    )
+  ) %>% 
+  dplyr::bind_rows()
+
+results_tbl |>
+  dplyr::filter(variable != 'intercept') |> 
+  dplyr::rename('model parameter' = variable) |> 
+  dplyr::select(-c(rhat,ess_bulk,ess_tail)) |> 
+  gt::gt() |> 
+  gt::tab_header(
+    title = "Estimated elasticities"
+    , subtitle = "Bayesian model"
+  ) |> 
+  gt::fmt_number(columns = -c(part, `model parameter`), decimals = 3) |> 
+  gt::tab_style(
+    style = gt::cell_fill(color = "lightgreen", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = c(mean,median),
+      rows = `model parameter` == 'elasticity' & mean >= 0
+    )
+  ) |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "red", alpha = 0.5),
+    locations = gt::cells_body(
+      columns = c(mean,median),
+      rows = `model parameter` == 'elasticity' & mean < 0
+    ) 
+  ) |> 
+  gtExtras::gt_theme_espn()
+
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ POST PROCESSING
+
+# (6) save the fit data for use later ----
+suffix = "elasticity_2024"
+summary_lst <- purrr::imap(
+  fits_lst
+  , (\(x,y){
+    # save the results of the fit for each product
+    x$save_output_files(
+      dir = mod_canonical_dir
+      , basename = paste0("output_files_",suffix,"_",y)
+      , timestamp = TRUE
+      , random = TRUE
+    )
+    # convert the cmdstanr output to stan fit objects
+    stanfit_ni <- rstan::read_stan_csv(x$output_files())
+    # save the stan fit objects
+    stanfit_ni %>% saveRDS(paste0(mod_canonical_dir,"stanfit_",suffix,"_",y,".rds"))
+    # return the fit result
+    x$summary(
+      variables = c("elasticity", "intercept", "lp__")
+    ) %>%
+      dplyr::mutate(part = y, .before = 1) %>%
+      dplyr::filter( stringr::str_starts(variable, 'elasticity')) %>%
+      dplyr::select(part,variable,mean, median) %>%
+      as.list()
+  }
+  )
+) %>%
+  dplyr::bind_rows() %>%
+  tidyr::nest('summary' = variable:median) %>%
+  # save the aggregated results to a file
+  saveRDS(
+    stringr::str_glue(
+      here::here("results/stan/summary_ni.rds")
+    )
+  )
+
+
+# (7) use the saved fit data to plot the posteriod distributions of the parameters ----
+price_volume_data_plot <- price_volume_data %>% 
+  dplyr::mutate(
+    plot =
+      purrr::map(
+        `Part Number`
+        , (\(y){
+          print(y)
+          temp_fit <- readRDS( here::here(stringr::str_glue('results/stan/stanfit_{suffix}_{y}.rds')) )
+          posterior <- as.array(temp_fit)
+          params <- 
+            rstan::summary(temp_fit)$summary[1:2,1] %>% scales::number(accuracy=0.01)
+          
+          bayesplot::mcmc_hex(posterior, pars = c("elasticity","intercept")) + 
+            ggplot2::geom_hline(yintercept = rstan::summary(temp_fit)$summary[1:2,1][2]) +
+            ggplot2::geom_vline(xintercept = rstan::summary(temp_fit)$summary[1:2,1][1]) +
+            ggplot2::labs(
+              title = stringr::str_glue("Elasticity for product {y}")
+              , subtitle = 
+                stringr::str_glue("elasticity = {params[1]}, intercept = {params[2]}")
+            ) +
+            ggplot2::theme_minimal(base_size = 18)
+        }
+        )
+      )
+  )
+
+p1 <- price_volume_data_plot %>% 
+  dplyr::slice(5) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p2 <- price_volume_data_plot %>% 
+  dplyr::slice(1) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p3 <- price_volume_data_plot %>% 
+  dplyr::slice(4) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+p4 <- price_volume_data_plot %>% 
+  dplyr::slice(3) %>% 
+  dplyr::pull(plot) %>% 
+  purrr::pluck(1)
+
+(p1 + p2)/(p3 + p4)
+
+```
+
+The last section of the code uses the saved results of the model fits to plot the posterior distributions of the parameters, i.e. $\pi\left[\left.\left(K,\beta\right)\right|V\right]$, the joint probabilities of the parameters given the observed data for the volume.
+
+An example is shown below for 4 of the 42 products fitted. The point estimates reported for each parameter equal the mean of the corresponding posterior distribution (black lines).
+
+![Posterior parameter distributions](images/elasticity_samples.png)
