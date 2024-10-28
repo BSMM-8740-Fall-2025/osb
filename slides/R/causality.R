@@ -518,3 +518,443 @@ predictions |>
   dplyr::summarize(mean_response = mean(.fitted)) |>
   dplyr::mutate(diff = mean_response - dplyr::lag(mean_response))
 
+
+# +++++++++++++++++++++++ DML ++++++++++++++++++++++++
+library(hdm)
+
+utils::data("pension", package = "hdm")
+help(pension)
+
+data <- pension
+
+skm <- skimr::skim(data)
+skm$skim_variable
+skm$skim_type
+
+ggplot(data, aes(x = e401, fill = factor(e401))) +
+  geom_bar()
+
+dens_net_tfa <- ggplot(data, aes(x = net_tfa, color = factor(e401), fill = factor(e401))) +
+  geom_density() +
+  xlim(c(-20000, 150000)) +
+  facet_wrap(. ~ e401)
+
+data$e401 |> table()
+# 0    1
+# 6233 3682
+data |> dplyr::group_by(e401) |>
+  dplyr::summarize(mean = mean(net_tfa)) |>
+  dplyr::mutate(diff = mean - dplyr::lag(mean))
+# e401   mean   diff
+# <int>  <dbl>  <dbl>
+#   1     0 10788.    NA
+# 2     1 30347. 19559.
+
+data$p401 |> table()
+# 0    1
+# 7321 2594
+data |> dplyr::group_by(p401) |>
+  dplyr::summarize(mean = mean(net_tfa)) |>
+  dplyr::mutate(diff = mean - dplyr::lag(mean))
+# p401   mean   diff
+# <int>  <dbl>  <dbl>
+#   1     0 10890.    NA
+# 2     1 38262. 27372.
+
+rec_y <- data |> recipes::recipe(net_tfa ~ .) |>
+  recipes::step_select(net_tfa, age, inc, educ, fsize, male, marr, twoearn, db, pira, hown)
+
+rec_d <- data |> recipes::recipe(~ .) |>
+#  recipes::step_select(net_tfa, e401, age, inc, educ, fsize, male, marr, twoearn, db, pira, hown) |>
+  recipes::step_select(net_tfa, e401, age, inc, educ, fsize,        marr, twoearn, db, pira, hown) |>
+  recipes::step_normalize(-c(net_tfa, e401)) |>
+  recipes::step_mutate( e401F = factor(e401, levels = c(0, 1)) ) |>
+#  recipes::step_bin2factor(p401, levels = c("0", "1") ) |>
+  recipes::step_poly(age, degree = 6, options =list(raw=TRUE)) |>
+  recipes::step_poly(inc, degree = 8, options =list(raw=TRUE)) |>
+  recipes::step_poly(educ, degree = 4, options =list(raw=TRUE)) |>
+  recipes::step_poly(fsize, degree = 4, options =list(raw=TRUE))
+
+dat_y <- rec_y |> recipes::prep() |> recipes::bake(new_data = data)
+dat_d <- rec_d |> recipes::prep() |> recipes::bake(new_data = data)
+
+
+# **********
+treatment <- c("e401")
+response <- c("net_tfa")
+xActual <- c("age", "inc", "fsize", "educ", "pira", "hown", "marr", "db", "twoearn")
+
+pension %>%
+  select(net_tfa,
+         e401,
+         age, inc, fsize, educ,
+         pira, hown, marr, db, twoearn) -> modelData
+
+modelData %>% mutate(e401F = factor(e401, levels = c(0, 1))) -> modelData
+
+inds <- sample.int(nrow(dat_d ), nrow(dat_d )/2, replace=F)
+
+dataList <- list(dat_d [inds, ],
+                 dat_d [-inds, ])
+
+train_control <- caret::trainControl(method="adaptive_cv",
+                              number=10,
+                              search = "random",
+                              verboseIter = TRUE)
+
+rfResponseModel <- lapply(dataList,
+                          function(x) caret::train(net_tfa ~ . - e401 - e401F,
+                                            method = "ranger",
+                                            tuneLength = 10,
+                                            data = x,
+                                            verbose = T,
+                                            trControl = train_control))
+
+rfTreatmentModel <- lapply(dataList,
+                           function(x) caret::train(e401F ~ . - net_tfa - e401,
+                                             method="ranger",
+                                             tuneLength = 10,
+                                             data = x,
+                                             verbose = T,
+                                             trControl = train_control))
+
+calc_theta <- function(dataList, responseModel, treatmentModel){
+
+  # Predict the response in dataset 1 (2) using model 2 (1).
+  responsePredictions <- lapply(list(c(1,2), c(2,1)),
+                                function(i) predict(responseModel[[i[1]]],
+                                                    dataList[[i[2]]]))
+  # Do the same for the treatment model
+  treatmentPredictions <- lapply(list(c(1,2), c(2,1)),
+                                 function(i) as.numeric(predict(treatmentModel[[i[1]]],
+                                                                dataList[[i[2]]])) - 1)
+  # Calculate the treatment residuals
+  treatmentResiduals <- list(dataList[[2]]$e401 - treatmentPredictions[[1]],
+                             dataList[[1]]$e401 - treatmentPredictions[[2]])
+
+  # Calculate the response residuals
+  responseResiduals <- list(dataList[[2]]$net_tfa - responsePredictions[[1]],
+                            dataList[[1]]$net_tfa - responsePredictions[[2]])
+
+  # Regress the residuals across both datasets
+  theta1 <- mean(treatmentResiduals[[1]] %*% responseResiduals[[1]]) / mean(treatmentResiduals[[1]] %*% dataList[[2]]$e401)
+  theta2 <- mean(treatmentResiduals[[2]] %*% responseResiduals[[2]]) / mean(treatmentResiduals[[2]] %*% dataList[[1]]$e401)
+
+  # Take the average as our treatment effect estimator
+  mean(c(theta1, theta2))
+}
+
+calc_theta(dataList, rfResponseModel, rfTreatmentModel)
+
+rfResponseModel_lm <- lapply(dataList,
+                          function(x) lm(net_tfa ~ . - e401 - e401F -1, data = x) )
+
+rfTreatmentModel_lm <- lapply(dataList,
+                           function(x) glm(e401F ~ . - net_tfa - e401 -1, data = x, family=binomial) )
+
+calc_theta(dataList, rfResponseModel_lm, rfTreatmentModel_lm)
+
+rfResponseModel_gbm <- lapply(dataList,
+                          function(x) caret::train(net_tfa ~ . - e401 - e401F,
+                                                   method = "gbm",
+                                                   tuneLength = 10,
+                                                   data = x,
+                                                   verbose = T,
+                                                   trControl = train_control))
+
+rfTreatmentModel_gbm <- lapply(dataList,
+                           function(x) caret::train(e401F ~ . - net_tfa - e401,
+                                                    method="glmnet",
+                                                    tuneLength = 10,
+                                                    data = x,
+                                                    verbose = T,
+                                                    trControl = train_control))
+
+calc_theta(dataList, rfResponseModel_gbm, rfTreatmentModel_gbm)
+
+# **********
+
+
+boot_fn <- function(dat, idx, y, t){
+  #print(idx)
+  # print(dim(dat))
+  # print(y)
+  # print(t)
+  # print(class(dat))
+
+  wf <- workflows::workflow() |>
+    # workflows::add_model( linear_reg() |> set_engine("lm") )
+    workflows::add_model( parsnip::rand_forest(trees = 200, min_n = 5) |> set_engine("ranger") |> parsnip::set_mode("regression") )
+
+  res <- tibble::tibble(
+    wf_y = wf |>
+      workflows::add_formula( formula(paste(y, "~.", collapse = " ")) ) |>
+      parsnip::fit(data = dat[idx,] |> dplyr::select(-dplyr::all_of(c(t))) ) |>
+      broom::augment(dat[idx,]) |> dplyr::select(-dplyr::all_of(c(t, ".pred"))) |>
+      dplyr::mutate(.resid = 1-2) |>
+      dplyr::pull(.resid)
+      # broom::augment(dat[idx,]) |>
+      # dplyr::pull(.resid)
+
+    ,wf_t = wf |>
+      workflows::add_formula( formula(paste(t, "~.", collapse = " ")) ) |>
+      parsnip::fit(data = dat[idx,] |> dplyr::select(-dplyr::all_of(c(y))) ) |>
+      broom::augment(dat[idx,]) |> dplyr::select(-dplyr::all_of(c(t, ".pred"))) |>
+      dplyr::mutate(.resid = 1-2) |>
+      dplyr::pull(.resid)
+
+  )
+
+  print(res)
+  res |>
+    lm(wf_y ~ wf_t, data = _) |>
+    broom::tidy() |>
+    dplyr::filter(term == "wf_t") |>
+    dplyr::pull(estimate)
+
+
+  # lm(wf_y ~ wf_y)
+  #
+  print(res)
+  res
+}
+
+bt <- boot::boot(dat_d, statistic = boot_fn, R = 500, y = "net_tfa", t = "e401")
+
+bt <- boot::boot(dat_d, statistic = boot_fn, R = 500, y = "net_tfa", t = "e401")
+bt$t |> mean()
+bt_p <- boot::boot(dat_d, statistic = boot_fn, R = 500, y = "net_tfa", t = "p401")
+bt_p$t |> mean()
+bt_p2 <- boot::boot(dat_d, statistic = boot_fn, R = 1000, y = "net_tfa", t = "p401")
+bt_p2$t |> mean()
+f1 <- \(x){ sd(x)/sqrt(length(x))}
+bt_p2$t |> f1()
+
+  \(x){ sd(x)/sqrt(length(x))}()
+
+
+bt_ranger <- boot::boot(dat_d, statistic = boot_fn, R = 500, y = "net_tfa", t = "p401")
+
+
+
+set.seed(27)
+boots <- bootstraps(mtcars, times = 2000, apparent = TRUE)
+
+lm(net_tfa ~., data = dat_d) |> broom::tidy()
+
+workflows::workflow() |>
+  # workflows::add_model( linear_reg() |> set_engine("lm") ) |>
+  workflows::add_model( parsnip::rand_forest(trees = 200, min_n = 5) |> set_engine("ranger") |> parsnip::set_mode("regression") ) |>
+  workflows::add_formula( formula(paste("net_tfa", "~.")) ) |>
+  parsnip::fit(data = dat_d |> dplyr::select(-dplyr::all_of(c("p401"))) ) |>
+  broom::augment(dat_d) |> dplyr::glimpse()
+  dplyr::pull(.resid)
+
+# !!!!!!!!!!!!!! original
+# outcome variable
+y <- data[, "net_tfa"]
+# treatment variable
+D <- data[, "e401"]
+D2 <- data[, "p401"]
+D3 <- data[, "a401"]
+
+columns_to_drop <- c(
+  "e401", "p401", "a401", "tw", "tfa", "net_tfa", "tfa_he",
+  "hval", "hmort", "hequity",
+  "nifa", "net_nifa", "net_n401", "ira",
+  "dum91", "icat", "ecat", "zhat",
+  "i1", "i2", "i3", "i4", "i5", "i6", "i7",
+  "a1", "a2", "a3", "a4", "a5"
+)
+
+# covariates
+X <- data[, !(names(data) %in% columns_to_drop)]
+
+# Constructing the controls
+x_formula <- paste("~ 0 + poly(age, 6, raw=TRUE) + poly(inc, 8, raw=TRUE) + poly(educ, 4, raw=TRUE) ",
+                   "+ poly(fsize, 2, raw=TRUE) + male + marr + twoearn + db + pira + hown")
+X <- data.table::as.data.table(model.frame(x_formula, X))
+head(X)
+
+dml2_for_plm <- function(x, d, y, dreg, yreg, nfold = 3, method = "regression") {
+  nobs <- nrow(x) # number of observations
+  foldid <- rep.int(1:nfold, times = ceiling(nobs / nfold))[sample.int(nobs)] # define folds indices
+  I <- split(1:nobs, foldid) # split observation indices into folds
+  ytil <- dtil <- rep(NA, nobs)
+  cat("fold: ")
+  for (b in seq_along(I)) {
+    if (method == "regression") {
+      dfit <- dreg(x[-I[[b]], ], d[-I[[b]]]) # take a fold out
+      yfit <- yreg(x[-I[[b]], ], y[-I[[b]]]) # take a foldt out
+      dhat <- predict(dfit, x[I[[b]], ], type = "response") # predict the left-out fold
+      yhat <- predict(yfit, x[I[[b]], ], type = "response") # predict the left-out fold
+      dtil[I[[b]]] <- (d[I[[b]]] - dhat) # record residual for the left-out fold
+      ytil[I[[b]]] <- (y[I[[b]]] - yhat) # record residial for the left-out fold
+    } else if (method == "randomforest") {
+      dfit <- dreg(x[-I[[b]], ], as.factor(d)[-I[[b]]]) # take a fold out
+      yfit <- yreg(x[-I[[b]], ], y[-I[[b]]]) # take a fold out
+      dhat <- predict(dfit, x[I[[b]], ], type = "prob")[, 2] # predict the left-out fold
+      yhat <- predict(yfit, x[I[[b]], ], type = "response") # predict the left-out fold
+      dtil[I[[b]]] <- (d[I[[b]]] - dhat) # record residual for the left-out fold
+      ytil[I[[b]]] <- (y[I[[b]]] - yhat) # record residial for the left-out fold
+    } else if (method == "decisiontrees") {
+      dfit <- dreg(x[-I[[b]], ], as.factor(d)[-I[[b]]]) # take a fold out
+      yfit <- yreg(x[-I[[b]], ], y[-I[[b]]]) # take a fold out
+      dhat <- predict(dfit, x[I[[b]], ])[, 2] # predict the left-out fold
+      yhat <- predict(yfit, x[I[[b]], ]) # predict the left-out fold
+      dtil[I[[b]]] <- (d[I[[b]]] - dhat) # record residual for the left-out fold
+      ytil[I[[b]]] <- (y[I[[b]]] - yhat) # record residial for the left-out fold
+    } else if (method == "boostedtrees") {
+      dfit <- dreg(x[-I[[b]], ], d[-I[[b]]]) # take a fold out
+      yfit <- yreg(x[-I[[b]], ], y[-I[[b]]]) # take a fold out
+      dhat <- predict(dfit, x[I[[b]], ], type = "response") # predict the left-out fold
+      yhat <- predict(yfit, x[I[[b]], ], type = "response") # predict the left-out fold
+      dtil[I[[b]]] <- (d[I[[b]]] - dhat) # record residual for the left-out fold
+      ytil[I[[b]]] <- (y[I[[b]]] - yhat) # record residial for the left-out fold
+    }
+    cat(b, " ")
+  }
+  rfit <- lm(ytil ~ dtil) # estimate the main parameter by regressing one residual on the other
+  coef_est <- coef(rfit)[2] # extract coefficient
+  se <- sqrt(sandwich::vcovHC(rfit)[2, 2]) # record robust standard error
+  cat(sprintf("\ncoef (se) = %g (%g)\n", coef_est, se)) # printing output
+  return(list(coef_est = coef_est, se = se, dtil = dtil, ytil = ytil)) # save output and residuals
+}
+
+
+summaryPLR <- function(point, stderr, resD, resy, name) {
+  data <- data.frame(
+    estimate = point, # point estimate
+    stderr = stderr, # standard error
+    lower = point - 1.96 * stderr, # lower end of 95% confidence interval
+    upper = point + 1.96 * stderr, # upper end of 95% confidence interval
+    `rmse y` = sqrt(mean(resy^2)), # RMSE of model that predicts outcome y
+    `rmse D` = sqrt(mean(resD^2)), # RMSE of model that predicts treatment D
+    `accuracy D` = mean(abs(resD) < 0.5) # binary classification accuracy of model for D
+  )
+  rownames(data) <- name
+  return(data)
+}
+
+set.seed(123)
+cat(sprintf("\nDML with Lasso CV \n"))
+
+dreg_lasso_cv <- function(x, d) {
+  glmnet::cv.glmnet(x, d, family = "gaussian", alpha = 1, nfolds = 5)
+}
+yreg_lasso_cv <- function(x, y) {
+  glmnet::cv.glmnet(x, y, family = "gaussian", alpha = 1, nfolds = 5)
+}
+
+dml2_results <- dml2_for_plm(as.matrix(X), D, y, dreg_lasso_cv, yreg_lasso_cv, nfold = 5)
+
+sum_lasso_cv <- summaryPLR(dml2_results$coef_est, dml2_results$se, dml2_results$dtil,
+                           dml2_results$ytil, name = "LassoCV")
+tableplr <- data.frame()
+tableplr <- rbind(sum_lasso_cv)
+tableplr
+
+# Because residuals are output, reconstruct fitted values for use in ensemble
+dhat_lasso <- D - dml2_results$dtil
+yhat_lasso <- y - dml2_results$ytil
+
+# DML with Random Forest
+set.seed(123)
+cat(sprintf("\nDML with Random Forest \n"))
+
+dreg_rf <- function(x, d) {
+  randomForest::randomForest(x, d, ntree = 1000, nodesize = 10)
+} # ML method=Forest
+yreg_rf <- function(x, y) {
+  randomForest::randomForest(x, y, ntree = 1000, nodesize = 10)
+} # ML method=Forest
+
+dml2_results <- dml2_for_plm(as.matrix(X), D, y, dreg_rf, yreg_rf, nfold = 5, method = "randomforest")
+sum_rf <- summaryPLR(dml2_results$coef_est, dml2_results$se, dml2_results$dtil,
+                     dml2_results$ytil, name = "Random Forest")
+tableplr <- rbind(tableplr, sum_rf)
+tableplr
+
+dhat_rf <- D - dml2_results$dtil
+dhat_rf <- y - dml2_results$ytil
+
+
+# DML with Decision Trees
+set.seed(123)
+cat(sprintf("\nDML with Decision Trees \n"))
+
+dreg_tr <- function(x, d) {
+  rpart::rpart(as.formula("D~."), cbind(data.frame(D = d), x), method = "class", minbucket = 10, cp = 0.001)
+}
+dreg_tr <- function(x, y) {
+  rpart::rpart(as.formula("y~."), cbind(data.frame(y = y), x), minbucket = 10, cp = 0.001)
+}
+
+# decision tree takes in X as dataframe, not matrix/array
+dml2_results <- dml2_for_plm(X, D, y, dreg_tr, dreg_tr, nfold = 5, method = "decisiontrees")
+sum_tr <- summaryPLR(dml2_results$coef_est, dml2_results$se, dml2_results$dtil,
+                     dml2_results$ytil, name = "Decision Trees")
+tableplr <- rbind(tableplr, sum_tr)
+tableplr
+
+dhat_tr <- D - dml2_results$dtil
+yhat_tr <- y - dml2_results$ytil
+
+# @@@@@@@@
+
+set.seed(27)
+
+
+boots <- bootstraps(mtcars, times = 2000, apparent = TRUE)
+
+
+# replication question ----
+
+propensity_model <- glm(
+  net ~ income + health + temperature,
+  data = causalworkshop::net_data,
+  family = binomial()
+)
+
+net_data_wts <- propensity_model |>
+  broom::augment(newdata = causalworkshop::net_data, type.predict = "response") |>
+  dplyr::mutate(
+    wts =
+      dplyr::case_when(
+        net ~ 1/.fitted
+        , TRUE ~ 1/(1-.fitted)
+      )
+  )
+
+# randomization question ----
+smpl_dat <- causalworkshop::net_data |>
+  tibble::rowid_to_column()
+
+split_0 <- smpl_dat |>
+  dplyr::slice_sample(prop=0.5) |>
+  dplyr::mutate(smpl = 0) |>
+  dplyr::bind_rows(
+
+  )
+
+split_data <- split_0 |>
+  dplyr::bind_rows(
+    smpl_dat[-smpl_dat0$rowid,] |>
+      dplyr::mutate(smpl = 1)
+  ) |>
+  dplyr::group_by(smpl)
+
+
+tidysmd::tidy_smd(
+  split_data,
+  c(income, health, temperature),
+  .group = smpl,
+)
+
+tidysmd::tidy_smd(
+  causalworkshop::net_data,
+  c(income, health, temperature),
+  .group = net,
+)
+
+

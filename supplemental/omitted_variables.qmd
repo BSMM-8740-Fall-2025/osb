@@ -247,7 +247,7 @@ $$ and taking the reciprocal:
 
 $$
 \frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}=\beta_{1}+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}\text{Var}\left(x\right)}}=\beta_{1}\left[1+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}^{2}\text{Var}\left(x\right)}}\right]
-$$ and the factor in the brackets is greater than 1 and as bofore $\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}$ has the same sign as $\beta_1$ so
+$$ and the factor in the brackets is greater than 1 and as before $\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}$ has the same sign as $\beta_1$ so
 
 $$
 \left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|\ge\left|\beta_{1}\right|

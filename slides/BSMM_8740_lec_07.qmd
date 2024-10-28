@@ -1,6 +1,6 @@
 ---
 title: "Causality"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 8]"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
 author: "L.L. Odette"
 footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
 logo: "images/logo.png"
@@ -34,8 +34,8 @@ execute:
 
 ## This week
 
--   Knowledge of the fundamental problems of inference and the biases of some intuitive estimators,
--   A basic understanding of the tools used to state and then satisfy causality assumptions,
+-   Introduction to the fundamental problems of causal inference and the biases of some intuitive estimators,
+-   Develop a basic understanding of the tools used to state and then satisfy causality assumptions,
 -   Understanding of how econometric methods recover treatment effects,
 -   Ability to use these methods and estimate their precision using R.
 
@@ -54,7 +54,7 @@ In this lecture we'll assume all interventions are binary, e.g. we offer a custo
 RCM is made of three distinct building blocks:
 
 -   a treatment allocation rule, that decides which unit receives the treatment / intervention;
--   potential outcomes, that measure how each unit reacts to the treatment;
+-   a definition of potential outcomes that measure how each unit reacts to the treatment;
 -   the switching equation that relates potential outcomes to observed outcomes through the allocation rule.
 
 ## Treatment allocation
@@ -70,12 +70,62 @@ The treatment allocation rule is critical:
 
 Each unit can be treated or untreated, and so there are two potential outcomes:
 
--   $Y_i^1$: the outcome unit $i$ will have if treated
--   $Y_i^0$: the outcome unit $i$ will have if not treated
+-   $Y_i^1$: the outcome unit $i$ will have, if treated
+-   $Y_i^0$: the outcome unit $i$ will have, if not treated
+
+## Example
+
+```{r}
+#| echo: false
+#| code-fold: true
+tibble::tibble(
+    'customer'  = c(1,2,3,4),
+    'Y1' = c(500,600,800,700) ,
+    'Y0' = c(450,600,600,750) ,
+    'D'  = c(1,1,0,0),
+    'Y'  = c(500,600,600,750) ,
+    'treatment effect' = c(50,0,200,-50) 
+) |> gt::gt() |> 
+  gt::cols_label(
+    Y1 = gt::md("$Y^1$"), Y0 = gt::md("$Y^0$"), D = gt::md("$\\text{D}$"), Y = gt::md("$\\text{outcome Y}$")
+  )
+```
+
+::: {style="font-size: large"}
+In this example $\text{ATE}=\left(50+0+200-50\right)/4=50$ and $\text{ATT}=\left(50+0\right)/2=25$.
+
+But this example imagines that we know the counterfactuals (i.e. $Y^0$ for $D=1$ and $Y^1$ for $D=0$), when we **never** do.
+
+The next example comparing the outcomes with and without treatment is more realistic.
+:::
+
+## Example
+
+```{r}
+#| echo: false
+#| code-fold: true
+tibble::tibble(
+    'customer'  = c(1,2,3,4),
+    'Y1' = c(500,600,NA,NA),
+    'Y0' = c(NA,NA,600,750),
+    'D'  = c(1,1,0,0),
+    'Y'  = c(500,600,600,750),
+    'treatment effect' = rep(NA,4)
+) |> gt::gt() |> 
+  gt::cols_label(
+    Y1 = gt::md("$Y^1$"), Y0 = gt::md("$Y^0$"), D = gt::md("$\\text{D}$"), Y = gt::md("$\\text{outcome Y}$")
+  )
+```
+
+::: {style="font-size: large"}
+Given these observations, and comparing the mean of the treated outcomes to the mean of the untreated outcomes: $\text{ATE}\ne\Delta_\text{WW}=\left(500+600\right)/2-\left(600+750\right)/2=-125$.
+
+The $\Delta_\text{WW}$ is a biased estimate of the $\text{ATE}$ because the untreated are bigger spenders than the treated on average.
+:::
 
 ## Switching equation
 
-The switching equation. It links the observed outcome to the potential outcomes through the allocation rule:
+Here is the switching equation. It links the observed outcome to the potential outcomes through the allocation rule:
 
 $$
 \begin{align*}
@@ -97,15 +147,19 @@ For each of the units, one of the two potential outcomes is unobserved - it is *
 
 Now we can defined the causal effect:
 
-The unit level treatment effect is defined as $\Delta_i^Y=Y_i^1-Y_i^0$ (which cannot be observed).
+The unit level treatment effect[^2] is defined as
 
-Note that the treatment effects can be heterogeneous (they can differ by unit).
+[^2]: Note that the treatment effects can be heterogeneous (they can differ by unit).
+
+$$
+\Delta_i^Y=Y_i^1-Y_i^0
+$$ (which cannot be observed).
 
 ## Treatment effects
 
-Average treatment effect on the treated (TT[^2]) gives us summary stats on the sample or the population.
+Average treatment effect on the treated (TT[^3]) gives us summary stats (in the *population* \[$TT$\] or *sample* \[$TT_s$\]).
 
-[^2]: You'll sometimes see this written as ATT
+[^3]: You'll sometimes see this written as ATT
 
 $$
 \Delta_{TT_{s}}^{Y}=\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}
@@ -122,7 +176,7 @@ It is **impossible** to observe TT, either in the *population* or in the *sample
 $$
 \begin{align*}
 \Delta_{TT_{s}}^{Y} & =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}\\
- & =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}D_{i}-\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^{0}D_{i}
+ & =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^1D_{i}-\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^{0}D_{i}
 \end{align*}
 $$ but $Y_{i}^{0}D_{i}$ is unobserved when $D_i=1$.
 
@@ -164,6 +218,8 @@ $$
 \end{align*}
 $$
 
+So the selection bias is the difference in the **untreated potential-outcomes** between treatment groups
+
 ## With/Without comparison
 
 Under what conditions would we have
@@ -192,7 +248,7 @@ $$
 \mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=0\right]=0
 $$
 
-i.e. the expected counterfactual outcome of the treated is equal to the expected potential outcome of the untreated in the absence of the treatment.
+i.e. the expected *counterfactual* outcome of the [**treated**]{.underline} is equal to the expected potential outcome of the [**untreated**]{.underline} .
 
 This is called the **identification assumption**.
 
@@ -200,9 +256,9 @@ This is called the **identification assumption**.
 
 For the identification assumption to hold, it has to be that **all** the determinants of $D_i$ are actually unrelated to $Y_i^0$.
 
-One way to enforce this assumption is to randomize treatment assignment.
+One way to [**enforce**]{.underline} this assumption is to randomize treatment assignment.
 
-One way to test for the validity of the identification assumption is to compare the values of observed covariates in the treated and untreated group, because differences in covariates an lead to confounding.
+One way to [**test**]{.underline} for the validity of the identification assumption is to compare the values of observed covariates in the treated and untreated group, because differences in covariates can lead to confounding.
 
 ## Identification assumption
 
@@ -218,7 +274,7 @@ $$ where $\Delta_{ATE}^{Y}$ is the average treatment effect in the population.
 
 ## Fundamental problems
 
--   The FPCI states that our causal parameter of interest ($\Delta_{TT}^{Y}$ of the effect of treatment on the treated) is fundamentally unobservable, even when the sample size is infinite.
+-   The FPCI states that our causal parameter of interest ($\Delta_{TT}^{Y}$ - the effect of treatment on the treated) is fundamentally unobservable, even when the sample size is infinite.
 -   The FPSI states that, even if we have an estimator $E$ that identifies $\Delta_{TT}^{Y}$ in the population, we cannot observe $E$ because we only have access to a finite sample of the population.
 
 # Causal Inference in R
@@ -226,15 +282,17 @@ $$ where $\Delta_{ATE}^{Y}$ is the average treatment effect in the population.
 ## Causal Inference Workflow
 
 1.  Specify a causal question
-2.  Draw our assumptions using a causal diagram
+2.  Draw our assumptions using a causal diagram (DAG)
 3.  Model our assumptions
 4.  Diagnose our models
 5.  Estimate the causal effect
 6.  Conduct sensitivity analysis on the effect estimate
 
+:::: {style="font-size: large"}
 ::: callout-important
 The following material is from [Causal Inference in R](https://www.r-causal.org/) by Barrett, D'Agostino McGowan & Gerke under a MIT + file license.
 :::
+::::
 
 # DAGS
 
@@ -329,11 +387,11 @@ Paths that transmit association are called ***open paths***. Paths that do not t
 ## DAGs - forks
 
 ::: {style="font-size: 80%"}
-So, should we adjust for `q`? That depends on the nature of the path.
+So, should we adjust for `q`, i.e. include `q` in our model? That depends on the nature of the path.
 
 Forks are confounding paths. Because `q` causes both `x` and `y`, `x` and `y` will have a spurious association. They both contain information from `q`, their mutual cause. That mutual causal relationship makes `x` and `y` associated statistically.
 
-Adjusting for `q` will *block* the bias from confounding and give us the true relationship between `x` and `y`.
+Adjusting for `q`, i.e. fixing the value of `q`, will *block* the bias from confounding and give us the true relationship between `x` and `y`.
 :::
 
 ## DAGs - mediators
@@ -351,7 +409,9 @@ The effect of `x` on `y` mediated by `q` is called the ***indirect*** effect, wh
 ::: {style="font-size: 80%"}
 Colliders are different. In the collider DAG of @fig-dag-path-types, `x` and `y` are *not* associated, but both cause `q`.
 
-Adjusting for `q` has the opposite effect than with confounding: it *opens* a biasing pathway. Sometimes, people draw the path opened up by conditioning on a collider connecting `x` and `y`.
+Adjusting for `q` has the opposite effect than with confounding: it *opens* a biasing pathway.
+
+Sometimes, people draw the path opened up by conditioning on a collider connecting `x` and `y`.
 :::
 
 ## DAGs - colliders
@@ -416,12 +476,12 @@ This example is extreme, but it shows how this type of bias, sometimes called co
 ## DAGs
 
 ::: {style="font-size: 80%"}
-Correctly identifying the causal structure between the exposure and outcome thus helps us
+Correctly identifying the causal structure between the exposure and outcome helps us
 
-1.  communicate the assumptions we're making about the relationships between variables and
+1.  communicate the assumptions we're making about the relationships between variables, and
 2.  identify sources of bias.
 
-Importantly, in doing 2), we are also often able to identify ways to prevent bias based on the assumptions in 1). In the simple case of the three DAGs (@fig-dag-path-types), we know whether or not to control for q depending on the nature of the causal structure. The set or sets of variables we need to adjust for is called the [**adjustment set**]{.underline}. DAGs can help us identify adjustment sets even in complex settings.
+Importantly, in doing 2), we are also often able to identify ways to prevent bias based on the assumptions in 1). In the simple case of the three DAGs (@fig-dag-path-types), we know whether or not to control for `q` depending on the nature of the causal structure. The set or sets of variables we need to adjust for is called the [**adjustment set**]{.underline}. DAGs can help us identify adjustment sets even in complex settings.
 :::
 
 ## DAGs - exchangeability
@@ -563,7 +623,7 @@ podcast_dag |>
 
 ## DAGs - open paths
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 65%"}
 DAGs are not pure data frames, but you can retrieve either the `dataframe` or `dagitty` object to work with them directly using `pull_dag_data()` or `pull_dag()`. `pull_dag()` can be useful when you want to work with dagitty functions:
 
@@ -603,11 +663,11 @@ podcast_dag_tidy |>
   dagitty::paths()
 ```
 :::
-:::
+:::::
 
 ## DAGs - open paths
 
-::: columns
+::::: columns
 ::: {.column width="20%" style="font-size: 65%"}
 `ggdag::ggdag_adjustment_set()` visualizes any valid adjustment sets implied by the DAG. Figure 5.11 shows adjusted variables as squares. Any arrows coming out of adjusted variables are removed from the DAG because the path is longer open at that variable.
 
@@ -641,7 +701,7 @@ ggdag::ggdag_adjustment_set(
 ) + ggdag::theme_dag()
 ```
 :::
-:::
+:::::
 
 ## DAGs - open paths
 
@@ -687,11 +747,11 @@ sim_data
 
 ## DAGs - open paths: example
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 65%"}
 Since we have simulated this data, we know that this is a case where *standard methods will succeed* and, therefore, can estimate the causal effect using a basic linear regression model.
 
-@fig-dag-sim (Estimates tab) shows a forest plot of the simulated data based on our DAG. Notice the model that only included the exposure resulted in a spurious effect (an estimate of -0.1 when we know the truth is 0).
+@fig-dag-sim (Estimates tab) shows a forest plot of the simulated data based on our DAG. Notice the model that only included the exposure resulted in a spurious effect (an estimate of \>0.1 when we know the truth is 0).
 
 By contrast, the model that adjusted for the two variables as suggested by `ggdag_adjustment_set()` is not spurious (much closer to 0).
 :::
@@ -731,9 +791,9 @@ dplyr::bind_rows(
   )
 ```
 :::
-:::
+:::::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ::: {style="font-size: 70%"}
 In `podcast_dag`, `mood` and `prepared` were *direct* confounders: an arrow was going directly from them to `podcast` and `exam`.
@@ -743,7 +803,7 @@ Often, backdoor paths are more complex. For example, let's add two new variables
 Now, `skills_course` is what frees up the time to listen to a podcast as well as being prepared for the exam. `mood` and `prepared` are no longer direct confounders: they are two variables along a more complex backdoor path. Additionally, we've added an arrow going from `humor` to `mood`.
 :::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ::: {style="font-size: 70%"}
 Let's take a look at @fig-podcast_dag2.
@@ -780,7 +840,7 @@ ggdag::ggdag(podcast_dag2, use_labels = "label", text = FALSE)  +
 ```
 :::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ```{r}
 #| echo: false
@@ -791,7 +851,7 @@ adj_sets <- unclass( dagitty::adjustmentSets(podcast_dag2) ) |>
 adj_sets <- glue::glue("`{adj_sets}`")
 ```
 
-::: {style="font-size: 65%"}
+:::: {style="font-size: 65%"}
 Now there are *three* backdoor paths we need to close: `r open_paths`.
 
 ::: panel-tabset
@@ -816,9 +876,9 @@ ggdag::ggdag_paths(podcast_dag2, use_labels = "label", text = FALSE, shadow = TR
   ggdag::theme_dag()
 ```
 :::
-:::
+::::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ::: {style="font-size: 75%"}
 There are four minimal adjustment sets to close all three paths (and eighteen full adjustment sets!). The minimal adjustment sets are `r adj_sets`.
@@ -827,14 +887,14 @@ We can now block the open paths in several ways - `mood` and `prepared` still wo
 
 Notably, `prepared` and `alertness` could happen at the same time or even after `podcast`. `skills_course` and `mood` still happen before both `podcast` and `exam`, so the idea is still the same: the confounding pathway starts before the exposure and outcome.
 
-The next slide shows the result of executing:
+The next slide shows the result of executing the following code:
 
 ``` r
 ggdag::ggdag_adjustment_set(podcast_dag2, use_labels = "label", text = FALSE)
 ```
 :::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ::: {style="font-size: 75%"}
 ```{r}
@@ -847,7 +907,7 @@ ggdag::ggdag_adjustment_set(podcast_dag2, use_labels = "label", text = FALSE) +
 ```
 :::
 
-## DAGs - more advanced confounding
+## DAGs - advanced confounding
 
 ::: {style="font-size: 65%"}
 Deciding between these adjustment sets is a matter of judgment: if all data are perfectly measured, the DAG is correct, and we've modeled them correctly, then it doesn't matter which we use. Each adjustment set will result in an unbiased estimate.
@@ -940,7 +1000,7 @@ podcast_dag3 |>
 
 ## DAGs - selection bias
 
-::: columns
+::::: columns
 ::: {.column width="30%" style="font-size: 60%"}
 Sometimes, you can still estimate effects in this situation by changing the estimate you wish to calculate. We can't calculate the total effect because we are missing the indirect effect, but we can still calculate the direct effect of `podcast` on `exam`.
 
@@ -970,12 +1030,12 @@ podcast_dag3 |>
   ggdag::theme_dag()
 ```
 :::
-:::
+:::::
 
 ## DAGs - M-Bias and Butterfly Bias
 
-::: columns
-::: {.column width="50%" style="font-size: 60%"}
+:::::: columns
+:::: {.column width="50%" style="font-size: 60%"}
 A particular case of selection bias that you'll often see is *M-bias*. It's called M-bias because it looks like an M when arranged top to bottom.
 
 ::: callout-tip
@@ -986,7 +1046,7 @@ ggdag has several quick-DAGs for demonstrating basic causal structures, includin
 #| echo: true
 dagitty::paths( ggdag::m_bias() )
 ```
-:::
+::::
 
 ::: {.column width="50%" style="font-size: 60%"}
 ```{r}
@@ -999,7 +1059,7 @@ ggdag::m_bias() |>
   ggdag::theme_dag()
 ```
 :::
-:::
+::::::
 
 ## DAGs - M-Bias and Butterfly Bias
 
@@ -1037,8 +1097,8 @@ podcast_dag4 <- ggdag::dagify(
     podcast = "podcast",
     exam = "exam score",
     mood = "mood",
-    u1 = "unmeasured",
-    u2 = "unmeasured"
+    u1 = "unmeasured_1",
+    u2 = "unmeasured_2"
   ),
   # we don't have them measured
   latent = c("u1", "u2")
@@ -1051,7 +1111,7 @@ ggdag::ggdag(podcast_dag4, use_labels = "label", text = FALSE)  +
 
 ## DAGs - M-Bias and Butterfly Bias
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 75%"}
 The problem arises when we think our original DAG is the right DAG: `mood` is in the adjustment set, so we control for it. But this induces bias!
 
@@ -1073,7 +1133,7 @@ podcast_dag4 |>
   ggdag::theme_dag()
 ```
 :::
-:::
+:::::
 
 ## DAGs - One of exposure / outcome
 
@@ -1204,7 +1264,7 @@ The time ordering algorithm in ggdag automates much of this for you, although it
 
 #### Order nodes by time - feedback loops
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 70%"}
 We might think about two things that mutually cause each other as happening in a circle, like global warming and A/C use (A/C use increases global warming, which makes it hotter, which increases A/C use, and so on).
 
@@ -1244,13 +1304,13 @@ ggdag::dagify(
   ggdag::theme_dag()
 ```
 :::
-:::
+:::::
 
 ## DAGs - Construction
 
 #### Order nodes by time - feedback loops
 
-::: columns
+::::: columns
 ::: {.column width="40%" style="font-size: 70%"}
 From a DAG perspective, this is a problem because of the *A* part of *DAG*: it's cyclic!
 
@@ -1315,7 +1375,7 @@ dagify(
   ggdag::theme_dag()
 ```
 :::
-:::
+:::::
 
 ## DAGs - Construction
 
@@ -1346,7 +1406,7 @@ In the remainder of today's slides, we'll analyze simulated data using a few key
 ## Example: causal question
 
 ::: {style="font-size: 75%"}
-> researchers are interested in whether using mosquito nets decreases an individual's risk of contracting malaria. They have collected data from 1,752 households in an unnamed country and have variables related to environmental factors, individual health, and household characteristics. The data is **not experimental**---researchers have no control over who uses mosquito nets, and individual households make their own choices over whether to apply for free nets or buy their own nets, as well as whether they use the nets if they have them.
+> Researchers are interested in whether using mosquito nets decreases an individual's risk of contracting malaria. They have collected data from 1,752 households in an unnamed country and have variables related to environmental factors, individual health, and household characteristics. The data is **not experimental**---researchers have no control over who uses mosquito nets, and individual households make their own choices over whether to apply for free nets or buy their own nets, as well as whether they use the nets if they have them.
 :::
 
 ## Example: causal question
@@ -1399,7 +1459,8 @@ In @fig-malaria-risk-density, the density of those who used nets is to the left 
 #| code-fold: true
 causalworkshop::net_data |>
   dplyr::group_by(net) |>
-  dplyr::summarize(malaria_risk = mean(malaria_risk))
+  dplyr::summarize(malaria_risk = mean(malaria_risk)) |> 
+  dplyr::mutate(diff = malaria_risk - dplyr::lag(malaria_risk))
 ```
 
 And that's what we see with simple linear regression, as well, as we would expect.
@@ -1653,7 +1714,7 @@ The first household did *not* use a bed net; they're predicted probability of ne
 
 ## Example: Diagnose our models
 
-::: columns
+::::: columns
 ::: {.column width="40%" style="font-size: 65%"}
 The goal of propensity score weighting is to weight the population of observations such that the distribution of confounders is balanced between the exposure groups.
 
@@ -1679,11 +1740,11 @@ ggplot(net_data_wts, aes(.fitted)) +
   labs(x = "propensity score")
 ```
 :::
-:::
+:::::
 
 ## Example: Diagnose our models
 
-::: columns
+::::: columns
 ::: {.column width="40%" style="font-size: 65%"}
 The weighted propensity score creates a pseudo-population where the distributions are much more similar:
 
@@ -1713,7 +1774,7 @@ ggplot(net_data_wts, aes(.fitted)) +
 #| fig.height: 7
 #| label: fig-mirror-histogram-net-data-weighted
 #| fig.cap: >
-#|   A mirrored histogram of the propensity scores of those who used nets (top, blue) versus those who who did not use nets (bottom, orange). The shaded region represents the unweighted distribution, and the colored region represents the weighted distributions. The ATE weights up-weight the groups to be similar in range and shape of the distribution of propensity scores.
+#|   A mirrored histogram of the propensity scores of those who used nets (top, blue) versus those who did not use nets (bottom, orange). The dark regions represent the unweighted distributions, and the lighter regions represent the weighted distributions. The ATE weights up-weight the groups to be similar in range and shape of the distribution of propensity scores.
 ggplot(net_data_wts, aes(.fitted)) +
   halfmoon::geom_mirror_histogram(
     aes(group = net),
@@ -1728,11 +1789,11 @@ ggplot(net_data_wts, aes(.fitted)) +
   labs(x = "propensity score")
 ```
 :::
-:::
+:::::
 
 ## Example: Diagnose our models
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 65%"}
 We might also want to know how well-balanced the groups are by each confounder. One way to do this is to calculate the standardized mean differences (SMDs) for each confounder with and without weights. We'll calculate the SMDs with `tidy_smd()` then plot them with `geom_love()` (see [SMD](supplemental/smd.html)).
 
@@ -1781,11 +1842,11 @@ ggplot(
   tidysmd::geom_love()
 ```
 :::
-:::
+:::::
 
 ## Example: Diagnose our models
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 65%"}
 Before we apply the weights to the outcome model, let's check their overall distribution for extreme weights.
 
@@ -1817,7 +1878,7 @@ net_data_wts |>
   geom_density(fill = "#CC79A7", color = NA, alpha = 0.8)
 ```
 :::
-:::
+:::::
 
 ## Example: Estimate the causal effect
 
@@ -1852,7 +1913,7 @@ The estimate for the average treatment effect is `r est_ci(estimates)`.
 ## Example: Estimate the causal effect
 
 ::: {style="font-size: 65%"}
-Unfortunately, the confidence intervals don't account for the dependence within the weights! Generally, confidence intervals for propensity score weighted models will be too narrow unless we correct for this dependence.
+Unfortunately, the confidence intervals don't account for the dependence within the weights! Generally, confidence intervals for propensity-score weighted models will be too narrow unless we correct for this dependence.
 
 The nominal coverage of the confidence intervals will thus be wrong (they aren't 95% CIs because their coverage is much lower than 95%) and may lead to misinterpretation.
 
@@ -1975,14 +2036,17 @@ When we have less information about unmeasured confounders, we can use tipping p
 ::: {style="font-size: 65%"}
 Assume an unknown, normally-distributed confounder.
 
-The `tip_coef()` function takes an estimate (e.g. the upper or lower bound of the coefficient) and further requires either the - the scaled differences in means of the confounder between exposure groups or - the effect of the confounder on the outcome.
+The `tip_coef()` function takes an estimate (e.g. the upper or lower bound of the coefficient) and further requires either the
+
+-   the scaled differences in means of the confounder between exposure groups, or
+-   the effect of the confounder on the outcome.
 
 For the estimate, we'll use `conf.high`, which is closer to 0 (the null), and ask: how much would the confounder have to affect malaria risk to have an unbiased upper confidence interval of 0?
 
 We'll use tipr to calculate this answer for 5 scenarios, where the mean difference in the confounder between exposure groups is 1, 2, 3, 4, or 5.
 :::
 
-## Example: Conduct sensitivity analysis
+## Example: Sensitivity analysis
 
 ::: {style="font-size: 65%"}
 ```{r}
@@ -2017,6 +2081,27 @@ tipping_points |>
 
 -   Read [Statistical tools for causal inference](https://chabefer.github.io/STCI/index.html)
 -   Read [Causal inference in R](https://www.r-causal.org/)
+
+## Summary: Assumptions
+
+::: {style="font-size: large"}
+
+In order to estimate a causal effect when there is a confounder, we need the following assumptions
+
+1.  $(Y^1,Y^0)\, \bot\, D\mid X$ (conditional independence)
+
+2.  $0<\mathbb{P}(D=1 \mid X) <1$ (common support)
+
+These two assumptions yield the following identity
+
+$$
+\begin{align}   E\big[Y^1-Y^0\mid X\big] & = E\big[Y^1 - Y^0 \mid X,D=1\big]                        \\            & = E\big[Y^1\mid X,D=1\big] - E\big[Y^0\mid X,D=0\big]   \\            & = E\big[Y\mid X,D=1\big] - E\big[Y\mid X,D=0\big]     \end{align}
+$$
+
+where each value of $Y$ is determined by the switching equation.
+
+Whereas we need treatment to be conditionally independent of both potential outcomes to identify the ATE, we need only treatment to be conditionally independent of $Y^0$ to identify the ATT and the fact that there exist some units in the control group for each treatment strata. Note, the reason for the common support assumption is because we are weighting the data; without common support, we cannot calculate the relevant weights.
+:::
 
 ## Recap
 
