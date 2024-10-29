@@ -2085,7 +2085,6 @@ tipping_points |>
 ## Summary: Assumptions
 
 ::: {style="font-size: large"}
-
 In order to estimate a causal effect when there is a confounder, we need the following assumptions
 
 1.  $(Y^1,Y^0)\, \bot\, D\mid X$ (conditional independence)

@@ -957,4 +957,60 @@ tidysmd::tidy_smd(
   .group = net,
 )
 
+# FWL question ----
+
+risk_data = readr::read_csv("slides/data/risk_data.csv", show_col_types = FALSE)
+
+risk_data |>
+  dplyr::group_by(credit_limit) |>
+  dplyr::mutate(size = n(), default = mean(default), ) |>
+  dplyr::distinct(default,credit_limit, size) |>
+  ggplot(aes(x = credit_limit, y = default, size = size)) +
+  geom_point() +
+  labs(title = "Default Rate by Credit Limit", x = "credit_limit", y = "default") +
+  theme_minimal()
+
+glm(default ~ credit_limit, family=binomial, data = risk_data) |>
+
+  lm(default ~ credit_limit, data = risk_data) |>
+  broom::augment() |>
+  dplyr::group_by(credit_limit) |>
+  dplyr::mutate(size = n(), default = mean(default), ) |>
+  dplyr::distinct(default,credit_limit, size) |>
+  ggplot(aes(x = credit_limit, y = default, size = size)) +
+  geom_point() +
+  labs(title = "Default Rate by Credit Limit", x = "credit_limit", y = "default") +
+  theme_minimal()
+
+  lm(default ~ credit_limit + wage +  credit_score1 + credit_score2, data = risk_data)
+
+  debiasing_model <- lm(credit_limit ~ wage +  credit_score1 + credit_score2, data = risk_data)
+
+  risk_data_deb <- risk_data |>
+    dplyr::mutate(credit_limit_res = mean(credit_limit) + debiasing_model$residuals)
+
+  lm(default ~ credit_limit_res, data = risk_data_deb) |>
+    broom::tidy(conf.int = TRUE)
+
+  risk_data_deb |>
+    dplyr::mutate(credit_limit_res = round(credit_limit_res,digits=-2)) |>
+    dplyr::group_by(credit_limit_res) |>
+    dplyr::mutate(size = n(), default = mean(default), ) |>
+    dplyr::filter(size>30) |>
+    dplyr::distinct(default,credit_limit_res, size) |>
+    ggplot(aes(x = credit_limit_res, y = default, size = size)) +
+    geom_point() +
+    labs(title = "Default Rate by Debiased Credit Limit", x = "credit_limit", y = "default")+
+    theme_minimal()
+
+  denoising_model <-
+    lm(default ~ wage + credit_score1  + credit_score2, data = risk_data_deb)
+
+  denoising_model |> broom::tidy(conf.int = TRUE)
+
+  risk_data_denoise <-  risk_data_deb |>
+    dplyr::mutate(default_res = denoising_model$residuals + mean(default))
+
+  lm(default_res ~ credit_limit_res, data = risk_data_denoise) |>
+    broom::tidy(conf.int = TRUE)
 
