@@ -70,6 +70,8 @@ Repeating our prior process, first we calculate the ipw weights and estimate the
 #| message: false
 #| warning: false
 #| code-summary: ATE estimate by IPW
+#| cache: true
+#| cache-comments: true
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
 propensity_model <- glm(
@@ -82,21 +84,23 @@ net_data_wts <- propensity_model |>
   # .fitted is the value predicted by the model
   # for a given observation
   dplyr::mutate(wts = propensity::wt_ate(.fitted, .exposure = net))
+
+net_data_wts |>
+  lm(malaria_risk ~ net, data = _, weights = wts) |>
+  broom::tidy(conf.int = TRUE) |> gt::gt() |> gtExtras::gt_theme_espn()
+
   # alternatively:
   # dplyr::mutate(
   #   ipw = dplyr::case_when(net == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
   #   , wts_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
   # )
 
-net_data_wts |>
-  lm(malaria_risk ~ net, data = _, weights = wts) |>
-  broom::tidy(conf.int = TRUE)
 ```
 
 ## Inverse Probability Weighting
 
-::: {style="font-size: x-large"}
-Using `propensity::wt_ate` calculates **unstabilized** weights by default. In the last lecture we looked at the distribution of weights and decided they were stable enough, because none of the weights were too big or too small.
+::: {style="font-size: large"}
+The function [^1]`propensity::wt_ate` calculates **unstabilized** weights by default. In the last lecture we looked at the distribution of weights and decided they were stable enough, because none of the weights were too big or too small.
 
 ```{r}
 #| label: fig-ate-density-net-data
@@ -113,6 +117,8 @@ net_data_wts |>
 
 Let's explore the question of IPW stabilization a bit more.
 :::
+
+[^1]: tables created with functions from the package `gtsummary`.
 
 ## Inverse Probability Weighting
 
@@ -176,6 +182,7 @@ Next we use bootstrapping to generate proper confidence intervals for the effect
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: define function for IPW bootstrapping
 #| label: ipw bootstrap function
 
 fit_ipw <- function(split, ...) {
@@ -218,7 +225,10 @@ Next we use our function to bootstrap proper confidence intervals:
 #| warning: false
 #| error: false
 #| code-fold: true
+#| code-summary: IPW bootstrap CIs
 #| label: ipw bootstrap process
+#| cache: true
+#| cache-comments: true
 # create bootstrap samples
 bootstrapped_net_data <- rsample::bootstraps(
   dat_,
@@ -242,6 +252,7 @@ IPW estimates rely on a model to predict the treatment using covariate/confounde
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: regression adjustment
 #| label: regression model
 outcome_model <- glm(
   malaria_risk ~ net + income + health + temperature + insecticide_resistance +
@@ -261,7 +272,10 @@ And we can also bootstrap the regression adjustment estimates to get confidence 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: regression bootstrap function definition and fits
 #| label: reg bootstrap function
+#| cache: true
+#| cache-comments: true
 fit_reg <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
   if("rsplit" %in% class(split)){
@@ -291,6 +305,7 @@ We can compare the results:
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: pull coefficient estimates from the fits  
 #| label: combine reg & ipw bootstraps
 both_results_dat <- both_results |>
   dplyr::mutate(
@@ -347,6 +362,7 @@ We can compare the means and the confidence intervals of the regression adjustme
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: compare IPW and regression effect estimates
 #| message: false
 #| error: false
 #| label: reg & ipw CIs
@@ -357,7 +373,7 @@ dat |>
   mean = mean(`effect estimate`)
   , lower_ci = quantile(`effect estimate`, 0.025)
   , upper_ci = quantile(`effect estimate`, 0.975)
-)
+) |> gt::gt() |> gtExtras::gt_theme_espn()
 
 ```
 
@@ -372,10 +388,13 @@ There is a package (`boot`) that performs cross-validation and CI estimation at 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: use the boot package for CI estimation of regression adjustment 
 #| message: false
 #| warning: false
 #| error: false
 #| label: boot package use
+#| cache: true
+#| cache-comments: true
 # bootstrap (1000 times) using the fit_reg function
 boot_out_reg <- boot::boot(
   data = causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
@@ -393,7 +412,7 @@ CIs <- boot_out_reg |>
   boot::boot.ci(L = boot::empinf(boot_out_reg, index=1L, type="jack"))
 
 tibble::tibble(CI = c("lower", "upper"), normal = CIs$normal[-1], basic = CIs$basic[-(1:3)]
-               , percent = CIs$percent[-(1:3)])
+               , percent = CIs$percent[-(1:3)]) |> gt::gt() |> gtExtras::gt_theme_espn()
 
 ```
 :::
@@ -404,13 +423,11 @@ tibble::tibble(CI = c("lower", "upper"), normal = CIs$normal[-1], basic = CIs$ba
 
 -   We’ve learned how to use linear regression and propensity score weighting to estimate $E[Y|D=1] - E[Y|D=0] | X$. But which one should we use and when?
 
--   When in doubt, just use both! Doubly Robust Estimation is a way of combining propensity score and linear regression in a way you don’t have to rely on either of them.
+-   When in doubt, just use both! **Doubly Robust Estimation** is a way of combining propensity score and linear regression in a way you don’t have to rely on either of them.
 
 ## Doubly Robust Estimation
 
-The estimator is as follows.
-
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 The estimator is as follows.
 
 $$
@@ -421,28 +438,39 @@ where
 
 -   $\hat{P}(x)$ is an estimation of the propensity score (using logistic regression, for example),
 
--   $\hat{\mu_1}(x)$ is an estimation of (using linear regression, for example), and is an estimation of $E[Y|X, D=1]$.
+-   $\hat{\mu_1}(x)$ is an estimation of $E[Y|X, D=1]$ (using linear regression, for example).
 
-As you might have already guessed, the first part of the doubly robust estimator estimates $E[Y^1]$ and the second part estimates $E[Y^0]$.
-
-Let’s examine the first part, as all the intuition will also apply to the second part by analogy.
+The first part of the doubly robust estimator estimates $E[Y^1]$ and the second part estimates $E[Y^0]$.
 :::
 
 ## Doubly Robust Estimation
 
-::: {style="font-size: x-large"}
+:::: {style="font-size: x-large"}
 First let's examine the code. Note we use a recipe with the regression to add the polynomial confounders for each
+
+::: panel-tabset
+## data
 
 ```{r}
 #| echo: true
-#| code-fold: true
-#| message: false
-#| error: false
-#| label: doubly robust estimation
 D <- "net"
 Y <- "malaria_risk"
 X <- paste0(c('income', 'health', 'temperature'),c(rep('_poly_1',3),rep('_poly_2',3)))
 
+doubly_robust_rec <- causalworkshop::net_data |> 
+  dplyr::mutate(net = as.numeric(net)) |> 
+  recipes::recipe(malaria_risk ~ net + income + health + temperature) |> 
+  # NOTE: these are orthogonal polynomial terms, were not used in regression adjustment earlier
+  recipes::step_poly(income, health, temperature) |> 
+  recipes::prep() 
+
+doubly_robust_dat <- doubly_robust_rec |> recipes::bake(new_data=NULL)
+```
+
+## DR function
+
+```{r}
+#| echo: true
 doubly_robust <- function(df, X, D, Y){
   ps <- # propensity score
     as.formula(paste(D, " ~ ", paste(X, collapse= "+"))) |>
@@ -471,20 +499,17 @@ doubly_robust <- function(df, X, D, Y){
   mean( d*(y - mu1)/ps + mu1 ) -
     mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
 }
+```
 
-doubly_robust_rec <- causalworkshop::net_data |> 
-  dplyr::mutate(net = as.numeric(net)) |> 
-  recipes::recipe(malaria_risk ~ net + income + health + temperature) |> 
-  recipes::step_poly(income, health, temperature) |> 
-  recipes::prep() 
+## estimates
 
-doubly_robust_dat <- doubly_robust_rec |> recipes::bake(new_data=NULL)
-  
+```{r}
+#| echo: true
 doubly_robust_dat |> 
   doubly_robust(X, D, Y)
-  
 ```
 :::
+::::
 
 ## Doubly Robust Estimation
 
@@ -495,10 +520,12 @@ Once again, we can use bootstrap to construct confidence intervals.
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: use bootstrap fold to estimate using DRE
 #| message: false
 #| error: false
 #| label: dre bootstrap
-
+#| cache: true
+#| cache-comments: true
 all_results_dat <- both_results_dat |>
   dplyr::mutate(
     dre_estimate = 
@@ -546,12 +573,13 @@ dat |>
 ## Doubly Robust Estimation
 
 ::: {style="font-size: x-large"}
-Confidence intervals, including the dre are:
+Confidence intervals, including for the dre estimate are:
 :::
 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: compute CIs for IPW, rgression and DRE
 #| message: false
 #| error: false
 #| label: dre reg ipw CIs
@@ -561,7 +589,7 @@ dat |>
   mean = mean(`effect estimate`)
   , lower_ci = quantile(`effect estimate`, 0.025)
   , upper_ci = quantile(`effect estimate`, 0.975)
-)
+) |> gt::gt() |> gtExtras::gt_theme_espn()
 ```
 
 ::: {style="font-size: x-large"}
@@ -573,25 +601,26 @@ All methods are consistent.
 ::: {style="font-size: x-large"}
 The doubly robust estimator is called doubly robust because it only requires one of the models, $\hat{P}(x)$ or $\hat{\mu}(x)$, to be correctly specified.
 
-To see this, take the first part that estimates $E[Y^1]$ and take a good look at it.
+Look at the first part that estimates $E[Y^1]$
 
 $$
 \hat{E}[Y^1] = \frac{1}{N}\sum \bigg( \dfrac{D_i(Y_i - \hat{\mu_1}(X_i))}{\hat{P}(X_i)} + \hat{\mu_1}(X_i) \bigg)
 $$
 
-Assume that $\hat{\mu_1}(x)$ is correct. If the propensity score model is wrong, we wouldn’t need to worry. Because if $\hat{\mu_1}(x)$ is correct, then $E[D_i(Y_i - \hat{\mu_1}(X_i))]=0$. That is because the multiplication by $T_i$ selects only the treated and the residual of $\hat{\mu_1}$ on the treated have, by definition, mean zero.
+Assume that $\hat{\mu_1}(x)$ is correct. If the propensity score model is wrong, we wouldn’t need to worry. Because if $\hat{\mu_1}(x)$ is correct, then $E[D_i(Y_i - \hat{\mu_1}(X_i))]=0$. That is because the multiplication by $D_i$ selects only the treated and the residual of $\hat{\mu_1}$ on the treated have, by definition, mean zero.
 
-This causes the whole thing to reduce to $\hat{\mu_1}(X_i)$, which is correctly estimated $E[Y^1]$ by assumption. So, you see, that by being correct, $\hat{\mu_1}(X_i)$ wipes out the relevance of the propensity score model. We can apply the same reasoning to understand the estimator of $E[Y^0]$.
+This causes the whole thing to reduce to $\hat{\mu_1}(X_i)$, which is correctly estimated $E[Y^1]$ by assumption. Similar reasoning applies to the estimator of $E[Y^0]$.
 :::
 
 ## Doubly Robust Estimation
 
-::: {style="font-size: x-large"}
-Replace the propensity score by a random uniform variable that goes from 0.1 to 0.9 (we don’t want very small weights to blow up the propensity score variance). Since this is random, there is no way it is a good propensity score model, but the doubly robust estimator still manages to produce an estimation that is very close to when the propensity score was estimated with logistic regression.
+::: {style="font-size: large"}
+Here we deliberately bias the IPW estimate by replacing the propensity score by a random uniform variable that goes from 0.1 to 0.9 (we don’t want very small weights to blow up the propensity score variance). Since this is random, there is no way it is a good propensity score model, but the doubly robust estimator still manages to produce an estimation that is very close to when the propensity score was estimated with logistic regression.
 
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: define a DRE with a bad IPW model
 #| message: false
 #| error: false
 #| label: bad ipw doubly robust
@@ -631,6 +660,8 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad ipw estimate plot
+#| cache: true
+#| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
     dre_bad_ipw_estimate = 
@@ -670,6 +701,7 @@ dat |>
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: summarize the models so far.
 #| message: false
 #| error: false
 #| label: bad ipw estimate plot CIs
@@ -679,13 +711,13 @@ dat |>
   mean = mean(`effect estimate`)
   , lower_ci = quantile(`effect estimate`, 0.025)
   , upper_ci = quantile(`effect estimate`, 0.975)
-)
+) |> gt::gt() |> gtExtras::gt_theme_espn()
 ```
 
 ## Doubly Robust Estimation
 
-::: {style="font-size: x-large"}
-Messing up the propensity score yields slightly different ATEs, but not by much. This covers the case that the propensity model is wrong but the outcome model is correct. Now let’s again take a good look at the first part of the estimator, rearranging some terms:
+::: {style="font-size: large"}
+Messing up the propensity score yields slightly different ATEs, but not by much. Now let’s again take a good look at the first part of the estimator, rearranging some terms:
 
 $$
 \begin{align*}
@@ -695,29 +727,22 @@ $$
  & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}-\hat{P}(X_{i})}{\hat{P}(X_{i})}\bigg)\hat{\mu_{1}}(X_{i})\bigg)
 \end{align*}
 $$
-
-Assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This makes the doubly robust estimator reduce to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption. So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
 :::
 
 ## Doubly Robust Estimation
 
 ::: {style="font-size: x-large"}
-Messing up the propensity score yields slightly different ATEs, but not by much. This covers the case that the propensity model is wrong but the outcome model is correct. Now let’s again take a good look at the first part of the estimator, rearranging some terms:
+Assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This reduces the doubly robust estimator to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption.
 
-$$
-\begin{align*}
-\hat{E}[Y^{1}] & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}(Y_{i}-\hat{\mu_{1}}(X_{i}))}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg) =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\dfrac{D_{i}\hat{\mu_{1}}(X_{i})}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg)\\
- & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}}{\hat{P}(X_{i})}-1\bigg)\hat{\mu_{1}}(X_{i})\bigg) =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}-\hat{P}(X_{i})}{\hat{P}(X_{i})}\bigg)\hat{\mu_{1}}(X_{i})\bigg)
-\end{align*}
-$$
-
-Assume that the propensity score $\hat{P}(X_i)$ is correctly specified. In this case, $E[D_i - \hat{P}(X_i)]=0$, which wipes out the part dependent on $\hat{\mu_1}(X_i)$. This makes the doubly robust estimator reduce to the propensity score weighting estimator $\frac{D_iY_i}{\hat{P}(X_i)}$, which is correct by assumption. So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
+So, even if the $\hat{\mu_1}(X_i)$ is wrong, the estimator will still be correct, provided that the propensity score is correctly specified.
 :::
 
 ## Doubly Robust Estimation
 
 ```{r}
 #| echo: true
+#| code-fold: true
+#| code-summary: define a DRE with a bad regression model
 #| label: (wrong outcome model) doubly robust estimation
 
 doubly_robust_bad_reg <- function(df, X, D, Y){
@@ -747,6 +772,8 @@ doubly_robust_bad_reg <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad reg estimate plot
+#| cache: true
+#| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
     dre_bad_reg_estimate = 
@@ -788,6 +815,7 @@ Once again, we can use bootstrap and see that the variance is just slightly high
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: compare the results so far
 #| message: false
 #| error: false
 #| label: bad ipw estimate est CIs
@@ -797,7 +825,7 @@ dat |>
   mean = mean(`effect estimate`)
   , lower_ci = quantile(`effect estimate`, 0.025)
   , upper_ci = quantile(`effect estimate`, 0.975)
-)
+) |> gt::gt() |> gtExtras::gt_theme_espn()
 ```
 
 ## Doubly Robust Estimation
@@ -805,13 +833,13 @@ dat |>
 ::: {style="font-size: x-large"}
 Once more, messing up the conditional mean model alone yields only slightly different ATE. The magic of doubly robust estimation happens because in causal inference, there are two ways to remove bias from our causal estimates: you either model the treatment mechanism or the outcome mechanism. If either of these models are correct, you are good to go.
 
-One caveat is that, in practice, it’s very hard to model precisely either of those. More often, what ends up happening is that neither the propensity score nor the outcome model are 100% correct. They are both wrong, but in different ways. When this happens, it is not exactly settled [\[1\]](https://www.stat.cmu.edu/~ryantibs/journalclub/kang_2007.pdf) [\[2\]](https://arxiv.org/pdf/0804.2969.pdf) [\[3\]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2798744/) if it’s better to use a single model or doubly robust estimation. I still like using them because at least it gives me two possibilities of being correct.
+One caveat is that, in practice, it’s very hard to model precisely either of those. More often, what ends up happening is that neither the propensity score nor the outcome model are 100% correct. They are both wrong, but in different ways. When this happens, it is not exactly settled [\[1\]](https://www.stat.cmu.edu/~ryantibs/journalclub/kang_2007.pdf) [\[2\]](https://arxiv.org/pdf/0804.2969.pdf) [\[3\]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2798744/) if it’s better to use a single model or doubly robust estimation. At least it gives you two possibilities of being correct.
 :::
 
 ## Finite Sample Bias
 
 ::: {style="font-size: x-large"}
-We know that not accounting for confounders can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate in finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
+We know that not accounting for confounders can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate with finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
 :::
 
 $$
@@ -827,6 +855,7 @@ $$
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: simulate finite sample bias
 #| message: false
 #| error: false
 #| label: finite sample
@@ -854,6 +883,7 @@ If we fit a propensity score model using the one confounder $Z$ and calculate th
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: fit the propensity score model wih finite samples
 ## fit the propensity score model
 finite_sample_wts <- glm(
   x ~ z,
@@ -877,6 +907,11 @@ Our effect of is pretty far from 0, although it’s hard to know if this is real
 To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:
 
 ```{r}
+#| cache: true
+#| cache-comments: true
+#| code-fold: true
+#| code-summary: fit the propensity score model wih different number of finite samples
+#| echo: true
 sim <- function(n) {
   ## create a simulated dataset
   finite_sample <- tibble::tibble(
@@ -936,7 +971,7 @@ ggplot(bias, aes(x = n, y = bias)) +
 ## Finite Sample Bias
 
 ::: {style="font-size: x-large"}
-This is an example of finite sample bias. Notice here, even when the sample size is quite large (5,000) we still see some bias away from the “true” effect of 0. It isn’t until a sample size larger than 10,000 that we see this bias disappear.
+This is demonstrates finite sample bias. Notice that even when the sample size is quite large (5,000) we still see some bias away from the “true” effect of 0. It isn’t until a sample size larger than 10,000 that we see this bias disappear.
 
 Estimands that utilize weights that are unbounded (i.e. that theoretically can be infinitely large) are more likely to suffer from finite sample bias. The likelihood of falling into finite sample bias depends on:
 
@@ -948,7 +983,7 @@ Estimands that utilize weights that are unbounded (i.e. that theoretically can b
 ## Matching
 
 ::: {style="font-size: x-large"}
-Regression does an amazing job at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for X.
+Regression is good at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for X.
 
 To get some intuition about controlling for X, let’s remember the case when all variables X are dummy variables.
 
@@ -1338,6 +1373,8 @@ The other, $mt_1$, will store the treated point and will find matches in the tre
 #| echo: true
 #| code-fold: true
 #| label: matching using knn
+#| cache: true
+#| cache-comments: true
 treated   <- data_med %>% dplyr::filter(medication==1)
 untreated <- data_med %>% dplyr::filter(medication==0)
 
@@ -1496,6 +1533,8 @@ where $\hat{\mu_0}(x)$ is some estimative of $E[Y|X, D=0]$, like a linear regres
 #| echo: true
 #| code-fold: true
 #| label: bias corrected match
+#| cache: true
+#| cache-comments: true
 ols0 <- lm(recovery ~ sex + age + severity, data = untreated) 
 ols1 <- lm(recovery ~ sex + age + severity, data = treated) 
 
@@ -1597,6 +1636,8 @@ In practice, we can simply use someone else’s code and just import a matching 
 #| message: false
 #| error: false
 #| code-fold: true
+#| cache: true
+#| cache-comments: true
 require(Matching)
 #  See https://www.jsekhon.com for additional documentation.
 c("ATE", "ATC", "ATT") %>% 
@@ -2325,7 +2366,9 @@ To demean the data, we need to set the index of the original data to be the indi
 :::
 
 ```{r}
-# NOTE: different in R
+#| cache: true
+#| cache-comments: true
+#| code-fold: true
 data_panel_baked <- 
   data_panel |> 
   dplyr::select(nr, year, married, expersq, union, hours, lwage) |> 

@@ -30,6 +30,48 @@ Due date: Lab 7 - Sunday, Nov 03, 5pm ET
 
 ⌨️ [Lab 7 -Causality: DAGs](labs/BSSM_8740_lab_7.html)
 
+## Podcast
+
+[Listen here](https://notebooklm.google.com/notebook/18572607-448b-4e94-8437-194575d7574e/audio)
+
+## Study
+
+### Short Answer Questions
+
+**Instructions**: Answer the following questions in 2-3 sentences each.
+
+1.  Explain the Fundamental Problem of Causal Inference (FPCI).
+2.  Define the Average Treatment Effect on the Treated (ATT) and provide an example.
+3.  What is selection bias and how does it affect causal inference?
+4.  Differentiate between a fork and a collider in a DAG and explain their implications for statistical
+5.  Explain the concept of an adjustment set and its role in identifying the causal effect.
+6.  What is M-Bias and how can it arise in causal inference?
+7.  Define an instrumental variable and describe its potential use in causal analysis.
+8.  Differentiate between a precision variable and a confounder.
+9.  What is a tipping point analysis and how is it useful in assessing the robustness of causal inferen
+10. Explain the concept of Inverse Probability Weighting (IPW) and its application in causal inference.
+
+**Short-Answer Answer Key**
+
+1.  The FPCI states that it is impossible to observe both potential outcomes (treated and untreated) for the same unit at the same time. This makes it challenging to determine the true causal effect of a treatment because we can only observe one of the potential outcomes.
+2.  ATT is the average difference in outcomes between treated units and what their outcome would have been had they not been treated. For example, if a company offers a training program to its employees, the ATT would measure the average improvement in performance among those who participated in the training compared to what their performance would have been had they not participated.
+3.  Selection bias occurs when the treatment and control groups differ systematically on factors that also influence the outcome. This can lead to inaccurate estimates of the treatment effect because the observed difference in outcomes may be due to these pre-existing differences rather than the treatment itself.
+4.  A fork in a DAG represents a common cause, where a single variable influences both the treatment and the outcome. This can create a spurious association between the treatment and outcome. A collider, on the other hand, is a variable that is caused by both the treatment and the outcome. Adjusting for a collider can introduce bias by creating a spurious association between the treatment and outcome.
+5.  An adjustment set is a group of variables that, when controlled for, block backdoor paths in a DAG. By controlling for these variables, we can isolate the causal effect of the treatment on the outcome and reduce the risk of confounding.
+6.  M-Bias is a type of selection bias that occurs when we adjust for a collider that is part of an M-shaped path in a DAG. This can open a backdoor path and create a spurious association between the treatment and the outcome.
+7.  An instrumental variable is a variable that is correlated with the treatment but not with the outcome, except through its effect on the treatment. Instrumental variables can be used to estimate the causal effect of the treatment even when there are unmeasured confounders.
+8.  A precision variable is a variable that is associated with the outcome but not with the treatment. Including precision variables in a model can help to reduce the variance of the estimate of the treatment effect. A confounder, on the other hand, is a variable that is associated with both the treatment and the outcome and can distort the relationship between them.
+9.  Tipping point analysis is a sensitivity analysis that explores how strong an unmeasured confounder would have to be to change the conclusions of a study. This is useful for assessing the robustness of causal inferences to the presence of unmeasured confounders.
+10. Inverse Probability Weighting (IPW) is a statistical technique that can be used to adjust for confounding in causal inference. IPW involves creating weights for each individual based on their probability of receiving the treatment, given their observed characteristics. By weighting the data, we can create a pseudo-population in which the treatment and control groups are more comparable.
+
+**Essay Questions**
+
+-   Describe the three main building blocks of the Rubin Causal Model (RCM) and discuss how they relate to the concept of potential outcomes.
+-   Explain the importance of identifying and controlling for confounders in causal inference. Discuss different methods for controlling for confounding, such as regression adjustment and inverse probability weighting.
+-   Explain how Directed Acyclic Graphs (DAGs) can be used to represent causal relationships and identify potential sources of bias. Provide an example of a DAG and discuss how it can be used to determine an appropriate adjustment set.
+-   Discuss the challenges of estimating causal effects in observational studies. Describe different types of selection bias and explain how they can affect the validity of causal inferences.
+-   Explain the concept of sensitivity analysis and discuss its importance in causal inference. Describe different types of sensitivity analyses and provide examples of how they can be used to assess the robustness of causal conclusions.
+
 <br><br>
 
 ::: {style="font-size: 0.875em;"}
