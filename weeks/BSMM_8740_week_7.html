@@ -377,6 +377,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
+  <li><a href="#podcast" id="toc-podcast" class="nav-link" data-scroll-target="#podcast">Podcast</a></li>
+  <li><a href="#study" id="toc-study" class="nav-link" data-scroll-target="#study">Study</a>
+  <ul class="collapse">
+  <li><a href="#short-answer-questions" id="toc-short-answer-questions" class="nav-link" data-scroll-target="#short-answer-questions">Short Answer Questions</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_7.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -431,12 +436,56 @@ Important
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
 <p>⌨️ <a href="labs/BSSM_8740_lab_7.html">Lab 7 -Causality: DAGs</a></p>
+</section>
+<section id="podcast" class="level2">
+<h2 class="anchored" data-anchor-id="podcast">Podcast</h2>
+<p><a href="https://notebooklm.google.com/notebook/18572607-448b-4e94-8437-194575d7574e/audio">Listen here</a></p>
+</section>
+<section id="study" class="level2">
+<h2 class="anchored" data-anchor-id="study">Study</h2>
+<section id="short-answer-questions" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-questions">Short Answer Questions</h3>
+<p><strong>Instructions</strong>: Answer the following questions in 2-3 sentences each.</p>
+<ol type="1">
+<li>Explain the Fundamental Problem of Causal Inference (FPCI).</li>
+<li>Define the Average Treatment Effect on the Treated (ATT) and provide an example.</li>
+<li>What is selection bias and how does it affect causal inference?</li>
+<li>Differentiate between a fork and a collider in a DAG and explain their implications for statistical</li>
+<li>Explain the concept of an adjustment set and its role in identifying the causal effect.</li>
+<li>What is M-Bias and how can it arise in causal inference?</li>
+<li>Define an instrumental variable and describe its potential use in causal analysis.</li>
+<li>Differentiate between a precision variable and a confounder.</li>
+<li>What is a tipping point analysis and how is it useful in assessing the robustness of causal inferen</li>
+<li>Explain the concept of Inverse Probability Weighting (IPW) and its application in causal inference.</li>
+</ol>
+<p><strong>Short-Answer Answer Key</strong></p>
+<ol type="1">
+<li>The FPCI states that it is impossible to observe both potential outcomes (treated and untreated) for the same unit at the same time. This makes it challenging to determine the true causal effect of a treatment because we can only observe one of the potential outcomes.</li>
+<li>ATT is the average difference in outcomes between treated units and what their outcome would have been had they not been treated. For example, if a company offers a training program to its employees, the ATT would measure the average improvement in performance among those who participated in the training compared to what their performance would have been had they not participated.</li>
+<li>Selection bias occurs when the treatment and control groups differ systematically on factors that also influence the outcome. This can lead to inaccurate estimates of the treatment effect because the observed difference in outcomes may be due to these pre-existing differences rather than the treatment itself.</li>
+<li>A fork in a DAG represents a common cause, where a single variable influences both the treatment and the outcome. This can create a spurious association between the treatment and outcome. A collider, on the other hand, is a variable that is caused by both the treatment and the outcome. Adjusting for a collider can introduce bias by creating a spurious association between the treatment and outcome.</li>
+<li>An adjustment set is a group of variables that, when controlled for, block backdoor paths in a DAG. By controlling for these variables, we can isolate the causal effect of the treatment on the outcome and reduce the risk of confounding.</li>
+<li>M-Bias is a type of selection bias that occurs when we adjust for a collider that is part of an M-shaped path in a DAG. This can open a backdoor path and create a spurious association between the treatment and the outcome.</li>
+<li>An instrumental variable is a variable that is correlated with the treatment but not with the outcome, except through its effect on the treatment. Instrumental variables can be used to estimate the causal effect of the treatment even when there are unmeasured confounders.</li>
+<li>A precision variable is a variable that is associated with the outcome but not with the treatment. Including precision variables in a model can help to reduce the variance of the estimate of the treatment effect. A confounder, on the other hand, is a variable that is associated with both the treatment and the outcome and can distort the relationship between them.</li>
+<li>Tipping point analysis is a sensitivity analysis that explores how strong an unmeasured confounder would have to be to change the conclusions of a study. This is useful for assessing the robustness of causal inferences to the presence of unmeasured confounders.</li>
+<li>Inverse Probability Weighting (IPW) is a statistical technique that can be used to adjust for confounding in causal inference. IPW involves creating weights for each individual based on their probability of receiving the treatment, given their observed characteristics. By weighting the data, we can create a pseudo-population in which the treatment and control groups are more comparable.</li>
+</ol>
+<p><strong>Essay Questions</strong></p>
+<ul>
+<li>Describe the three main building blocks of the Rubin Causal Model (RCM) and discuss how they relate to the concept of potential outcomes.</li>
+<li>Explain the importance of identifying and controlling for confounders in causal inference. Discuss different methods for controlling for confounding, such as regression adjustment and inverse probability weighting.</li>
+<li>Explain how Directed Acyclic Graphs (DAGs) can be used to represent causal relationships and identify potential sources of bias. Provide an example of a DAG and discuss how it can be used to determine an appropriate adjustment set.</li>
+<li>Discuss the challenges of estimating causal effects in observational studies. Describe different types of selection bias and explain how they can affect the validity of causal inferences.</li>
+<li>Explain the concept of sensitivity analysis and discuss its importance in causal inference. Describe different types of sensitivity analyses and provide examples of how they can be used to assess the robustness of causal conclusions.</li>
+</ul>
 <p><br><br></p>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

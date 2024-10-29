@@ -388,10 +388,10 @@
     }
   </style>
 <meta property="og:title" content="Causality – BSMM-8740 - Fall 2024">
-<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 8]">
+<meta property="og:description" content="BSMM8740-2-R-2024F [WEEK - 7]">
 <meta property="og:site_name" content="BSMM-8740 - Fall 2024">
 <meta name="twitter:title" content="Causality – BSMM-8740 - Fall 2024">
-<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 8]">
+<meta name="twitter:description" content="BSMM8740-2-R-2024F [WEEK - 7]">
 <meta name="twitter:image" content="https://bsmm-8740-fall-2024.github.io/osb/slides/images/twitter-card.png">
 <meta name="twitter:creator" content="@lodette">
 <meta name="twitter:card" content="summary_large_image">
@@ -402,7 +402,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Causality</h1>
-  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 8]</p>
+  <p class="subtitle">BSMM8740-2-R-2024F [WEEK - 7]</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -423,8 +423,8 @@ L.L. Odette
 <section id="this-week" class="slide level2">
 <h2>This week</h2>
 <ul>
-<li>Knowledge of the fundamental problems of inference and the biases of some intuitive estimators,</li>
-<li>A basic understanding of the tools used to state and then satisfy causality assumptions,</li>
+<li>Introduction to the fundamental problems of causal inference and the biases of some intuitive estimators,</li>
+<li>Develop a basic understanding of the tools used to state and then satisfy causality assumptions,</li>
 <li>Understanding of how econometric methods recover treatment effects,</li>
 <li>Ability to use these methods and estimate their precision using R.</li>
 </ul>
@@ -444,7 +444,7 @@ L.L. Odette
 <p>RCM is made of three distinct building blocks:</p>
 <ul>
 <li>a treatment allocation rule, that decides which unit receives the treatment / intervention;</li>
-<li>potential outcomes, that measure how each unit reacts to the treatment;</li>
+<li>a definition of potential outcomes that measure how each unit reacts to the treatment;</li>
 <li>the switching equation that relates potential outcomes to observed outcomes through the allocation rule.</li>
 </ul>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>The Rubin Causal Model (RCM), also known as the potential outcomes framework, was developed by Donald Rubin in the 1970s and gained prominence in the 1980s.</p></li></ol></aside></section>
@@ -461,13 +461,1056 @@ L.L. Odette
 <h2>Potential outcomes</h2>
 <p>Each unit can be treated or untreated, and so there are two potential outcomes:</p>
 <ul>
-<li><span class="math inline">\(Y_i^1\)</span>: the outcome unit <span class="math inline">\(i\)</span> will have if treated</li>
-<li><span class="math inline">\(Y_i^0\)</span>: the outcome unit <span class="math inline">\(i\)</span> will have if not treated</li>
+<li><span class="math inline">\(Y_i^1\)</span>: the outcome unit <span class="math inline">\(i\)</span> will have, if treated</li>
+<li><span class="math inline">\(Y_i^0\)</span>: the outcome unit <span class="math inline">\(i\)</span> will have, if not treated</li>
 </ul>
+</section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fjxzwiprix" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fjxzwiprix table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fjxzwiprix thead, #fjxzwiprix tbody, #fjxzwiprix tfoot, #fjxzwiprix tr, #fjxzwiprix td, #fjxzwiprix th {
+  border-style: none;
+}
+
+#fjxzwiprix p {
+  margin: 0;
+  padding: 0;
+}
+
+#fjxzwiprix .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fjxzwiprix .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fjxzwiprix .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fjxzwiprix .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fjxzwiprix .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fjxzwiprix .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fjxzwiprix .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fjxzwiprix .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fjxzwiprix .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fjxzwiprix .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fjxzwiprix .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fjxzwiprix .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fjxzwiprix .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fjxzwiprix .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fjxzwiprix .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjxzwiprix .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fjxzwiprix .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fjxzwiprix .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fjxzwiprix .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjxzwiprix .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fjxzwiprix .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjxzwiprix .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fjxzwiprix .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjxzwiprix .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fjxzwiprix .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fjxzwiprix .gt_left {
+  text-align: left;
+}
+
+#fjxzwiprix .gt_center {
+  text-align: center;
+}
+
+#fjxzwiprix .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fjxzwiprix .gt_font_normal {
+  font-weight: normal;
+}
+
+#fjxzwiprix .gt_font_bold {
+  font-weight: bold;
+}
+
+#fjxzwiprix .gt_font_italic {
+  font-style: italic;
+}
+
+#fjxzwiprix .gt_super {
+  font-size: 65%;
+}
+
+#fjxzwiprix .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fjxzwiprix .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fjxzwiprix .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fjxzwiprix .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fjxzwiprix .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fjxzwiprix .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fjxzwiprix .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#fjxzwiprix .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#fjxzwiprix div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" style="width:100%;" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="customer" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">customer</th>
+<th id="<div data-qmd-base64=&quot;JFleMSQ=&quot;><div class='gt_from_md'><p>\(Y^1\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(Y^1\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFleMCQ=&quot;><div class='gt_from_md'><p>\(Y^0\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(Y^0\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFx0ZXh0e0R9JA==&quot;><div class='gt_from_md'><p>\(\text{D}\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(\text{D}\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFx0ZXh0e291dGNvbWUgWX0k&quot;><div class='gt_from_md'><p>\(\text{outcome Y}\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(\text{outcome Y}\)</span></p></th>
+<th id="treatment effect" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">treatment effect</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="customer">1</td>
+<td class="gt_row gt_right" headers="Y1">500</td>
+<td class="gt_row gt_right" headers="Y0">450</td>
+<td class="gt_row gt_right" headers="D">1</td>
+<td class="gt_row gt_right" headers="Y">500</td>
+<td class="gt_row gt_right" headers="treatment effect">50</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="customer">2</td>
+<td class="gt_row gt_right" headers="Y1">600</td>
+<td class="gt_row gt_right" headers="Y0">600</td>
+<td class="gt_row gt_right" headers="D">1</td>
+<td class="gt_row gt_right" headers="Y">600</td>
+<td class="gt_row gt_right" headers="treatment effect">0</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="customer">3</td>
+<td class="gt_row gt_right" headers="Y1">800</td>
+<td class="gt_row gt_right" headers="Y0">600</td>
+<td class="gt_row gt_right" headers="D">0</td>
+<td class="gt_row gt_right" headers="Y">600</td>
+<td class="gt_row gt_right" headers="treatment effect">200</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="customer">4</td>
+<td class="gt_row gt_right" headers="Y1">700</td>
+<td class="gt_row gt_right" headers="Y0">750</td>
+<td class="gt_row gt_right" headers="D">0</td>
+<td class="gt_row gt_right" headers="Y">750</td>
+<td class="gt_row gt_right" headers="treatment effect">-50</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div style="font-size: large">
+<p>In this example <span class="math inline">\(\text{ATE}=\left(50+0+200-50\right)/4=50\)</span> and <span class="math inline">\(\text{ATT}=\left(50+0\right)/2=25\)</span>.</p>
+<p>But this example imagines that we know the counterfactuals (i.e.&nbsp;<span class="math inline">\(Y^0\)</span> for <span class="math inline">\(D=1\)</span> and <span class="math inline">\(Y^1\)</span> for <span class="math inline">\(D=0\)</span>), when we <strong>never</strong> do.</p>
+<p>The next example comparing the outcomes with and without treatment is more realistic.</p>
+</div>
+</section>
+<section id="example-1" class="slide level2">
+<h2>Example</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="etnihrejhc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#etnihrejhc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#etnihrejhc thead, #etnihrejhc tbody, #etnihrejhc tfoot, #etnihrejhc tr, #etnihrejhc td, #etnihrejhc th {
+  border-style: none;
+}
+
+#etnihrejhc p {
+  margin: 0;
+  padding: 0;
+}
+
+#etnihrejhc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#etnihrejhc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#etnihrejhc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#etnihrejhc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#etnihrejhc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#etnihrejhc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#etnihrejhc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#etnihrejhc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#etnihrejhc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#etnihrejhc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#etnihrejhc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#etnihrejhc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#etnihrejhc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#etnihrejhc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#etnihrejhc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#etnihrejhc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#etnihrejhc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#etnihrejhc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#etnihrejhc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#etnihrejhc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#etnihrejhc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#etnihrejhc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#etnihrejhc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#etnihrejhc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#etnihrejhc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#etnihrejhc .gt_left {
+  text-align: left;
+}
+
+#etnihrejhc .gt_center {
+  text-align: center;
+}
+
+#etnihrejhc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#etnihrejhc .gt_font_normal {
+  font-weight: normal;
+}
+
+#etnihrejhc .gt_font_bold {
+  font-weight: bold;
+}
+
+#etnihrejhc .gt_font_italic {
+  font-style: italic;
+}
+
+#etnihrejhc .gt_super {
+  font-size: 65%;
+}
+
+#etnihrejhc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#etnihrejhc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#etnihrejhc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#etnihrejhc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#etnihrejhc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#etnihrejhc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#etnihrejhc .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#etnihrejhc .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#etnihrejhc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top" style="width:100%;" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="customer" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">customer</th>
+<th id="<div data-qmd-base64=&quot;JFleMSQ=&quot;><div class='gt_from_md'><p>\(Y^1\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(Y^1\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFleMCQ=&quot;><div class='gt_from_md'><p>\(Y^0\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(Y^0\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFx0ZXh0e0R9JA==&quot;><div class='gt_from_md'><p>\(\text{D}\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(\text{D}\)</span></p></th>
+<th id="<div data-qmd-base64=&quot;JFx0ZXh0e291dGNvbWUgWX0k&quot;><div class='gt_from_md'><p>\(\text{outcome Y}\)</p>
+</div></div>" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col"><p><span class="math inline">\(\text{outcome Y}\)</span></p></th>
+<th id="treatment effect" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">treatment effect</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_right" headers="customer">1</td>
+<td class="gt_row gt_right" headers="Y1">500</td>
+<td class="gt_row gt_right" headers="Y0">NA</td>
+<td class="gt_row gt_right" headers="D">1</td>
+<td class="gt_row gt_right" headers="Y">500</td>
+<td class="gt_row gt_center" headers="treatment effect">NA</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="customer">2</td>
+<td class="gt_row gt_right" headers="Y1">600</td>
+<td class="gt_row gt_right" headers="Y0">NA</td>
+<td class="gt_row gt_right" headers="D">1</td>
+<td class="gt_row gt_right" headers="Y">600</td>
+<td class="gt_row gt_center" headers="treatment effect">NA</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_right" headers="customer">3</td>
+<td class="gt_row gt_right" headers="Y1">NA</td>
+<td class="gt_row gt_right" headers="Y0">600</td>
+<td class="gt_row gt_right" headers="D">0</td>
+<td class="gt_row gt_right" headers="Y">600</td>
+<td class="gt_row gt_center" headers="treatment effect">NA</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_right" headers="customer">4</td>
+<td class="gt_row gt_right" headers="Y1">NA</td>
+<td class="gt_row gt_right" headers="Y0">750</td>
+<td class="gt_row gt_right" headers="D">0</td>
+<td class="gt_row gt_right" headers="Y">750</td>
+<td class="gt_row gt_center" headers="treatment effect">NA</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div style="font-size: large">
+<p>Given these observations, and comparing the mean of the treated outcomes to the mean of the untreated outcomes: <span class="math inline">\(\text{ATE}\ne\Delta_\text{WW}=\left(500+600\right)/2-\left(600+750\right)/2=-125\)</span>.</p>
+<p>The <span class="math inline">\(\Delta_\text{WW}\)</span> is a biased estimate of the <span class="math inline">\(\text{ATE}\)</span> because the untreated are bigger spenders than the treated on average.</p>
+</div>
 </section>
 <section id="switching-equation" class="slide level2">
 <h2>Switching equation</h2>
-<p>The switching equation. It links the observed outcome to the potential outcomes through the allocation rule:</p>
+<p>Here is the switching equation. It links the observed outcome to the potential outcomes through the allocation rule:</p>
 <p><span class="math display">\[
 \begin{align*}
 Y_{i} &amp; =\begin{cases}
@@ -486,26 +1529,28 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 <section id="treatment-effects" class="slide level2">
 <h2>Treatment effects</h2>
 <p>Now we can defined the causal effect:</p>
-<p>The unit level treatment effect is defined as <span class="math inline">\(\Delta_i^Y=Y_i^1-Y_i^0\)</span> (which cannot be observed).</p>
-<p>Note that the treatment effects can be heterogeneous (they can differ by unit).</p>
-</section>
+<p>The unit level treatment effect<sup>1</sup> is defined as</p>
+<p><span class="math display">\[
+\Delta_i^Y=Y_i^1-Y_i^0
+\]</span> (which cannot be observed).</p>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Note that the treatment effects can be heterogeneous (they can differ by unit).</p></li></ol></aside></section>
 <section id="treatment-effects-1" class="slide level2">
 <h2>Treatment effects</h2>
-<p>Average treatment effect on the treated (TT<sup>1</sup>) gives us summary stats on the sample or the population.</p>
+<p>Average treatment effect on the treated (TT<sup>1</sup>) gives us summary stats (in the <em>population</em> [<span class="math inline">\(TT\)</span>] or <em>sample</em> [<span class="math inline">\(TT_s\)</span>]).</p>
 <p><span class="math display">\[
 \Delta_{TT_{s}}^{Y}=\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}
 \]</span> with the corresponding expected value in the population</p>
 <p><span class="math display">\[
 \Delta_{TT}^{Y}=\mathbb{E}\left[\left.Y_{i}^{1}-Y_{i}^{0}\right|D_{i}=1\right]
 \]</span></p>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>You’ll sometimes see this written as ATT</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>You’ll sometimes see this written as ATT</p></li></ol></aside></section>
 <section id="fundamental-problem-of-causal-inference" class="slide level2">
 <h2>Fundamental problem of causal inference</h2>
 <p>It is <strong>impossible</strong> to observe TT, either in the <em>population</em> or in the <em>sample</em>.</p>
 <p><span class="math display">\[
 \begin{align*}
 \Delta_{TT_{s}}^{Y} &amp; =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}\\
-&amp; =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}D_{i}-\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^{0}D_{i}
+&amp; =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^1D_{i}-\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^{0}D_{i}
 \end{align*}
 \]</span> but <span class="math inline">\(Y_{i}^{0}D_{i}\)</span> is unobserved when <span class="math inline">\(D_i=1\)</span>.</p>
 </section>
@@ -540,6 +1585,7 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 &amp; =\mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=0\right]
 \end{align*}
 \]</span></p>
+<p>So the selection bias is the difference in the <strong>untreated potential-outcomes</strong> between treatment groups</p>
 </section>
 <section id="withwithout-comparison-2" class="slide level2">
 <h2>With/Without comparison</h2>
@@ -565,14 +1611,14 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 <p><span class="math display">\[
 \mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=0\right]=0
 \]</span></p>
-<p>i.e.&nbsp;the expected counterfactual outcome of the treated is equal to the expected potential outcome of the untreated in the absence of the treatment.</p>
+<p>i.e.&nbsp;the expected <em>counterfactual</em> outcome of the <u><strong>treated</strong></u> is equal to the expected potential outcome of the <u><strong>untreated</strong></u> .</p>
 <p>This is called the <strong>identification assumption</strong>.</p>
 </section>
 <section id="identification-assumption-1" class="slide level2">
 <h2>Identification assumption</h2>
 <p>For the identification assumption to hold, it has to be that <strong>all</strong> the determinants of <span class="math inline">\(D_i\)</span> are actually unrelated to <span class="math inline">\(Y_i^0\)</span>.</p>
-<p>One way to enforce this assumption is to randomize treatment assignment.</p>
-<p>One way to test for the validity of the identification assumption is to compare the values of observed covariates in the treated and untreated group, because differences in covariates an lead to confounding.</p>
+<p>One way to <u><strong>enforce</strong></u> this assumption is to randomize treatment assignment.</p>
+<p>One way to <u><strong>test</strong></u> for the validity of the identification assumption is to compare the values of observed covariates in the treated and untreated group, because differences in covariates can lead to confounding.</p>
 </section>
 <section id="identification-assumption-2" class="slide level2">
 <h2>Identification assumption</h2>
@@ -588,7 +1634,7 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 <section id="fundamental-problems" class="slide level2">
 <h2>Fundamental problems</h2>
 <ul>
-<li>The FPCI states that our causal parameter of interest (<span class="math inline">\(\Delta_{TT}^{Y}\)</span> of the effect of treatment on the treated) is fundamentally unobservable, even when the sample size is infinite.</li>
+<li>The FPCI states that our causal parameter of interest (<span class="math inline">\(\Delta_{TT}^{Y}\)</span> - the effect of treatment on the treated) is fundamentally unobservable, even when the sample size is infinite.</li>
 <li>The FPSI states that, even if we have an estimator <span class="math inline">\(E\)</span> that identifies <span class="math inline">\(\Delta_{TT}^{Y}\)</span> in the population, we cannot observe <span class="math inline">\(E\)</span> because we only have access to a finite sample of the population.</li>
 </ul>
 </section></section>
@@ -601,12 +1647,13 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 <h2>Causal Inference Workflow</h2>
 <ol type="1">
 <li>Specify a causal question</li>
-<li>Draw our assumptions using a causal diagram</li>
+<li>Draw our assumptions using a causal diagram (DAG)</li>
 <li>Model our assumptions</li>
 <li>Diagnose our models</li>
 <li>Estimate the causal effect</li>
 <li>Conduct sensitivity analysis on the effect estimate</li>
 </ol>
+<div style="font-size: large">
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -617,6 +1664,7 @@ Y_{i}^{0} &amp; \text{if}\,D_{i}=0
 </div>
 <div class="callout-content">
 <p>The following material is from <a href="https://www.r-causal.org/">Causal Inference in R</a> by Barrett, D’Agostino McGowan &amp; Gerke under a MIT + file license.</p>
+</div>
 </div>
 </div>
 </div>
@@ -661,9 +1709,9 @@ Figure&nbsp;2: Three types of causal relationships: forks, chains, and colliders
 <section id="dags---forks" class="slide level2">
 <h2>DAGs - forks</h2>
 <div style="font-size: 80%">
-<p>So, should we adjust for <code>q</code>? That depends on the nature of the path.</p>
+<p>So, should we adjust for <code>q</code>, i.e.&nbsp;include <code>q</code> in our model? That depends on the nature of the path.</p>
 <p>Forks are confounding paths. Because <code>q</code> causes both <code>x</code> and <code>y</code>, <code>x</code> and <code>y</code> will have a spurious association. They both contain information from <code>q</code>, their mutual cause. That mutual causal relationship makes <code>x</code> and <code>y</code> associated statistically.</p>
-<p>Adjusting for <code>q</code> will <em>block</em> the bias from confounding and give us the true relationship between <code>x</code> and <code>y</code>.</p>
+<p>Adjusting for <code>q</code>, i.e.&nbsp;fixing the value of <code>q</code>, will <em>block</em> the bias from confounding and give us the true relationship between <code>x</code> and <code>y</code>.</p>
 </div>
 </section>
 <section id="dags---mediators" class="slide level2">
@@ -678,7 +1726,8 @@ Figure&nbsp;2: Three types of causal relationships: forks, chains, and colliders
 <h2>DAGs - colliders</h2>
 <div style="font-size: 80%">
 <p>Colliders are different. In the collider DAG of <a href="#/fig-dag-path-types" class="quarto-xref">Figure&nbsp;2</a>, <code>x</code> and <code>y</code> are <em>not</em> associated, but both cause <code>q</code>.</p>
-<p>Adjusting for <code>q</code> has the opposite effect than with confounding: it <em>opens</em> a biasing pathway. Sometimes, people draw the path opened up by conditioning on a collider connecting <code>x</code> and <code>y</code>.</p>
+<p>Adjusting for <code>q</code> has the opposite effect than with confounding: it <em>opens</em> a biasing pathway.</p>
+<p>Sometimes, people draw the path opened up by conditioning on a collider connecting <code>x</code> and <code>y</code>.</p>
 </div>
 </section>
 <section id="dags---colliders-1" class="slide level2">
@@ -706,12 +1755,12 @@ Figure&nbsp;3: A collider relationship over two points in time. At time point on
 <section id="dags-4" class="slide level2">
 <h2>DAGs</h2>
 <div style="font-size: 80%">
-<p>Correctly identifying the causal structure between the exposure and outcome thus helps us</p>
+<p>Correctly identifying the causal structure between the exposure and outcome helps us</p>
 <ol type="1">
-<li>communicate the assumptions we’re making about the relationships between variables and</li>
+<li>communicate the assumptions we’re making about the relationships between variables, and</li>
 <li>identify sources of bias.</li>
 </ol>
-<p>Importantly, in doing 2), we are also often able to identify ways to prevent bias based on the assumptions in 1). In the simple case of the three DAGs (<a href="#/fig-dag-path-types" class="quarto-xref">Figure&nbsp;2</a>), we know whether or not to control for q depending on the nature of the causal structure. The set or sets of variables we need to adjust for is called the <u><strong>adjustment set</strong></u>. DAGs can help us identify adjustment sets even in complex settings.</p>
+<p>Importantly, in doing 2), we are also often able to identify ways to prevent bias based on the assumptions in 1). In the simple case of the three DAGs (<a href="#/fig-dag-path-types" class="quarto-xref">Figure&nbsp;2</a>), we know whether or not to control for <code>q</code> depending on the nature of the causal structure. The set or sets of variables we need to adjust for is called the <u><strong>adjustment set</strong></u>. DAGs can help us identify adjustment sets even in complex settings.</p>
 </div>
 </section>
 <section id="dags---exchangeability" class="slide level2">
@@ -1041,7 +2090,7 @@ Figure&nbsp;7: All valid adjustment sets for <code>podcast_dag</code>.
 <div class="columns">
 <div class="column" style="font-size: 65%">
 <p>Since we have simulated this data, we know that this is a case where <em>standard methods will succeed</em> and, therefore, can estimate the causal effect using a basic linear regression model.</p>
-<p><a href="#/dags---open-paths-example-1" class="quarto-xref">Figure&nbsp;8</a> (Estimates tab) shows a forest plot of the simulated data based on our DAG. Notice the model that only included the exposure resulted in a spurious effect (an estimate of -0.1 when we know the truth is 0).</p>
+<p><a href="#/dags---open-paths-example-1" class="quarto-xref">Figure&nbsp;8</a> (Estimates tab) shows a forest plot of the simulated data based on our DAG. Notice the model that only included the exposure resulted in a spurious effect (an estimate of &gt;0.1 when we know the truth is 0).</p>
 <p>By contrast, the model that adjusted for the two variables as suggested by <code>ggdag_adjustment_set()</code> is not spurious (much closer to 0).</p>
 </div><div class="column" style="font-size: 65%">
 <div class="cell" data-layout-align="center">
@@ -1087,18 +2136,18 @@ Figure&nbsp;8: Forest plot of simulated data based on the DAG described in <a hr
 </div>
 </div></div>
 </section>
-<section id="dags---more-advanced-confounding" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 70%">
 <p>In <code>podcast_dag</code>, <code>mood</code> and <code>prepared</code> were <em>direct</em> confounders: an arrow was going directly from them to <code>podcast</code> and <code>exam</code>.</p>
 <p>Often, backdoor paths are more complex. For example, let’s add two new variables: <code>alertness</code> and <code>skills_course</code>. <code>alertness</code> represents the feeling of alertness from a good mood, thus an arrow from <code>mood</code> to <code>alertness</code>. <code>skills_course</code> represents whether the student took a College Skills Course and learned time management techniques.</p>
 <p>Now, <code>skills_course</code> is what frees up the time to listen to a podcast as well as being prepared for the exam. <code>mood</code> and <code>prepared</code> are no longer direct confounders: they are two variables along a more complex backdoor path. Additionally, we’ve added an arrow going from <code>humor</code> to <code>mood</code>.</p>
 </div>
 </section>
-<section id="dags---more-advanced-confounding-1" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding-1" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 70%">
-<p>Let’s take a look at <a href="#/dags---more-advanced-confounding-1" class="quarto-xref">Figure&nbsp;9</a>.</p>
+<p>Let’s take a look at <a href="#/dags---advanced-confounding-1" class="quarto-xref">Figure&nbsp;9</a>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1140,8 +2189,8 @@ Figure&nbsp;9: An expanded version of <code>podcast_dag</code> that includes two
 </div>
 </div>
 </section>
-<section id="dags---more-advanced-confounding-2" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding-2" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 65%">
 <p>Now there are <em>three</em> backdoor paths we need to close: <code>podcast &lt;- humor -&gt; mood -&gt; alertness -&gt; exam</code>, <code>podcast &lt;- mood -&gt; alertness -&gt; exam</code>, and <code>podcast &lt;- skills_course -&gt; prepared -&gt; exam</code>.</p>
 <div class="panel-tabset">
@@ -1173,18 +2222,18 @@ Figure&nbsp;10: Three open paths in <code>podcast_dag2</code>. Since there is no
 </div>
 </div>
 </section>
-<section id="dags---more-advanced-confounding-3" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding-3" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 75%">
 <p>There are four minimal adjustment sets to close all three paths (and eighteen full adjustment sets!). The minimal adjustment sets are <code>alertness + prepared</code>, <code>alertness + skills_course</code>, <code>mood + prepared</code>, <code>mood + skills_course</code>.</p>
 <p>We can now block the open paths in several ways - <code>mood</code> and <code>prepared</code> still work, but we’ve got other options now.</p>
 <p>Notably, <code>prepared</code> and <code>alertness</code> could happen at the same time or even after <code>podcast</code>. <code>skills_course</code> and <code>mood</code> still happen before both <code>podcast</code> and <code>exam</code>, so the idea is still the same: the confounding pathway starts before the exposure and outcome.</p>
-<p>The next slide shows the result of executing:</p>
+<p>The next slide shows the result of executing the following code:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>ggdag<span class="sc">::</span><span class="fu">ggdag_adjustment_set</span>(podcast_dag2, <span class="at">use_labels =</span> <span class="st">"label"</span>, <span class="at">text =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="dags---more-advanced-confounding-4" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding-4" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 75%">
 <div class="cell">
 <div class="cell-output-display">
@@ -1194,7 +2243,7 @@ Figure&nbsp;10: Three open paths in <code>podcast_dag2</code>. Since there is no
 <img data-src="BSMM_8740_lec_07_files/figure-revealjs/fig-podcast_dag2-set-1.png" width="1056">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-podcast_dag2-set-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11: Valid minimal adjustment sets that will close the backdoor paths in <a href="#/dags---more-advanced-confounding-2" class="quarto-xref">Figure&nbsp;10</a>.
+Figure&nbsp;11: Valid minimal adjustment sets that will close the backdoor paths in <a href="#/dags---advanced-confounding-2" class="quarto-xref">Figure&nbsp;10</a>.
 </figcaption>
 </figure>
 </div>
@@ -1202,8 +2251,8 @@ Figure&nbsp;11: Valid minimal adjustment sets that will close the backdoor paths
 </div>
 </div>
 </section>
-<section id="dags---more-advanced-confounding-5" class="slide level2">
-<h2>DAGs - more advanced confounding</h2>
+<section id="dags---advanced-confounding-5" class="slide level2">
+<h2>DAGs - advanced confounding</h2>
 <div style="font-size: 65%">
 <p>Deciding between these adjustment sets is a matter of judgment: if all data are perfectly measured, the DAG is correct, and we’ve modeled them correctly, then it doesn’t matter which we use. Each adjustment set will result in an unbiased estimate.</p>
 <p>All three of those assumptions are usually untrue to some degree. Let’s consider the path via <code>skills_course</code> and <code>prepared</code>.</p>
@@ -1409,8 +2458,8 @@ Figure&nbsp;15: A DAG representing M-Bias, a situation where a collider predates
 <span id="cb25-14"><a></a>    <span class="at">podcast =</span> <span class="st">"podcast"</span>,</span>
 <span id="cb25-15"><a></a>    <span class="at">exam =</span> <span class="st">"exam score"</span>,</span>
 <span id="cb25-16"><a></a>    <span class="at">mood =</span> <span class="st">"mood"</span>,</span>
-<span id="cb25-17"><a></a>    <span class="at">u1 =</span> <span class="st">"unmeasured"</span>,</span>
-<span id="cb25-18"><a></a>    <span class="at">u2 =</span> <span class="st">"unmeasured"</span></span>
+<span id="cb25-17"><a></a>    <span class="at">u1 =</span> <span class="st">"unmeasured_1"</span>,</span>
+<span id="cb25-18"><a></a>    <span class="at">u2 =</span> <span class="st">"unmeasured_2"</span></span>
 <span id="cb25-19"><a></a>  ),</span>
 <span id="cb25-20"><a></a>  <span class="co"># we don't have them measured</span></span>
 <span id="cb25-21"><a></a>  <span class="at">latent =</span> <span class="fu">c</span>(<span class="st">"u1"</span>, <span class="st">"u2"</span>)</span>
@@ -1691,7 +2740,7 @@ Figure&nbsp;20: A DAG showing the relationship between A/C use and global temper
 <h2>Example: causal question</h2>
 <div style="font-size: 75%">
 <blockquote>
-<p>researchers are interested in whether using mosquito nets decreases an individual’s risk of contracting malaria. They have collected data from 1,752 households in an unnamed country and have variables related to environmental factors, individual health, and household characteristics. The data is <strong>not experimental</strong>—researchers have no control over who uses mosquito nets, and individual households make their own choices over whether to apply for free nets or buy their own nets, as well as whether they use the nets if they have them.</p>
+<p>Researchers are interested in whether using mosquito nets decreases an individual’s risk of contracting malaria. They have collected data from 1,752 households in an unnamed country and have variables related to environmental factors, individual health, and household characteristics. The data is <strong>not experimental</strong>—researchers have no control over who uses mosquito nets, and individual households make their own choices over whether to apply for free nets or buy their own nets, as well as whether they use the nets if they have them.</p>
 </blockquote>
 </div>
 </section>
@@ -1740,14 +2789,15 @@ Figure&nbsp;21: A density plot of malaria risk for those who did and did not use
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>causalworkshop<span class="sc">::</span>net_data <span class="sc">|&gt;</span></span>
 <span id="cb29-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(net) <span class="sc">|&gt;</span></span>
-<span id="cb29-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">malaria_risk =</span> <span class="fu">mean</span>(malaria_risk))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">malaria_risk =</span> <span class="fu">mean</span>(malaria_risk)) <span class="sc">|&gt;</span> </span>
+<span id="cb29-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">diff =</span> malaria_risk <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(malaria_risk))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 2
-  net   malaria_risk
-  &lt;lgl&gt;        &lt;dbl&gt;
-1 FALSE         43.9
-2 TRUE          27.5</code></pre>
+<pre><code># A tibble: 2 × 3
+  net   malaria_risk  diff
+  &lt;lgl&gt;        &lt;dbl&gt; &lt;dbl&gt;
+1 FALSE         43.9  NA  
+2 TRUE          27.5 -16.4</code></pre>
 </div>
 </div>
 <p>And that’s what we see with simple linear regression, as well, as we would expect.</p>
@@ -1965,7 +3015,7 @@ Figure&nbsp;24: A mirrored histogram of the propensity scores of those who used 
 <img data-src="BSMM_8740_lec_07_files/figure-revealjs/fig-mirror-histogram-net-data-weighted-1.png" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mirror-histogram-net-data-weighted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;25: A mirrored histogram of the propensity scores of those who used nets (top, blue) versus those who who did not use nets (bottom, orange). The shaded region represents the unweighted distribution, and the colored region represents the weighted distributions. The ATE weights up-weight the groups to be similar in range and shape of the distribution of propensity scores.
+Figure&nbsp;25: A mirrored histogram of the propensity scores of those who used nets (top, blue) versus those who did not use nets (bottom, orange). The dark regions represent the unweighted distributions, and the lighter regions represent the weighted distributions. The ATE weights up-weight the groups to be similar in range and shape of the distribution of propensity scores.
 </figcaption>
 </figure>
 </div>
@@ -2093,7 +3143,7 @@ Figure&nbsp;27: A density plot of the average treatment effect (ATE) weights. Th
 <section id="example-estimate-the-causal-effect-1" class="slide level2">
 <h2>Example: Estimate the causal effect</h2>
 <div style="font-size: 65%">
-<p>Unfortunately, the confidence intervals don’t account for the dependence within the weights! Generally, confidence intervals for propensity score weighted models will be too narrow unless we correct for this dependence.</p>
+<p>Unfortunately, the confidence intervals don’t account for the dependence within the weights! Generally, confidence intervals for propensity-score weighted models will be too narrow unless we correct for this dependence.</p>
 <p>The nominal coverage of the confidence intervals will thus be wrong (they aren’t 95% CIs because their coverage is much lower than 95%) and may lead to misinterpretation.</p>
 <p>For this example, we’ll use the bootstrap, a flexible tool that calculates distributions of parameters using re-sampling. We’ll use the <code>rsample</code> package from <code>tidymodels</code> to work with bootstrap samples.</p>
 </div>
@@ -2218,13 +3268,17 @@ Figure&nbsp;28: “A histogram of 1,000 bootstrapped estimates of the effect of 
 <h2>Example: Conduct sensitivity analysis</h2>
 <div style="font-size: 65%">
 <p>Assume an unknown, normally-distributed confounder.</p>
-<p>The <code>tip_coef()</code> function takes an estimate (e.g.&nbsp;the upper or lower bound of the coefficient) and further requires either the - the scaled differences in means of the confounder between exposure groups or - the effect of the confounder on the outcome.</p>
+<p>The <code>tip_coef()</code> function takes an estimate (e.g.&nbsp;the upper or lower bound of the coefficient) and further requires either the</p>
+<ul>
+<li>the scaled differences in means of the confounder between exposure groups, or</li>
+<li>the effect of the confounder on the outcome.</li>
+</ul>
 <p>For the estimate, we’ll use <code>conf.high</code>, which is closer to 0 (the null), and ask: how much would the confounder have to affect malaria risk to have an unbiased upper confidence interval of 0?</p>
 <p>We’ll use tipr to calculate this answer for 5 scenarios, where the mean difference in the confounder between exposure groups is 1, 2, 3, 4, or 5.</p>
 </div>
 </section>
-<section id="example-conduct-sensitivity-analysis-2" class="slide level2">
-<h2>Example: Conduct sensitivity analysis</h2>
+<section id="example-sensitivity-analysis" class="slide level2">
+<h2>Example: Sensitivity analysis</h2>
 <div style="font-size: 65%">
 <div class="cell">
 <details class="code-fold">
@@ -2261,6 +3315,22 @@ Figure&nbsp;29: A tipping point analysis under several confounding scenarios whe
 <li>Read <a href="https://chabefer.github.io/STCI/index.html">Statistical tools for causal inference</a></li>
 <li>Read <a href="https://www.r-causal.org/">Causal inference in R</a></li>
 </ul>
+</section>
+<section id="summary-assumptions" class="slide level2">
+<h2>Summary: Assumptions</h2>
+<div style="font-size: large">
+<p>In order to estimate a causal effect when there is a confounder, we need the following assumptions</p>
+<ol type="1">
+<li><p><span class="math inline">\((Y^1,Y^0)\, \bot\, D\mid X\)</span> (conditional independence)</p></li>
+<li><p><span class="math inline">\(0&lt;\mathbb{P}(D=1 \mid X) &lt;1\)</span> (common support)</p></li>
+</ol>
+<p>These two assumptions yield the following identity</p>
+<p><span class="math display">\[
+\begin{align}   E\big[Y^1-Y^0\mid X\big] &amp; = E\big[Y^1 - Y^0 \mid X,D=1\big]                        \\            &amp; = E\big[Y^1\mid X,D=1\big] - E\big[Y^0\mid X,D=0\big]   \\            &amp; = E\big[Y\mid X,D=1\big] - E\big[Y\mid X,D=0\big]     \end{align}
+\]</span></p>
+<p>where each value of <span class="math inline">\(Y\)</span> is determined by the switching equation.</p>
+<p>Whereas we need treatment to be conditionally independent of both potential outcomes to identify the ATE, we need only treatment to be conditionally independent of <span class="math inline">\(Y^0\)</span> to identify the ATT and the fact that there exist some units in the control group for each treatment strata. Note, the reason for the common support assumption is because we are weighting the data; without common support, we cannot calculate the relevant weights.</p>
+</div>
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
