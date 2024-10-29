@@ -38,7 +38,7 @@ require(data.table, quietly = TRUE)
 
 # setwd(here::here("dat"))
 
-price_volume_data <- fread(here::here("dat","price_data.csv"))
+price_volume_data <- fread(here::here("scratch/dat","price_data.csv"))
 
 price_volume_data$`Volume Weighted Price` <- as.integer(price_volume_data$`Volume Weighted Price`)
 price_volume_data$Volume <- as.integer(price_volume_data$Volume)
@@ -111,12 +111,12 @@ elasticity_data <- left_join(PNs , coef_elasticty , by = 'List ID')
 elasticity_data <- left_join(elasticity_data , pvalue , by = 'List ID')
 elasticity_data <- left_join(elasticity_data , r_squared , by = 'List ID')
 
-fwrite(elasticity_data , "Price Elastcity Regression Results.csv")
+# fwrite(elasticity_data , "Price Elastcity Regression Results.csv")
 
 ```
 
 ```{r}
-data.table(elasticity_data)  |> 
+data.table::data.table(elasticity_data)  |> 
   gt::gt() |> 
   gt::tab_header(
     title = "Estimated elasticities"
