@@ -116,6 +116,7 @@ elasticity_data <- left_join(elasticity_data , r_squared , by = 'List ID')
 ```
 
 ```{r}
+#| eval: false
 data.table::data.table(elasticity_data)  |> 
   gt::gt() |> 
   gt::tab_header(
@@ -239,7 +240,7 @@ A sample is shown below (the green points are along the fitted demand curve).
 #| label: PSL elasticity results and plots
 #| code-fold: true
 #| code-summary: "Code extracting PSL elasticity results + plots"
-#| eval: true
+#| eval: false
 #| fig-align: 'center'
 
 price_volume_data <- 
