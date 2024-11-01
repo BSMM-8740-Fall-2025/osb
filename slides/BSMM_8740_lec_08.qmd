@@ -839,12 +839,12 @@ One caveat is that, in practice, it’s very hard to model precisely either of t
 ## Finite Sample Bias
 
 ::: {style="font-size: x-large"}
-We know that not accounting for confounders can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate with finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
+We know that not accounting for confounders or blocking open backdoor paths can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate with finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
 :::
 
 $$
 \begin{align*}
-X &\sim \mathscr{N}(0,1)\\
+Z &\sim \mathscr{N}(0,1)\\
 X & = \mathrm{ifelse}(0.5+Z>0,1,0)\\
 Y & = Z +  \mathscr{N}(0,1)
 \end{align*}
@@ -852,9 +852,11 @@ $$
 
 ## Finite Sample Bias
 
+#### Sampling code
+
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: simulate finite sample bias
 #| message: false
 #| error: false
@@ -883,7 +885,7 @@ If we fit a propensity score model using the one confounder $Z$ and calculate th
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: fit the propensity score model wih finite samples
+#| code-summary: fit the propensity score model with finite samples
 ## fit the propensity score model
 finite_sample_wts <- glm(
   x ~ z,
@@ -902,6 +904,7 @@ finite_sample_wts |>
 
 ## Finite Sample Bias
 
+::: {style="font-size: x-large"}
 Our effect of is pretty far from 0, although it’s hard to know if this is really bias, or something we are just seeing by chance in this particular simulated sample.
 
 To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:
@@ -910,7 +913,7 @@ To explore the potential for finite sample bias, we can rerun this simulation ma
 #| cache: true
 #| cache-comments: true
 #| code-fold: true
-#| code-summary: fit the propensity score model wih different number of finite samples
+#| code-summary: fit the propensity score model with different number of finite samples
 #| echo: true
 sim <- function(n) {
   ## create a simulated dataset
@@ -955,10 +958,11 @@ bias <- finite_sample_sims %>%
   dplyr::group_by(n) %>%
   dplyr::summarise(bias = mean(bias))
 ```
+:::
 
 ## Finite Sample Bias
 
-Ploting the results:
+Plotting the results:
 
 ```{r}
 #| fig-cap: "Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000"
@@ -983,14 +987,14 @@ Estimands that utilize weights that are unbounded (i.e. that theoretically can b
 ## Matching
 
 ::: {style="font-size: x-large"}
-Regression is good at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for X.
+Regression is good at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for $X$.
 
-To get some intuition about controlling for X, let’s remember the case when all variables X are dummy variables.
+To get some intuition about controlling for $X$, let’s remember the case when all variables $X$ are dummy variables.
 
 If that is the case, regression partitions the data into the dummy cells and computes the mean difference between test and control. Effectively we are calculating doing
 
 $$
-E[Y|D=1] - E[Y|D=0] | X=x]
+E[Y|D=1, X=x] - E[Y|D=0, X=x]
 $$
 
 where $x$ is a dummy cell (all dummies set to 1, for example).
@@ -1001,7 +1005,7 @@ Regression then combines the estimate in each of the cells to produce a final AT
 ## Matching
 
 ::: {style="font-size: x-large"}
-To give an example, suppose we try to estimate the effect of a drug and I have 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
+To give an example, suppose we try to estimate the effect of a drug and I have drug data for 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
 
 To make matters more interesting, men are much more affected by this illness and stay longer at the hospital. They also get much more of the drug. Only 1 out of the 6 men does not get the drug. On the other hand, women are more resistant to this illness, so they stay less at the hospital. 50% of the women get the drug.
 :::
@@ -1099,7 +1103,7 @@ So we’ve seen that regression has its idiosyncrasies. It is linear, parametric
 
 Because of this, it’s important to be aware of other techniques we can use to control for confounders. Not only are they an extra tool in your causal tool belt, but understanding different ways to deal with confounding expands our understanding of the problem.
 
-For this reason, I present you now the Subclassification Estimator!
+For this reason, we'll now examne the Subclassification Estimator!
 :::
 
 ## Matching: subclassification
@@ -1111,7 +1115,7 @@ If we have conditional independence $(Y^0, Y^1)\perp D | X$ , then we can write 
 :::
 
 $$
-ATE = \int(E[Y|X, D=1] - E[Y|X, D=0])dP(x)
+ATE = \int(E[Y|X=x, D=1] - E[Y|X=x, D=0])dP(x)
 $$
 
 ::: {style="font-size: x-large"}
@@ -1123,7 +1127,7 @@ What the integral does is it goes through all the space of the distribution of f
 ::: {style="font-size: x-large"}
 Another way to see this is to think about a discrete set of features.
 
-In this case, we can say that the features X takes on K different cells $\{X_1, X_2, ..., X_k\}$ and what we are doing is computing the treatment effect in each cell and combining them into the ATE.
+In this case, we can say that values the feature set X takes on falls into K different sets $\{X_1, X_2, ..., X_k\}$ and what we are doing is computing the treatment effect in each set and combining them into the ATE.
 
 In this discrete case, converting the integral to a sum, we can derive the subclassifications estimator:
 :::
@@ -1153,7 +1157,7 @@ This allows us to explore other kinds of estimators, such as the Matching Estima
 ## Matching estimator
 
 ::: {style="font-size: x-large"}
-Since some confounder X makes it so that treated and untreated are not initially comparable, we can make them so by matching each treated unit with a similar untreated unit - finding an untreated twin for every treated unit. In making such comparisons, treated and untreated become again comparable.
+When some confounder X makes it so that treated and untreated are not initially comparable, we can make them so by matching each treated unit with a similar untreated unit - finding an untreated twin for every treated unit. In making such comparisons, treated and untreated become again comparable.
 
 As an example, let’s suppose we are trying to estimate the effect of a trainee program on earnings. Here is what the trainees looks like:
 :::
@@ -1219,7 +1223,7 @@ We can use matching on age to try to correct that.
 We will take unit 1 from the treated and pair it with unit 27, since both are 28 years old. Unit 2 we will pair it with unit 34, unit 3 with unit 37, unit 4 we will pair it with unit 35… When it comes to unit 5, we need to find someone with age 29 from the non treated, but that is unit 37, which is already paired.
 
 This is not a problem, since we can use the same unit multiple times. If more than 1 unit is a match, we can choose randomly between them.
-:::
+
 
 ```{r}
 #| echo: true
@@ -1238,6 +1242,7 @@ matches %>% dplyr::slice_head(n=5) %>%
   gt::gt() %>% 
   gtExtras::gt_theme_espn()
 ```
+:::
 
 ## Matching estimator
 
@@ -1284,7 +1289,7 @@ $$
 ::: {style="font-size: x-large"}
 Where $Y_{jm}(i)$ is the sample from the other treatment group which is most similar to $Y_i$.
 
-We do this $2T_i - 1$ to match both ways: treated with controls and controls with the treatment.
+We scale by $2D_i - 1$ to match both ways: treated with controls and controls with the treatment.
 :::
 
 ## Matching estimator
@@ -1312,7 +1317,7 @@ data_med %>%
 ## Matching estimator
 
 ::: {style="font-size: x-large"}
-If we look at a simple difference in means, $E[Y|D=1]-E[Y|D=0]$, we get that the treatment takes, on average, 16.9 more days to recover than the untreated.
+If we look at a simple difference in means, $E[Y|D=1]-E[Y|D=0]$, we get that the treated take, on average, 16.9 more days to recover than the untreated.
 
 This is probably due to confounding, since we don’t expect the medicine to cause harm to the patient.
 :::
