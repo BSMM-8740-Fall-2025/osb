@@ -425,6 +425,8 @@ tibble::tibble(CI = c("lower", "upper"), normal = CIs$normal[-1], basic = CIs$ba
 
 -   When in doubt, just use both! **Doubly Robust Estimation** is a way of combining propensity score and linear regression in a way you don’t have to rely on either of them.
 
+# Doubly Robust Estimation
+
 ## Doubly Robust Estimation
 
 ::: {style="font-size: large"}
@@ -836,6 +838,8 @@ Once more, messing up the conditional mean model alone yields only slightly diff
 One caveat is that, in practice, it’s very hard to model precisely either of those. More often, what ends up happening is that neither the propensity score nor the outcome model are 100% correct. They are both wrong, but in different ways. When this happens, it is not exactly settled [\[1\]](https://www.stat.cmu.edu/~ryantibs/journalclub/kang_2007.pdf) [\[2\]](https://arxiv.org/pdf/0804.2969.pdf) [\[3\]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2798744/) if it’s better to use a single model or doubly robust estimation. At least it gives you two possibilities of being correct.
 :::
 
+# Finite Sample Bias
+
 ## Finite Sample Bias
 
 ::: {style="font-size: x-large"}
@@ -983,6 +987,8 @@ Estimands that utilize weights that are unbounded (i.e. that theoretically can b
 2.  the distribution of the covariates in the exposed and unexposed groups (i.e. is there good overlap? Potential positivity violations, when there is poor overlap, are the regions where weights can become too large)
 3.  the sample size.
 :::
+
+# Matching
 
 ## Matching
 
@@ -1223,7 +1229,6 @@ We can use matching on age to try to correct that.
 We will take unit 1 from the treated and pair it with unit 27, since both are 28 years old. Unit 2 we will pair it with unit 34, unit 3 with unit 37, unit 4 we will pair it with unit 35… When it comes to unit 5, we need to find someone with age 29 from the non treated, but that is unit 37, which is already paired.
 
 This is not a problem, since we can use the same unit multiple times. If more than 1 unit is a match, we can choose randomly between them.
-
 
 ```{r}
 #| echo: true
@@ -1499,8 +1504,8 @@ $$
 ::: {style="font-size: x-large"}
 Now, $\mu_0(X_i) - \mu_0(X_j(i))$ is not so simple to understand, so let’s look at it more carefully.
 
--   $\mu_0(X_i)$ is the outcome Y value of a treated unit $i$ had it not been treated.
--   It is the counterfactual outcome $Y^0$ for unit $i$. $\mu_0(X_j(i))$ is the outcome of the untreated unit $j$ that is the match of unit $i$.
+-   $\mu_0(X_i)$ is the outcome Y value of a treated unit $i$ had it not been treated. It is the counterfactual outcome $Y^0$ for unit $i$.
+-   $\mu_0(X_j(i))$ is the outcome of the untreated unit $j$ that is the match of unit $i$.
 -   It is also the $Y^0$, but for unit $j$ now.
 -   Only this time, it is a factual outcome, because $j$ is in the non treated group.
 -   Now, because $j$ and $i$ are only similar, but not the same, this will likely not be zero. In other words, $X_i \approx X_j$, so, $Y^0_i \approx Y^0_j$.
@@ -1704,6 +1709,8 @@ What it does is project all the features X into a single one, the Y dimension. I
 So, in some way, linear regression performs some sort of dimensionality reduction to estimate the ATE. It’s quite elegant.
 :::
 
+# Difference-in-Differences
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
@@ -1718,7 +1725,7 @@ Rio Grande do Sul is part of the south of Brazil, one of the most developed regi
 
 #### Three Billboards in the South of Brazil
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Data was also obtained from another capital from the south, Florianopolis, the capital city of the state of Santa Catarina in Brasil. The idea is that Florianopolis could be used as a control sample to estimate the counterfactual when compared to Porto Alegre. The billboard was placed in Porto Alegre for the entire month of June. The resulting data like this:
 :::
 
@@ -1733,7 +1740,7 @@ data_bboard %>%
   gtExtras::gt_theme_espn()
 ```
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Here deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
 :::
 
@@ -1757,6 +1764,7 @@ In words, the causal effect is the outcome in the period post intervention in ca
 
 #### DID Estimator
 
+::: {style="font-size: x-large"}
 One way around this is a before and after comparison.
 
 $$
@@ -1773,49 +1781,7 @@ poa_after  <- data_bboard |> dplyr::filter(poa==1 & jul==1) |> dplyr::pull(depos
 poa_after - poa_before
 ```
 
-This estimator is telling us that we should expect deposits to increase R$\$ 41.04$ after the intervention. But can we trust this?
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-::: {style="font-size: x-large"}
-Notice that $E[Y(0)|D=1]=E[Y^0(0)|D=1]$, the observed outcome for the treated unit before the intervention is equal to the counterfactual outcome for the treated unit also before the intervention. Since we are using this to estimate the counterfactual after the intervention $E[Y^0(1)|D=1]$, this estimation above assumes that $E[Y^0(1)|D=1] = E[Y^0(0)|D=1]$.
-
-It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
-
-For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention. With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
-:::
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-Another idea is to compare the treated group with an untreated group that didn’t get the intervention:
-
-$$
-\hat{ATET} = E[Y(1)|D=1] - E[Y(1)|D=0]
-$$
-
-In our example, it would be to compare the deposits from POA to that of Florianopolis in the post intervention period.
-
-```{r}
-#| echo: true
-#| code-fold: true
-fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposits) |> mean()
-poa_after - fl_after
-```
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-::: {style="font-size: x-large"}
-This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R$\$ 119.10$.
-
-Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$.
-
-But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
+This estimator is telling us that we should expect deposits to increase R$\$ 41.05$ after the intervention. But can we trust this?
 :::
 
 ## Difference-in-Differences
@@ -1823,9 +1789,11 @@ But notice that this would only be true if both groups have a very similar basel
 #### DID Estimator
 
 ::: {style="font-size: x-large"}
+Notice that $E[Y(0)|D=1]=E[Y^0(0)|D=1]$, the observed outcome for the treated unit before the intervention is equal to the counterfactual outcome for the treated unit also before the intervention. Since we are using this to estimate $E[Y^0(1)|D=1]$, the counterfactual after the intervention, this estimation above assumes that $E[Y^0(1)|D=1] = E[Y^0(0)|D=1]$.
+
 It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
 
-For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention.
+For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention. 
 
 With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
 :::
@@ -1843,11 +1811,26 @@ $$
 In our example, it would be to compare the deposits from POA to that of Florianopolis in the post intervention period.
 
 ```{r}
+#| echo: true
+#| code-fold: true
 fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposits) |> mean()
 poa_after - fl_after
 ```
-
 This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+::: {style="font-size: x-large"}
+This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R$\$ 119.10$.
+
+Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$.
+
+But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. 
+
+On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
+:::
 
 ## Difference-in-Differences
 
@@ -1886,15 +1869,14 @@ What this does is take the treated unit **before the intervention** and adds a t
 
 ::: {style="font-size: x-large"}
 It is important to notice that this assumes that the trends in the treatment and control are the same:
-:::
+
 
 $$
 E[Y^0(1) − Y^0(0)|D=1] = E[Y^0(1) − Y^0(0)|D=0]
 $$
 
-::: {style="font-size: x-large"}
 where the left hand side is the counterfactual trend. Now, we can replace the estimated counterfactual in the treatment effect definition
-:::
+
 
 $E[Y^1(1)|D=1] - E[Y^0(1)|D=1]$
 
@@ -1903,6 +1885,7 @@ $$
 $$
 
 It gets that name because it gets the difference between the difference between treatment and control after and before the treatment.
+:::
 
 ## Difference-in-Differences
 
@@ -1950,7 +1933,7 @@ tibble::tibble(
 ```
 
 ::: {style="font-size: x-large"}
-The small difference between the red and the blue dashed lines shows the small treatment effect on Porto Alegre.
+The small difference between the solid and the dashed lines shows the small treatment effect on Porto Alegre.
 :::
 
 ## Difference-in-Differences
@@ -2007,6 +1990,7 @@ One way to check if this is happening is to plot the trend using past periods. F
 
 ```{r}
 #| warning: false
+#| fig-align: center
 tibble::tibble( 
   mo = c("Jan", "Mar", "May", "Jul") |> factor(levels=c("Jan", "Mar", "May", "Jul"))
   , fl = c(120, 150, fl_before, fl_after)
@@ -2016,7 +2000,7 @@ tibble::tibble(
   tidyr::pivot_longer(-mo) |> 
   ggplot(aes(x=mo, y = value, group = name, color = name, linetype = name)) +
   geom_line() +
-  theme_minimal()
+  theme_minimal(base_size = 18)
 ```
 
 ## Difference-in-Differences
@@ -2024,12 +2008,14 @@ tibble::tibble(
 #### Non Parallel Trends
 
 ::: {style="font-size: x-large"}
-One final issue that it’s worth mentioning is that you won’t be able to place confidence intervals around your Diff-in-Diff estimator if you only have aggregated data.
+One final issue that is worth mentioning is that you won’t be able to place confidence intervals around your Diff-in-Diff estimator if you only have aggregated data.
 
 Say for instance you don’t have data on what each of our customers from Florianópolis or Porto Alegre did. Instead, you only have the average deposits before and after the intervention for both cities.
 
 In this case, you will still be able to estimate the causal effect by Diff-in-Diff, but you won’t know the variance of it. That’s because all the variability in your data got squashed out in aggregation.
 :::
+
+# Panel Data and Fixed Effects
 
 ## Panel Data and Fixed Effects
 
