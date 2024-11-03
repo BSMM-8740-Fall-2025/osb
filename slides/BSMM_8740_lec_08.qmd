@@ -33,7 +33,12 @@ execute:
 
 ## This week
 
--   We will look at other methods used to estimate causal effects, along with methods used for special situations.
+-   We will look at other methods used to estimate causal effects, along with methods used for special situations, including:
+    -   regression adjustment
+    -   doubly robust estimation
+    -   matching
+    -   difference in differences
+    -   fexed effects and methods for panel data
 
 ```{r}
 #| message: false
@@ -1793,7 +1798,7 @@ Notice that $E[Y(0)|D=1]=E[Y^0(0)|D=1]$, the observed outcome for the treated un
 
 It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
 
-For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention. 
+For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention.
 
 With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
 :::
@@ -1816,6 +1821,7 @@ In our example, it would be to compare the deposits from POA to that of Floriano
 fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposits) |> mean()
 poa_after - fl_after
 ```
+
 This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
 
 ## Difference-in-Differences
@@ -1827,7 +1833,7 @@ This estimator is telling us that the campaign is detrimental and that customers
 
 Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$.
 
-But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. 
+But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$.
 
 On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
 :::
@@ -1870,13 +1876,11 @@ What this does is take the treated unit **before the intervention** and adds a t
 ::: {style="font-size: x-large"}
 It is important to notice that this assumes that the trends in the treatment and control are the same:
 
-
 $$
 E[Y^0(1) − Y^0(0)|D=1] = E[Y^0(1) − Y^0(0)|D=0]
 $$
 
 where the left hand side is the counterfactual trend. Now, we can replace the estimated counterfactual in the treatment effect definition
-
 
 $E[Y^1(1)|D=1] - E[Y^0(1)|D=1]$
 
@@ -2022,7 +2026,9 @@ In this case, you will still be able to estimate the causal effect by Diff-in-Di
 ::: {style="font-size: x-large"}
 In the simple Diff-in-Diff setup, we have a treated and a control group (the city of POA and FLN, respectively) and only two periods, a pre-intervention and a post-intervention period. But what would happen if we had more periods? Or more groups?
 
-This setup is so common and powerful for causal inference and gets its own name: panel data. A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
+This setup is so common and powerful for causal inference and gets its own name: panel data.
+
+A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
 
 To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). We want to see if that sort of offline marketing strategy can boost the usage of our investment products. Specifically, we want to know how much deposits in our investments account would increase if we placed billboards.
 :::
@@ -2041,7 +2047,6 @@ This growth factor was estimated in a control city, Florianopolis (FLN).
 
 ::: {style="font-size: x-large"}
 To recap some notation, here is how we can estimate this counterfactual outcome
-:::
 
 $$
 \begin{split}
@@ -2052,7 +2057,6 @@ $$
 \end{split}
 $$
 
-::: {style="font-size: x-large"}
 where $t$ denotes time, $D$ denotes the treatment (since $t$ is taken), $Y^D(t)$ denote the potential outcome for treatment $D$ in period $t$ (for example, $Y^0(1)$ is the outcome under the control in period 1).
 :::
 

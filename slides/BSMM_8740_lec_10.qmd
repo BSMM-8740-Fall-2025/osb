@@ -28,14 +28,278 @@ execute:
 
 ## Recap of last week
 
--   Last week we introduced the fundamental problems of inference and the biases of some intuitive estimators.
--   We also built a basic understanding of the tools used to state and then satisfy causality assumptions.
+-   Last week we introduced Markov Chain methods for integration and sampling from probability distributions.
+-   We also built a basic understanding of the tools for sampling in Bayesian analysis.
 
 ## This week
 
--   We will get a taste of Bayesian regression applied to elasticity analysis.
+-   We will explore Bayesian methods in more detail.
+-   We will use one of the popular R packages for Bayesian analysis.
 
 # Bayesian Regression
+
+::: {style="font-size: x-large"}
+From Bayes' Rule we have
+
+$$
+P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)} 
+$$
+
+If $B$ is interpreted as the data $\mathcal{D}$ and $A$ is chosen to be the set of parameters that you'd want to estimate, call this set $\theta$, then
+
+$$
+\underbrace{P(\theta \vert \mathcal{D})}_{\text{Posterior}} = 
+    \frac{1}{\underbrace{P(\mathcal{D})}_{\text{Normalization}}}
+\overbrace{P(\mathcal{D} \vert \theta)}^{\text{Likelihood}}\overbrace{P(\theta)}^{\text{Prior}}
+$$
+:::
+
+# Bayesian Regression
+
+## Maximum likelihood (MLE)
+
+Recall that for a linear regression $y\sim \mathcal{N}(\beta x,\sigma^2)$ the likelihood of any one observation $y_i$ is (with $\theta$ representing the set of parameters)
+
+$$
+\pi\left(\left.y_{i}\right|x_{i},\beta,\sigma^{2}\right)=\pi\left(\left.y_{i}\right|x_{i},\theta\right)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i}-\beta x_{i})^{2}}{2\sigma^{2}}}
+$$ and the log-likelihood of $N$ observations $\{y_i\}_{i=1}^N$ is
+
+$$
+\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
+$$
+
+## Maximum likelihood (MLE)
+
+The maximum likelihood estimate of $\beta$ is
+
+$$
+\hat{\theta}_{\text{MLE}}=\arg\max_{\theta} -\sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
+$$
+
+$$
+\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
+$$
+
+this is equivalent to minimizing the sum of the squared errors, and is also called the [**a priori**]{.underline} estimate.
+
+## Bayesian model
+
+The Bayesian model for linear regression is (to within a scaling constant)
+
+$$
+\begin{align*}
+\pi_{\theta\vert\mathcal{D}}\left(\left.\theta\right|y_i,x_i\right)\sim\pi\left(\left.y_i\right|x_i,\theta\right)\times\pi_\theta\left(\theta\right)
+\end{align*}
+$$
+
+where the parameters are $\theta=\{\beta,\sigma^2\}$.
+
+::: {style="font-size: 70%"}
+In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods to avoid numerical problems arising from the product of small probabilities.
+:::
+
+## Maximum a posteriori estimate (MAPE)
+
+The maximum a posteriori estimate of the parameters is
+
+$$
+\begin{align*}
+\hat{\theta}_{\text{MAP}} & =\arg\max_{\theta}\log\prod_{i=1}^{N}\pi_{\theta\vert\mathcal{D}}\left(\left. \theta \right|y_{i},x_{i}\right)\\
+ & =\arg\max_{\theta}\sum_{i=1}^{N} \left(\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)+\log\pi_\theta\left(\theta\right)\right)\\
+ & =\arg\min_{\theta}-\sum_{i=1}^{N} \left(\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)+\log\pi_\theta\left(\theta\right)\right)
+\end{align*}
+$$
+
+## Maximum a posteriori estimate (MAPE)
+
+::: {style="font-size: x-large"}
+If $\theta$ is not uncertain/random, then $\pi(\theta)=1\rightarrow\log\pi(\theta)=0$ and the MAPE is equal to the MLE.
+
+In linear regression we assume $\pi(\sigma^2) = 1$, so If $\theta$ is uncertain/random it remains to give a prior distribution to $\beta$ (as a vector of dimension $D$, in general). Assume $\beta=\mathscr{N}\left(0,\lambda^{-1}I\right)$ (with a single scale constant $\lambda$), then
+
+$$
+\pi_\theta(\beta) =  \frac{1}{\sqrt{(2\pi)^D \frac{1}{\lambda^D}}}exp(-\frac{1}{2}(\beta - 0)^\top (\frac{1}{\lambda} I)^{-1} (\beta - 0)) =
+\frac{\lambda^{\frac{D}{2}}}{(2\pi)^{\frac{D}{2}}}exp(-\frac{\lambda}{2} \beta^\top \beta)
+$$
+:::
+
+## Maximum a posteriori estimate (MAPE)
+
+::: {style="font-size: x-large"}
+With Gaussian $\pi(\beta)$ as in the last slide, and likelihood
+
+$$
+\pi(y_i \vert x_i, \beta) = \frac{1}{\sqrt{2\pi\sigma^2}}exp(-\frac{1}{2\sigma^2}(y_i- x_i^\top\beta)^2)
+$$
+
+we have, for linear regression
+
+$$
+\begin{align*}
+\hat{\theta}_{\text{MAP}} & =\arg\min_{\theta}-\sum_{i=1}^{N}\left(\log\pi\left(\left.y_{i}\right|x_{i},\theta\right)+\log\pi_\theta\left(\theta\right)\right)\\
+ & =\arg\min_{\theta}\left(\frac{1}{2\sigma^{2}}\sum_{i=1}^{N}(y_i-x_i^{T}\beta)^{2}+\frac{\lambda}{2}\beta^\top\beta\right)
+\end{align*}
+$$
+
+which turns out to be a linear interpolation between the prior mean and the sample mean weighted by their respective covariances.
+:::
+
+## Conjugate priors
+
+The case of the Gaussian likelihood and Gaussian prior
+
+If the posterior distribution $\pi_{\theta\vert\mathcal{D}}$ is in the same probability distribution family as the prior probability distribution $\pi_\theta$ (generally this means they are the same to within a normalizing constant), the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood function $\pi$. A conjugate prior is an algebraic convenience, giving a closed-form expression for the posterior.
+
+## Conjugate priors
+
+#### example 1
+
+Consider a random variable which consists of the number of successes $s$ in $n$ Bernoulli trials with unknown probability of success $p\in[0,1]$. This random variable will follow the binomial distribution, with a probability mass function of the form
+
+$$
+\pi(s)={n \choose s}p^s(1-p)^{n-s}
+$$
+
+The usual conjugate prior is the beta distribution with parameters ($\alpha, \beta$):
+
+$$
+\pi_\theta(p;\alpha,\beta) = \frac{p^{\alpha-1}(1-p)^{\beta-1}}{\mathrm{B}(\alpha,\beta)}
+$$
+
+where $\alpha$ and $\beta$ are chosen to reflect any existing belief or information ($\alpha = 1$ and $\beta = 1$ would give a uniform distribution) and $\mathrm{B}(\alpha,\beta)$ is the Beta function acting as a normalising constant.
+
+## Conjugate priors
+
+#### example 1
+
+If we sample this random variable and get $s'$ successes and $f=n-s'$ failures, then we have
+
+$$
+\begin{align*}
+\pi_{\theta\vert\mathcal{D}}(p=x) & \sim x^{s'}(1-x)^{n-s'}\times x^{\alpha-1}(1-x)^{\beta-1}\\
+ & \sim x^{s'+\alpha+1}(1-x)^{(n-s')+\beta-1}\\
+ & \sim\pi_{\theta\vert\mathcal{D}}(x;s'+\alpha+1,(n-s')+\beta-1)
+\end{align*}
+$$
+
+And the posterior distribution $\pi_{\theta\vert\mathcal{D}}$ is in the same probability distribution family as the prior probability distribution $\pi_\theta$.
+
+## Conjugate priors
+
+#### example 2
+
+::: {style="font-size: x-large"}
+Suppose you've been asked to find the probability that you have exactly 5 outages at your website during any hour of the day. Your client has limited data, in fact they have just three data points $x=[3,4,1]$
+
+If you assume that the data are generated by a Poisson distribution (which has a single parameter, the rate $\lambda$), then the maximum likelihood estimate of $\lambda$ is $\lambda=\frac{3+4+1}{3}\approx 2.67$, and
+
+$$
+\pi(n=5\vert\lambda\approx 2.67) = \frac{\lambda^n e^{-\lambda}}{n!}=\frac{2.67^5 e^{-2.67}}{5!}=0.078
+$$
+:::
+
+## Conjugate priors
+
+#### example 2
+
+::: {style="font-size: x-large"}
+This is the Poisson distribution that is the most likely to have generated the observed data $x$.
+
+But the data could also have come from another Poisson distribution, e.g., one with $\lambda =3$, or $\lambda =2$, etc. In fact, there is an infinite number of Poisson distributions that could have generated the observed data. With relatively few data points, we should be quite uncertain about which exact Poisson distribution generated this data. Intuitively we should instead take a weighted average of the probability of $\pi(x>0|\lambda )$ for each of those Poisson distributions, weighted by how likely they each are, given the data we've observed.
+
+This is exactly what Bayes' Rule does.
+:::
+
+## Conjugate priors
+
+#### example 2
+
+::: {style="font-size: x-large"}
+Luckily, the Poisson distribution has a conjugate, the Gamma distribution: $\pi_\theta(x;\alpha,\beta)=\frac{x^{\alpha-1}e^{-\beta x}\beta^\alpha}{\Gamma(\alpha)}$, and
+
+$$
+\begin{align*}
+\pi\left(y\vert\lambda\right) & =\prod_{i=1}^{n}\frac{\lambda^{y_{i}}e^{-\lambda}}{y_{i}!}\\
+ & =\lambda^{n\bar{y}}e^{-n\lambda}\prod_{i=1}^{n}\frac{1}{y_{i}!}
+\end{align*}
+$$
+
+so $\pi\left(y\vert\lambda\right)\times pi_\theta(x;\alpha,\beta)\sim \lambda^{n\bar{y}+\alpha-1}e^{-(n+\beta)\lambda}\sim\pi_\theta(x;n\bar{y}+\alpha,(n+\beta))$
+:::
+
+## Conjugate priors
+
+#### example 2
+
+::: {style="font-size: large"}
+Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might take the prior as a Gamma with $\alpha=9;\;\beta = 2$ which looks like this:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-height: 3
+#| fig-width: 8
+#| fig-aling: center
+#| 
+.shape <- 9 + 3*2.67  ; .rate <- 3+2
+
+tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=9, rate = 2), measure = "prior") |> 
+  dplyr::bind_rows(
+    tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=.shape, rate = .rate), measure = "posterior")
+  ) |> 
+  ggplot(aes(x=lambda, y = plambda, color = measure)) + geom_line() + theme(legend.position = "right")
+```
+
+```{r}
+#| echo: true
+#| code-fold: true
+.shape <- 9 + 3*2.67  ; .rate <- 3+2
+ci <- qgamma(c(0.05,0.9), shape=.shape, rate = .rate) |> purrr::map_dbl(function(x){round( x^5 * exp(-x)/factorial(5),digits=3)})
+```
+
+Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
+:::
+
+## Conjugate priors
+
+#### example 2
+
+::::: columns
+::: {.column width="40%"}
+::: {style="font-size: large"}
+Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might take the prior as a Gamma with $\alpha=9;\;\beta = 2$ which looks like this:
+```{r}
+#| echo: true
+#| code-fold: true
+.shape <- 9 + 3*2.67  ; .rate <- 3+2
+ci <- qgamma(c(0.05,0.95), shape=.shape, rate = .rate) |> purrr::map_dbl(function(x){round( x^5 * exp(-x)/factorial(5),digits=3)})
+```
+
+Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
+:::
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-height: 5
+#| fig-width: 9
+#| fig-aling: center
+#| 
+.shape <- 9 + 3*2.67  ; .rate <- 3+2
+
+tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=9, rate = 2), measure = "prior") |> 
+  dplyr::bind_rows(
+    tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=.shape, rate = .rate), measure = "posterior")
+  ) |> 
+  ggplot(aes(x=lambda, y = plambda, color = measure)) + geom_line() + 
+  labs(title = "Probability distributions for Lambda", subtitle = " prior and posterior predictive") +
+  theme(legend.position = "right")
+```
+
+:::
+:::::
 
 ## Elasticity estimation
 
@@ -76,60 +340,6 @@ The equation $\log(V) = \log(K) + \beta\log(p)$ defines a linear relation betwee
 In this version of the problem there are only two parameters, the constant $\log(K)$ (aka the intercept in the log-log plot of volume vs price plot) and the elasticity $\beta$, the slope of the log-log plot.
 
 As in all linear regressions the variance of the error term is **assumed** constant and its mean is **assumed** zero.
-
-## Maximum likelihood (MLE)
-
-For a linear regression $y\sim \mathcal{N}(\beta x,\sigma^2)$ the likelihood of any one observation $y_i$ is
-
-$$
-\pi\left(\left.y_{i}\right|x_{i},\beta,\sigma^{2}\right)=\pi\left(\left.y_{i}\right|x_{i},\theta\right)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i}-\beta x_{i})^{2}}{2\sigma^{2}}}
-$$ and the log-likelihood of $N$ observations is
-
-$$
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-## Maximum likelihood (MLE)
-
-The maximum likelihood estimate of $\beta$ is
-
-$$
-\hat{\theta}_{\text{MLE}}=\arg\max_{\theta} -\sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-$$
-\log\prod_{i=1}^{N}\pi\left(\left.y_{i}\right|x_{i},\theta\right) = \sum_{i=1}^{N}\log \pi\left(\left.y_{i}\right|x_{i},\theta\right)
-$$
-
-this is equivalent to minimizing the sum of the squared errors, and is also called the a priori estimate.
-
-## Bayesian model
-
-The Bayesian model for our elasticity problem is (to within a scaling constant)
-
-$$
-\begin{align*}
-\pi\left(\left.\theta\right|V,P\right)\sim\pi\left(\left.V\right|P,\theta\right)\times\pi\left(\theta\right)
-\end{align*}
-$$ {#eq-bayes}
-
-where the parameters are $\theta=\{\beta,K\}$.
-
-::: {style="font-size: 70%"}
-In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods in equation (@eq-bayes) to avoid numerical problems arising from the product of small probabilities.
-:::
-
-## Maximum a posteriori (MAPE)
-
-The maximum a posteriori estimate of the parameters is
-
-$$
-\begin{align*}
-\hat{\theta}_{\text{MAP}} & =\arg\max_{\theta}\log\prod_{i=1}^{N}\pi\left(\left. \theta \right|v_{i},p_{i}\right)\\
- & =\arg\max_{\theta}\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)\\
- & =\arg\min_{\theta}-\sum_{i=1}^{N} \left(\log \pi\left(\left.v_{i}\right|p_{i},\theta\right)+\log\pi\left(\theta\right)\right)
-\end{align*}
-$$
 
 ## Likelihood Function
 
