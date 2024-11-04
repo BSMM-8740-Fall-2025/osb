@@ -231,43 +231,11 @@ so $\pi\left(y\vert\lambda\right)\times pi_\theta(x;\alpha,\beta)\sim \lambda^{n
 
 #### example 2
 
+:::::: columns
+:::: {.column width="40%"}
 ::: {style="font-size: large"}
 Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might take the prior as a Gamma with $\alpha=9;\;\beta = 2$ which looks like this:
 
-```{r}
-#| echo: true
-#| code-fold: true
-#| fig-height: 3
-#| fig-width: 8
-#| fig-aling: center
-#| 
-.shape <- 9 + 3*2.67  ; .rate <- 3+2
-
-tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=9, rate = 2), measure = "prior") |> 
-  dplyr::bind_rows(
-    tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), shape=.shape, rate = .rate), measure = "posterior")
-  ) |> 
-  ggplot(aes(x=lambda, y = plambda, color = measure)) + geom_line() + theme(legend.position = "right")
-```
-
-```{r}
-#| echo: true
-#| code-fold: true
-.shape <- 9 + 3*2.67  ; .rate <- 3+2
-ci <- qgamma(c(0.05,0.9), shape=.shape, rate = .rate) |> purrr::map_dbl(function(x){round( x^5 * exp(-x)/factorial(5),digits=3)})
-```
-
-Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
-:::
-
-## Conjugate priors
-
-#### example 2
-
-::::: columns
-::: {.column width="40%"}
-::: {style="font-size: large"}
-Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might take the prior as a Gamma with $\alpha=9;\;\beta = 2$ which looks like this:
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -277,7 +245,7 @@ ci <- qgamma(c(0.05,0.95), shape=.shape, rate = .rate) |> purrr::map_dbl(functio
 
 Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
 :::
-:::
+::::
 
 ::: {.column width="60%"}
 ```{r}
@@ -297,9 +265,313 @@ tibble::tibble(lambda = seq(0.04,15,0.02), plambda = dgamma(seq(0.04,15,0.02), s
   labs(title = "Probability distributions for Lambda", subtitle = " prior and posterior predictive") +
   theme(legend.position = "right")
 ```
+:::
+::::::
 
+## Conjugate priors
+
+-   Conjugate priors offer ease of computation, efficiency in updates, and clear interpretation, making them suitable for simpler models or real-time applications.
+
+-   However, they are often too restrictive for complex or non-standard models, where flexibility in capturing prior beliefs is crucial.
+
+## Conjugate priors
+
+::: {style="font-size: large"}
+Limitations of Conjugate Priors
+
+-   Restrictive Choice of Priors: Conjugate priors limit the choice of prior distributions to a specific family. This restricts flexibility, especially if real-world data suggests a prior belief outside the conjugate family, which may not accurately capture prior knowledge or uncertainty.
+-   Lack of Flexibility with Complex Models: Conjugate priors are often insufficient for complex models, such as hierarchical or multi-level models, where dependencies between variables require more flexible priors. Non-conjugate priors, despite being more computationally intensive, can better accommodate the complexity of these models.
+-   Potential for Over-Simplification: Choosing a conjugate prior for convenience can sometimes lead to oversimplification, especially if it does not match the true prior knowledge. This can introduce bias and reduce the model’s accuracy in reflecting genuine prior beliefs.
+-   Less Suitable for Non-Standard Likelihoods: Conjugate priors work best with specific likelihood functions, and many real-world problems don’t have standard likelihoods that match conjugate prior forms. In these cases, using a conjugate prior may be infeasible, forcing the use of non-conjugate methods.
+:::
+
+## Generative (bayesian) modelling
+
+-   Generative Bayesian modeling is an approach in Bayesian statistics where we create models that describe how data is generated, often by specifying probability distributions for both observed and latent (unobserved) variables.
+
+-   This process involves defining a generative process — a step-by-step probabilistic framework that models how data could have arisen.
+
+## Generative (bayesian) modelling
+
+::: {style="font-size: x-large"}
+**Key Components of Generative Bayesian Modeling**
+
+-   Defining Priors: Start by assigning prior distributions to parameters, reflecting prior beliefs about these parameters before observing data. Priors incorporate domain knowledge and regularize the model.
+-   Likelihood Function: Specify the likelihood, which represents the probability of observing the data given the parameters. It describes how data is assumed to be generated given specific values of the model parameters.
+-   Posterior Inference: Using Bayes’ theorem, combine priors and the likelihood to calculate the posterior distribution of the parameters. This posterior reflects updated beliefs after seeing the data.
+-   Latent Variables and Hierarchies: Generative models can include latent variables, which represent unobserved or hidden factors, and hierarchical structures, which model data with multiple levels of variation (e.g., nested or grouped data).
+:::
+
+## Generative (bayesian) modelling
+
+::: {style="font-size: x-large"}
+**Advantages of Generative Bayesian Models**
+
+-   Interpretability: Generative models explicitly describe the data-generating process, making them interpretable and suitable for understanding complex systems.
+-   Predictive Power: By learning the underlying structure of the data, generative models can predict unseen outcomes and infer missing or latent data.
+-   Uncertainty Quantification: Bayesian models naturally quantify uncertainty in parameter estimates and predictions, enhancing decision-making with probabilistic insights.
+:::
+
+## Generative (bayesian) modelling
+
+::: {style="font-size: x-large"}
+**Limitations**
+
+-   Computational Complexity: Generative Bayesian models, especially those with complex hierarchical structures or latent variables, can be computationally demanding, often requiring methods like MCMC.
+-   Model Specification: The accuracy of generative Bayesian models heavily depends on correctly specifying the generative process, which can be challenging with limited domain knowledge or complex data.
+
+**Applications**
+
+Generative Bayesian modeling is widely used in areas requiring a deep understanding of data-generating processes, such as healthcare, natural language processing, finance, and other business applications. It enables tasks like anomaly detection, missing data imputation, and causal inference by modeling the probability structure of observed and unobserved variables.
+:::
+
+## Generative modelling with BRMS
+
+`BRMS` (Bayesian Regression Models using Stan) is an R package for fitting complex Bayesian regression models using Stan, a powerful probabilistic programming language. BRMS provides a high-level, formula-based interface in R, making it easy to specify and fit Bayesian models.
+
+`BRMS` is useful for performing complex Bayesian analyses in R without diving into raw Stan code.
+
+## Generative modelling with BRMS
+
+:::::: {style="font-size: x-large"}
+::::: columns
+::: {.column width="40%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| cache: true
+# load data
+data("epilepsy", package = "brms")
+
+epilepsy
+```
+:::
+
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+output <- 
+  capture.output(
+    fit_epi_gaussian1 <- brms::brm(count ~ 1 + Trt, data = epilepsy, silent = 2, seed = 8740)
+  )
+  
+fit_epi_gaussian1
+```
 :::
 :::::
+::::::
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+At the top of the output, we see the formula and dataset. Moving to the actual posterior results, brms shows two blocks of parameters here, namely Regression Coefficients and Further Distributional Parameters. The latter refers to additional parameters of the likelihood that we did not predict with our regression, here the residual standard deviation sigma.
+
+For each of the displayed parameters, we see seven summary statistics. The Estimate column is simply the empirical mean of the posterior draws, which is a sampling-based estimate of the analytical posterior mean.
+
+The Est.Error columns denotes (the empirical estimate of) the posterior standard deviation, while the lower and upper bounds of the 95% credible interval are computed as the 2.5% and 97.5% quantile of the posterior samples, respectively. The three remaining columns, Rhat, Bulk_ESS, and Tail_ESS give us information about convergence and sampling eﬀiciency, as also shortly explained at the bottom of the summary output.
+:::
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+Here we see, for each parameter separately, traces of the four MCMC chains in different colors with post-warmup iterations on the x-axis and parameter values on the y-axis. These trace plots are showing ideal convergence: All chains are overlaying each other nicely, are stationary (horizontal on average), and show little autocorrelation (moving up and doing very quickly).
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| fig-align: center
+#| fig-height: 4
+brms::mcmc_plot(fit_epi_gaussian1, type = "trace")
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+Having convinced us of convergence, at least graphically for now, we can move on to inspecting the posterior. For example, we can plot histograms of the posterior samples per parameter.
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| fig-align: center
+#| fig-height: 4
+brms::mcmc_plot(fit_epi_gaussian1, type = "hist", bins=30)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+In R, we can easily perform transformations by first extracting the posterior draws and then applying the transformation per draws in a vectorized manner. For example, using the functionality from the posterior:: package
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+draws <- 
+  posterior::as_draws_df(fit_epi_gaussian1) |> 
+  posterior::mutate_variables(
+    sigma2 = sigma^2, mu_Trt = b_Intercept + b_Trt1
+  )
+
+draws
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+With mu_Trt we computed the model-implied predictions of the mean for the treatment group. For the control group, it would just be mu_Ctrl = $\beta_0$ for this simple model.
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+bayesplot::mcmc_hist(draws, c("sigma2", "mu_Trt"), bins = 30)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+For more complex models, computing the predictions for different groups or, more generally, different predictor values manually becomes quite cumbersome. For this reason brms provides you with a convenient method to provide quick graphical summarizes of the model-implied predictions per predictor:
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+ce <- brms::conditional_effects(fit_epi_gaussian1)
+plot(ce)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+The error bars in the last slide are representing 95% credible intervals by default, but we can change that value if we like via the prob argument. Comparing the conditional_effects plot with our manually computed posterior of mu_Trt, we see that they actually are the same.
+
+To put the mean predictions into the context of the observed data, we can also show the data as points in the plot:
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+plot(ce, points = TRUE)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+What we do in conditional_effects by default, and have done above, is visualizing the expected value (mean parameter) of the likelihood distribution, conditional on certain predictor values. In brms, this is done via the posterior_epred (posterior expected predictions) method. For example, we can run the code beloe to create expected posterior predictions for both groups. The resulting object contains the posterior draws in the rows and the different conditions (here, treatment groups) in the columns.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+newdata <- data.frame(Trt = c(0, 1))
+pe <- brms::posterior_epred(fit_epi_gaussian1, newdata = newdata)
+```
+
+We also can summarize the draws, for example, via
+
+```{r}
+brms::posterior_summary(pe)
+```
+
+In linear models, posterior_epred directly coincides with evaluating the linear predictor $\mu$ as exemplified above. What posterior_epred does not include is the residual uncertainty, which is represented by $\sigma$ in our linear models.
+:::
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+Consider again the task of evaluating predictions for the treatment group. If we are only interested in (the posterior of) the likelihood’s mean parameter, we would compute $\mu^{(s)}_{\mathrm{Trt}}=\beta_0^{(s)} + \beta_1^{(s)}$.
+
+In contrast, if we are interested in prediction of hypothetical new data points $y^{(s)}_{\mathrm{Trt}}$ from the treatment group (i.e., actual posterior predictions), we would sample
+
+$$
+y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)} \right)
+$$
+
+This is exactly what happens behind the scenes when we execute the code below:
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+options(brms.plot_points = TRUE)
+brms::conditional_effects(fit_epi_gaussian1, method = "posterior_predict")
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+We could have also done this more manually via
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+newdata <- data.frame(Trt = c(0, 1))
+pp <- brms::posterior_predict(fit_epi_gaussian1, newdata = newdata)
+
+brms::posterior_summary(pp)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+We are already aware that the considered linear regression model is not ideal for the epilepsy data. But how bad is it? As quick graphical method, we can use posterior predictive (PP) checks, where we are compare the observed outcome data with the model predicted outcome data, that is, with the posterior predictions. In brms, we can perform PP-checks via:
+:::
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| message: false
+brms::pp_check(fit_epi_gaussian1)
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+We see that the model predictions can neither account for the strong spike of observed outcomes close to zero nor for their right-skewness. Instead, the the model also predicts a lot of negative outcomes, which is impossible in reality because we are predicting counts of epileptic seizures. In the plot, it looks as if the observed data also had few negative values (the dark blue density going below zero) but this is just an artifact of estimating a continuous density from counts. While this PP-check type is definitely not ideal to illustrate count outcome data, it still very clearly points to the shortcomings of our linear model.
+:::
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+While the default PP-check was already eye-opening, there are lot of types that can further our understanding of model appropriateness. For example, an often very useful check is obtained by comparing the residuals = observed outcomes - model predictions with the observed outcomes, also known as residual plot. In pp_check this check type is called error_scatter_avg:
+:::
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| message: false
+
+brms::pp_check(fit_epi_gaussian1, type = "error_scatter_avg")
+```
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+Here there is a strongly almost perfectly linear relationship indicating strong problems with the independence assumption of the errors. 
+
+Essentially, both PP-checks have told us that our initial model is a very bad for the data at hand. 
+
+If you don’t know which check types are available, you can simply pass an arbitrary non-supported type name to get a list of all currently supported types:
+
+:::
+```{r}
+#| echo: true
+#| eval: false
+brms::pp_check(fit_epi_gaussian1, type = "help_me")
+```
+
 
 ## Elasticity estimation
 
