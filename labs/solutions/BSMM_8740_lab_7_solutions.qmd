@@ -481,6 +481,7 @@ The de-biasing step is crucial for estimating the correct causal effect, while t
 
 ```{r}
 #| eval: true
+#| message: false
 # create the de-noising model
 denoising_model <- 
     lm(
