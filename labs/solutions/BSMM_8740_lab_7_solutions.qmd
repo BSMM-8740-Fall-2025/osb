@@ -1,0 +1,948 @@
+---
+title: "Lab 7 - Causality: DAGs"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+reference-location: margin
+---
+
+## Introduction
+
+In today's lab, you'll practice working with DAGs and building a causal workflow.
+
+### Learning goals
+
+By the end of the lab you will...
+
+-   Be able to build DAGs to model causal assumptions and use the causal model to extract implications for answering causal questions.
+-   Be able to build a causal workflow to answer causal questions.
+
+## Packages
+
+```{r}
+#| message: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito, malcolmbarrett/causalworkshop
+  , magrittr, ggplot2, estimatr, Formula, r-causal/propensity, gt, gtExtras)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Exercise 1: DAGs and open paths
+
+Find the open paths from D (treatment) to Y (outcome) in the four DAGs below.
+
+You can examine the DAGS to identify (this is the recommended first step) and then use the code for the DAGs (in your repo), along with the function `dagitty::paths` to confirm
+
+```{r}
+#| code-fold: true
+#| code-summary: Four example DAGs
+# (1)
+dag_1 <- 
+ggdag::dagify(
+  A ~ D
+  , Y ~ A
+  , B ~ A
+  , coords = ggdag::time_ordered_coords(
+    list(
+      "D"             # time point 1
+      , c("A","B")    # time point 2
+      , "Y"           # time point 3
+    )
+  ),
+  exposure = "D",
+  outcome = "Y"
+) 
+
+# (2)
+dag_2 <- 
+ggdag::dagify(
+  D ~ A
+  , E ~ D
+  , Y ~ E
+  , E ~ F
+  , B ~ F
+  , B ~ A
+  , C ~ B
+  , coords = ggdag::time_ordered_coords(
+    list(
+      c("A","D")             # time point 1
+      , c("B","F","E")    # time point 2
+      , c("C","Y")           # time point 3
+    )
+  ),
+  exposure = "D",
+  outcome = "Y"
+) 
+
+# (3)
+dag_3 <- 
+ggdag::dagify(
+  A ~ D
+  , Y ~ D
+  , D ~ B
+  , A ~ B
+  , Y ~ B
+  , coords = ggdag::time_ordered_coords(
+    list(
+      "D"             # time point 1
+      , c("B","A")    # time point 2
+      , "Y"           # time point 3
+    )
+  ),
+  exposure = "D",
+  outcome = "Y"
+) 
+
+# (4)
+dag_4 <- 
+  ggdag::dagify(
+    Y ~ D
+    , Y ~ C
+    , D ~ B
+    , D ~ A
+    , B ~ C
+    , B ~ A
+    , coords = ggdag::time_ordered_coords(
+      list(
+        c("A","D")             # time point 1
+        , "B"    # time point 2
+        , c("C","Y")           # time point 3
+      )
+    ),
+    exposure = "D",
+    outcome = "Y"
+  ) 
+# %>% 
+#   ggdag::ggdag(text = TRUE) +
+#   ggdag::theme_dag()
+
+dag_flows <- 
+  purrr::map(
+    list(dag_1 = dag_1, dag_2 = dag_2, dag_3 = dag_3, dag_4 = dag_4)
+    , ggdag::tidy_dagitty
+  ) |> 
+  purrr::map("data") |> 
+  purrr::list_rbind(names_to = "dag") |> 
+  dplyr::mutate(dag = factor(dag, levels = c("dag_1", "dag_2", "dag_3", "dag_4")))
+
+dag_flows |> 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  ggdag::geom_dag_edges(edge_width = 1) + 
+  ggdag::geom_dag_point() + 
+  ggdag::geom_dag_text() + 
+  facet_wrap(~ dag) +
+  ggdag::expand_plot(
+    expand_x = expansion(c(0.2, 0.2)),
+    expand_y = expansion(c(0.2, 0.2))
+  ) +
+  ggdag::theme_dag()
+```
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+-   DAG_1
+
+```{r}
+#| echo: true
+# open paths DAG 1: "D -> A -> Y"
+dag_1 %>% dagitty::paths()
+```
+
+-   DAG_2
+
+```{r}
+#| echo: true
+# open paths DAG 2: "D -> E -> Y"
+dag_2 %>% dagitty::paths()
+```
+
+-   DAG_3
+
+```{r}
+#| echo: true
+# open paths DAG 3: "D -> Y" and "D <- B -> Y"
+dag_3 %>% dagitty::paths()
+```
+
+-   DAG_4
+
+```{r}
+#| echo: true
+# open paths DAG 4: "D -> Y" and "D <- B <- C -> Y"
+dag_4 %>% dagitty::paths()
+```
+:::
+
+## Exercise 2: Building a DAG
+
+You work for a company that sells a commodity to retail customers, and your management is interested in the relationship between your price and the demand for the commodity at your outlets. You have one competitor and your pricing tactic is to set your price at slightly less that your competitor's. Your company surveys the competitors prices several times per day and once you know the competitor's price, the pricing team resets your prices according to the pricing tactic. The public is well informed of both prices when they make their choice to buy.
+
+You and your competitor buy from the wholesaler at a price that is set by the global market, and the wholesaler's price is reset at the beginning of the each day according to the market price at the end of the day before. As the market is traded globally it reflects global demand for the commodity as well as other global and local economic shocks that you customers might be exposed to (interest rates, general business conditions, wages, etc.).
+
+Your company has data on its prices, competitor prices and sales, and has asked you to do an analysis of the pricing tactics to increase demand.
+
+To confirm your understanding of the business, perhaps identify missing data, and to inform your analysis, create a DAG describing the assumed relationships between the driving factors for this problem.
+
+What data might be missing from dataset provided by the company?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+\(1\) **The DAG:** The description above describes the DAG shown below
+
+```{r}
+#| code-fold: true
+#| code-summary: price-demand DAG
+#| warning: false
+set.seed(8740)
+ggdag::dagify(
+  demand ~ price + economy + c_price
+  , price ~ c_price + wholesale
+  , c_price ~ wholesale
+  , wholesale ~ economy
+  , exposure = "price"
+  , outcome = "demand"
+  , labels = c(
+      price = "price",
+      c_price = "c_price",
+      economy = "economy",
+      demand = "demand",
+      wholesale = "wholesale"
+    )
+) %>%
+  ggdag::ggdag(use_labels = "label", text = FALSE) +
+  ggdag::theme_dag()
+```
+
+\(2\) **The missing data**: There is an [**open**]{.underline} path: **price -\> c_price -\> demand**, and clearly our competitor's price is a confounder of our price effect on demand - but it can be controlled for since we have the competitor price data.
+
+However, there is also an [**open**]{.underline} path: **price -\> wholesale -\> economy -\> demand**, and this needs to be closed if we are to accurately estimate our price effect on demand. We could close this path if we had data on the wholesale prices or on the 'economy,' as controlling for either would close the path, but the latter is unmeasured and even if there were some measure of the 'economy,' the wholesale prices would likely have less measurement error. So both those datasets are missing, but we should ask management for, or otherwise acquire, the wholesale price history.
+
+We might be able to do a bit better too, perhaps by reducing variance by including data on weather, traffic, holidays, etc., expanding our model as follows:
+
+```{r}
+#| code-fold: true
+#| code-summary: revised price-demand DAG
+set.seed(8740)
+ggdag::dagify(
+  demand ~ price + traffic + c_price + economy
+  , traffic ~ economy
+  , demand ~ weather
+  , demand ~ holidays
+  , price ~ c_price + wholesale
+  , c_price ~ wholesale
+  , wholesale ~ economy
+  , exposure = "price"
+  , outcome = "demand"
+  , labels = c(
+      price = "price",
+      c_price = "c_price",
+      economy = "economy",
+      demand = "demand",
+      wholesale = "wholesale",
+      traffic = "traffic",
+      weather = "weather",
+      holidays = "holidays"
+    )
+) %>%
+  ggdag::ggdag(use_labels = "label", text = FALSE) +
+  ggdag::theme_dag()
+```
+:::
+
+## Exercise 3: Inverse Probability Weights (IPWs)
+
+In class we used the function `propensity::wt_ate` to calculate inverse probability weights, starting from the propensity scores, as in the code below:
+
+```{r}
+#| eval: true
+propensity_model <- glm(
+  net ~ income + health + temperature,
+  data = causalworkshop::net_data,
+  family = binomial()
+)
+```
+
+Repeat the calculation of the IPWs, using the definition of the weight as the inverse probability, and show that your calculated weights are the same as those computed by `propensity::wt_ate`
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| eval: true
+#| message: false
+#| warning: false
+# calculate inverse probability weights
+net_data_wts <- propensity_model |>
+  # augment the origiinal data with the predictions from that data per the model
+  broom::augment(newdata = causalworkshop::net_data, type.predict = "response") |>
+  # add columns for 
+  # - directly calculated weights and 
+  # - weights from propensity::wt_ate, and
+  # - eqquality comparison of the two weights
+  dplyr::mutate(
+    ip_wts =
+      # NOTE: the weight is 1/(probability of treatment)- so 1/.fitted if net = TRUE and 1/(1-.fitted) otherwise
+      dplyr::case_when(
+        net ~ 1/.fitted
+        , TRUE ~ 1/(1-.fitted)
+      )
+    , wts = propensity::wt_ate(.fitted, net)
+    , "ip_wts = wts" = ip_wts == wts
+)
+
+net_data_wts |> dplyr::select(net, ip_wts, wts, `ip_wts = wts`)
+```
+
+```{r}
+# summarize by evaluating if all the weights are positive
+net_data_wts |> dplyr::select(net, ip_wts, wts, `ip_wts = wts`) |> 
+  dplyr::summarise("all equal" = all(`ip_wts = wts`) )
+```
+:::
+
+## Exercise 4: Randomized Controlled Trials
+
+The essence of exchangeability is that the treated and untreated groups are very similar with respect to values of potential confounders. Randomization of treatment makes outcomes independent of treatment, and also makes the treated and untreated groups very similar with respect to values of potential confounders.
+
+Show that this is the case for our mosquito net data by simulating random treatment assignment as follows:
+
+```{r}
+#| echo: true
+# use this data - mosquito net data plus a row id numer
+smpl_dat <- causalworkshop::net_data |>
+  tibble::rowid_to_column()
+```
+
+1.  use `tidysmd::tidy_smd` with `smpl_dat` and group=net to calculate the standardized mean differences (SMDs) for the confounders income, health and temperature.
+2.  use `dplyr::slice_sample` to randomly sample from `smpl_dat`, with proportion 0.5. Give this sample data a name.
+3.  mutate the sample to add a column with smpl = 1.
+4.  take the data not in the first sample and form a second sample (start with the original data (smpl_dat) and remove the rows that appear in the sample of step 1. This is why we added a row id. Give this second sample data a name.
+5.  mutate the second sample to add a column with smpl = 0.
+6.  bind the two samples together by rows (e.g. `dplyr::bind_rows`).
+7.  use `tidysmd::tidy_smd` with the combined samples from step 6 and group=smpl to calculate the standardized mean differences (SMDs) for the confounders income, health and temperature.
+
+Did randomization make the treatment groups more alike with respect to income, health and temperature?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+# create the first random sample of the data (sample 0)
+split_0 <- smpl_dat |>
+  dplyr::slice_sample(prop=0.5) |>
+  dplyr::mutate(smpl = 0)
+
+# create the second random sample from the first (sample 1)
+split_data <- split_0 |>
+  dplyr::bind_rows(
+    smpl_dat[-split_0$rowid,] |>
+      dplyr::mutate(smpl = 1)
+  )
+
+smd_dat <- tidysmd::tidy_smd(
+  split_data,
+  c(income, health, temperature),
+  .group = smpl,
+) 
+smd_dat
+```
+
+```{r}
+# plot the differences
+smd_dat |> dplyr::mutate( samples = "random" ) |> 
+  dplyr::bind_rows(
+    tidysmd::tidy_smd(
+      causalworkshop::net_data,
+      c(income, health, temperature),
+      .group = net,
+    ) |> dplyr::mutate( samples = "non-random" )
+  ) |> 
+  ggplot(
+    aes(x = abs(smd), y = variable, group = samples, color = samples)
+  ) + tidysmd::geom_love()
+
+```
+:::
+
+## Exercise 5: Frisch-Waugh-Lovell Theorem
+
+Here we'll look at credit and default-risk data. First we'll load the data:
+
+```{r}
+# load data
+risk_data = readr::read_csv("data/risk_data.csv", show_col_types = FALSE)
+```
+
+The FWL Theorem states that a multivariate linear regression can be estimated all at once or in three separate steps. For example, you can regress `default` on the financial variables `credit_limit`, `wage`, `credit_score1`, and `credit_score2` as follows:
+
+```{r}
+# regress default on financial variabbles in the dataset
+model <- lm(default ~ credit_limit + wage +  credit_score1 + credit_score2, data = risk_data)
+
+model |> broom::tidy(conf.int = TRUE)
+```
+
+Per FWL you can also break this down into
+
+1.  a [**de-biasing**]{.underline} step, where you regress the treatment (`credit_limit`) on the financial confounders `wage`, `credit_score1`, and `credit_score2` , obtaining the residuals
+2.  a [**de-noising**]{.underline} step, where you regress the outcome (`default`) on the financial confounders, obtaining the residuals
+3.  an [**outcome model**]{.underline}, where you regress the outcome residuals from step 2 on the treatment residuals of step 1.
+
+Due to confounding, the data looks like this, with default percentage trending down by credit limit.
+
+```{r}
+#| echo: true
+risk_data |> 
+  dplyr::group_by(credit_limit) |> 
+  # add columns for number of measurements in the group, and the mean of the group
+  dplyr::mutate(size = n(), default = mean(default), ) |> 
+  # pull ot the distict values
+  dplyr::distinct(default,credit_limit, size) |> 
+  ggplot(aes(x = credit_limit, y = default, size = size)) +
+  geom_point() +
+  labs(title = "Default Rate by Credit Limit", x = "credit_limit", y = "default") +
+  theme_minimal()
+```
+
+[**Step 1:**]{.underline}
+
+-   Create the debiasing model, and
+-   add the residuals to the risk_data, saving the result in `risk_data_deb` in a column `credit_limit_res`.
+-   plot the de-biased data
+-   regress the outcome (`default`) on `credit_limit_res`
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION - step 1:
+
+```{r}
+#| eval: true
+# create debiasing model
+debiasing_model <- 
+  lm(
+    # the de-biasing step predicts the treatment will all variables **except** the treatment
+    credit_limit ~ wage + credit_score1 + credit_score2 
+    , data = risk_data
+  )
+
+# add a column with the residuals of the debiasing model 
+# (add the residuals to the mean credit limit to give a nice interpretation to a zero residual)
+risk_data_deb <- risk_data |> 
+  dplyr::mutate(
+    credit_limit_res = 
+      mean(credit_limit) + debiasing_model$residuals 
+  )
+
+risk_data_deb |> 
+  # round the residuals prior to grouping
+  dplyr::mutate(credit_limit_res = round(credit_limit_res, digits=-2)) |> 
+  dplyr::group_by(credit_limit_res) |> 
+  # add columns for number of measurements in the group, and the mean of the group
+  dplyr::mutate(size = n(), default = mean(default), ) |> 
+  # only plot the residual groups with 'large' numbers of cases
+  dplyr::filter(size>30) |> 
+  # pull oot the distinct values
+  dplyr::distinct(default,credit_limit_res, size) |> 
+  ggplot(aes(x = credit_limit_res, y = default, size = size)) +
+  geom_point() +
+  labs(title = "Default Rate by Debiased Credit Limit", x = "credit_limit", y = "default")+
+  theme_minimal()
+```
+
+```{r}
+# predict the outcome with the de-biasing residual data
+lm(default ~ credit_limit_res, data = risk_data_deb) |> 
+  # note the confidence intervals on the estimate of credit_limit_res
+    broom::tidy(conf.int = TRUE)
+```
+
+In this last regression, the coefficient estimated for `credit_limit_res` should be the same as the coefficient estimated for `credit_limit` in the initial regression.
+
+Note the difference in the confidence intervals though.
+:::
+
+The de-biasing step is crucial for estimating the correct causal effect, while the de-noising step is nice to have, since it reduces the variance of the coefficient estimate and narrows the confidence interval.
+
+[**Step 2:**]{.underline}
+
+-   create the de-noising model,
+-   add the residuals to the de-biased data (risk_data_deb), saving the result in `risk_data_denoise` in a column `default_res`.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION - step 2:
+
+```{r}
+#| eval: true
+# create the de-noising model
+denoising_model <- 
+    lm(
+      # the de-noising step predicts the outcome with all variables **except** the treatment
+      default ~ wage + credit_score1  + credit_score2
+      , data = risk_data_deb
+    )
+
+risk_data_denoise <- risk_data_deb |> 
+  # add a column with the residuals of the de-noised model 
+  # (add the residuals to the mean default to give a nice interpretation to the zero residual)
+  dplyr::mutate(default_res = denoising_model$residuals + mean(default))
+```
+:::
+
+[**Step 3:**]{.underline}
+
+-   regress the default residuals (`default_res`) on the credit limit residuals (`credit_limit_res`)
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION - step 3:
+
+```{r}
+#| eval: true
+lm(
+  # the final step regresses the outcome residuals the treatment residuals
+  default_res ~ credit_limit_res
+  , data = risk_data_denoise
+) |> 
+    broom::tidy(conf.int = TRUE)
+```
+
+*How do the coefficients and confidence intervals from the FWL steps above compare to the original multivariate regression?*
+
+They are essentially identical, showing that the two methods are equivalent.
+:::
+
+## Exercise 6: Causal Modeling
+
+In this guided exercise, we attempt to answer a causal question: does quitting smoking make you gain weight? Causal modeling has a special place in the history of smoking research: the studies that demonstrated that smoking causes lung cancer were observational. Thanks to other studies, we also know that, if you're already a smoker, quitting smoking reduces your risk of lung cancer. However, some have observed that former smokers tend to gain weight. Is this the result of quitting smoking, or does something else explain this effect? In the book [Causal Inference](https://www.hsph.harvard.edu/miguel-hernan/wp-content/uploads/sites/1268/2023/10/hernanrobins_WhatIf_30sep23.pdf) by Hernán and Robins, the authors analyze this question using several causal inference techniques.
+
+To answer this question, we'll use causal inference methods to examine the relationship between quitting smoking and gaining weight. First, we'll draw our assumptions with a causal diagram (a directed acyclic graph, or DAG), which will guide our model. Then, we'll use a modeling approach called inverse probability weighting--one of many causal modeling techniques--to estimate the causal effect we're interested in.
+
+We'll use data from NHEFS to try to estimate the causal effect of quitting smoking on weight game. NHEFS is a longitudinal, observational study that has many of the variables we'll need. Take a look at `causaldata::nhefs_codebook` if you want to know more about the variables in this data set. These data are included in the {causaldata} package. We'll use the `causaldata::nhefs_complete` data set, but we'll remove people who were lost to follow-up.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: NHEFS data
+nhefs_complete_uc <- causaldata::nhefs_complete |>
+  dplyr::filter(censored == 0)
+nhefs_complete_uc
+```
+
+Let's look at the distribution of weight gain between the two groups.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: weight gain distributions
+nhefs_complete_uc |>
+  ggplot(aes(wt82_71, fill = factor(qsmk))) + 
+  geom_vline(xintercept = 0, color = "grey60", linewidth = 1) +
+  geom_density(color = "white", alpha = .75, linewidth = .5) +
+  ggokabeito::scale_color_okabe_ito(order = c(1, 5)) + 
+  theme_minimal() +
+  theme(legend.position = "bottom") + 
+  labs(
+    x = "change in weight (kg)",
+    fill = "quit smoking (1 = yes)"
+  )
+```
+
+There's a difference--former smokers do seemed to have gained a bit more weight--but there's also a lot of variation. Let's look at the numeric summaries.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: weight gain summaries
+# ~4.5 kg gained for quit vs. not quit
+nhefs_complete_uc |>
+  dplyr::group_by(qsmk) |>
+  dplyr::summarize(
+    mean_weight_change = mean(wt82_71), 
+    sd = sd(wt82_71),
+    .groups = "drop"
+  )
+```
+
+Here, it looks like those who quit smoking gained, on average, 4.5 kg. But is there something else that could explain these results? There are many factors associated with both quitting smoking and gaining weight; could one of those factors explain away the results we're seeing here?
+
+To truly answer this question, we need to specify a causal diagram based on domain knowledge. Sadly, for most circumstances, there is no data-driven approach that consistently identify confounders. Only our causal assumptions can help us identify them. Causal diagrams are a visual expression of those assumptions linked to rigorous mathematics that allow us to understand what we need to account for in our model.
+
+In R, we can visualize and analyze our DAGs with the {ggdag} package. {ggdag} uses {ggplot2} and {ggraph} to visualize diagrams and {dagitty} to analyze them. Let's set up our assumptions. The `dagify()` function takes formulas, much like `lm()` and friends, to express assumptions. We have two basic causal structures: the causes of quitting smoking and the causes of gaining weight. Here, we're assuming that the set of variables here affect both. Additionally, we're adding `qsmk` as a cause of `wt82_71`, which is our causal question; we also identify these as our outcome and exposure. Finally, we'll add some labels so the diagram is easier to understand. The result is a `dagitty` object, and we can transform it to a `tidy_dagitty` data set with `tidy_dagitty()`.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| code-summary: tidy version of the DAG
+# set up DAG
+smk_wt_dag <- ggdag::dagify(
+  # specify causes of quitting smoking and weight gain:
+  qsmk ~ sex + race + age + education + 
+    smokeintensity + smokeyrs + exercise + active + wt71,
+  wt82_71 ~ qsmk + sex + race + age + education + 
+    smokeintensity + smokeyrs + exercise + active + wt71,
+  # specify causal question:
+  exposure = "qsmk", 
+  outcome = "wt82_71",
+  coords = ggdag::time_ordered_coords(),
+  # set up labels:
+  # here, I'll use the same variable names as the data set, but I'll label them
+  # with clearer names
+  labels = c(
+    # causal question
+    "qsmk" = "quit\nsmoking",
+    "wt82_71" = "change in\nweight",
+    
+    # demographics
+    "age" = "age",
+    "sex" = "sex",
+    "race" = "race",
+    "education" = "education",
+    
+    # health
+    "wt71" = "baseline\nweight",
+    "active" = "daily\nactivity\nlevel",
+    "exercise" = "exercise",
+    
+    # smoking history
+    "smokeintensity" = "smoking\nintensity",
+    "smokeyrs" = "yrs of\nsmoking"
+  )
+) |>
+  ggdag::tidy_dagitty()
+
+smk_wt_dag
+```
+
+Let's visualize our assumptions with `ggdag()`.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: graphic version of the DAG
+#| message: false
+#| warning: false
+smk_wt_dag |>
+  ggdag::ggdag(text = FALSE, use_labels = "label") + ggdag::theme_dag()
+```
+
+What do we need to control for to estimate an unbiased effect of quitting smoking on weight gain? In many DAGs, there will be many sets of variables--called adjustment sets--that will give us the right effect (assuming our DAG is correct--a big, unverifiable assumption!). `ggdag_adjustment_set()` can help you visualize them. Here, there's only one adjustment set: we need to control for everything! While we're add it, since a {ggdag} plot is just a {ggplot2} plot, let's clean it up a bit, too.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: DAG adjustment sets
+smk_wt_dag |>
+  ggdag::ggdag_adjustment_set(text = FALSE, use_labels = "label") +
+  ggdag::theme_dag() +
+  ggokabeito::scale_color_okabe_ito(order = c(1, 5)) + 
+  ggokabeito::scale_fill_okabe_ito(order = c(1, 5))
+```
+
+Let's fit a model with these variables. Note that we'll fit all continuous variables with squared terms, as well, to allow them a bit of flexibility.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: fit of data using all variables
+lm(
+  wt82_71~ qsmk + sex + 
+    race + age + I(age^2) + education + 
+    smokeintensity + I(smokeintensity^2) + 
+    smokeyrs + I(smokeyrs^2) + exercise + active + 
+    wt71 + I(wt71^2), 
+  data = nhefs_complete_uc
+) |>
+  broom::tidy(conf.int = TRUE) |>
+  dplyr::filter(term == "qsmk")
+```
+
+When we adjust for the variables in our DAG, we get an estimate of about 3.5 kg--people who quit smoking gained about this amount of weight. However, we are trying to answer a specific causal question: how much weight would a person gain if the quit smoking vs. if the same person did not quit smoking? Let's use an inverse probability weighting model to try to estimate that effect at the population level (what if *everyone* quit smoking vs what if *no one* quit smoking).
+
+For a simple IPW model, we have two modeling steps. First, we fit a propensity score model, which predicts the probability that you received a treatment or exposure (here, that a participant quit smoking). We use this model to calculate inverse probability weights--1 / your probability of treatment. Then, in the second step, we use this weights in the outcome model, which estimates the effect of exposure on the outcome (here, the effect of quitting smoking on gaining weight).
+
+For the propensity score model, we'll use logistic regression (since quitting smoking is a binary variable). The outcome is quitting smoking, and the variables in the model are all those included in our adjustment set. Then, we'll use `augment()` from {broom} (which calls `predict()` on the inside) to calculate our weights using `propensity::wt_ate()` and save it back into our data set.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| code-summary: propensity score calculations
+propensity_model <- glm(
+  qsmk ~ sex + 
+    race + age + I(age^2) + education + 
+    smokeintensity + I(smokeintensity^2) + 
+    smokeyrs + I(smokeyrs^2) + exercise + active + 
+    wt71 + I(wt71^2), 
+  family = binomial(), 
+  data = nhefs_complete_uc
+)
+
+nhefs_complete_uc <- propensity_model |>
+  # predict whether quit smoking
+  broom::augment(type.predict = "response", data = nhefs_complete_uc) |>
+  # calculate inverse probability
+  dplyr::mutate(wts = propensity::wt_ate(.fitted, qsmk))
+
+nhefs_complete_uc |>
+  dplyr::select(qsmk, .fitted, wts)
+```
+
+Let's look at the distribution of the weights.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: propensity weight distribution
+ggplot(nhefs_complete_uc, aes(wts)) +
+  geom_histogram(color = "white", fill = "#E69F00", bins = 50) + 
+  #  use a log scale for the x axis
+  scale_x_log10() + 
+  theme_minimal(base_size = 20) + 
+  xlab("Weights")
+```
+
+It looks a little skewed, particularly that there are some participants with much higher weights. There are a few techniques for dealing with this -- trimming weights and stabilizing weights -- but we'll keep it simple for now and just use them as is.
+
+The main goal here is to *break* the non-causal associations between quitting smoking and gaining weight--the other paths that might distort our results. In other words, if we succeed, there should be no differences in these variables between our two groups, those who quit smoking and those who didn't. This is where randomized trials shine; you can often assume that there is no baseline differences among potential confounders between your treatment groups (of course, no study is perfect, and there's a whole set of literature on dealing with this problem in randomized trials).
+
+Standardized mean differences (SMD) are a simple measurement of differences that work across variable types. In general, the closer to 0 we are, the better job we have done eliminating the non-causal relationships we drew in our DAG. Note that low SMDs for everything we adjust for does *not* mean that there is not something else that might confound our study. Unmeasured confounders or misspecified DAGs can still distort our effects, even if our SMDs look great!
+
+We'll use the {halfmoon} package to calculate the SMDs, then visualize them.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: Standardized mean differences plot
+vars <- c(
+  "sex", "race", "age", "education", 
+  "smokeintensity", "smokeyrs", 
+  "exercise", "active", "wt71"
+)
+
+plot_df <- halfmoon::tidy_smd(
+    nhefs_complete_uc,
+    all_of(vars),
+    qsmk,
+    wts
+)
+
+ggplot(
+    data = plot_df,
+    mapping = aes(x = abs(smd), y = variable, group = method, color = method)
+) +
+    halfmoon::geom_love()
+```
+
+These look pretty good! Some variables are better than others, but weighting appears to have done a much better job eliminating these differences than an unadjusted analysis.
+
+We can also use halfmoon's `geom_mirror_histogram()` to visualize the impact that the weights are having on our population.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: Inverse Probability Weight distributions 
+nhefs_complete_uc |>
+  dplyr::mutate(qsmk = factor(qsmk)) |>
+  ggplot(aes(.fitted)) +
+  halfmoon::geom_mirror_histogram(
+    aes(group = qsmk),
+    bins = 50
+  ) +
+  halfmoon::geom_mirror_histogram(
+    aes(fill = qsmk, weight = wts),
+    bins = 50,
+    alpha = .5
+  ) +
+  scale_y_continuous(labels = abs) +
+  labs(x = "propensity score") + 
+  theme_minimal(base_size = 20)
+```
+
+Both groups are being *upweighted* so that their distributions of propensity scores are much more similar.
+
+We could do more here to analyze our assumptions, but let's move on to our second step: fitting the outcome model weighted by our inverse probabilities. Some researchers call these Marginal Structural Models, in part because the model is marginal; we only need to include our outcome (`wt82_71`) and exposure (`qsmk`). The other variables aren't in the model; they are accounted for with the IPWs!
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: Fit using inverse probability weights 
+ipw_model <- lm(
+  wt82_71 ~ qsmk, 
+  data = nhefs_complete_uc, 
+  weights = wts # inverse probability weights
+) 
+
+ipw_estimate <- ipw_model |>
+  broom::tidy(conf.int = TRUE) |>
+  dplyr::filter(term == "qsmk")
+
+ipw_estimate
+```
+
+This estimate is pretty similar to what we saw before, if a little smaller. In fact, for simple causal questions, this is often the case: adjusting for confounders directly in your regression model sometimes estimates the same effect as IPWs and other causal techniques. Causal techniques are special, though, in that they use counterfactual modeling, which allows you to deal with many circumstances, such as when you have selection bias or time-dependendent confounding. They also often have variance properties.
+
+But we have other problem that we need to address. While we're just using `lm()` to estimate our IPW model, it doesn't properly account for the weights. That means our standard error is too small, which will artificially narrow confidence intervals and artificially shrink p-values. There are many ways to address this, including robust estimators. We'll focus on using the bootstrap via the {**rsamples**} package in this lab, but here's one way to do it with robust standard errors:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: Robust linear fit without bootstrap  
+# also see robustbase, survey, gee, and others
+library(estimatr)
+ipw_model_robust <- estimatr::lm_robust( 
+  wt82_71 ~ qsmk, 
+  data = nhefs_complete_uc, 
+  weights = wts 
+) 
+
+ipw_estimate_robust <- ipw_model_robust |>
+  broom::tidy(conf.int = TRUE) |>
+  dplyr::filter(term == "qsmk")
+
+ipw_estimate_robust
+```
+
+Now let's try the bootstrap. First, we need to wrap our model in a function so we can call it many times on our bootstrapped data. A function like this might be your instinct; however, it's not quite right.
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-fold: true
+#| code-summary: not quite right function for bootstrapped estimates 
+# fit ipw model for a single bootstrap sample
+fit_ipw_not_quite_rightly <- function(split, ...) {
+  # get bootstrapped data sample with `rsample::analysis()`
+  .df <- rsample::analysis(split)
+  
+  # fit ipw model
+  lm(wt82_71 ~ qsmk, data = .df, weights = wts) |>
+    tidy()
+}
+```
+
+The problem is that we need to account for the *entire* modeling process, so we need to include the first step of our analysis -- fitting the inverse probability weights.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: right function for bootstrapped estimates 
+fit_ipw <- function(split, ...) {
+  .df <- rsample::analysis(split)
+  
+  # fit propensity score model
+  propensity_model <- glm(
+    qsmk ~ sex + 
+      race + age + I(age^2) + education + 
+      smokeintensity + I(smokeintensity^2) + 
+      smokeyrs + I(smokeyrs^2) + exercise + active + 
+      wt71 + I(wt71^2), 
+    family = binomial(), 
+    data = .df
+  )
+  
+  # calculate inverse probability weights
+  .df <- propensity_model |>
+    broom::augment(type.predict = "response", data = .df) |>
+    dplyr::mutate(wts = propensity::wt_ate(
+      .fitted,
+      qsmk, 
+      exposure_type = "binary"
+    ))
+  
+  # fit correctly bootstrapped ipw model
+  lm(wt82_71 ~ qsmk, data = .df, weights = wts) |>
+    tidy()
+}
+```
+
+{rsample} makes the rest easy for us: `bootstraps()` resamples our data 1000 times, then we can use `purrr::map()` to apply our function to each resampled set (`splits`). {rsample}'s `int_*()` functions help us get confidence intervals for our estimate.
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: fit ipw model to bootstrapped estimates 
+# fit ipw model to bootstrapped samples
+ipw_results <- rsample::bootstraps(causaldata::nhefs_complete, 1000, apparent = TRUE) |>
+  dplyr::mutate(results = purrr::map(splits, fit_ipw))
+
+# get t-statistic-based CIs
+boot_estimate <- rsample::int_t(ipw_results, results) |>
+  dplyr::filter(term == "qsmk")
+
+boot_estimate
+```
+
+Let's compare to our naive weighted model that just used a single estimate from `lm()`
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: comparison of robust and naive weighted models 
+dplyr::bind_rows(
+  ipw_estimate |>
+    dplyr::select(estimate, conf.low, conf.high) |>
+    dplyr::mutate(type = "ols"),
+  ipw_estimate_robust |>
+    dplyr::select(estimate, conf.low, conf.high) |>
+    dplyr::mutate(type = "robust"),
+  boot_estimate |>
+    dplyr::select(estimate = .estimate, conf.low = .lower, conf.high = .upper) |>
+    dplyr::mutate(type = "bootstrap")
+) |>
+  #  calculate CI width to sort by it
+  dplyr::mutate(width = conf.high - conf.low) |>
+  dplyr::arrange(width) |>
+  #  fix the order of the model types for the plot  
+  dplyr::mutate(type = forcats::fct_inorder(type)) |>
+  ggplot(aes(x = type, y = estimate, ymin = conf.low, ymax = conf.high)) + 
+    geom_pointrange(color = "#0172B1", size = 1, fatten = 3) +
+    coord_flip() +
+    theme_minimal(base_size = 20) +
+    theme(axis.title.y = element_blank())
+```
+
+Our bootstrapped confidence intervals are wider, which is expected; remember that they were artificially narrow in the naive OLS model!
+
+So, we have a final estimate for our causal effect: on average, a person who quits smoking will gain 3.5 kg (95% CI 2.4 kg, 4.4 kg) versus if they had not quit smoking.
+
+------------------------------------------------------------------------
+
+### Questions:
+
+-   Please enumerate the steps in the causal analysis workflow
+-   What do you think? Is this estimate reliable? Did we do a good job addressing the assumptions we need to make for a causal effect, particularly that there is no confounding? How might you criticize this model, and what would you do differently?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+-   **causal workflow steps**:
+    -   Specify a causal question
+    -   Draw assumptions using a causal diagram
+    -   Model assumptions
+    -   Diagnose models
+    -   Estimate the causal effect
+    -   Conduct sensitivity analysis on the effect estimate
+-   **critique of the results of the exercise**:
+
+We have many confounders in this problem. What if we missed an important one?
+
+The one step of the workflow that we missed is to conduct a sensitivity analysis and so that should certainly be done before reporting the results of the exercise.
+:::
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 6  | 30     |
