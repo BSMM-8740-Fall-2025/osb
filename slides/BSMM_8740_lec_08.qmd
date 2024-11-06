@@ -76,7 +76,7 @@ Repeating our prior process, first we calculate the ipw weights and estimate the
 #| message: false
 #| warning: false
 #| code-summary: ATE estimate by IPW
-#| cache: true
+#| cache: false
 #| cache-comments: true
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
@@ -230,7 +230,7 @@ Next we use our function to bootstrap proper confidence intervals:
 #| code-fold: false
 #| code-summary: IPW bootstrap CIs
 #| label: ipw bootstrap process
-#| cache: true
+#| cache: false
 #| cache-comments: true
 # create bootstrap samples
 bootstrapped_net_data <- rsample::bootstraps(
@@ -277,7 +277,7 @@ And we can also bootstrap the regression adjustment estimates to get confidence 
 #| code-fold: false
 #| code-summary: regression bootstrap function definition and fits
 #| label: reg bootstrap function
-#| cache: true
+#| cache: false
 #| cache-comments: true
 fit_reg <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
@@ -396,7 +396,7 @@ There is a package (`boot`) that performs cross-validation and CI estimation at 
 #| warning: false
 #| error: false
 #| label: boot package use
-#| cache: true
+#| cache: false
 #| cache-comments: true
 # bootstrap (1000 times) using the fit_reg function
 boot_out_reg <- boot::boot(
@@ -529,7 +529,7 @@ Once again, we can use bootstrap to construct confidence intervals.
 #| message: false
 #| error: false
 #| label: dre bootstrap
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- both_results_dat |>
   dplyr::mutate(
@@ -665,7 +665,7 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad ipw estimate plot
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
@@ -777,7 +777,7 @@ doubly_robust_bad_reg <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad reg estimate plot
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
@@ -917,7 +917,7 @@ Our effect of is pretty far from 0, although it’s hard to know if this is real
 To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:
 
 ```{r}
-#| cache: true
+#| cache: false
 #| cache-comments: true
 #| code-fold: true
 #| code-summary: fit the propensity score model with different number of finite samples
@@ -1651,7 +1651,7 @@ In practice, we can simply use someone else’s code and just import a matching 
 #| message: false
 #| error: false
 #| code-fold: true
-#| cache: true
+#| cache: false
 #| cache-comments: true
 require(Matching)
 #  See https://www.jsekhon.com for additional documentation.
@@ -2394,7 +2394,7 @@ To demean the data, we need to set the index of the original data to be the indi
 :::
 
 ```{r}
-#| cache: true
+#| cache: false
 #| cache-comments: true
 #| code-fold: true
 data_panel_baked <- 
