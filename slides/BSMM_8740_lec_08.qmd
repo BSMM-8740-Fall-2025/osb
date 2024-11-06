@@ -94,13 +94,6 @@ net_data_wts <- propensity_model |>
 net_data_wts |>
   lm(malaria_risk ~ net, data = _, weights = wts) |>
   broom::tidy(conf.int = TRUE) |> gt::gt() |> gtExtras::gt_theme_espn()
-
-  # alternatively:
-  # dplyr::mutate(
-  #   ipw = dplyr::case_when(net == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
-  #   , wts_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
-  # )
-
 ```
 
 ## Inverse Probability Weighting
@@ -108,20 +101,20 @@ net_data_wts |>
 ::: {style="font-size: large"}
 The function [^1]`propensity::wt_ate` calculates **unstabilized** weights by default. In the last lecture we looked at the distribution of weights and decided they were stable enough, because none of the weights were too big or too small.
 
+Let's explore the question of IPW stabilization a bit more.
+
 ```{r}
 #| label: fig-ate-density-net-data
 #| code-fold: true
 # fig.width: 8
 #| fig-asp: 2/5
-#| fig.height: 3
+#| fig.height: 2
 #| fig.cap: >
 #|   A density plot of the average treatment effect (ATE) weights. The plot is skewed, with higher values towards 8. This may indicate a problem with the model, but the weights aren't so extreme to destabilize the variance of the estimate.
 net_data_wts |>
   ggplot(aes(wts)) +
   geom_density(fill = "#CC79A7", color = NA, alpha = 0.8)
 ```
-
-Let's explore the question of IPW stabilization a bit more.
 :::
 
 [^1]: tables created with functions from the package `gtsummary`.
@@ -153,6 +146,8 @@ We know that IPW weighting should create a pseudo-population that make the covar
 ## unweighted
 
 ```{r}
+#| echo: true
+#| code-fold: true
 gtsummary::tbl_summary(
   net_data_wts 
   , by = net
@@ -165,6 +160,8 @@ gtsummary::tbl_summary(
 ## weighted
 
 ```{r}
+#| echo: true
+#| code-fold: true
 net_svy <- survey::svydesign(
   ids = ~1,
   data = net_data_wts,
@@ -187,7 +184,7 @@ Next we use bootstrapping to generate proper confidence intervals for the effect
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: define function for IPW bootstrapping
 #| label: ipw bootstrap function
 
@@ -230,7 +227,7 @@ Next we use our function to bootstrap proper confidence intervals:
 #| message: false
 #| warning: false
 #| error: false
-#| code-fold: true
+#| code-fold: false
 #| code-summary: IPW bootstrap CIs
 #| label: ipw bootstrap process
 #| cache: true
@@ -277,7 +274,7 @@ And we can also bootstrap the regression adjustment estimates to get confidence 
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: regression bootstrap function definition and fits
 #| label: reg bootstrap function
 #| cache: true
@@ -310,7 +307,7 @@ We can compare the results:
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: pull coefficient estimates from the fits  
 #| label: combine reg & ipw bootstraps
 both_results_dat <- both_results |>
@@ -383,7 +380,7 @@ dat |>
 
 ```
 
-Note that each mean ate estimate is within the CIs of the other ate mean estimate.
+Note that each mean ATE estimate is within the CIs of the other ATE mean estimate.
 :::
 
 ## IPW vs Regression Adjustment
