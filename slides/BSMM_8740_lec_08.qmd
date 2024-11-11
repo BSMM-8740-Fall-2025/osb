@@ -1451,7 +1451,9 @@ $$
 #| echo: true
 #| code-fold: true
 predicted |> 
-  dplyr::summarize("ATE (est)" = mean( (2*medication - 1) * (recovery - match) )) |> 
+  dplyr::summarize(
+    "ATE (est)" = mean( (2*medication - 1) * (recovery - match) )
+  ) |> 
   gt::gt() |> 
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
