@@ -353,6 +353,7 @@ epilepsy
 #| echo: true
 #| code-fold: true
 #| message: false
+#| cache: true
 output <- 
   capture.output(
     fit_epi_gaussian1 <- brms::brm(count ~ 1 + Trt, data = epilepsy, silent = 2, seed = 8740)
@@ -528,6 +529,7 @@ brms::posterior_summary(pp)
 ::: {style="font-size: x-large"}
 We are already aware that the considered linear regression model is not ideal for the epilepsy data. But how bad is it? As quick graphical method, we can use posterior predictive (PP) checks, where we are compare the observed outcome data with the model predicted outcome data, that is, with the posterior predictions. In brms, we can perform PP-checks via:
 :::
+
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -547,6 +549,7 @@ We see that the model predictions can neither account for the strong spike of ob
 ::: {style="font-size: x-large"}
 While the default PP-check was already eye-opening, there are lot of types that can further our understanding of model appropriateness. For example, an often very useful check is obtained by comparing the residuals = observed outcomes - model predictions with the observed outcomes, also known as residual plot. In pp_check this check type is called error_scatter_avg:
 :::
+
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -559,18 +562,575 @@ brms::pp_check(fit_epi_gaussian1, type = "error_scatter_avg")
 ## Generative modelling with BRMS
 
 ::: {style="font-size: x-large"}
-Here there is a strongly almost perfectly linear relationship indicating strong problems with the independence assumption of the errors. 
+Here there is a strongly almost perfectly linear relationship indicating strong problems with the independence assumption of the errors.
 
-Essentially, both PP-checks have told us that our initial model is a very bad for the data at hand. 
+Essentially, both PP-checks have told us that our initial model is a very bad for the data at hand.
 
 If you don’t know which check types are available, you can simply pass an arbitrary non-supported type name to get a list of all currently supported types:
-
 :::
+
 ```{r}
 #| echo: true
 #| eval: false
 brms::pp_check(fit_epi_gaussian1, type = "help_me")
 ```
+
+## Generative modelling with BRMS
+
+:::::: {style="font-size: x-large"}
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| message: false
+#| cache: true
+output <- 
+  capture.output(
+    fit_epi_student1 <- 
+      brms::brm(
+        count ~ Trt * Base,
+        data = epilepsy,
+        family = brms::student()
+        , silent = 2, seed = 8740
+      )
+  )
+
+
+summary(fit_epi_student1)
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| message: false
+#| fig-height: 10
+brms::pp_check(fit_epi_student1) + xlim(-30, 30)
+```
+:::
+:::::
+::::::
+
+## Generative modelling with BRMS
+
+#### Absolute predictive performance
+
+:::::: {style="font-size: x-large"}
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| fig-height: 8
+#| fig-cap: Default posterior predictive check for model fit_epi_skew_normal1
+#| cache: true
+output <- 
+  capture.output(
+    fit_epi_gaussian2 <- brms::brm(count ~ Trt + Base, data = epilepsy, silent = 2, seed = 8740)
+  )
+# find a spot for this
+output <- 
+  capture.output(
+    fit_epi_gaussian3 <- brms::brm(count ~ Trt * Base, data = epilepsy, silent = 2, seed = 8740)
+  )
+brms::pp_check(fit_epi_gaussian2) + theme_minimal(base_size = 18) + theme(legend.position = "side")
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| fig-height: 8
+#| fig-cap: Posterior predictive check comparing observed responses (y-axis) with the predictive residuals (x-axis) of model fit_epi_gaussian2
+brms::pp_check(fit_epi_gaussian2, type = "error_scatter_avg") + theme_minimal(base_size = 18)
+```
+:::
+:::::
+::::::
+
+## Generative modelling with BRMS
+
+#### Measures of explained variance: $R^2$
+
+::: {style="font-size: x-large"}
+The standard $R^2$ measure is defined only for Gaussian models and is often referred to as the percentage of explained variance. Note that in the Gaussian context we compute draws from the posterior $R^2$
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| message: false
+# compute draws of the predictive errors based on posterior_epred
+errors <- brms::predictive_error(fit_epi_gaussian2, method = "posterior_epred")
+str(errors)
+```
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| message: false
+# sum errors over observations
+error_variation <- rowSums(errors^2)
+str(error_variation)
+```
+
+```{r}
+#| echo: true
+#| code-fold: false
+#| message: false
+# compute R2_basic
+overall_variation <- sum((epilepsy$count - mean(epilepsy$count))^2)
+R2_basic_epi_gaussian2 <- 1 - error_variation / overall_variation
+brms::posterior_summary(R2_basic_epi_gaussian2)
+```
+:::
+
+## Generative modelling with BRMS
+
+#### Measures of explained variance: $R^2$
+
+::: {style="font-size: x-large"}
+The $R^2_{\mathrm{basic}}$is a good starting point, but it doesn’t readily generalize to models that are much more complicated the Gaussian linear models. In particular it doesn’t readily generalize to most other likelihood families.
+
+We'll use a more general form of $R^2$ that we can apply to (almost) all brms models, regardless of what likelihood families they have. The measure is based on the ratio of explained variance and the sum of explained and error variance:
+
+$$
+R^2_{\mathrm{general}} = \frac{\mathrm{explained variance}}{\mathrm{explained variance}+\mathrm{error varriance}}
+$$
+
+Where $\mathrm{Var}(\hat{y})$) is the variance of the posterior predicted mean over observations (again `posterior_epred`) and $\mathrm{Var}(\hat{e})$)) is the variance of the model-implied errors over observations, where $\hat{e}=y_n-\hat{y}_n$.
+
+```{r}
+#| echo: true
+brms::bayes_R2(fit_epi_gaussian2)
+```
+:::
+
+## Generative modelling with BRMS
+
+#### Measures of Squared Errors
+
+:::::: {style="font-size: x-large"}
+$\mathrm{RMSE}_{\mathrm{basic}}$ computes a mean square error of observations $n$ for each posterior draw $s$, and thus yields a posterior distribution over RMSE values
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+# compute draws of the predictive errors based on posterior_epred
+errors_epi_gaussian3 <-
+brms::predictive_error(fit_epi_gaussian3, method = "posterior_epred")
+str(errors_epi_gaussian3)
+```
+
+```{r}
+#| echo: true
+# root mean of squared errors over observations
+rmse_basic_epi_gaussian3 <- sqrt(rowMeans(errors_epi_gaussian3^2))
+str(rmse_basic_epi_gaussian3)
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| fig-height: 6
+#| fig-cap: Posterior histogram of RMSE_basic for model fit_epi_gaussian3.
+lattice::histogram(rmse_basic_epi_gaussian3) 
+```
+:::
+:::::
+::::::
+
+## Generative modelling with BRMS
+
+#### Measures of Squared Errors
+
+:::::: {style="font-size: x-large"}
+We can also exchange the use of $n$ and $s$ and compute a mean square error over draws $s$ for each observation $n$:
+
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+rmse_alt_epi_gaussian3 <- 
+  sqrt(colMeans(errors_epi_gaussian3^2))
+str(rmse_alt_epi_gaussian3)
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| fig-height: 4
+#| fig-cap: Posterior histogram of RMSE_alt for model fit_epi_gaussian3.
+lattice::histogram(rmse_alt_epi_gaussian3) 
+```
+:::
+:::::
+
+In this case, we get a distribution of RMSE over observations, where each individual RMSE value would be computed over the posterior predictive distribution of a single observation. Both of the above RMSE measures are fully Bayesian as they take into account the uncertainty in the posterior distribution, but in different ways.
+::::::
+
+## Generative modelling with BRMS
+
+#### Measures of Squared Errors
+
+::: {style="font-size: x-large"}
+Typically see only a point estimate $\hat{\bar{y}}_n$ being used to represent the model-implied predictions, instead of a (posterior) distribution over such predictions for each $n$. For example, for a Bayesian model this point estimate could simply be the posterior mean.
+
+When using such a point prediction approach, our RMSE definition becomes:
+
+```{r}
+#| echo: true
+# extract a point estimate of the predictions per observation
+ppmean_epi_gaussian3 <- colMeans(brms::posterior_epred(fit_epi_gaussian3))
+str(ppmean_epi_gaussian3)
+
+# compute RMSE based on the responses and point predictions
+(rmse_point_epi_gaussian3 <- sqrt(mean((epilepsy$count - ppmean_epi_gaussian3)^2)) )
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6 Relative predictive performance
+
+::: {style="font-size: x-large"}
+In general, it is more common to compare multiple models against each other and thus investigating their relative predictive performance.
+
+```{r}
+#| echo: true
+errors_epi_student1 <-
+  brms::predictive_error(fit_epi_student1, method = "posterior_epred")
+rmse_alt_epi_student1 <- sqrt(colMeans(errors_epi_student1^2))
+```
+
+We can now even compute the pointwise (per-observation) difference in RMSE values:
+
+```{r}
+#| echo: true
+rmse_alt_diff <- rmse_alt_epi_student1 - rmse_alt_epi_gaussian3
+str(rmse_alt_diff)
+
+se_mean <- function(x) {sd(x) / sqrt(length(x))}
+
+se_rmse_alt_diff <- se_mean(rmse_alt_diff)
+se_rmse_alt_diff
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6.1 Likelihood Density Scores
+
+::: {style="font-size: xx-large"}
+We have looked at variations of $R^2$ and RMSE metrics. Here we use the log-likelihood of models as predictive metric more generally.
+
+The log-likelihood plays a pivotal role not only in to derive the posterior in Bayesian statistics but also to obtain maximum likelihood estimates in a frequentist framework. Intuitively, the higher the likelihood of the data given the model’s parameters estimates (represented as either posterior draws or point estimates), the better the fit of the model to the data. Many important predictive metrics, Bayesian or otherwise, are based on log-likelihood scores.
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6.1 Likelihood Density Scores
+
+::: {style="font-size: xx-large"}
+Recall that since the log is a strictly monotonic transformation, we are not changing anything fundamental by looking at log likelihoods instead of likelihoods. However, we are making a lot of math much simpler by now working with sums instead of products. In particular, this concerns computing gradients because the gradient of a sum is just the sum of the individual (pointwise) gradients. In fact, much of the modern statistics and machine learning relies on this property, so we are working with something quite fundamental here.
+
+`brms` comes with a dedicated `log_lik` method that does all the required math.
+
+```{r}
+#| echo: true
+ll_epi_gaussian3 <- brms::log_lik(fit_epi_gaussian3)
+str(ll_epi_gaussian3)
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6.1 Likelihood Density Scores
+
+::: {style="font-size: x-large"}
+The output of log_lik has the same structure and posterior_predict and friends, that is, it has as many columns as we have observations and as many rows as we posterior draws.
+
+```{r}
+#| fig-cap: Per-observation (pointwise) log-likelihoods of model fit_epi_gaussian3.
+#| fig-height: 4
+lattice::histogram(colMeans(ll_epi_gaussian3), nint=30, type = "density")
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6.1 Likelihood Density Scores
+
+::: {style="font-size: x-large"}
+Similar to the RMSE_alt metric earlier, we will average over posterior draws per observation (to be justified more shortly) such that we obtain one log-likelihood value per observation.
+
+The mean of the log-likelihood differences is slightly positive which points to a slightly better fit of the Student-t model. 
+
+
+
+```{r}
+#| echo: true
+#| code-fold: true
+llm_epi_student1  <- colMeans( brms::log_lik(fit_epi_student1) )
+llm_epi_gaussian3 <- colMeans( brms::log_lik(fit_epi_gaussian3) )
+
+llm_epi_diff <- llm_epi_student1 - llm_epi_gaussian3
+mean(llm_epi_diff)
+```
+
+```{r}
+#| fig-cap: Pointwise log-likelihood values of model fit_epi_gaussian3 and fit_epi_student1 as well as their pointwise log-likelihood differences.
+#| fig-align: center
+#| fig-height: 4
+llm_epi_gaussian3 <- colMeans(ll_epi_gaussian3)
+lattice::histogram(~llm_epi_gaussian3 + llm_epi_student1 + llm_epi_diff, nint=50, type = "density")
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.6.1 Likelihood Density Scores
+
+::: {style="font-size: x-large"}
+It is more typical to work with sums instead of means of log-likelihood values over observations, a quantity that we call
+LPD:
+
+```{r}
+#| echo: true
+(lpd_epi_diff <- sum(llm_epi_diff))
+```
+
+The corresponding standard error is also not particular difficult to obtain:
+
+```{r}
+#| echo: true
+se_sum <- function(x) {sd(x) * sqrt(length(x))}
+
+(se_lpd_epi_diff <- se_sum(llm_epi_diff))
+```
+:::
+
+
+## Generative modelling with BRMS
+
+#### 2.7 Out-of-sample predictions
+
+```{r}
+#| echo: true
+#| code-fold: true
+set.seed(8973)
+splits <- epilepsy |> rsample::initial_split(prop = 0.8)
+epilepsy_train <- rsample::training(splits)
+epilepsy_test  <- rsample::testing(splits)
+```
+
+```{r}
+#| cache: true
+#| echo: true
+#| code-fold: true
+output <- 
+  capture.output(
+    fit_student1_train <- 
+      brms::brm(count ~ Trt * Base, data = epilepsy_train, family = brms::student(), silent = 2, seed = 8740)
+  )
+llm_epi_gaussian3_test <-  brms::log_lik(fit_student1_train, newdata = epilepsy_test)
+
+output <- 
+  capture.output(
+    fit_gaussian3_train <- brms::brm(count ~ Trt * Base, data = epilepsy_train, silent = 2, seed = 8740)
+  )
+llm_epi_student1_test <- colMeans( brms::log_lik(fit_gaussian3_train, newdata = epilepsy_test) )
+```
+
+## Generative modelling with BRMS
+
+#### 2.7 Out-of-sample predictions
+
+```{r}
+#| eval: true
+llm_epi_diff_test <- llm_epi_student1_test - llm_epi_gaussian3_test
+lattice::histogram(llm_epi_diff_test |> matrix(), nint=50, type = "density")
+```
+
+```{r}
+(elpd_epi_diff_test <- sum(llm_epi_diff_test))
+```
+```{r}
+(se_elpd_epi_diff_test <- se_sum(llm_epi_diff_test))
+```
+
+## Generative modelling with BRMS
+
+#### 2.7 Out-of-sample predictions
+
+::: {style="font-size: x-large"}
+In leave-one-out cross-validation (LOO-CV), we perform $N$ training-test splits, where each time we are leaving out a single observations, fitting the model on the remaining $N-1$ observations before evaluating model fit on that single left-out observation. 
+:::
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+loo_epi_gaussian3 <- brms::loo(fit_epi_gaussian3)
+loo_epi_gaussian3
+```
+
+```{r}
+#| echo: true
+#| warning: false
+loo_epi_student1 <- brms::loo(fit_epi_student1)
+loo_epi_student1
+```
+
+```{r}
+brms::loo_compare(loo_epi_gaussian3, loo_epi_student1)
+```
+
+```{r}
+brms::loo(fit_epi_gaussian3, fit_epi_student1)
+```
+
+## Generative modelling with BRMS
+
+#### 2.8 Prior predictive performance
+
+::: {style="font-size: x-large"}
+We will now take a fundamentally different approach by evaluating prior predictive distribution, that is, by looking at what predictions a model implies before seeing any data. The starting point to investigating prior predictive performance is to perform graphical prior predictive checks.
+
+```{r}
+#| echo: true
+prior_epi_gaussian6 <-
+  brms::prior(normal(6, 3), class = "Intercept") +
+  brms::prior(normal(0, 5), class = "b", coef = "Trt1") +
+  brms::prior(normal(0, 1), class = "b", coef = "Base") +
+  brms::prior(normal(0, 1), class = "b", coef = "Trt1:Base") +
+  brms::prior(normal(0, 15), class = "sigma")
+prior_epi_gaussian6 
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.8 Prior predictive performance
+
+::: {style="font-size: x-large"}
+Now that we are done, we are “fitting” the model with the option sample_prior = "only", which ensures that Stan ignores the likelihood contribution to the posterior, such that the posterior directly resembles the prior. 
+
+```{r}
+#| echo: true
+#| cache: true
+#| code-fold: true
+output <- 
+  capture.output(
+    fit_prior_epi_gaussian6 <- 
+      brms::brm(
+        count ~ 1 + Trt * Base,
+        data = epilepsy,
+        prior = prior_epi_gaussian6,
+        sample_prior = "only"
+      )
+  )
+summary(fit_prior_epi_gaussian6)
+```
+:::
+
+## Generative modelling with BRMS
+
+#### 2.8 Prior predictive performance
+::: {style="font-size: x-large"}
+For all practical purposes, our “prior-only” brms model can be post-processed as any other brms model. 
+:::
+
+```{r}
+#| echo: true
+#| warning: false
+#| fig-align: center
+brms::pp_check(fit_prior_epi_gaussian6, ndraws = 100) + xlim(-150, 150)
+```
+
+## Generative modelling with BRMS
+
+#### 2.8 Marginal likelihood-based metrics
+
+::: {style="font-size: x-large"}
+To mathematically formalize the prior predictive performance of a model, consider the marginal likelihood that we find in the denominator of Bayes theorem (aka evidence):
+$$
+p(y)=\int p(y\vert\theta)p(\theta)d\theta
+$$
+We can write this as thelikelihood of the data given the model and we can do inference about the models based on the marginal likelihood.
+$$
+p(y\vert M)=\int p(y\vert\theta,M)p(\theta\vert M)d\theta
+$$
+The absolute marginal likelihood values $p(y\vert M)$are very hard to interpret. We only know that higher is better.
+:::
+
+## Generative modelling with BRMS
+
+#### 2.8 Marginal likelihood-based metrics
+::: {style="font-size: x-large"}
+The most common such comparative metric is the Bayes factors that is defined as the ratio of two models’ marginal likelihoods:
+
+$$
+\mathrm{BF}_{1,2}=\frac{p(y\vert M_{1})}{p(y\vert M_{2})}
+$$
+If the Bayes factor is greater than 1, the data $y$ have a higher likelihood given model $M_1$ compared to $M_2$, and vice versa. 
+:::
+
+## Generative modelling with BRMS
+
+#### 2.8 Marginal likelihood-based metrics
+::: {style="font-size: x-large"}
+We can say "Given the data $y$, model $M_1$ is more likely than model $M_2$” if we use the posterior odds:
+
+$$
+\frac{p(M_{1}\vert y)}{p(M_{2}\vert y)}=\frac{p(y\vert M_{1})}{p(y\vert M_{2})}\frac{p(M_{1})}{p(M_{2})}=\mathrm{BF}_{1,2}\times\frac{p(M_{1})}{p(M_{2})}
+$$
+We often set the prior odds to 1 not actually because we really believe in models being equally likely a priori, but simply out of convenience; just as we often set wide or even completely flat priors on parameters.
+
+:::
+
+## Generative modelling with BRMS
+
+#### 2.8 Marginal likelihood-based metrics
+
+::: {style="font-size: x-large"}
+Since the Bayes factor is based on marginal likelihoods, the computational challenges are substantial. Fortunately, there is one class of algorithms that enables reliable computation of (log) marginal likelihood on the basis of posterior draws. This class of algorithms is called bridge sampling. 
+
+Marginal likelihood estimation via bridgesampling usually requires several times more posterior draws than the estimation of posterior moments or quantiles (i.e., what we usually do with posterior draws). 
+
+```{r}
+#| echo: true
+#| cache: true
+#| code-fold: true
+#| message: false
+#| warning: false
+output <- 
+  capture.output(
+    fit_epi_gaussian6 <- 
+      brms::brm(
+        count ~ 1 + Trt * Base, data = epilepsy,
+        prior = prior_epi_gaussian6,
+        save_pars = brms::save_pars(all = TRUE),
+        iter = 5000, warmup = 1000
+      )
+  )
+logml_epi_gaussian6 <- brms::bridge_sampler(fit_epi_gaussian6)
+summary(logml_epi_gaussian6)
+```
+
+:::
 
 
 ## Elasticity estimation

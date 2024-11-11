@@ -2478,6 +2478,8 @@ This model is saying that marriage increases the man’s wage by 14%. A somewhat
 -   Read [Causal inference in R](https://www.r-causal.org/)
 -   Read Scott Cunningham: [Causal Inference The Mixtape](https://mixtape.scunning.com/)
 -   Take a course from Scott Cunningham: [Mixtape Sessions](https://www.mixtapesessions.io/sessions/)
+-   Read [A Crash Course in Good and Bad Control](https://causality.cs.ucla.edu/blog/index.php/category/bad-control/)
+-   Read [A Causal Approach for Business Optimization](https://arxiv.org/ftp/arxiv/papers/2207/2207.01722.pdf)
 
 ## Recap
 

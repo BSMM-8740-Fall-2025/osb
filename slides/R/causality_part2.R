@@ -468,3 +468,450 @@ data %>%
             n = n())
 
 # * common support check passed
+
+
+# Q4 ----
+# $$$$$$$$$
+# qini
+
+library(grf)
+library(maq)
+
+doubly_robust <- function(df, X, D, Y){
+  ps <- # propensity score
+    as.formula(paste(D, " ~ ", paste(X, collapse= "+"))) |>
+    stats::glm( data = df, family = binomial() ) |>
+    broom::augment(type.predict = "response", data = df) |>
+    dplyr::pull(.fitted)
+
+  lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
+
+  idx <- df[,D] |> dplyr::pull(1) == 0
+  mu0 <- # mean response D == 0
+    lm(lin_frml, data = df[idx,]) |>
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+
+  idx <- df[,D] |> dplyr::pull(1) == 1
+  mu1 <- # mean response D == 1
+    lm(lin_frml, data = df[idx,]) |>
+    broom::augment(type.predict = "response", newdata = df[,X]) |>
+    dplyr::pull(.fitted)
+
+  # convert treatment factor to integer | recast as vectors
+  d <- df[,D] |> dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] |> dplyr::pull(1)
+
+  mean( d*(y - mu1)/ps + mu1 ) -
+    mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
+}
+
+doubly_robust_models <- function(df, X, D, Y){
+  ps <- # propensity score
+    as.formula(paste(D, " ~ ", paste(X, collapse= "+"))) |>
+    stats::glm( data = df, family = binomial() )
+
+  lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
+
+  idx <- df[,D] |> dplyr::pull(1) == 0
+  mu0 <- # mean response D == 0
+    lm(lin_frml, data = df[idx,])
+
+  idx <- df[,D] |> dplyr::pull(1) == 1
+  mu1 <- # mean response D == 1
+    lm(lin_frml, data = df[idx,])
+
+  # # convert treatment factor to integer | recast as vectors
+  # d <- df[,D] |> dplyr::pull(1) |> as.character() |> as.numeric()
+  # y <- df[,Y] |> dplyr::pull(1)
+  #
+  # mean( d*(y - mu1)/ps + mu1 ) -
+  #   mean( (1-d)*(y - mu0)/(1-ps) + mu0 )
+
+  return(
+    list(p_score = ps, m0 = mu0, m1 = mu1)
+  )
+}
+
+doubly_robust_predict <- function(df, X, mdls, cost = 1){
+  ps <- # propensity score
+    mdls$p_score |> broom::augment(type.predict = "response", data = df) |>
+    dplyr::pull(.fitted)
+
+  # mean response D == 0
+  df$D = 0
+  mu0 <- mdls$m0 |>
+    broom::augment(type.predict = "response", newdata = df) |>
+    dplyr::pull(.fitted)
+
+  # mean response D == 1
+  df$D = 1
+  mu1 <- mdls$m1 |>
+    broom::augment(type.predict = "response", newdata = df) |>
+    dplyr::pull(.fitted)
+
+  tibble::tibble(
+    m0 = mu0, m1 = mu1, ps = ps, res = mu1/ps - mu0/ps
+  ) |>
+    dplyr::mutate(net = res - cost) |>
+    dplyr::filter(net > 0)
+}
+
+
+
+
+n <- 2000
+p <- 5
+X <- matrix(rnorm(n * p), n, p)
+W <- rbinom(n, 1, 0.5)
+Y <- pmax(X[, 1], 0) * W + X[, 2] + pmin(X[, 3], 0) + rnorm(n)
+
+set.seed(8740)
+dat <- matrix(rnorm(n * p), n, p, dimnames = list(NULL, paste0("X",1:p)) ) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(
+    W = rbinom(n, 1, 0.5)
+    , Y = pmax(X1, 0) * W + X2 + pmin(X3, 0) + rnorm(n)
+    )
+
+require(ggplot2)
+dat |> ggplot(aes(x=W, y=Y)) + geom_point()
+
+
+doubly_robust(dat, paste0("X",1:p), "W", "Y")
+# 0.3242907
+doubly_robust_predict(dat, paste0("X",1:p), "W", "Y")
+
+splits     <- rsample::initial_split(dat, prop = 0.5)
+train_data <- rsample::training(splits)
+test_data  <- rsample::testing(splits)
+
+doubly_robust(train_data, paste0("X",1:p), "W", "Y")
+# 0.3242907
+mdls <- doubly_robust_models(train_data, paste0("X",1:p), "W", "Y")
+
+wsx <- doubly_robust_predict(test_data, X, mdls, cost = 0.5)
+mean(wsx$res)
+
+#!@!@!@!
+set.seed(8740)
+dat <- matrix(rnorm(n * p), n, p, dimnames = list(NULL, paste0("X",1:p)) ) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(
+    W = rbinom(n, 1, 0.5)
+    , Y = pmax(X1, 0) * W + X2 + pmin(X3, 0) + rnorm(n)
+  )
+
+dat <- matrix(rnorm(n * p), n, p, dimnames = list(NULL, paste0("X",1:p)) ) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(
+    W = rbinom(n, 1, 0.5)
+    , Y = pmax(X1, 0) * W + X2 + pmin(X3, 0) + rnorm(n)
+  )
+
+base_mod <- lm(Y~., data = train_data)
+base_mod <- lm(Y~W*X1 + X2 + X3, data = train_data) # 0.26409
+base_mod <- lm(Y~W*X1 + X2 + X3 + X4 + X5, data = train_data) # 0.26471
+doubly_robust(train_data, paste0("X",1:p), "W", "Y") # 0.2622673
+
+stacked_data <- train_data |> dplyr::mutate(W=1) |>
+  dplyr::bind_rows(
+    train_data |> dplyr::mutate(W=0)
+  )
+
+base_mod |>
+  broom::augment(newdata = stacked_data)|>
+  dplyr::group_by(W) |>
+  dplyr::summarize(mean_effect = mean(.fitted)) |>
+  dplyr::mutate(contrast = mean_effect - dplyr::lag(mean_effect)) # 0.262
+
+predictions |>
+  dplyr::group_by(net) |>
+  dplyr::summarize(mean_malaria_risk = mean(.fitted)) |>
+  dplyr::mutate(contrast = mean_malaria_risk - dplyr::lag(mean_malaria_risk))
+
+
+
+base_mod |>
+  broom::augment(newdata = test_data |> dplyr::mutate(W = 1)) |>
+  dplyr::select(r1 = .fitted) |>
+  dplyr::bind_cols(
+    base_mod |>
+      broom::augment(newdata = test_data |> dplyr::mutate(W = 0)) |>
+      dplyr::select(r0 = .fitted)
+  ) |>
+  dplyr::summarize(effect = mean(r1-r0))
+
+wsx <- base_mod |>
+  broom::augment(newdata = test_data |> dplyr::mutate(W = 1)) |>
+  dplyr::select(r1 = .fitted) |>
+  dplyr::bind_cols(
+    base_mod |>
+      broom::augment(newdata = test_data |> dplyr::mutate(W = 0)) |>
+      dplyr::select(r0 = .fitted)
+  ) |>
+  dplyr::mutate(
+    lift = r1 - r0 - 0.1
+    , baseline_lift = base_mod$coefficients["W"] - 0.1
+  ) |>
+  dplyr::arrange(desc(lift)) |>
+  tibble::rowid_to_column("ID") |>
+  dplyr::mutate(
+    cumulative_pct = ID / n,
+    treated_cumsum = cumsum(r1),
+    control_cumsum = cumsum(r0),
+    baseline_cumsum = cumsum(baseline_lift),
+    cumulative_uplift = cumsum(lift) #treated_cumsum - control_cumsum
+  )
+
+wsx |>
+  dplyr::summarize(max_ordered = max(cumulative_uplift), max_random = max(baseline_cumsum))
+
+wsx |>
+  tidyr::pivot_longer(c(baseline_cumsum, cumulative_uplift)) |>
+  ggplot(aes(x=cumulative_pct, y=value, color = name)) + geom_line()
+
+
+
+wsx |> ggplot(aes(x=cumulative_pct, y=value, group = name)) + geom_point()
+
+data <- data %>%
+  mutate(
+    cumulative_n = row_number(),
+    cumulative_pct = cumulative_n / n,
+    treated_cumsum = cumsum(treatment * outcome),
+    control_cumsum = cumsum((1 - treatment) * outcome),
+    cumulative_uplift = treated_cumsum - control_cumsum
+  )
+
+# Normalize cumulative uplift for Qini curve (optional)
+data <- data %>%
+  mutate(
+    normalized_uplift = cumulative_uplift / max(cumulative_uplift)
+  )
+
+base_mod |>
+  broom::augment(newdata = dat |> dplyr::mutate(W = 0))
+
+
+# *&*&*&*&*&*&*& FROM CLAUDE
+
+ Load required libraries
+library(dplyr)
+library(ggplot2)
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Generate synthetic data
+n <- 1000
+data <- data.frame(
+  customer_id = 1:n,
+  propensity_score = runif(n),  # Random propensity scores
+  treatment = rbinom(n, 1, 0.5),  # Random treatment assignment
+  baseline_response = rbinom(n, 1, 0.3)  # Baseline response rate
+)
+
+# Simulate treatment effect (higher effect for customers with higher propensity)
+data$outcome <- with(data,
+  ifelse(treatment == 1,
+    baseline_response + 0.2 * (propensity_score > 0.7),
+    baseline_response
+  )
+)
+
+# Function to calculate Qini curve points
+calculate_qini <- function(data, n_points = 10) {
+  # Sort by propensity score
+  data <- data[order(-data$propensity_score), ]
+
+  # Calculate incremental gains at different percentiles
+  percentiles <- seq(0, 1, length.out = n_points)
+  qini_points <- data.frame(
+    percentile = percentiles,
+    incremental_response = NA,
+    random_incremental_response = NA
+  )
+
+  for(i in 1:length(percentiles)) {
+    if(percentiles[i] == 0) {
+      qini_points$incremental_response[i] <- 0
+      qini_points$random_incremental_response[i] <- 0
+      next
+    }
+
+    # Select top k% of observations
+    k <- floor(nrow(data) * percentiles[i])
+    subset <- data[1:k, ]
+
+    # Calculate actual incremental response
+    treated <- subset[subset$treatment == 1, ]
+    control <- subset[subset$treatment == 0, ]
+
+    # Calculate treatment effect
+    treat_effect <- sum(treated$outcome) / nrow(treated) -
+                   sum(control$outcome) / nrow(control)
+
+    qini_points$incremental_response[i] <- treat_effect * k
+    qini_points$random_incremental_response[i] <- treat_effect * k * percentiles[i]
+  }
+
+  return(qini_points)
+}
+
+# Calculate Qini curve points
+qini_data <- calculate_qini(data)
+
+# Calculate Qini coefficient
+qini_coefficient <- with(qini_data, {
+  actual_area <- sum(diff(percentile) * (incremental_response[-1] + incremental_response[-length(incremental_response)]) / 2)
+  random_area <- sum(diff(percentile) * (random_incremental_response[-1] + random_incremental_response[-length(random_incremental_response)]) / 2)
+  actual_area - random_area
+})
+
+# Plot Qini curve
+ggplot(qini_data, aes(x = percentile)) +
+  geom_line(aes(y = incremental_response, color = "Actual"), size = 1) +
+  geom_line(aes(y = random_incremental_response, color = "Random"),
+            linetype = "dashed", size = 1) +
+  labs(title = "Qini Curve",
+       x = "Percentage of population targeted",
+       y = "Cumulative incremental response",
+       color = "Model") +
+  theme_minimal() +
+  scale_color_manual(values = c("Actual" = "blue", "Random" = "red"))
+
+# Print Qini coefficient
+print(paste("Qini Coefficient:", round(qini_coefficient, 4)))
+Last edited just now
+
+# Q5 ----
+
+# Load required packages
+library(causaldata)
+library(MatchIt)
+library(dplyr)
+library(ggplot2)
+library(cobalt)
+library(sandwich)
+library(lmtest)
+
+# Load the NHEFS data
+data(nhefs)
+
+
+# Create binary treatment variable for smoking cessation
+# 1 = quit smoking, 0 = continued smoking
+nhefs <- nhefs %>%
+  mutate(quit_smoking = ifelse(smkintensity82_71 == 0, 1, 0)) |>   #ifelse(smk82_71 == 0, 1, 0)) %>%
+  # Remove missing values in key variables
+  filter(!is.na(quit_smoking) & !is.na(wt82_71) & !is.na(age) &
+           !is.na(wt71) & !is.na(smokeintensity) & !is.na(exercise))
+
+# Perform matching using nearest neighbor matching
+# We'll match on baseline characteristics
+match_obj <- matchit(
+  quit_smoking ~ age + wt71 + smokeintensity + exercise +
+    education + sex + race,
+  data = nhefs,
+  method = "nearest",
+  ratio = 1,
+  caliper = 0.25
+)
+
+# Get summary of matching
+print("Matching Summary:")
+summary(match_obj)
+
+# Extract matched data
+matched_data <- match.data(match_obj)
+
+# Create balance plot
+love.plot(match_obj, binary = "std",
+          abs = TRUE,
+          var.order = "unadjusted",
+          line = TRUE,
+          limits = c(0, 0.8),
+          title = "Covariate Balance Before and After Matching")
+
+# Calculate treatment effect (weight change) in matched sample
+model <- lm(wt82_71 ~ quit_smoking, data = matched_data, weights = weights)
+
+# Get robust standard errors
+robust_se <- sqrt(diag(vcovHC(model, type = "HC1")))
+est <- coef(model)["quit_smoking"]
+se <- robust_se["quit_smoking"]
+t_stat <- est/se
+p_val <- 2 * pt(-abs(t_stat), df = nrow(matched_data) - 2)
+
+# Create results data frame
+results <- data.frame(
+  Estimate = est,
+  SE = se,
+  t_value = t_stat,
+  p_value = p_val,
+  CI_lower = est - 1.96 * se,
+  CI_upper = est + 1.96 * se
+)
+
+# Print results
+print("\nAverage Treatment Effect on the Treated (ATT) - Weight Change:")
+print(results)
+
+# Visualize treatment effect
+p1 <- ggplot(matched_data, aes(x = factor(quit_smoking),
+                               y = wt82_71,
+                               fill = factor(quit_smoking))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Weight Change Distribution by Smoking Cessation Status",
+       x = "Quit Smoking",
+       y = "Weight Change (kg)",
+       fill = "Quit Smoking") +
+  scale_fill_manual(values = c("#E69F00", "#56B4E9"),
+                    labels = c("Continued Smoking", "Quit Smoking")) +
+  theme_minimal()
+
+# Additional balance checks
+balance_stats <- matched_data %>%
+  group_by(quit_smoking) %>%
+  summarise(
+    n = n(),
+    age_mean = mean(age),
+    baseline_weight = mean(wt71),
+    smoking_intensity = mean(smokeintensity),
+    exercise_mean = mean(exercise),
+    education_mean = mean(education),
+    prop_male = mean(sex == 1)
+  )
+
+print("\nBalance Statistics After Matching:")
+print(balance_stats)
+
+# Create density plots for key covariates
+p2 <- matched_data %>%
+  select(age, wt71, smokeintensity, quit_smoking) %>%
+  tidyr::pivot_longer(cols = c(age, wt71, smokeintensity)) %>%
+  ggplot(aes(x = value, fill = factor(quit_smoking))) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~name, scales = "free") +
+  labs(title = "Distribution of Key Covariates After Matching",
+       fill = "Quit Smoking") +
+  scale_fill_manual(values = c("#E69F00", "#56B4E9"),
+                    labels = c("Continued Smoking", "Quit Smoking")) +
+  theme_minimal()
+
+# Calculate standardized differences for key covariates
+std_diff <- matched_data %>%
+  group_by(quit_smoking) %>%
+  summarise(across(c(age, wt71, smokeintensity, exercise),
+                   list(mean = mean, sd = sd))) %>%
+  tidyr::pivot_wider(names_from = quit_smoking,
+                     values_from = ends_with(c("mean", "sd"))) %>%
+  mutate(across(everything(), ~replace_na(., 0)))
+
+print("\nStandardized Differences for Key Covariates:")
+print(std_diff)
+
+# Print both plots
+print(p1)
+print(p2)

@@ -1,0 +1,575 @@
+---
+title: "2024-midterm"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+---
+
+## Packages
+
+```{r}
+#| message: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito, malcolmbarrett/causalworkshop
+  , magrittr, ggplot2, estimatr, Formula, r-causal/propensity, gt, gtExtras, timetk, modeltime)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+# Part 1
+
+## Q-1
+
+In the context of time series, ***partial autocorrelation*** measures are:
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   The correlation between two variables, removing the effect of intervening variables
+:::
+
+## Q-2
+
+In a causal DAG, a ***confounder*** is:
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   A variable that influences both the cause and effect
+:::
+
+## Q-3
+
+***Stationarity*** in time series analysis means that:
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   The series has a constant mean and variance over time
+:::
+
+## Q-4
+
+For the binary classifier with the confusion matrix below:
+
+![](images/binary_confusion.png){fig-align="center" width="250"}
+
+The ***precision*** of this binary classifier is approximately:
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   0.74
+
+Precision is calculated as:
+
+$$
+\text{Precision} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Positives (FP)}}
+$$ where:
+
+-   True Positives (TP): The number of correctly predicted positive instances.
+-   False Positives (FP): The number of instances incorrectly predicted as positive.
+
+Alternatively, precision is the number of true positives out of all positives predicted. Here the number of true positives is 45, and the mnumber of positives predicted is 60, so the precision is 45/60 = 0.75
+:::
+
+## Q-5
+
+Which distance metric is not commonly used in kNN classifiers?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   Hamming distance
+
+The Hamming distance measures the number of positions at which the corresponding elements of two vectors differ. It is primarily used for comparing categorical, binary, or string data, where it calculates the count of mismatches between two vectors.
+
+Hamming distance is specialized for exact matches in binary or categorical data, which is rare in most kNN applications that rely on numerical distances in continuous space.
+:::
+
+## Q6
+
+In causal DAGs, what does a directed edge represent?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   Causation
+:::
+
+## Q7
+
+How does the kNN algorithm typically perform on very large datasets?:
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   It becomes slower due to the increased computation of distances
+:::
+
+## Q8
+
+![](images/dag.png){fig-align="center"}
+
+How many **open paths** are in the DAG above?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   4
+
+-   A path is open if it has no non-collider nodes that have been conditioned on.
+
+-   If a collider exists along the path, conditioning on the collider (or its descendants) can open the path.
+
+```{r}
+# define the DAG coordinates
+  coord_dag <- list(
+    x = c(z2 = 0, z1 = 0, z3 = -1, x = 1, y = 2),
+    y = c(z2 = -1, z1 = 1, z3 = 0, x = 0, y = 0)
+  )
+# specify the DAG 
+  dag <- ggdag::dagify(
+    y ~ x + z1 + z2 + z3,
+    x ~ z3 + z1 + z2,
+    coords = coord_dag,
+    labels = labels,
+    exposure = "x",
+    outcome = "y"
+  )
+# find the paths and indicate which are open 
+  dag |> dagitty::paths()
+```
+:::
+
+## Q9
+
+What is the purpose of introducing a soft margin in a SVM?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+-   To allow for a certain degree of misclassification in the training data
+
+In Support Vector Machines (SVM), a soft margin is introduced to allow for some misclassification of data points in order to handle cases where the data is not perfectly linearly separable. The soft margin concept relaxes the strict requirement of a hard margin (where all points must lie on the correct side of the margin), allowing the SVM to create a more flexible and generalizable decision boundary.
+:::
+
+## Q10
+
+Which of the following is not a typical component of time series data?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (1 point) :
+
+Delete the wrong answer(s) below
+
+-   Trend
+-   Seasonality
+-   Cyclical
+:::
+
+# Part 2
+
+## Q11
+
+This question uses data for the closing prices of the five major Canadian banks from 2005-08-10 to 2023-09-29. The data was obtained using the following code (the difference in the time range is due to elimination of rows with NA values:
+
+``` r
+tidyquant::tq_get(
+  c("TD","BMO","BNS","RBC","CM")
+  , get = "stock.prices"
+  , from = "2000-01-01"
+  , to = "2023-10-01"
+)
+```
+
+The data can be found in your **data** directory
+
+```{r}
+#| eval: true
+arima_data <- readr::read_csv('data/stock_data.csv', show_col_types = FALSE)
+```
+
+\(1\) Plot the data using functions in the `timetk` package **(0.5 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+#| message: false
+# A PLOT OF THE CLOSING PRICES FOR THE FIVE MAJOR CANADIAN BANKS
+arima_data %>%
+  tidyr::pivot_longer(-date) %>%
+  timetk::plot_time_series(
+    .date_var = date
+    , .value = value
+    , .color_var = name
+    , .smooth = F
+  )
+```
+:::
+
+The goal is to build and evaluate an **arima** model to predict the stock price of CIBC (symbol 'CM'), using the workflow we developed in class.
+
+\(2\) Create test/trains splits of the data, where the **initial period is 10 years** and the **assessment period is 1 year**. Plot the test/train series for CIBC (symbol 'CM'). **(0.5 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+#| message: false
+# DEFINITION AND A PLOT (CM) OF TEST & TRAINING SPLITS OF THE DATA
+splits <-
+  timetk::time_series_split(
+     data = arima_data
+     , initial = "10 year"
+     , assess = "1 year"
+   )
+
+splits %>%
+  timetk::tk_time_series_cv_plan() %>%
+  timetk::plot_time_series_cv_plan(.date_var = date, .value = CM)
+```
+:::
+
+\(3\) Define a data preprocessing **recipe** and a **model** definition. The recipe is based on the formula `CM ~ .`, and make sure the data argument uses the training data. The model engine should be **auto_arima**.
+
+Finally, create a **workflow** object containing the recipe and the model spec, and then **fit** the model using the training data. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+# A RECIPE
+time_rec <- arima_data %>%
+  recipes::recipe( CM ~ ., data = rsample::training(splits))
+  
+# A MODEL SPECIFICATION
+model_spec_arima <- modeltime::arima_reg() %>%
+  parsnip::set_engine("auto_arima")
+  
+# A FITTED WORKFLOW
+workflow_fit_arima <- workflows::workflow() %>%
+  workflows::add_recipe(time_rec) %>%
+  workflows::add_model(model_spec_arima) %>%
+  parsnip::fit(rsample::training(splits))
+```
+:::
+
+\(4\) Create a **models table** with your fitted model and a **calibration table** that uses the **testing** data. Generate a forecast with the **testing** data and the original **arima_data**. Plot the forecast. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+# A MODELS TABLE
+models_tbl <- 
+  modeltime::modeltime_table(workflow_fit_arima)
+
+# A CALIBRATION TABLE
+calibration_tbl <- models_tbl %>%
+  modeltime::modeltime_calibrate(new_data = rsample::testing(splits))
+
+# PLOT OF THE FITTED MODEL FORECAST OF THE TRAINING DATA  
+calibration_tbl %>%
+  modeltime::modeltime_forecast(
+    new_data    = rsample::testing(splits),
+    actual_data = arima_data
+ ) %>%
+  modeltime::plot_modeltime_forecast(
+    .legend_max_width = 25, # For mobile screens
+    .interactive      = TRUE
+  )
+```
+:::
+
+\(5\) Compute the accuracy metrics for the forecast. What is the $R^2$ (rsq) metric. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+calibration_tbl %>%
+  modeltime::modeltime_accuracy() %>%
+  modeltime::table_modeltime_accuracy(
+    .interactive = FALSE
+  )
+```
+
+The rsq metric for the fit of the arima model to the testing data is: 0.65, as can be read off the table.
+:::
+
+## Q12
+
+Execute the following code to create simulated observational data, where `D` is the treatment variable and `Y` is the response variable.
+
+```{r}
+#| echo: true
+#| message: false
+#| error: false
+set.seed(8740)
+
+n <- 800
+V <- rbinom(n, 1, 0.2)
+W <- 3*V + rnorm(n)
+D <- V + rnorm(n)
+Y <- D + W^2 + 1 + rnorm(n)
+Z <- D + Y + rnorm(n)
+data_obs <- tibble::tibble(V=V, W=W, D=D, Y=Y, Z=Z)
+```
+
+In the code below we fit several different outcome models. Compare the resulting coefficients for `D`. Which regressions appear to lead to unbiased estimates of the causal effect? **(1.5 points)**
+
+```{r}
+#| echo: true
+#| 
+# linear model of Y on X
+lin_YX <- lm(Y ~ D, data=data_obs)
+# linear model of Y on X and V
+lin_YV <- lm(Y ~ D + V, data=data_obs)
+# linear model Y on X and W
+lin_YW <- lm(Y ~ D + W, data=data_obs)
+```
+
+List all valid adjustment sets for the causal structure in this data (a good first step is to sketch the causal relations between variables - you don't need **ggdag::dagify**). **(1.5 points)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+# extract the coefficients for each regression
+tibble::tibble(
+  model = c('lin_YX','lin_YV','lin_YW')
+  , m = list(lin_YX,lin_YV,lin_YW )
+) %>%
+  dplyr::mutate(
+    D_coefficient =
+      purrr::map_dbl(
+        m
+        , function(s){
+          s %>% broom::tidy() %>%
+            dplyr::filter(term == "D") %>%
+            dplyr::pull(estimate)
+        }
+      )
+  )
+```
+
+1.  Regressions that appear to lead to unbiased estimates of the causal effect: (lin_YV and lin_YW are less biased than linYX)
+
+    From the code used to create the data, the coefficient of D is 1. `lin_YV` (controlling for V) gives a more accurate estimate, while `lin_YW` also finds an estimate close to the correct value.
+
+2.  Valid adjustment sets for the data used in this question:
+
+```{r}
+# specify the DAG for this question, based on the data generation mechanism
+Q10dag <- ggdag::dagify(
+  W ~ V
+  , D ~ V
+  , Y ~ D + W
+  , Z ~ D + Y
+  , exposure = "D"
+  , outcome = "Y"
+)
+```
+
+```{r}
+# Plot the DAG
+Q10dag %>% ggdag::ggdag(use_text = TRUE, layout = "time_ordered") +
+  ggdag::theme_dag()
+```
+
+```{r}
+Q10dag %>% ggdag::ggdag_adjustment_set(use_text = TRUE) +
+  ggdag::theme_dag()
+```
+
+Here both variables V and W will block the open backdoor path from D -\> Y. Note that the Dag doesn't capture the quadratic relationship of W to Y, just that Y depends on W. The quadratic relationship is why lin_YW doesn't product a great estimate.
+
+In practice you would note the difference between lin_YV and lin_YW and experiment with different regression specifications, e.g.:
+
+```{r}
+lm(Y ~ D + I(W^2), data=data_obs)
+```
+:::
+
+## Q13
+
+For this question we'll use the [**Spam Classification Dataset**]{.underline} available from the UCI Machine Learning Repository. It features a collection of spam and non-spam emails represented as feature vectors, making it suitable for a logistic regression model. The data is in your `data/` directory and the metadata is in the `data/spambase/` directory.
+
+We'll use this data to create a model for detecting email spam using **logistic regression**.
+
+```{r}
+#| eval: true
+#| message: false
+spam_data <- readr::read_csv('data/spam.csv', show_col_types = FALSE) %>% 
+  tibble::as_tibble() %>% 
+  dplyr::mutate(type = forcats::as_factor(type))
+
+```
+
+\(1\) Split the data into test and training sets, and create a default recipe and a default model specification. Use the ***glmnet*** engine for the model, with **penalty** = 0.05 & **mixture** = 0.5. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+#| message: false
+set.seed(8740)
+
+# create test/train splits
+splits <- rsample::initial_split(spam_data)
+train <- rsample::training(splits)
+test <- rsample::testing(splits)
+
+default_recipe <- train %>%
+  recipes::recipe(formula = type ~ .)
+  
+default_model <- parsnip::logistic_reg(penalty = 0.05, mixture = 0.5) %>%
+  parsnip::set_engine("glmnet") %>%
+  parsnip::set_mode("classification")
+```
+:::
+
+\(2\) create a default workflow object with the recipe and the model specification, fit the workflow using `parnsip::fit` and the **training** data, and then generate the testing results by applying the fit to the **testing** data using `broom::augment` . **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+#| message: false
+default_workflow <- workflows::workflow() %>%
+  workflows::add_recipe(default_recipe) %>%
+  workflows::add_model(default_model)
+  
+lm_fit <- default_workflow %>%
+  parsnip::fit(train)
+
+testing_results <- broom::augment(lm_fit , test)
+
+```
+:::
+
+\(3\) Evaluate the testing results by plotting the **roc_auc curve**, and calculating the **accuracy**. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+```{r}
+#| eval: true
+#| message: false
+# ROC_AUC PLOT
+testing_results %>% 
+    yardstick::roc_curve(
+    truth = type
+    , .pred_spam
+    ) %>%
+  ggplot2::autoplot() +
+  ggplot2::theme_bw(base_size = 18)
+
+```
+
+```{r}
+# CALCULATION OF ACCURACY
+testing_results %>%
+    yardstick::roc_auc(
+    truth = type
+    , .pred_spam
+    )
+```
+:::
+
+\(4\) Is there a way you could improve the accuracy of this **model? (1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+-   This model could be made more accurate by tuning the meta parameters of the logistic model.
+:::
+
+## Q14
+
+1.  When preprocessing data for time series models, what is the function `timetk::step_fourier()` used for? **(1 point)**
+
+2.  Give an example of its use in a recipe that is engineered by use with weekly data records. **(1 point)**
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+-   The `timetk::step_fourier()` function is used for [adding seasonality to variable(s) via sinusoidal features]{.underline}.
+
+-   An example of its use in a recipe that is engineered for use with weekly data records is:
+
+```{r}
+# Sample weekly data
+set.seed(123)
+weekly_data <- tibble(
+  date = seq(as.Date("2023-01-01"), by = "week", length.out = 52),
+  sales = 100 + 10 * sin(2 * pi * seq(1, 52) / 52) + rnorm(52, sd = 5)
+)
+
+# Create a recipe
+rec <- recipes::recipe(sales ~ date, data = weekly_data) %>%
+  # Add Fourier terms for seasonality with a weekly frequency
+  # Use 1 or 2 harmonics for weekly seasonality depending on desired complexity
+  timetk::step_fourier(date, period = 12, K = 2)  # period = 12 weeks (quarterly seasonality for weekly data)
+
+# Prepare and bake the recipe to see the engineered features
+rec_prep <- recipes::prep(rec)
+weekly_data_with_fourier <- recipes::bake(rec_prep, new_data = NULL)
+
+weekly_data_with_fourier
+```
+:::
+
+## Q15
+
+In a paper in the prestigious **Proceedings of the National Academy of Science** (PNAS) earlier this year:
+
+::: callout-note
+**S. A. Rains, A. S. Richards**, *US state vaccine mandates did not influence COVID-19 vaccination rates but reduced uptake of COVID-19 boosters and flu vaccines compared to bans on vaccine restrictions*. **Proc. Natl. Acad. Sci.** U.S.A. 121(8), e2313610121 (2024).
+:::
+
+Rains & Richards performed a causal analysis and found that compared to states that banned COVID-19 vaccination requirements, states that imposed COVID-19 [vaccination mandates]{.underline} exhibit [lower adult and child uptake of flu vaccines and lower uptake of COVID-19 boosters]{.underline}. They included their data and their code (in R), as is best practice.
+
+In their analysis, the treatment was binary (vaccine mandate (1) or ban (0)). The proportion of people in a state that had been vaccinated was included to account for the general inclination toward COVID-19 vaccination in a state (mean centered). The outcome variable reflected the proportion of eligible people in a state who had received a booster or flu shot.
+
+However in a letter to the PNAS on September 30, 2024 , the author of the letter, **Jack Fitzgerald,** argued that Rains & Richards had included a **bad control** in their analysis, a variable that biased their results.
+
+::: callout-note
+**Fitzgerald, J.** *US states that mandated COVID-19 vaccination see higher, not lower, take-up of COVID-19 boosters and flu vaccines*. **Proc. Natl. Acad. Sci.** U.S.A. 121(41), e2403758121 (2024).
+:::
+
+Here is Fitzgerald's DAG from his letter:
+
+![](images/pnas.2403758121fig01.jpg){fig-align="center" width="1000"}
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (2 points):
+
+Fitzgerald thought that the vaccination rate variable was the bad control, since it is a collider.
+
+Controlling for a collider opens up the backdoor path from the treatment to the outcome through unobserved factors, for example vaccine hesitancy, and that this backdoor would bias the results. He re-ran the analyses without controlling for vaccination rate and found that the effect changed sign, from **reducing** booster uptake to **increasing** booster uptake.
+:::
+
+# Grading (25 pts)
+
+| **Part**                | **Points** |
+|:------------------------|:----------:|
+| **Part 1 - Conceptual** |     10     |
+| **Part 2 - Applied**    |     15     |
+| **Total**               |     25     |
