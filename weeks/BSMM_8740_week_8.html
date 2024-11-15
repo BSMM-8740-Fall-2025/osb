@@ -377,6 +377,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
+  <li><a href="#study" id="toc-study" class="nav-link" data-scroll-target="#study">Study</a>
+  <ul class="collapse">
+  <li><a href="#short-answer-questions" id="toc-short-answer-questions" class="nav-link" data-scroll-target="#short-answer-questions">Short Answer Questions</a></li>
+  <li><a href="#short-answer-key" id="toc-short-answer-key" class="nav-link" data-scroll-target="#short-answer-key">Short Answer Key</a></li>
+  <li><a href="#essay-questions" id="toc-essay-questions" class="nav-link" data-scroll-target="#essay-questions">Essay Questions</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_8.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -429,12 +435,55 @@ Important
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
 <p>⌨️ <a href="labs/BSMM_8740_lab_8.html">Lab 8 - Causality: Methods</a></p>
-<p><br><br></p>
+</section>
+<section id="study" class="level2">
+<h2 class="anchored" data-anchor-id="study">Study</h2>
+<section id="short-answer-questions" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-questions">Short Answer Questions</h3>
+<p><strong>Instructions</strong>: Answer the following questions in 2-3 sentences each.</p>
+<ul>
+<li>Explain the concept of Inverse Probability Weighting (IPW) and its purpose in causal inference.</li>
+<li>What are stabilized weights in IPW, and why are they used?</li>
+<li>How does regression adjustment help in estimating causal effects?</li>
+<li>Describe the principle of doubly robust estimation and its advantages.</li>
+<li>Explain the concept of finite sample bias and factors influencing its likelihood.</li>
+<li>What is the main idea behind matching in causal inference?</li>
+<li>Explain the concept of subclassification and its limitations in practice.</li>
+<li>How does matching estimator work, and how is it different from regression adjustment?</li>
+<li>Explain the core principle of difference-in-differences (DID) estimation.</li>
+<li>What is the parallel trends assumption in DID, and why is it important?</li>
+</ul>
+</section>
+<section id="short-answer-key" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-key">Short Answer Key</h3>
+<ul>
+<li>IPW is a technique that creates a pseudo-population where the distribution of confounders is balanced between the treatment and control groups. This helps to estimate causal effects by reducing bias due to confounding.</li>
+<li>Stabilized weights are a modified version of IPW weights that are multiplied by the mean of the treatment or a subset of baseline covariates. They are used to reduce the variance of the IPW estimator and improve stability.</li>
+<li>Regression adjustment estimates causal effects by building a regression model that predicts the outcome based on the treatment and confounders. By controlling for confounders in the model, it aims to isolate the effect of the treatment.</li>
+<li>Doubly robust estimation combines propensity score weighting and regression adjustment. It provides an unbiased estimate of the causal effect if either the propensity score model or the outcome model is correctly specified, offering greater robustness.</li>
+<li>Finite sample bias occurs when estimates of causal effects are biased due to the limited size of the sample. The likelihood of finite sample bias depends on the estimand, overlap between treatment groups, and sample size.</li>
+<li>Matching aims to create comparable treatment and control groups by pairing individuals based on similarities in their observed characteristics (confounders). This reduces bias by creating a more balanced comparison.</li>
+<li>Subclassification involves dividing the data into subgroups based on confounder values and estimating the causal effect within each subgroup. Its practical limitation is the curse of dimensionality, as the number of subgroups grows exponentially with the number of confounders.</li>
+<li>Matching estimator directly pairs treated and control units based on proximity in confounder space, while regression adjustment uses a model to control for confounders. Matching focuses on finding similar individuals, while regression statistically adjusts for differences.</li>
+<li>DID estimates the causal effect of a treatment by comparing the change in outcomes over time between a treatment group and a control group. It leverages both time and group comparisons to isolate the treatment effect.</li>
+<li>The parallel trends assumption in DID states that the treatment and control groups would have followed similar trends in the outcome variable had the treatment not been implemented. It is crucial because DID estimates the treatment effect based on the difference in these trends.</li>
+</ul>
+</section>
+<section id="essay-questions" class="level3">
+<h3 class="anchored" data-anchor-id="essay-questions">Essay Questions</h3>
+<ul>
+<li>Discuss the strengths and limitations of both Inverse Probability Weighting (IPW) and regression adjustment in estimating causal effects. When might you prefer one method over the other?</li>
+<li>Explain the concept of doubly robust estimation in detail. Why is it considered “doubly robust”? Provide an example scenario where doubly robust estimation would be particularly advantageous.</li>
+<li>Discuss the challenges associated with matching in causal inference. How can these challenges be addressed in practice? Explain different distance metrics and their implications in matching.</li>
+<li>Describe the difference-in-differences (DID) estimator and its underlying assumptions. What are potential threats to the validity of DID estimates, and how can they be mitigated?</li>
+<li>Explain the concept of fixed effects in panel data analysis. How do fixed effects help to control for unobserved confounders? Discuss the advantages and limitations of using fixed effects models.</li>
+</ul>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
