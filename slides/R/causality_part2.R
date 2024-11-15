@@ -915,3 +915,126 @@ print(std_diff)
 # Print both plots
 print(p1)
 print(p2)
+
+# Q5 ----
+
+nhefs |>
+  dplyr::group_by(quit_smoking) |>
+  dplyr::summarize(mean_effect = mean(wt82_71)) |>
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) |> readr::write_csv('')
+
+nhefs_data <- nhefs |> dplyr::select(wt82_71, quit_smoking, age, wt71, smokeintensity, exercise, education, sex, race)
+
+nhefs_data <-
+  wt82_71 ~ quit_smoking
+
+nhefs_data <- nhefs_data |> recipes::recipe(wt82_71 ~ .) |>
+  recipes::update_role(quit_smoking, new_role = 'treatment') |>
+  recipes::step_normalize(age, wt71, smokeintensity) |>
+  recipes::prep() |>
+  recipes::bake(new_data=NULL)
+
+treated   <- nhefs_data |> dplyr::filter(quit_smoking==1)
+untreated <- nhefs_data |> dplyr::filter(quit_smoking==0)
+
+mt0 <- # untreated knn model predicting recovery
+  caret::knnreg(x = untreated |> dplyr::select(age, wt71, smokeintensity, exercise, education, sex, race), y = untreated$wt82_71, k=1)
+mt1 <- # treated knn model predicting recovery
+  caret::knnreg(x = treated |> dplyr::select(age, wt71, smokeintensity, exercise, education, sex, race), y = treated$wt82_71, k=1)
+
+predicted <-
+  # combine the treated and untreated matches
+  c(
+    # find matches for the treated looking at the untreated knn model
+    treated |>
+      tibble::rowid_to_column("ID") |>
+      {\(y)split(y,y$ID)}() |> # hack for native pipe
+      # split(.$ID) |>         # this vesion works with magrittr
+      purrr::map(
+        (\(x){
+          x |>
+            dplyr::mutate(
+              match = predict( mt0, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+            )
+        })
+      )
+    # find matches for the untreated looking at the treated knn model
+    , untreated |>
+      tibble::rowid_to_column("ID") |>
+      {\(y)split(y,y$ID)}() |>
+      # split(.$ID) |>
+      purrr::map(
+        (\(x){
+          x |>
+            dplyr::mutate(
+              match = predict( mt1, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+            )
+        })
+      )
+  ) |>
+  # bind the treated and untreated data
+  dplyr::bind_rows()
+
+predicted |>
+  dplyr::summarize("ATE (est)" = mean( (2*quit_smoking - 1) * (wt82_71 - match) ))
+
+predicted |>
+  dplyr::slice_head(n=5) |>
+  gt::gt() |>
+  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) |>
+  gtExtras::gt_theme_espn() |>
+  gt::as_raw_html()
+
+
+ols0 <- lm(wt82_71 ~ age + wt71 + smokeintensity + exercise + education + sex + race, data = untreated)
+ols1 <- lm(wt82_71 ~ age + wt71 + smokeintensity + exercise + education + sex + race, data = treated)
+
+# find the units that match to the treated
+treated_match_index <- # RANN::nn2 does Nearest Neighbour Search
+  (RANN::nn2(mt0$learn$X, treated |> dplyr::select(age, wt71, smokeintensity, exercise, education, sex, race), k=1))$nn.idx |>
+  as.vector()
+
+# find the units that match to the untreated
+untreated_match_index <- # RANN::nn2 does Nearest Neighbour Search
+  (RANN::nn2(mt1$learn$X, untreated |> dplyr::select(age, wt71, smokeintensity, exercise, education, sex, race), k=1))$nn.idx |>
+  as.vector()
+
+predicted <-
+  c(
+    purrr::map2(
+      .x =
+        treated |> tibble::rowid_to_column("ID") |> {\(y)split(y,y$ID)}() # split(.$ID)
+      , .y = treated_match_index
+      , .f = (\(x,y){
+        x |>
+          dplyr::mutate(
+            match = predict( mt0, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+            , bias_correct =
+              predict( ols0, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] ) -
+              predict( ols0, untreated[y,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+          )
+      })
+    )
+    , purrr::map2(
+      .x =
+        untreated |> tibble::rowid_to_column("ID") |> {\(y)split(y,y$ID)}() # split(.$ID)
+      , .y = untreated_match_index
+      , .f = (\(x,y){
+        x |>
+          dplyr::mutate(
+            match = predict( mt1, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+            , bias_correct =
+              predict( ols1, x[1,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] ) -
+              predict( ols1, treated[y,c('age', 'wt71', 'smokeintensity', 'exercise', 'education', 'sex', 'race')] )
+          )
+      })
+    )
+  ) |>
+  # bind the treated and untreated data
+  dplyr::bind_rows()
+
+predicted |>
+  dplyr::summarize(
+    "ATE (est)" =
+      mean( (2*quit_smoking - 1) * (wt82_71 - match - bias_correct) ))
+

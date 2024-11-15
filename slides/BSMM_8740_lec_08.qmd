@@ -922,6 +922,9 @@ To explore the potential for finite sample bias, we can rerun this simulation ma
 #| code-fold: true
 #| code-summary: fit the propensity score model with different number of finite samples
 #| echo: true
+#| warning: false
+#| message: false
+#| error: false
 sim <- function(n) {
   ## create a simulated dataset
   finite_sample <- tibble::tibble(
@@ -972,6 +975,7 @@ bias <- finite_sample_sims |>
 Plotting the results:
 
 ```{r}
+#| code-fold: true
 #| fig-cap: "Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000"
 ggplot(bias, aes(x = n, y = bias)) +
   geom_point() +
@@ -1013,13 +1017,14 @@ Regression then combines the estimate in each of the cells to produce a final AT
 
 ## Matching
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 To give an example, suppose we try to estimate the effect of a drug and I have drug data for 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
 
 To make matters more interesting, men are much more affected by this illness and stay longer at the hospital. They also get much more of the drug. Only 1 out of the 6 men does not get the drug. On the other hand, women are more resistant to this illness, so they stay less at the hospital. 50% of the women get the drug.
 :::
 
 ```{r}
+#| code-fold: true
 data_drug <- tibble::tibble(
   sex= c("M","M","M","M","M","M", "W","W","W","W"),
     drug=c(1,1,1,1,1,0,  1,0,1,0),
@@ -1040,6 +1045,7 @@ In this case, the estimated ATE is smaller than the true one because men get mor
 :::
 
 ```{r}
+#| code-fold: true
 data_drug |> 
   dplyr::group_by(drug) |> 
   dplyr::summarize(mean_effect = mean(days)) |> 
@@ -1089,6 +1095,7 @@ So regression will give a higher weight to women in our example and the ATE will
 :::
 
 ```{r}
+#| code-fold: true
 lm(days ~ drug + sex, data=data_drug) |> 
   broom::tidy() |> 
   gt::gt() |> 
@@ -1169,7 +1176,7 @@ This allows us to explore other kinds of estimators, such as the Matching Estima
 When some confounder X makes it so that treated and untreated are not initially comparable, we can make them so by matching each treated unit with a similar untreated unit - finding an untreated twin for every treated unit. In making such comparisons, treated and untreated become again comparable.
 
 As an example, let’s suppose we are trying to estimate the effect of a trainee program on earnings. Here is what the trainees looks like:
-:::
+
 
 ::: panel-tabset
 ## trainees
@@ -1198,10 +1205,8 @@ data_trainees |>
   gtExtras::gt_theme_espn()
 ```
 :::
+:::
 
-```{r}
-
-```
 
 ## Matching estimator
 
@@ -1642,7 +1647,7 @@ predicted |>
 
 ## Matching CI
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Of course, we also need to place a confidence interval around this measurement.
 
 In practice, we can simply use someone else’s code and just import a matching estimator. Here is one from the library Matching.
@@ -1680,13 +1685,13 @@ c("ATE", "ATC", "ATT") |>
   gtExtras::gt_theme_espn()
 ```
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Finally, we can say with confidence that our medicine does indeed lower the time someone spends at the hospital. The ATE estimate is just a little bit lower than our algorithm, due to the difference in tie breaking of matches of knn implementation and the `Matching` R package.
 :::
 
 ## Matching bias again
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 We saw that matching is biased when the unit and its match are not so similar. But what causes them to be so different?
 
 As it turns out, the answer is quite simple and intuitive. It is easy to find people that match on a few characteristics, like sex. But if we add more characteristics, like age, income, city of birth and so on, it becomes harder and harder to find matches. In more general terms, [**the more features we have, the higher will be the distance between units and their matches**]{.underline}.
@@ -1728,9 +1733,6 @@ They wanted to see if that boosted deposits into our savings account.
 
 Rio Grande do Sul is part of the south of Brazil, one of the most developed regions.
 
-## Difference-in-Differences
-
-#### Three Billboards in the South of Brazil
 
 ::: {style="font-size: large"}
 Data was also obtained from another capital from the south, Florianopolis, the capital city of the state of Santa Catarina in Brasil. The idea is that Florianopolis could be used as a control sample to estimate the counterfactual when compared to Porto Alegre. The billboard was placed in Porto Alegre for the entire month of June. The resulting data like this:
@@ -1747,9 +1749,16 @@ data_bboard |>
   gtExtras::gt_theme_espn()
 ```
 
-::: {style="font-size: large"}
-Here deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
+
+
+## Difference-in-Differences
+
+#### Three Billboards in the South of Brazil
+
+::: {style="font-size: x-large"}
+In this example deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
 :::
+
 
 ## Difference-in-Differences
 
@@ -1815,6 +1824,7 @@ With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0
 
 #### DID Estimator
 
+::: {style="font-size: x-large"}
 Another idea is to compare the treated group with an untreated group that didn’t get the intervention:
 
 $$
@@ -1831,6 +1841,7 @@ poa_after - fl_after
 ```
 
 This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
+:::
 
 ## Difference-in-Differences
 
@@ -1932,6 +1943,7 @@ To visualize what diff-in-diff is doing, we can project the growth trend from th
 ```{r}
 #| fig-align: center
 #| fig-height: 4
+#| code-fold: true
 tibble::tibble( 
   mo = c("May", "Jul") |> factor(levels=c("May", "Jul"))
   , fl = c(fl_before, fl_after)
@@ -1952,7 +1964,7 @@ The small difference between the solid and the dashed lines shows the small trea
 
 #### DID Estimator
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 But how much can we trust this estimator? To get standard errors we use a neat trick that uses regression. Specifically, we will estimate the following linear model
 :::
 
@@ -1960,7 +1972,7 @@ $$
 Y_i = \beta_0 + \beta_1 POA_i + \beta_2 Jul_i + \beta_3 POA_i*Jul_i + e_i
 $$
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Notice that $\beta_0$ is the baseline of the control. In our case, is the level of deposits in Florianopolis in the month of May.
 
 If we turn on the treated city dummy, we get $\beta_1$. So $\beta_0+\beta_1$ is the baseline of Porto Alegre in May, before the intervention, and $\beta_1$ is the increase of Porto Alegre baseline on top of Florianopolis.
@@ -1985,7 +1997,7 @@ lm(deposits ~ poa*jul, data = data_bboard) |> broom::tidy()
 #### Non Parallel Trends
 
 ::: {style="font-size: x-large"}
-One obvious problem with Diff-in-Diff is failure to satisfy the parallel trend assumption. If the growth trend from the treated is different from the trend of the control, diff-in-diff will be biased.
+One obvious potential problem with Diff-in-Diff is failure to satisfy the parallel trend assumption. If the growth trend from the treated is different from the trend of the control, diff-in-diff will be biased.
 
 This is a common problem with non-random data, where the decision to treat a region is based on its potential to respond well to the treatment, or when the treatment is targeted at regions that are not performing very well. In our marketing example we decided to test billboards in Porto Alegre not in order to check the effect of billboards in general. The reason is simply because sales perform poorly there.
 
@@ -2003,6 +2015,7 @@ One way to check if this is happening is to plot the trend using past periods. F
 ```{r}
 #| warning: false
 #| fig-align: center
+#| code-fold: true
 tibble::tibble( 
   mo = c("Jan", "Mar", "May", "Jul") |> factor(levels=c("Jan", "Mar", "May", "Jul"))
   , fl = c(120, 150, fl_before, fl_after)
@@ -2038,7 +2051,7 @@ This setup is so common and powerful for causal inference and gets its own name:
 
 A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
 
-To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). We want to see if that sort of offline marketing strategy can boost the usage of our investment products. Specifically, we want to know how much deposits in our investments account would increase if we placed more billboards.
+To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). Specifically, we want to know how much deposits in our investments account would increase if we placed more billboards.
 :::
 
 ## Panel Data and Fixed Effects
@@ -2443,7 +2456,7 @@ lm(lwage ~ married + expersq + union + hours, data = data_panel_baked) |>
 
 #### Fixed Effects
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 If we believe that fixed effect eliminates the all omitted variable bias, this model is telling us that marriage increases a man’s wage by 11%. This result is very significant. One detail here is that for fixed effect models, the standard errors need to be clustered. So, instead of doing all our estimation by hand (which is only nice for pedagogical reasons), we can use the library `linearmodels` and set the argument `cluster_entity` to True.
 :::
 
@@ -2463,14 +2476,12 @@ estimatr::lm_robust(
 
 ::: {style="font-size: large"}
 Notice how the parameter estimates are identical to the ones we’ve got with time-demeaned data. The only difference is that the standard errors are a bit larger. Compare this to the simple OLS model that doesn’t take the time structure of the data into account. For this model, we add back the variables that are constant in time.
-:::
 
 ```{r}
 lm(lwage ~ expersq+union+married+hours+black+hisp+educ, data = data_panel) |> 
   broom::tidy()
 ```
 
-::: {style="font-size: large"}
 This model is saying that marriage increases the man’s wage by 14%. A somewhat larger effect than the one we found with the fixed effect model. This suggests some omitted variable bias due to fixed individual factors, like intelligence and beauty, not being added to the model.
 :::
 
