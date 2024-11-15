@@ -1727,6 +1727,7 @@ So, in some way, linear regression performs some sort of dimensionality reductio
 
 #### Three Billboards in the South of Brazil
 
+::: {style="font-size: large"}
 To figure out how good billboards were as a marketing channel, A bank placed 3 billboards in the city of Porto Alegre, the capital of the state of Rio Grande do Sul.
 
 They wanted to see if that boosted deposits into our savings account.
@@ -1734,7 +1735,7 @@ They wanted to see if that boosted deposits into our savings account.
 Rio Grande do Sul is part of the south of Brazil, one of the most developed regions.
 
 
-::: {style="font-size: large"}
+
 Data was also obtained from another capital from the south, Florianopolis, the capital city of the state of Santa Catarina in Brasil. The idea is that Florianopolis could be used as a control sample to estimate the counterfactual when compared to Porto Alegre. The billboard was placed in Porto Alegre for the entire month of June. The resulting data like this:
 :::
 
