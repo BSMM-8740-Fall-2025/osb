@@ -38,8 +38,11 @@ execute:
 
 ## This week
 
--   We will explore Monte Carlo methods as a way to integrate difficult functions, and sample from difficult probability distributions.
--   Along the way we will look at Markov Chains, which both underlie sampling methods and provide a way to model the generation of data.
+-   We will explore Monte Carlo methods as a way to integrate difficult functions, and to sample from difficult probability distributions.
+-   Along the way we will look at Markov Chains, which can both underlie sampling methods and provide a way to model the generation of data.
+-   Finally, we look at Markov Chain Monte Carlo (MCMC) methods to sample from probability distributions.
+
+# Monte Carlo (MC) Methods
 
 ## Monte Carlo (MC) Methods
 
@@ -52,7 +55,7 @@ First we consider how 'random numbers' are computer generated.
 ## Random Number Generation
 
 ::: {style="font-size: x-large"}
-Random numbers from a given distribution are drawn using random numbers from a ($[0,1]$) uniform distribution, using the **inverse transform sampling method**. Here’s how it works:
+Random numbers from a given distribution are drawn using random numbers from a ($[0,1]$) uniform distribution, using the **inverse transform sampling method** as follows:
 
 1.  **Uniform Distribution**: Start by drawing a random number ($U$) from a ($[0,1]$) uniform distribution. This gives us a random variable that is uniformly distributed between $0$ and $1$.
 
@@ -70,7 +73,7 @@ Random numbers from a given distribution are drawn using random numbers from a (
 -   Use the inverse CDF of the desired distribution: ($X = F_X^{-1}(U)$).
 -   The result (X) is a random number that follows the target distribution.
 
-**Example**: For an exponential distribution with rate parameter ($\lambda$), the CDF is ($F_X(x) = 1 - e^{-\lambda x}$). To generate a random draw from this distribution: - Draw ($U \sim \mathcal{U}(0,1)$). - Use the inverse of the CDF: ($X = -\frac{1}{\lambda} \ln(1 - U)$), which gives an exponentially distributed random variable.
+**Example**: For an exponential distribution with rate parameter ($\lambda$), the CDF is$F_X(x) = 1 - e^{-\lambda x}$. To generate a random draw from this distribution: Draw $U \sim \mathcal{U}(0,1)$, then use the inverse of the CDF: ($X = -\frac{1}{\lambda} \ln(1 - U)$), to get an exponentially distributed random variable.
 
 This method applies broadly to any distribution where you can compute or approximate the inverse CDF.
 :::
@@ -79,11 +82,11 @@ This method applies broadly to any distribution where you can compute or approxi
 
 Pseudo-random generators found in computers use a deterministic (i.e. repeatable) algorithm to generate a sequence of (apparently) random numbers on the $(0, 1)$ interval.
 
-What defines a good random number generator (RNG) is a long period – how long it takes before the sequence repeats itself. A period of $2^{32}$ is not enough (need at least $2^{40}$). Various statistical tests exisit to measure “randomness” – well validated software will have gone through these checks.
+What defines a good random number generator (RNG) is a long period – how long it takes before the sequence repeats itself. A period of $2^{32}$ is not enough (need at least $2^{40}$). Various statistical tests exist to measure “randomness” – well validated software will have gone through these checks.
 
 ## Random Number Generation
 
-Alternatives to inverse transform sampling are special algorithms that generate random samples from a particular distributions, e.g. one way to sample from a Gaussian random number generation uses the Box-Muller method:
+Alternatives to inverse transform sampling are special algorithms that generate random samples from particular distributions, e.g. one way to sample from a Gaussian random number generation uses the Box-Muller method:
 
 -   generate two independent uniform $[0, 1]$ random variables, and
 -   use some trigonometry.
@@ -121,7 +124,6 @@ It can be proved that $x_1$ and $x_2$ are independent $\mathscr{N}(0, 1)$ random
 #| echo: true
 #| code-fold: true
 #| fig-cap: "Normal y1 vs Normal y2; independent random RVs"
-#| layout-ncol: 2
 #| column: page
 #| fig-align: center
 # The Box-Muller transformation
@@ -141,7 +143,7 @@ samples <- matrix(runif(10000), ncol=2) |> data.frame() |>
   tidyr::unnest(normals)  
   
 
-samples |> 
+p0 <- samples |> 
   tidyr::pivot_longer(-c(X1,X2)) |> 
   ggplot(aes(x=value, color=name, fill=name)) + 
   geom_histogram(
@@ -149,14 +151,15 @@ samples |>
   ) + 
   labs(x="Value", y="Density") + theme_minimal()
 
-samples |> 
+p1 <- samples |> 
 ggplot(aes(x=y1, y=y2)) + geom_point() + coord_fixed() + theme_minimal()
 
+p0+p1
 ```
 
 ## Random Number Generation
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Your computer is only capable of producing pseudorandom numbers. These are made by running a pseudorandom number generator algorithm which is deterministic, e.g.
 
 ```{r}
@@ -171,7 +174,7 @@ set.seed(340)
 rnorm(n=10)
 ```
 
-Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers. That is what “statistical randomness” means!
+Once the RNG seed is set, the “random” numbers that R generates aren’t random at all. But someone looking at these random numbers would have a very hard time distinguishing these numbers from truly random numbers.
 :::
 
 ## MC Methods
@@ -228,7 +231,7 @@ rnorm( NMC, mean=1, sd=sqrt(3) ) |>
 
 ## MC Methods
 
-Now
+Given event $E\equiv Z\in S$,
 
 ::: {style="font-size: x-large"}
 $$
@@ -259,6 +262,7 @@ and the variance of $h(Z)$ decreases as $1/M$ by the same reasoning.
 
 ## Moments and the MGF
 
+::: {style="font-size: x-large"}
 The $k$-th moment of a random variable $X$ is the expected value of: $X$ raised to the $k$-th power.
 
 $$
@@ -269,7 +273,10 @@ The $k$-th moment of a random variable $X$ around some value $c$ is known as the
 
 $$
 \mu_k(X)=\mathbb{E}[(X-c)^k]
-$$ The $k$-th standardized moment of a random variable $X$ is the $k$-th central moment of $X$ divided by the $k$-th power of the standard deviation of $X$.
+$$
+
+The $k$-th standardized moment of a random variable $X$ is the $k$-th central moment of $X$ divided by the $k$-th power of the standard deviation of $X$.
+:::
 
 ## Moments and the MGF
 
@@ -355,7 +362,7 @@ $$
 \begin{align*}
 \bar{Z}_{n} & =\frac{\bar{X}_{n}-\mu}{\sigma/\sqrt{n}}=\frac{\sqrt{n}}{\sigma}\left[\frac{X_{1}+X_{2}+\cdots X_{n}}{n}-\mu\right]\\
  & =\frac{\sqrt{n}}{\sigma}\left[\frac{X_{1}+X_{2}+\cdots X_{n}-n\mu}{n}\right]\\
- & =\frac{\sqrt{n}}{\sigma}\left[\frac{\frac{X_{1}-\mu}{\sigma}+\frac{X_{2}-\mu}{\sigma}+\cdots\frac{X_{n}-\mu}{\sigma}}{n}\right]=\frac{1}{\sqrt{n}}\sum_{i=1}^{n}Z_{i}
+ & =\sqrt{n}\left[\frac{\frac{X_{1}-\mu}{\sigma}+\frac{X_{2}-\mu}{\sigma}+\cdots\frac{X_{n}-\mu}{\sigma}}{n}\right]=\frac{1}{\sqrt{n}}\sum_{i=1}^{n}Z_{i}
 \end{align*}
 $$
 :::
@@ -363,8 +370,31 @@ $$
 ## Central Limit Theorem
 
 $$
-M_{\bar{Z}_n}(t)=\left(M_{Z/\sqrt{n}}(t)\right)^n
+\begin{align*}
+M_{\bar{Z}_{n}}(t) & =\left(M_{Z/\sqrt{n}}(t)\right)^{n}=\left(M_{Z}(t/\sqrt{n})\right)^{n}\\
+M_{Z}(t/\sqrt{n}) & =1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+\sum_{k=3}^{\infty}M_{Z}^{k}(0)\frac{\left(t/\sqrt{n}\right)^{k}}{k!}
+\end{align*}
 $$
+Now $M_{Z}(t/\sqrt{n}) = T_2(t/\sqrt{n}) + R_2(t/\sqrt{n})$ where $T_2$ is the Taylor series up to order 2, and $R_2$ is the residual - the Taylor series terms greater than order 2.
+
+## Central Limit Theorem
+::: {style="font-size: xx-large"}
+$$
+\lim_{n\rightarrow\infty}\frac{R_2(t/\sqrt{n})}{(t/\sqrt{n})^2}=\lim_{n\rightarrow\infty}nR_2(t/\sqrt{n})=0
+$$
+and 
+
+$$
+\begin{align*}
+\lim_{n\rightarrow\infty}M_{\bar{Z}_{n}}(t) & =\lim_{n\rightarrow\infty}\left(1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+R_{2}(t/\sqrt{n})\right)^{n}\\
+ & =\lim_{n\rightarrow\infty}\left(1+\frac{1}{n}\left(\frac{t^{2}}{2}+nR_{2}(t/\sqrt{n})\right)\right)^{n}=\lim_{n\rightarrow\infty}\left(1+\frac{t^{2}/2}{n}\right)^{n}
+\end{align*}
+$$
+:::
+
+## Central Limit Theorem
+
+and
 
 ## Central Limit Theorem
 
@@ -385,16 +415,16 @@ $$ where $Z\sim\mathscr{N}(0,1)$
 ::: {style="font-size: xx-large"}
 Suppose we need to compute an expectation $\mathbb{E}[h(Z)]$ for some random variable $Z$ and some function $h:\mathbb{R}\to\mathbb{R}$.
 
-Monte Carlo methods avoid doing any integration and instead just generate lots of samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[h(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mh(z_i)$, relying on empirical probability. The law of large numbers states that this sample mean should be close to $\mathbb{E}[h(Z)]$.
+Monte Carlo methods avoid doing any integration and instead just generate many samples of $Z$, say $z_1,z_2,\ldots,z_M$ and *estimate* $\mathbb{E}[h(Z)]$ as $\frac{1}{M}\sum_{i=1}^Mh(z_i)$, relying on empirical probability. The law of large numbers states that this sample mean should be close to $\mathbb{E}[h(Z)]$.
 
-Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating lots of random variables.
+Monte Carlo replaces the work of computing an integral (i.e., an expectation) with the work of generating many random variables.
 :::
 
 ## MC Methods
 
 #### sampling
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 If $X\sim\mathscr{N}(\mu,\sigma)$ and we want to compute $\mathbb{E}[\log|X|]$, we could set up and solve the integral
 
 $$
@@ -411,7 +441,7 @@ Alternatively, we could just draw lots of Monte Carlo replicates $X_1,X_2,\cdots
 
 #### sampling
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Suppose that we want to compute an integral
 
 $$
@@ -429,7 +459,7 @@ where $h(x)=g_0(x)/f(x)$ and $X\sim f$
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Similarly, if we are given $h(x)$ and we want to compute $\mathbb{E}_f[h(X)]$ where $X\sim f,\,x\in D$. What if we could not sample from $f$ directly?
 
 If there were some other distribution $g_1(x)$ we could sample from, such that $g_1(x)>0,\,x\in D$, then
@@ -445,7 +475,7 @@ $$
 
 ## MC Methods
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 This method is called importance sampling (IS).
 
 1.  draw iid $x_1,x_2,\ldots,x_n$ from $g_1$ and calculate the importance weight
@@ -473,6 +503,7 @@ Estimate $\mathbb E_f(X)$ where $f(x) = \sqrt{2/\pi}e^{-\frac{x^2}{2}};\;x\ge 0$
 #| code-summary: integrate the half-normal
 n <- 5000
 X <- rexp(n, rate=2)
+# calculate the importance weights
 W <- exp(-0.5 * X^2 + 2*X) / sqrt(2 * pi)
 
 mu_h  <- mean(W*X)
@@ -483,7 +514,6 @@ tibble::tibble(mean = mu_h,  variance = var_h, 'standard error' = se_h) |>
   gt::gt() |> 
   gt::fmt_number(decimals=4) |> 
   gt::tab_options( table.font.size = gt::px(30) ) |>  
-  #gt::tab_header(title = )
   gt::as_raw_html()
 ```
 
@@ -498,10 +528,11 @@ Estimate $\mathbb E_f(X)$ where $f(x) = e^{-\frac{x^2}{2}};\;x\ge 0$ (this is th
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: integrate the (un-noramlized) half-normal
+#| code-summary: integrate the (un-normalized) half-normal
 # un-normalized weights
 n <- 5000
 X <- rexp(n, rate=2)
+# calculate the weights
 W <- exp(-0.5 * X^2 + 2*X)
 
 mu_h2  <- sum(W*X)/sum(W)
@@ -542,7 +573,7 @@ Then use the following procedure:
 
 #### rejection sampling
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   Since $0\le\frac{g(x)}{Kf(x)}\le 1$ we know that $\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)=\frac{g(x)}{Kf(x)}$
 
 -   and so
@@ -560,7 +591,7 @@ $$
 
 #### rejection sampling
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Similarly, for any $y\in\mathbb{R}$, we can calculate the joint probability
 
 $$
@@ -639,9 +670,11 @@ $$
 
 [^2]: The **geometric distribution** is a discrete pmf that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
 
+# Stochastic processes
+
 ## Stochastic processes
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 A stochastic process, which we will usually write as $(X_n)$, is an indexed sequence of random variables that are possibly dependent on each other.
 
 Each random variable $X_n$ takes a value in a state space $\mathcal S$ which is the set of possible values for the process. As with usual random variables, the state space $\mathcal S$ can be discrete or continuous.
@@ -651,13 +684,13 @@ A discrete state space denotes a set of distinct possible outcomes, which can be
 
 ## Stochastic processes
 
-The stochastic process has an index set that puts the random variables that make up the process in order.
+The stochastic process has an index set that orders the random variables that make up the process.
 
 The index set is usually interpreted as a time variable, telling us when the process will be measured. The index set for time can also be discrete or continuous. Discrete time denotes a process sampled at distinct points, often denoted by $n = 0,1,2,\dots$, while continuous time denotes a process monitored constantly over time, often denoted by $t \in \mathbb R_+ = \{x \in \mathbb R : x \geq 0\}$.
 
 ## Markov property
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Consider a simple board game where we roll a dice and move that many squares forward on the board. Suppose we are currently on the square $X_n$. What can we say about which square $X_{n+1}$ we move to on our next turn?
 
 -   $X_{n+1}$ is random, since it depends on the roll of the dice.
@@ -670,15 +703,15 @@ Consider a simple board game where we roll a dice and move that many squares for
 ::: {style="font-size: xx-large"}
 The third point is called the Markov property or memoryless property.
 
-The property of Markov Chains is memoryless, because we only need to remember what square we've reached, not which squares we visited to get here.
+The key property of Markov Chains is memoryless: to get the next value we only need to know where we are, not which squares we visited to get here.
 
-The stochastic process before this step has no bearing on the future steps, given where we are now. That is, the past and the future are conditionally independent given the present.
+The past and the future are conditionally independent given the present.
 :::
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
-Consider the following **simple random walk** on the integers $\mathbb Z$:
+::: {style="font-size: x-large"}
+Consider the following **simple random walk** on the positive integers $\mathbb Z$:
 
 We start at $0$, then at each time step, we go up by one with probability $p$ and down by one with probability $q = 1-p$. When $p = q = \frac12$, we're equally as likely to go up as down, and we call this the **simple symmetric random walk**.
 
@@ -735,17 +768,16 @@ p0+p1+p3
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 We can write this as a stochastic process $(X_n)$ with discrete time $n = \{0,1,2,\dots\} = \mathbb Z_+$ and discrete state space $\mathcal S = \mathbb Z$, where $X_0 = 0$ and, for $n \geq 0$, we have
 
-\$\$ X\_{n+1} =
-
-\begin{cases} X_n + 1 & \text{with probability $p$,} \\
-                             X_n - 1 & \text{with probability $1-p$.} 
-                             
-              \end{cases}
-
-\$\$
+$$
+X_{n+1} =
+\begin{cases} 
+X_n + 1 & \text{with probability $p$,} \\
+X_n - 1 & \text{with probability $1-p$} 
+\end{cases}
+$$
 
 It's clear from this definition that $X_{n+1}$ (the future) depends on $X_n$ (the present), but, given $X_n$, does not depend on $X_{n-1}, \dots, X_1, X_0$ (the past). Thus the Markov property holds, and the simple random walk is a discrete time Markov process or [**Markov chain**]{.underline}.
 :::
@@ -760,7 +792,7 @@ In our examples of the simple random walk and gambler's ruin, we specified the s
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 We also need to know the transition probabilities $\mathbb P(X_{n+1} = j \mid X_n = i)$ for $i,j \in \mathcal S$. Because of the Markov property, the transition probability only needs to condition on the state we're in now $X_n = i$, and not on the whole history of the process.
 
 In the case of the simple random walk, for example, we had initial distribution
@@ -786,7 +818,7 @@ A Markov process with this property is called time homogeneous. We will only con
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Write $p_{ij} = \mathbb P(X_{n+1} = j \mid X_n = i)$ for the transition probabilities, which are independent of $n$. We must have $p_{ij} \geq 0$, since it is a probability, and we must also have $\sum_j p_{ij} = 1$ for all states $i$, as this is the sum of the probabilities of all the places you can move to from state i.
 
 When the state space is finite (and even sometimes when it's not), it's convenient to write the transition probabilities $(p_{ij})$ as a matrix $\mathsf P$, called the transition matrix, whose $(i,j)$th entry is $p_{ij}$.
@@ -796,10 +828,12 @@ Then the condition that $\sum_j p_{ij} = 1$ is the condition that each of the ro
 
 ## Markov Chains
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Consider a simple two-state Markov chain with state space $\mathcal S = \{0,1\}$ and transition matrix $$ \mathsf P = \begin{pmatrix} p_{00} & p_{01} \\ p_{10} & p_{11} \end{pmatrix} = \begin{pmatrix} 1-\alpha & \alpha \\ \beta & 1-\beta \end{pmatrix}  $$ for some $0 < \alpha<1, 0>\beta < 1$. Note that the rows of $\mathsf P$ add up to $1$, as they must.
 
-We can illustrate $\mathsf P$ by a transition diagram/graph, where the nodes/vertices are the states and the arrows give the transition probabilities. (We don't draw the arrow if $p_{ij} = 0$.) In this case, our transition diagram looks like this:
+like
+
+We can illustrate $\mathsf P$ by a transition diagram/graph, where the nodes/vertices are the states and the arrows give the transition probabilities. (We don't draw the arrow if $p_{ij} = 0$.) In this case, our transition diagram looks the graph on the next slide:
 :::
 
 ## Markov Chains
@@ -832,7 +866,7 @@ We can use this graph as a simple model of customer churn, for example. If the c
 
 :::: {style="font-size: x-large"}
 ::: {#printer .example}
-*If the customer has an account in period* $n$, what's the probability they also have an account in period $n+2$?
+If the customer has an account in period $n$, what's the probability they also have an account in period $n+2$?
 
 $$
 p_{11}(2) = \mathbb P (X_{n+2} = 1 \mid X_n = 1)
@@ -847,7 +881,7 @@ $$
   &= \mathbb P (X_{n+1} = 0 \mid X_n = 1)\,\mathbb P (X_{n+2} = 1 \mid X_{n+1} = 0) \\
   &\qquad{} + \mathbb P (X_{n+1} = 1 \mid X_n = 1)\,\mathbb P (X_{n+2} = 1 \mid X_{n+1} = 1) \\
   &= p_{10}p_{01} + p_{11}p_{11} \\
-  &= \beta\alpha + (1-\beta)^2 .
+  &= \beta\alpha + (1-\beta)^2
 \end{align*} 
 $$
 :::
@@ -863,7 +897,7 @@ Another way to think of this as we summing the probabilities of all length-2 pat
 
 ## Markov Chains
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 In the above example, we calculated a two-step transition probability:
 
 $$
@@ -886,7 +920,7 @@ More generally, we see that this rule holds over multiple steps, provided we sum
 
 ## Markov Chains
 
-:::: {style="font-size: xx-large"}
+:::: {style="font-size: x-large"}
 ::: {#thm-n-step .theorem}
 Let $(X_n)$ be a Markov chain with state space $\mathcal S$ and transition matrix $\mathsf P = (p_{ij})$. For $i,j \in \mathcal S$, write $$ p_{ij}(n) = \mathbb P(X_n = j \mid X_0 = i) $$ for the $n$-step transition probability. Then
 
@@ -930,7 +964,7 @@ Given transition matrix $\mathsf P$ and initial state pmf $\boldsymbol \pi_0$, t
 
 ## Markov Chains
 
-:::: {style="font-size: xx-large"}
+:::: {style="font-size: x-large"}
 Starting from a state given by a distribution $\boldsymbol \pi = (\pi_i)_{i\in S}$, then after step 1 the probability we're in state $j$ is $\sum_i \pi_i p_{ij}$. So if $\pi_j = \sum_i \pi_i p_{ij}$, we stay in this distribution forever. We call such a distribution a stationary distribution. We again recognise this formula as a matrix-vector multiplication, so this is $\boldsymbol \pi = \boldsymbol \pi\mathsf P$, where $\boldsymbol \pi$ is a *row* vector.
 
 ::: definition
@@ -956,7 +990,7 @@ One way to think is that if we started off a thousand Markov chains, choosing ea
 
 #### stationary distributions
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 So our definition of the stationary state pmf is: $\pi$ such that $\pi=\pi\times \mathsf P$. We can calculate it as follows:
 
 $$
@@ -1070,12 +1104,14 @@ pi %*% P
 		\end{tikzpicture}
 ```
 
+# Markov Chain Monte Carlo
+
 ## Markov Chain Monte Carlo
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Suppose have complicated, high-dimensional density $\pi = cg$ and we want samples $X_1, X_2,\dots \sim \pi$.
 
-Define a Markov chain (dependent random process) $X_0, X_1,X_2\dots$ in such a way that for large enough $m$, we have $X_n\sim \pi,\,\forall n\ge m$.
+Define a Markov chain $X_0, X_1,X_2\dots$ in such a way that for large enough $m$, we have $X_n\sim \pi,\,\forall n\ge m$.
 
 Then we can estimate $\mathbb{E}_{\pi}(h) ≡ \int h(x) \pi(x) dx$ by:
 
@@ -1088,7 +1124,7 @@ where $B$ (“burn-in”) is chosen large enough so $X_B\sim\pi$, and $M$ is cho
 
 ## MCMC Metropolis Algo
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 1.  choose some initial value $X_0$, then
 2.  given $X_{n-1}$, choose a proposal state $Y_n\sim \textrm{MVN}(X_{n-1},\sigma^2\textrm{I})$, for some fixed $\sigma^2>0$
 3.  let $A_n=\pi(Y_n)/\pi(X_{n-1})=g(Y_n)/g(X_{n-1})$ and $U_n\sim\textrm{U}[0,1]$, then
@@ -1126,9 +1162,6 @@ $$
 #| echo: true
 #| code-fold: true
 #| code-summary: "a simple Metropolis algorithm in one dimension (continuous RV)"
-#| layout-ncol: 2
-#| layout-align: center
-#| fig-height: 8
 g = function(y) {
     if ( (y<0) || (y>1) )
 	return(0)
@@ -1163,7 +1196,13 @@ se1 =  sd(hlist[(B+1):M]) / sqrt(M-B)
 varfact <- function(xxx) { 2 * sum(acf(xxx, plot=FALSE)$acf) - 1 }
 thevarfact = varfact(hlist[(B+1):M])
 se = se1 * sqrt( thevarfact )
+```
 
+::::: columns
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
 tibble::tibble(
   measure = c("iterations","burn-in","mean of h","iid se","varfact","true se","95% CI lb","95% CI ub")
   , value = c(M,B,u,se1,thevarfact,se,u-1.96*se,u+1.96*se)
@@ -1172,12 +1211,22 @@ gt::gt("measure") |>
 gt::fmt_number(rows = 3:8, decimals = 4) |> 
 gt::fmt_number(rows = 1:2, decimals = 0) |> 
 gtExtras::gt_theme_espn()
+```
+:::
 
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| layout-align: center
+#| fig-width: 9
+#| fig-height: 7
 tibble::tibble(x=1:length(xlist), y=xlist) |> 
   ggplot(aes(x=x,y=y)) + geom_line() +
   labs(title = "Plot of accepted values")
-
 ```
+:::
+:::::
 
 ## MCMC Metropolis Algo
 
@@ -1352,13 +1401,13 @@ $$
 A_n = \frac{\pi(Y_n)}{\pi(X_{n-1})}\;\mathrm{with}\; A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}
 $$
 
-and the algorithm is still valid even is $q$ is not symmetric.
+and the algorithm is still valid even if $q$ is not symmetric.
 
 ## MCMC Metropolis-Hastings Algo
 
 Why is this valid?
 
-For metropolis, th key was that the Markov chain was reversible, i.e. $\pi(x)\mathsf{P}(x,y)=\pi(y)\mathsf{P}(y,x)$
+For metropolis, the key was that the Markov chain was reversible, i.e. $\pi(x)\mathsf{P}(x,y)=\pi(y)\mathsf{P}(y,x)$
 
 If instead $A_n = \frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}$, with acceptance probability $\alpha(x,y)=\min\left[1,\frac{\pi(Y_n)q(Y_n,X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_n)}\right]$, then
 
@@ -1525,7 +1574,7 @@ dat |> dplyr::mutate(step = factor(step)) |> dplyr::group_by(step) |>
 
 ## MCMC and Bayesian Analysis
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 It is more common to have multiple data points and multiple parameters. In this case we sample from the posterior using $\pi_X\left(\left.X\right|\theta\right)\times\pi_\theta\left(\theta\right)$ and a MCMC method like Metropolis Hastings.
 
 In the example to follow, we observe $(y,x)$ and we have parameters $\theta=(a,b,\sigma)$ that we want to estimate
@@ -1545,12 +1594,12 @@ In the example to follow, we observe $(y,x)$ and we have parameters $\theta=(a,b
 ```{r}
 #| echo: true
 set.seed(8740)
-b0 = 0; b1 = 5; sigma = 10; sampleSize = 31
+a = 0; b = 5; sigma = 10; sampleSize = 31
 
 data <- 
   tibble::tibble(
     x = (-(sampleSize-1)/2):((sampleSize-1)/2)
-    , y =  b0 + b1 * x + rnorm(n=sampleSize, mean=0, sd=sigma)
+    , y =  a + b * x + rnorm(n=sampleSize, mean=0, sd=sigma)
   )
 ```
 
@@ -1631,7 +1680,7 @@ mcm_chain <- coda::mcmc(chain)
 smry <- summary(mcm_chain)
 smry$statistics |> tibble::as_tibble() |> 
   dplyr::bind_cols(smry$quantiles |> tibble::as_tibble()) |>
-  tibble::add_column(param = c('beta1','beta0','sigma')) |> 
+  tibble::add_column(param = c('b','a','sigma')) |> 
   gt::gt("param") |> 
   gt::tab_spanner(label = "percentiles", columns = ends_with("%")) |> 
   gt::tab_options( table.font.size = gt::px(48) ) %>% 
@@ -1654,7 +1703,7 @@ plot(mcm_chain)
 ## MCMC and Bayesian Analysis
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 trueA = 5
 trueB = 0
@@ -1707,16 +1756,17 @@ run_metropolis_MCMC = function(startvalue, iterations){
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
+#| code-fold: true
 
 set.seed(8740)
-b0 = 0; b1 = 5; sigma = 10; sampleSize = 31
+a = 0; b = 5; sigma = 10; sampleSize = 31
 
 data <- 
   tibble::tibble(
     x = (-(sampleSize-1)/2):((sampleSize-1)/2)
-    , y =  b0 + b1 * x + rnorm(n=sampleSize, mean=0, sd=sigma)
+    , y =  a + b * x + rnorm(n=sampleSize, mean=0, sd=sigma)
   )
 
 

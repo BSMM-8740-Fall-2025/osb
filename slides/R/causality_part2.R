@@ -923,12 +923,16 @@ nhefs |>
   dplyr::summarize(mean_effect = mean(wt82_71)) |>
   dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) |> readr::write_csv('')
 
+nhefs <-
+  readr::read_csv('labs/solutions/data/nhefs_data.csv', show_col_types = FALSE) |>
+  dplyr::select(wt82_71, quit_smoking, age, wt71, smokeintensity, exercise, education, sex, race)
+
 nhefs_data <- nhefs |> dplyr::select(wt82_71, quit_smoking, age, wt71, smokeintensity, exercise, education, sex, race)
 
 nhefs_data <-
   wt82_71 ~ quit_smoking
 
-nhefs_data <- nhefs_data |> recipes::recipe(wt82_71 ~ .) |>
+nhefs_data <- nhefs_data |> recipes::recipe(data=_,formula = wt82_71 ~ .) |>
   recipes::update_role(quit_smoking, new_role = 'treatment') |>
   recipes::step_normalize(age, wt71, smokeintensity) |>
   recipes::prep() |>
