@@ -310,6 +310,30 @@ and so $\left.\frac{d^{n}}{dt^{n}}M_{X}(t)\right|_{t=0}=\mathbb{E}\left[X^{n}\ri
 
 ## Moments and the MGF
 
+#### Key facts needed for the CLT
+
+::: {style="font-size: x-large"}
+The exponential function can be defined by the limit[^1]:
+
+[^1]: [reference](https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function)
+
+$$
+e^x=\lim_{n\rightarrow\infty}\left(1+\frac{x}{n}\right)^n
+$$
+
+A Taylor series around point $a$ can be defined as[^2]:
+
+[^2]: see [here](https://en.wikipedia.org/wiki/Taylor%27s_theorem)
+
+$$
+f(x)=\sum_{n=0}^k\frac{f^{(n)}(a)}{n!}(x-a)^n+h_k(x)(x-a)^k
+$$
+
+where $\lim_{n\rightarrow\infty..}\frac{h_k(x)}{(x-a)^k}=0$
+:::
+
+## Moments and the MGF
+
 #### Other properties of the MGF
 
 -   if $Y=\beta_0+\beta_1X$ then
@@ -336,9 +360,9 @@ $$
 
 ## Moments and the MGF
 
-#### Other properties of the MGF[^1]
+#### Other properties of the MGF[^3]
 
-[^1]: see [here](http://www.srabbani.com/moments.pdf) for a derivation of the moments of the standard Normal pdf.
+[^3]: see [here](http://www.srabbani.com/moments.pdf) for a derivation of the moments of the standard Normal pdf.
 
 if $Y=\mathscr{N}(0,1)$ then starting with the Taylor series expansion of $e^{t^2/2}$:
 
@@ -372,17 +396,16 @@ $$
 $$
 \begin{align*}
 M_{\bar{Z}_{n}}(t) & =\left(M_{Z/\sqrt{n}}(t)\right)^{n}=\left(M_{Z}(t/\sqrt{n})\right)^{n}\\
-M_{Z}(t/\sqrt{n}) & =1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+\sum_{k=3}^{\infty}M_{Z}^{k}(0)\frac{\left(t/\sqrt{n}\right)^{k}}{k!}
+M_{Z}(t/\sqrt{n}) & =1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+\sum_{k=3}^{\infty}M_{Z}^{(k)}(0)\frac{\left(t/\sqrt{n}\right)^{k}}{k!}
 \end{align*}
-$$
-Now $M_{Z}(t/\sqrt{n}) = T_2(t/\sqrt{n}) + R_2(t/\sqrt{n})$ where $T_2$ is the Taylor series up to order 2, and $R_2$ is the residual - the Taylor series terms greater than order 2.
+$$ Now $M_{Z}(t/\sqrt{n}) = T_2(t/\sqrt{n}) + R_2(t/\sqrt{n})$ where $T_2$ is the Taylor series up to order 2, and $R_2$ is the residual - the Taylor series terms greater than order 2.
 
 ## Central Limit Theorem
-::: {style="font-size: xx-large"}
+
+::: {style="font-size: x-large"}
 $$
 \lim_{n\rightarrow\infty}\frac{R_2(t/\sqrt{n})}{(t/\sqrt{n})^2}=\lim_{n\rightarrow\infty}nR_2(t/\sqrt{n})=0
-$$
-and 
+$$ and
 
 $$
 \begin{align*}
@@ -394,7 +417,19 @@ $$
 
 ## Central Limit Theorem
 
-and
+and since
+
+$$
+e^x=\lim_{n\rightarrow\infty}\left(1+\frac{x}{n}\right)^n
+$$
+
+we have
+
+$$
+\lim_{n\rightarrow\infty}M_{\bar{Z}_{n}}(t)=\lim_{n\rightarrow\infty}\left(1+\frac{t^{2}/2}{n}\right)^{n}=e^{t^2/2}
+$$
+
+i.e. the sum of $n$ IID samples of a random variable converges to a Gaussian in the limit $n\rightarrow\infty$.
 
 ## Central Limit Theorem
 
@@ -658,7 +693,7 @@ $$
 #### rejection sampling: proof for discrete rv
 
 ::: {style="font-size: xx-large"}
-and so[^2]
+and so[^4]
 
 $$
 \begin{align*}
@@ -668,7 +703,7 @@ $$
 $$
 :::
 
-[^2]: The **geometric distribution** is a discrete pmf that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
+[^4]: The **geometric distribution** is a discrete pmf that can be interpreted as the number of failures before the first success ($\mathbb{P}(X=k)=(1-p)^{k-1}p$, with mean $p$).
 
 # Stochastic processes
 
@@ -957,10 +992,10 @@ Of course, once we know that $\mathsf P(n) = \mathsf P^n$ is given by the matrix
 ::: {style="font-size: xx-large"}
 If we start from a state given by a pmf $\boldsymbol \pi_0 = (\pi_{0,i})_{i\in S}$, then after step 1 the probability we're in state $j$ is $\sum_i \pi_{0,i} p_{ij}$.
 
-Given transition matrix $\mathsf P$ and initial state pmf $\boldsymbol \pi_0$, the pmf for the state after one step is $\boldsymbol \pi_1=\boldsymbol \pi_0 \times\mathsf P$, i.e. $\boldsymbol \pi_1$ and $\boldsymbol \pi_0$ are row vectors, and for any given state pmf, the pmf for the states on the next step of the Markov chain is the current state pmf multiplied[^3] by the transition matrix.
+Given transition matrix $\mathsf P$ and initial state pmf $\boldsymbol \pi_0$, the pmf for the state after one step is $\boldsymbol \pi_1=\boldsymbol \pi_0 \times\mathsf P$, i.e. $\boldsymbol \pi_1$ and $\boldsymbol \pi_0$ are row vectors, and for any given state pmf, the pmf for the states on the next step of the Markov chain is the current state pmf multiplied[^5] by the transition matrix.
 :::
 
-[^3]: note: on the left
+[^5]: note: on the left
 
 ## Markov Chains
 
