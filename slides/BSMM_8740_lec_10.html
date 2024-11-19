@@ -427,6 +427,7 @@ L.L. Odette
 <li>We will use one of the popular R packages for Bayesian analysis.</li>
 </ul>
 </section>
+<section>
 <section id="bayesian-regression" class="title-slide slide level1 center">
 <h1>Bayesian Regression</h1>
 <div style="font-size: x-large">
@@ -441,12 +442,6 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 \overbrace{P(\mathcal{D} \vert \theta)}^{\text{Likelihood}}\overbrace{P(\theta)}^{\text{Prior}}
 \]</span></p>
 </div>
-</section>
-
-<section>
-<section id="bayesian-regression-1" class="title-slide slide level1 center">
-<h1>Bayesian Regression</h1>
-
 </section>
 <section id="maximum-likelihood-mle" class="slide level2">
 <h2>Maximum likelihood (MLE)</h2>
@@ -474,7 +469,7 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 <p>The Bayesian model for linear regression is (to within a scaling constant)</p>
 <p><span class="math display">\[
 \begin{align*}
-\pi_{\theta\vert\mathcal{D}}\left(\left.\theta\right|y_i,x_i\right)\sim\pi\left(\left.y_i\right|x_i,\theta\right)\times\pi_\theta\left(\theta\right)
+\pi_{\theta\vert\mathcal{D}}\left(\left.\theta\right|y_i,x_i\right)\sim\pi_{\mathcal{D}}\left(\left.y_i\right|x_i,\theta\right)\times\pi_\theta\left(\theta\right)
 \end{align*}
 \]</span></p>
 <p>where the parameters are <span class="math inline">\(\theta=\{\beta,\sigma^2\}\)</span>.</p>
@@ -521,27 +516,36 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 <p>which turns out to be a linear interpolation between the prior mean and the sample mean weighted by their respective covariances.</p>
 </div>
 </section>
+<section id="maximum-a-posteriori-estimate-mape-3" class="slide level2">
+<h2>Maximum a posteriori estimate (MAPE)</h2>
+<p>In this MAPE for linear regression, with Gaussian priors, the posterior is also a Gaussian, since the product of Gaussian distributions is proportional to a Gaussian distribution, and the denominator in Bayes rule reflects the proportionality.</p>
+<p>However, this a special case where the likelihood and prior distributions are <u><strong>conjugate</strong></u>.</p>
+</section>
 <section id="conjugate-priors" class="slide level2">
 <h2>Conjugate priors</h2>
-<p>The case of the Gaussian likelihood and Gaussian prior</p>
-<p>If the posterior distribution <span class="math inline">\(\pi_{\theta\vert\mathcal{D}}\)</span> is in the same probability distribution family as the prior probability distribution <span class="math inline">\(\pi_\theta\)</span> (generally this means they are the same to within a normalizing constant), the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood function <span class="math inline">\(\pi\)</span>. A conjugate prior is an algebraic convenience, giving a closed-form expression for the posterior.</p>
+<p>If the posterior distribution <span class="math inline">\(\pi_{\theta\vert\mathcal{D}}\)</span> is in the same probability distribution family as the prior probability distribution <span class="math inline">\(\pi_\theta\)</span> (generally this means they are the same to within a normalizing constant), the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood function <span class="math inline">\(\pi_{\mathcal{D}}\)</span>.</p>
+<p>A conjugate prior is an algebraic convenience, giving a closed-form expression for the posterior.</p>
 </section>
 <section id="conjugate-priors-1" class="slide level2">
 <h2>Conjugate priors</h2>
 <h4 id="example-1">example 1</h4>
 <p>Consider a random variable which consists of the number of successes <span class="math inline">\(s\)</span> in <span class="math inline">\(n\)</span> Bernoulli trials with unknown probability of success <span class="math inline">\(p\in[0,1]\)</span>. This random variable will follow the binomial distribution, with a probability mass function of the form</p>
 <p><span class="math display">\[
-\pi(s)={n \choose s}p^s(1-p)^{n-s}
+\pi(s\vert p)={n \choose s}p^s(1-p)^{n-s}
 \]</span></p>
-<p>The usual conjugate prior is the beta distribution with parameters (<span class="math inline">\(\alpha, \beta\)</span>):</p>
+</section>
+<section id="conjugate-priors-2" class="slide level2">
+<h2>Conjugate priors</h2>
+<h4 id="example-1-1">example 1</h4>
+<p>The usual conjugate prior for the Bernoulli is the beta distribution with parameters (<span class="math inline">\(\alpha, \beta\)</span>):</p>
 <p><span class="math display">\[
 \pi_\theta(p;\alpha,\beta) = \frac{p^{\alpha-1}(1-p)^{\beta-1}}{\mathrm{B}(\alpha,\beta)}
 \]</span></p>
 <p>where <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> are chosen to reflect any existing belief or information (<span class="math inline">\(\alpha = 1\)</span> and <span class="math inline">\(\beta = 1\)</span> would give a uniform distribution) and <span class="math inline">\(\mathrm{B}(\alpha,\beta)\)</span> is the Beta function acting as a normalising constant.</p>
 </section>
-<section id="conjugate-priors-2" class="slide level2">
+<section id="conjugate-priors-3" class="slide level2">
 <h2>Conjugate priors</h2>
-<h4 id="example-1-1">example 1</h4>
+<h4 id="example-1-2">example 1</h4>
 <p>If we sample this random variable and get <span class="math inline">\(s'\)</span> successes and <span class="math inline">\(f=n-s'\)</span> failures, then we have</p>
 <p><span class="math display">\[
 \begin{align*}
@@ -552,88 +556,96 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 \]</span></p>
 <p>And the posterior distribution <span class="math inline">\(\pi_{\theta\vert\mathcal{D}}\)</span> is in the same probability distribution family as the prior probability distribution <span class="math inline">\(\pi_\theta\)</span>.</p>
 </section>
-<section id="conjugate-priors-3" class="slide level2">
+<section id="conjugate-priors-4" class="slide level2">
 <h2>Conjugate priors</h2>
 <h4 id="example-2">example 2</h4>
 <div style="font-size: x-large">
-<p>Suppose you’ve been asked to find the probability that you have exactly 5 outages at your website during any hour of the day. Your client has limited data, in fact they have just three data points <span class="math inline">\(x=[3,4,1]\)</span></p>
-<p>If you assume that the data are generated by a Poisson distribution (which has a single parameter, the rate <span class="math inline">\(\lambda\)</span>), then the maximum likelihood estimate of <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(\lambda=\frac{3+4+1}{3}\approx 2.67\)</span>, and</p>
+<p>Suppose you’ve been asked to find the probability that you have exactly 5 outages at your website during any hour of the day. Your client has limited data, in fact they have just three data points <span class="math inline">\(y=[3,4,1]\)</span></p>
+<p>If you assume that the data are generated by a Poisson distribution (which has a single parameter, the rate <span class="math inline">\(\lambda\)</span>), then the maximum likelihood estimate of <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(\lambda=\frac{3+4+1}{3}\approx 2.67\)</span>, and you would estimate the probability as:</p>
 <p><span class="math display">\[
 \pi(n=5\vert\lambda\approx 2.67) = \frac{\lambda^n e^{-\lambda}}{n!}=\frac{2.67^5 e^{-2.67}}{5!}=0.078
 \]</span></p>
 </div>
 </section>
-<section id="conjugate-priors-4" class="slide level2">
+<section id="conjugate-priors-5" class="slide level2">
 <h2>Conjugate priors</h2>
 <h4 id="example-2-1">example 2</h4>
 <div style="font-size: x-large">
-<p>This is the Poisson distribution that is the most likely to have generated the observed data <span class="math inline">\(x\)</span>.</p>
-<p>But the data could also have come from another Poisson distribution, e.g., one with <span class="math inline">\(\lambda =3\)</span>, or <span class="math inline">\(\lambda =2\)</span>, etc. In fact, there is an infinite number of Poisson distributions that could have generated the observed data. With relatively few data points, we should be quite uncertain about which exact Poisson distribution generated this data. Intuitively we should instead take a weighted average of the probability of <span class="math inline">\(\pi(x&gt;0|\lambda )\)</span> for each of those Poisson distributions, weighted by how likely they each are, given the data we’ve observed.</p>
+<p>We’ve assumed that the observed data <span class="math inline">\(y\)</span> is most likely to have been generated by a Poisson distribution with MLE for <span class="math inline">\(\lambda= 2.67\)</span>.</p>
+<p>But the data could also have come from another Poisson distribution, e.g., one with <span class="math inline">\(\lambda =3\)</span>, or <span class="math inline">\(\lambda =2\)</span>, etc. In fact, there is an infinite number of Poisson distributions that could have generated the observed data.</p>
+<p>With relatively few data points, we should be quite uncertain about which exact Poisson distribution generated this data. Intuitively we should instead take a weighted average of the probability of <span class="math inline">\(\pi(y\ge 0|\lambda )\)</span> for each of those Poisson distributions, weighted by how likely they each are, given the data we’ve observed.</p>
 <p>This is exactly what Bayes’ Rule does.</p>
 </div>
 </section>
-<section id="conjugate-priors-5" class="slide level2">
+<section id="conjugate-priors-6" class="slide level2">
 <h2>Conjugate priors</h2>
 <h4 id="example-2-2">example 2</h4>
 <div style="font-size: x-large">
-<p>Luckily, the Poisson distribution has a conjugate, the Gamma distribution: <span class="math inline">\(\pi_\theta(x;\alpha,\beta)=\frac{x^{\alpha-1}e^{-\beta x}\beta^\alpha}{\Gamma(\alpha)}\)</span>, and</p>
+<p>Luckily, the Poisson distribution has a conjugate, the Gamma distribution:</p>
+<p><span class="math display">\[
+\pi_\theta(x\lambda;\alpha,\beta)=\frac{x^{\alpha-1}e^{-\beta \lambda}\beta^\alpha}{\Gamma(\alpha)}
+\]</span></p>
+<p>and</p>
 <p><span class="math display">\[
 \begin{align*}
 \pi\left(y\vert\lambda\right) &amp; =\prod_{i=1}^{n}\frac{\lambda^{y_{i}}e^{-\lambda}}{y_{i}!}\\
 &amp; =\lambda^{n\bar{y}}e^{-n\lambda}\prod_{i=1}^{n}\frac{1}{y_{i}!}
 \end{align*}
 \]</span></p>
-<p>so <span class="math inline">\(\pi\left(y\vert\lambda\right)\times pi_\theta(x;\alpha,\beta)\sim \lambda^{n\bar{y}+\alpha-1}e^{-(n+\beta)\lambda}\sim\pi_\theta(x;n\bar{y}+\alpha,(n+\beta))\)</span></p>
+<p>so <span class="math inline">\(\pi\left(y\vert\lambda\right)\times \pi_\theta(x;\alpha,\beta)\sim \lambda^{n\bar{y}+\alpha-1}e^{-(n+\beta)\lambda}\sim\pi_\theta(\lambda;n\bar{y}+\alpha,(n+\beta))\)</span></p>
 </div>
 </section>
-<section id="conjugate-priors-6" class="slide level2">
+<section id="conjugate-priors-7" class="slide level2">
 <h2>Conjugate priors</h2>
 <h4 id="example-2-3">example 2</h4>
 <div class="columns">
-<div class="column" style="width:40%;">
+<div class="column" style="width:60%;">
 <div style="font-size: large">
-<p>Given our observations <span class="math inline">\(\lambda=\frac{3+4+1}{3}\approx 2.67\)</span>, we might take the prior as a Gamma with <span class="math inline">\(\alpha=9;\;\beta = 2\)</span> which looks like this:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>.shape <span class="ot">&lt;-</span> <span class="dv">9</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fl">2.67</span>  ; .rate <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">+</span><span class="dv">2</span></span>
-<span id="cb1-2"><a></a>ci <span class="ot">&lt;-</span> <span class="fu">qgamma</span>(<span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">shape=</span>.shape, <span class="at">rate =</span> .rate) <span class="sc">|&gt;</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(<span class="cf">function</span>(x){<span class="fu">round</span>( x<span class="sc">^</span><span class="dv">5</span> <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x)<span class="sc">/</span><span class="fu">factorial</span>(<span class="dv">5</span>),<span class="at">digits=</span><span class="dv">3</span>)})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as 0.046, 0.175. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.</p>
-</div>
-</div><div class="column" style="width:60%;">
+<p>Given our observations <span class="math inline">\(\lambda=\frac{3+4+1}{3}\approx 2.67\)</span>, we might arbitrarily take the prior as a Gamma with <span class="math inline">\(\alpha=9;\;\beta = 2\)</span> so that the prior and posterior look like this:</p>
 <div class="cell" data-fig-aling="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>.shape <span class="ot">&lt;-</span> <span class="dv">9</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fl">2.67</span>  ; .rate <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">+</span><span class="dv">2</span></span>
-<span id="cb2-2"><a></a></span>
-<span id="cb2-3"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">lambda =</span> <span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">plambda =</span> <span class="fu">dgamma</span>(<span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">shape=</span><span class="dv">9</span>, <span class="at">rate =</span> <span class="dv">2</span>), <span class="at">measure =</span> <span class="st">"prior"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb2-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
-<span id="cb2-5"><a></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">lambda =</span> <span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">plambda =</span> <span class="fu">dgamma</span>(<span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">shape=</span>.shape, <span class="at">rate =</span> .rate), <span class="at">measure =</span> <span class="st">"posterior"</span>)</span>
-<span id="cb2-6"><a></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb2-7"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> plambda, <span class="at">color =</span> measure)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb2-8"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Probability distributions for Lambda"</span>, <span class="at">subtitle =</span> <span class="st">" prior and posterior predictive"</span>) <span class="sc">+</span></span>
-<span id="cb2-9"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>.shape <span class="ot">&lt;-</span> <span class="dv">9</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fl">2.67</span>  ; .rate <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">+</span><span class="dv">2</span></span>
+<span id="cb1-2"><a></a></span>
+<span id="cb1-3"><a></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">lambda =</span> <span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">plambda =</span> <span class="fu">dgamma</span>(<span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">shape=</span><span class="dv">9</span>, <span class="at">rate =</span> <span class="dv">2</span>), <span class="at">measure =</span> <span class="st">"prior"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb1-5"><a></a>    tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">lambda =</span> <span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">plambda =</span> <span class="fu">dgamma</span>(<span class="fu">seq</span>(<span class="fl">0.04</span>,<span class="dv">15</span>,<span class="fl">0.02</span>), <span class="at">shape=</span>.shape, <span class="at">rate =</span> .rate), <span class="at">measure =</span> <span class="st">"posterior"</span>)</span>
+<span id="cb1-6"><a></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb1-7"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lambda, <span class="at">y =</span> plambda, <span class="at">color =</span> measure)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb1-8"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Probability distributions for Lambda"</span>, <span class="at">subtitle =</span> <span class="st">" prior and posterior predictive"</span>) <span class="sc">+</span></span>
+<span id="cb1-9"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-3-1.png" width="864"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-2-1.png" width="864"></p>
 </figure>
 </div>
 </div>
 </div>
+</div>
+</div><div class="column" style="width:40%;">
+<div style="font-size: large">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>.shape <span class="ot">&lt;-</span> <span class="dv">9</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fl">2.67</span>  ; .rate <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">+</span><span class="dv">2</span></span>
+<span id="cb2-2"><a></a>ci <span class="ot">&lt;-</span> <span class="fu">qgamma</span>(<span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.95</span>), <span class="at">shape=</span>.shape, <span class="at">rate =</span> .rate) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a></a>  purrr<span class="sc">::</span><span class="fu">map_dbl</span>(<span class="cf">function</span>(x){<span class="fu">round</span>( x<span class="sc">^</span><span class="dv">5</span> <span class="sc">*</span> <span class="fu">exp</span>(<span class="sc">-</span>x)<span class="sc">/</span><span class="fu">factorial</span>(<span class="dv">5</span>),<span class="at">digits=</span><span class="dv">3</span>)})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as 0.046, 0.175. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.</p>
+</div>
 </div></div>
 </section>
-<section id="conjugate-priors-7" class="slide level2">
+<section id="conjugate-priors-8" class="slide level2">
 <h2>Conjugate priors</h2>
 <ul>
 <li><p>Conjugate priors offer ease of computation, efficiency in updates, and clear interpretation, making them suitable for simpler models or real-time applications.</p></li>
 <li><p>However, they are often too restrictive for complex or non-standard models, where flexibility in capturing prior beliefs is crucial.</p></li>
 </ul>
 </section>
-<section id="conjugate-priors-8" class="slide level2">
+<section id="conjugate-priors-9" class="slide level2">
 <h2>Conjugate priors</h2>
 <div style="font-size: large">
 <p>Limitations of Conjugate Priors</p>
@@ -654,6 +666,11 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 </section>
 <section id="generative-bayesian-modelling-1" class="slide level2">
 <h2>Generative (bayesian) modelling</h2>
+<p>Note the similarity to DAGs:</p>
+<p>Given a DAG, we next assign probability distributions to each node, relate the nodes through the parameters of the distributions and finally assign priors for any remaining/undetermined parameters, including parameters used to define the relationships between variables.</p>
+</section>
+<section id="generative-bayesian-modelling-2" class="slide level2">
+<h2>Generative (bayesian) modelling</h2>
 <div style="font-size: x-large">
 <p><strong>Key Components of Generative Bayesian Modeling</strong></p>
 <ul>
@@ -664,7 +681,7 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 </ul>
 </div>
 </section>
-<section id="generative-bayesian-modelling-2" class="slide level2">
+<section id="generative-bayesian-modelling-3" class="slide level2">
 <h2>Generative (bayesian) modelling</h2>
 <div style="font-size: x-large">
 <p><strong>Advantages of Generative Bayesian Models</strong></p>
@@ -675,7 +692,7 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 </ul>
 </div>
 </section>
-<section id="generative-bayesian-modelling-3" class="slide level2">
+<section id="generative-bayesian-modelling-4" class="slide level2">
 <h2>Generative (bayesian) modelling</h2>
 <div style="font-size: x-large">
 <p><strong>Limitations</strong></p>
@@ -686,6 +703,11 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 <p><strong>Applications</strong></p>
 <p>Generative Bayesian modeling is widely used in areas requiring a deep understanding of data-generating processes, such as healthcare, natural language processing, finance, and other business applications. It enables tasks like anomaly detection, missing data imputation, and causal inference by modeling the probability structure of observed and unobserved variables.</p>
 </div>
+</section></section>
+<section>
+<section id="brms" class="title-slide slide level1 center">
+<h1>BRMS</h1>
+
 </section>
 <section id="generative-modelling-with-brms" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
@@ -694,6 +716,7 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 </section>
 <section id="generative-modelling-with-brms-1" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
+<h4 id="brms-example">BRMS example</h4>
 <div style="font-size: x-large">
 <div class="columns">
 <div class="column" style="width:40%;">
@@ -1188,10 +1211,11 @@ P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>output <span class="ot">&lt;-</span> </span>
 <span id="cb5-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb5-3"><a></a>    fit_epi_gaussian1 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
-<span id="cb5-4"><a></a>  )</span>
-<span id="cb5-5"><a></a>  </span>
-<span id="cb5-6"><a></a>fit_epi_gaussian1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-3"><a></a>    fit_epi_gaussian1 <span class="ot">&lt;-</span> </span>
+<span id="cb5-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
+<span id="cb5-5"><a></a>  )</span>
+<span id="cb5-6"><a></a>  </span>
+<span id="cb5-7"><a></a>fit_epi_gaussian1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
@@ -1226,7 +1250,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-2" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>At the top of the output, we see the formula and dataset. Moving to the actual posterior results, brms shows two blocks of parameters here, namely Regression Coefficients and Further Distributional Parameters. The latter refers to additional parameters of the likelihood that we did not predict with our regression, here the residual standard deviation sigma.</p>
+<p>At the top of the output, we see the formula and dataset. Moving to the actual posterior results, brms shows two blocks of parameters here, namely <em>Regression Coefficients</em> and <em>Further Distributional Parameters</em>. The latter refers to additional parameters of the likelihood that we did not specify with our regression, i.e.&nbsp;the residual standard deviation (sigma).</p>
 <p>For each of the displayed parameters, we see seven summary statistics. The Estimate column is simply the empirical mean of the posterior draws, which is a sampling-based estimate of the analytical posterior mean.</p>
 <p>The Est.Error columns denotes (the empirical estimate of) the posterior standard deviation, while the lower and upper bounds of the 95% credible interval are computed as the 2.5% and 97.5% quantile of the posterior samples, respectively. The three remaining columns, Rhat, Bulk_ESS, and Tail_ESS give us information about convergence and sampling eﬀiciency, as also shortly explained at the bottom of the summary output.</p>
 </div>
@@ -1234,7 +1258,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-3" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>Here we see, for each parameter separately, traces of the four MCMC chains in different colors with post-warmup iterations on the x-axis and parameter values on the y-axis. These trace plots are showing ideal convergence: All chains are overlaying each other nicely, are stationary (horizontal on average), and show little autocorrelation (moving up and doing very quickly).</p>
+<p>Here we see, for each parameter separately, traces of the four MCMC chains in different colors with post-warmup iterations on the x-axis and parameter values on the y-axis. These trace plots are showing ideal convergence: All chains are <strong>overlaying each other nicely</strong>, are <strong>stationary</strong> (horizontal on average), and show <strong>little autocorrelation</strong>.</p>
 </div>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
@@ -1247,7 +1271,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-4" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>Having convinced us of convergence, at least graphically for now, we can move on to inspecting the posterior. For example, we can plot histograms of the posterior samples per parameter.</p>
+<p>Having convinced us of convergence, at least graphically for now, we can move on to inspecting the posteriors. e.g., we can plot histograms of the posterior samples per parameter.</p>
 </div>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
@@ -1260,15 +1284,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-5" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>In R, we can easily perform transformations by first extracting the posterior draws and then applying the transformation per draws in a vectorized manner. For example, using the functionality from the posterior:: package</p>
-</div>
+<p>In R, we can easily perform data transformations by first extracting the posterior draws and then applying the transformation per draws in a vectorized manner. e.g., using the functionality from the posterior:: package</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>draws <span class="ot">&lt;-</span> </span>
 <span id="cb9-2"><a></a>  posterior<span class="sc">::</span><span class="fu">as_draws_df</span>(fit_epi_gaussian1) <span class="sc">|&gt;</span> </span>
 <span id="cb9-3"><a></a>  posterior<span class="sc">::</span><span class="fu">mutate_variables</span>(</span>
-<span id="cb9-4"><a></a>    <span class="at">sigma2 =</span> sigma<span class="sc">^</span><span class="dv">2</span>, <span class="at">mu_Trt =</span> b_Intercept <span class="sc">+</span> b_Trt1</span>
+<span id="cb9-4"><a></a>    <span class="at">variance =</span> sigma<span class="sc">^</span><span class="dv">2</span>, <span class="at">mu_Trt =</span> b_Intercept <span class="sc">+</span> b_Trt1</span>
 <span id="cb9-5"><a></a>  )</span>
 <span id="cb9-6"><a></a></span>
 <span id="cb9-7"><a></a>draws</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1286,19 +1309,20 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 8         10.4 -2.836    13       8.9   -7.7 -934
 9          9.3 -1.693    13       8.4   -7.5 -933
 10         7.9  0.085    12       8.0   -7.2 -933
-   sigma2 mu_Trt
-1     146    7.1
-2     155    8.7
-3     150    7.6
-4     158    8.9
-5     158    9.9
-6     161   10.2
-7     149    5.1
-8     168    7.5
-9     161    7.6
-10    139    8.0
+   variance mu_Trt
+1       146    7.1
+2       155    8.7
+3       150    7.6
+4       158    8.9
+5       158    9.9
+6       161   10.2
+7       149    5.1
+8       168    7.5
+9       161    7.6
+10      139    8.0
 # ... with 3990 more draws
 # ... hidden reserved variables {'.chain', '.iteration', '.draw'}</code></pre>
+</div>
 </div>
 </div>
 </section>
@@ -1310,7 +1334,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(draws, <span class="fu">c</span>(<span class="st">"sigma2"</span>, <span class="st">"mu_Trt"</span>), <span class="at">bins =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(draws, <span class="fu">c</span>(<span class="st">"variance"</span>, <span class="st">"mu_Trt"</span>), <span class="at">bins =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -1332,7 +1356,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-8" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>The error bars in the last slide are representing 95% credible intervals by default, but we can change that value if we like via the prob argument. Comparing the conditional_effects plot with our manually computed posterior of mu_Trt, we see that they actually are the same.</p>
+<p>The error bars in the last slide are representing 95% credible intervals by default, but we can change that value if we like via the <code>prob</code> argument. Comparing the conditional_effects plot with our manually computed posterior of mu_Trt, we see that they actually are the same.</p>
 <p>To put the mean predictions into the context of the observed data, we can also show the data as points in the plot:</p>
 </div>
 <div class="cell" data-layout-align="center">
@@ -1346,7 +1370,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="generative-modelling-with-brms-9" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>What we do in conditional_effects by default, and have done above, is visualizing the expected value (mean parameter) of the likelihood distribution, conditional on certain predictor values. In brms, this is done via the posterior_epred (posterior expected predictions) method. For example, we can run the code beloe to create expected posterior predictions for both groups. The resulting object contains the posterior draws in the rows and the different conditions (here, treatment groups) in the columns.</p>
+<p>What we do in <code>conditional_effects</code> by default, and have done above, is visualizing the expected value (mean parameter) of the likelihood distribution, conditional on certain predictor values. In brms, this is done via the <code>posterior_epred</code> (posterior expected predictions) method. For example, we can run the code below to create expected posterior predictions for both groups. The resulting object contains the posterior draws in the rows and the different conditions (here, treatment groups) in the columns.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1356,13 +1380,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>We also can summarize the draws, for example, via</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error  Q2.5 Q97.5
 [1,]    8.426     1.158 6.114 10.66
 [2,]    7.836     1.118 5.615 10.01</code></pre>
 </div>
 </div>
-<p>In linear models, posterior_epred directly coincides with evaluating the linear predictor <span class="math inline">\(\mu\)</span> as exemplified above. What posterior_epred does not include is the residual uncertainty, which is represented by <span class="math inline">\(\sigma\)</span> in our linear models.</p>
+<p>In linear models, <code>posterior_epred</code> directly coincides with evaluating the linear predictor <span class="math inline">\(\mu\)</span> as exemplified above. What <code>posterior_epred</code> does not include is the residual uncertainty, which is represented by <span class="math inline">\(\sigma\)</span> in our linear models.</p>
 </div>
 </section>
 <section id="generative-modelling-with-brms-10" class="slide level2">
@@ -1378,8 +1403,8 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">options</span>(<span class="at">brms.plot_points =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-2"><a></a>brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1, <span class="at">method =</span> <span class="st">"posterior_predict"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">options</span>(<span class="at">brms.plot_points =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-2"><a></a>brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1, <span class="at">method =</span> <span class="st">"posterior_predict"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -1392,35 +1417,36 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb17-2"><a></a>pp <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_predict</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span>
-<span id="cb17-3"><a></a></span>
-<span id="cb17-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb18-2"><a></a>pp <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_predict</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span>
+<span id="cb18-3"><a></a></span>
+<span id="cb18-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error   Q2.5 Q97.5
-[1,]    8.434     12.46 -15.82 32.55
-[2,]    7.558     12.75 -16.90 32.83</code></pre>
+[1,]    8.512     12.42 -15.35 32.86
+[2,]    8.015     12.36 -15.59 32.08</code></pre>
 </div>
 </div>
 </section>
 <section id="generative-modelling-with-brms-12" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
-<p>We are already aware that the considered linear regression model is not ideal for the epilepsy data. But how bad is it? As quick graphical method, we can use posterior predictive (PP) checks, where we are compare the observed outcome data with the model predicted outcome data, that is, with the posterior predictions. In brms, we can perform PP-checks via:</p>
+<p>We are already aware that linear regression model is not ideal for the epilepsy data. But how bad is it? As quick graphical method, we can use posterior predictive (PP) checks, where we compare the observed outcome data with the model predicted outcome data, that is, with the posterior predictions. In brms, we can perform PP-checks via:</p>
 </div>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
 <img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="generative-modelling-with-brms-13" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
-<div style="font-size: x-large">
-<p>We see that the model predictions can neither account for the strong spike of observed outcomes close to zero nor for their right-skewness. Instead, the the model also predicts a lot of negative outcomes, which is impossible in reality because we are predicting counts of epileptic seizures. In the plot, it looks as if the observed data also had few negative values (the dark blue density going below zero) but this is just an artifact of estimating a continuous density from counts. While this PP-check type is definitely not ideal to illustrate count outcome data, it still very clearly points to the shortcomings of our linear model.</p>
+<div style="font-size: xx-large">
+<p>We see that the model predictions can neither account for the strong spike of observed outcomes close to zero nor for their right-skewness. Instead, the the model also predicts a lot of negative outcomes, which is impossible in reality because we are predicting counts of epileptic seizures.</p>
+<p>In the plot, it looks as if the observed data also had few negative values (the dark blue density going below zero) but this is just an artifact of estimating a continuous density from counts. While this PP-check type is definitely not ideal to illustrate count outcome data, it still very clearly points to the shortcomings of our linear model.</p>
 </div>
 </section>
 <section id="generative-modelling-with-brms-14" class="slide level2">
@@ -1431,7 +1457,7 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -1444,7 +1470,7 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <p>If you don’t know which check types are available, you can simply pass an arbitrary non-supported type name to get a list of all currently supported types:</p>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"help_me"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"help_me"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="generative-modelling-with-brms-16" class="slide level2">
@@ -1455,19 +1481,19 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb22-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb22-3"><a></a>    fit_epi_student1 <span class="ot">&lt;-</span> </span>
-<span id="cb22-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb22-5"><a></a>        count <span class="sc">~</span> Trt <span class="sc">*</span> Base,</span>
-<span id="cb22-6"><a></a>        <span class="at">data =</span> epilepsy,</span>
-<span id="cb22-7"><a></a>        <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
-<span id="cb22-8"><a></a>        , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span></span>
-<span id="cb22-9"><a></a>      )</span>
-<span id="cb22-10"><a></a>  )</span>
-<span id="cb22-11"><a></a></span>
-<span id="cb22-12"><a></a></span>
-<span id="cb22-13"><a></a><span class="fu">summary</span>(fit_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb23-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb23-3"><a></a>    fit_epi_student1 <span class="ot">&lt;-</span> </span>
+<span id="cb23-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb23-5"><a></a>        count <span class="sc">~</span> Trt <span class="sc">*</span> Base,</span>
+<span id="cb23-6"><a></a>        <span class="at">data =</span> epilepsy,</span>
+<span id="cb23-7"><a></a>        <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
+<span id="cb23-8"><a></a>        , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span></span>
+<span id="cb23-9"><a></a>      )</span>
+<span id="cb23-10"><a></a>  )</span>
+<span id="cb23-11"><a></a></span>
+<span id="cb23-12"><a></a></span>
+<span id="cb23-13"><a></a><span class="fu">summary</span>(fit_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: student 
@@ -1506,7 +1532,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_student1) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_student1) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1528,16 +1554,16 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb25-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb25-3"><a></a>    fit_epi_gaussian2 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">+</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
-<span id="cb25-4"><a></a>  )</span>
-<span id="cb25-5"><a></a><span class="co"># find a spot for this</span></span>
-<span id="cb25-6"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb25-7"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb25-8"><a></a>    fit_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
-<span id="cb25-9"><a></a>  )</span>
-<span id="cb25-10"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"side"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb26-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb26-3"><a></a>    fit_epi_gaussian2 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">+</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
+<span id="cb26-4"><a></a>  )</span>
+<span id="cb26-5"><a></a><span class="co"># find a spot for this</span></span>
+<span id="cb26-6"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb26-7"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb26-8"><a></a>    fit_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
+<span id="cb26-9"><a></a>  )</span>
+<span id="cb26-10"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"side"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1552,7 +1578,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1572,26 +1598,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div style="font-size: x-large">
 <p>The standard <span class="math inline">\(R^2\)</span> measure is defined only for Gaussian models and is often referred to as the percentage of explained variance. Note that in the Gaussian context we compute draws from the posterior <span class="math inline">\(R^2\)</span></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
-<span id="cb27-2"><a></a>errors <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian2, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb27-3"><a></a><span class="fu">str</span>(errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
+<span id="cb28-2"><a></a>errors <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian2, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb28-3"><a></a><span class="fu">str</span>(errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] 4.84 1.78 5.23 4.78 1.55 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="co"># sum errors over observations</span></span>
-<span id="cb29-2"><a></a>error_variation <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(errors<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb29-3"><a></a><span class="fu">str</span>(error_variation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="co"># sum errors over observations</span></span>
+<span id="cb30-2"><a></a>error_variation <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(errors<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb30-3"><a></a><span class="fu">str</span>(error_variation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000] 15239 15286 15374 15180 15280 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="co"># compute R2_basic</span></span>
-<span id="cb31-2"><a></a>overall_variation <span class="ot">&lt;-</span> <span class="fu">sum</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> <span class="fu">mean</span>(epilepsy<span class="sc">$</span>count))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb31-3"><a></a>R2_basic_epi_gaussian2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> error_variation <span class="sc">/</span> overall_variation</span>
-<span id="cb31-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(R2_basic_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="co"># compute R2_basic</span></span>
+<span id="cb32-2"><a></a>overall_variation <span class="ot">&lt;-</span> <span class="fu">sum</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> <span class="fu">mean</span>(epilepsy<span class="sc">$</span>count))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb32-3"><a></a>R2_basic_epi_gaussian2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> error_variation <span class="sc">/</span> overall_variation</span>
+<span id="cb32-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(R2_basic_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error   Q2.5  Q97.5
 [1,]   0.5767  0.004426 0.5651 0.5816</code></pre>
@@ -1603,14 +1629,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="measures-of-explained-variance-r2-1">Measures of explained variance: <span class="math inline">\(R^2\)</span></h4>
 <div style="font-size: x-large">
-<p>The <span class="math inline">\(R^2_{\mathrm{basic}}\)</span>is a good starting point, but it doesn’t readily generalize to models that are much more complicated the Gaussian linear models. In particular it doesn’t readily generalize to most other likelihood families.</p>
+<p>The <span class="math inline">\(R^2_{\mathrm{basic}}\)</span>is a good starting point, but it doesn’t generalize to models that are more complicated than Gaussian linear models. In particular it doesn’t readily generalize to most other likelihood families.</p>
 <p>We’ll use a more general form of <span class="math inline">\(R^2\)</span> that we can apply to (almost) all brms models, regardless of what likelihood families they have. The measure is based on the ratio of explained variance and the sum of explained and error variance:</p>
 <p><span class="math display">\[
-R^2_{\mathrm{general}} = \frac{\mathrm{explained variance}}{\mathrm{explained variance}+\mathrm{error varriance}}
+R^2_{\mathrm{general}} = \frac{\mathrm{Var}(\hat{y})}{\mathrm{Var}(\hat{y})+$\mathrm{Var}(\hat{e})}
 \]</span></p>
 <p>Where <span class="math inline">\(\mathrm{Var}(\hat{y})\)</span>) is the variance of the posterior predicted mean over observations (again <code>posterior_epred</code>) and <span class="math inline">\(\mathrm{Var}(\hat{e})\)</span>)) is the variance of the model-implied errors over observations, where <span class="math inline">\(\hat{e}=y_n-\hat{y}_n\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>brms<span class="sc">::</span><span class="fu">bayes_R2</span>(fit_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>brms<span class="sc">::</span><span class="fu">bayes_R2</span>(fit_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Estimate Est.Error   Q2.5  Q97.5
 R2   0.5794     0.027 0.5217 0.6271</code></pre>
@@ -1626,18 +1652,18 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
-<span id="cb35-2"><a></a>errors_epi_gaussian3 <span class="ot">&lt;-</span></span>
-<span id="cb35-3"><a></a>brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian3, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb35-4"><a></a><span class="fu">str</span>(errors_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
+<span id="cb36-2"><a></a>errors_epi_gaussian3 <span class="ot">&lt;-</span></span>
+<span id="cb36-3"><a></a>brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian3, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb36-4"><a></a><span class="fu">str</span>(errors_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] -0.439 0.799 1.535 1.874 1.874 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="co"># root mean of squared errors over observations</span></span>
-<span id="cb37-2"><a></a>rmse_basic_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">rowMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb37-3"><a></a><span class="fu">str</span>(rmse_basic_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="co"># root mean of squared errors over observations</span></span>
+<span id="cb38-2"><a></a>rmse_basic_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">rowMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb38-3"><a></a><span class="fu">str</span>(rmse_basic_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000] 7.88 7.76 7.72 7.74 7.74 ...</code></pre>
 </div>
@@ -1646,7 +1672,7 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_basic_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_basic_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1668,9 +1694,9 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>rmse_alt_epi_gaussian3 <span class="ot">&lt;-</span> </span>
-<span id="cb40-2"><a></a>  <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb40-3"><a></a><span class="fu">str</span>(rmse_alt_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>rmse_alt_epi_gaussian3 <span class="ot">&lt;-</span> </span>
+<span id="cb41-2"><a></a>  <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb41-3"><a></a><span class="fu">str</span>(rmse_alt_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 1.997 0.971 1.039 1.852 10.954 ...</code></pre>
 </div>
@@ -1679,7 +1705,7 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_alt_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_alt_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1701,14 +1727,14 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <p>Typically see only a point estimate <span class="math inline">\(\hat{\bar{y}}_n\)</span> being used to represent the model-implied predictions, instead of a (posterior) distribution over such predictions for each <span class="math inline">\(n\)</span>. For example, for a Bayesian model this point estimate could simply be the posterior mean.</p>
 <p>When using such a point prediction approach, our RMSE definition becomes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="co"># extract a point estimate of the predictions per observation</span></span>
-<span id="cb43-2"><a></a>ppmean_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian3))</span>
-<span id="cb43-3"><a></a><span class="fu">str</span>(ppmean_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a><span class="co"># extract a point estimate of the predictions per observation</span></span>
+<span id="cb44-2"><a></a>ppmean_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian3))</span>
+<span id="cb44-3"><a></a><span class="fu">str</span>(ppmean_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 3.24 3.24 1.91 2.44 17.89 ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a><span class="co"># compute RMSE based on the responses and point predictions</span></span>
-<span id="cb45-2"><a></a>(rmse_point_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> ppmean_epi_gaussian3)<span class="sc">^</span><span class="dv">2</span>)) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a><span class="co"># compute RMSE based on the responses and point predictions</span></span>
+<span id="cb46-2"><a></a>(rmse_point_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> ppmean_epi_gaussian3)<span class="sc">^</span><span class="dv">2</span>)) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7.698</code></pre>
 </div>
@@ -1721,21 +1747,21 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div style="font-size: x-large">
 <p>In general, it is more common to compare multiple models against each other and thus investigating their relative predictive performance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a>errors_epi_student1 <span class="ot">&lt;-</span></span>
-<span id="cb47-2"><a></a>  brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_student1, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb47-3"><a></a>rmse_alt_epi_student1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_student1<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>errors_epi_student1 <span class="ot">&lt;-</span></span>
+<span id="cb48-2"><a></a>  brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_student1, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb48-3"><a></a>rmse_alt_epi_student1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_student1<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now even compute the pointwise (per-observation) difference in RMSE values:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>rmse_alt_diff <span class="ot">&lt;-</span> rmse_alt_epi_student1 <span class="sc">-</span> rmse_alt_epi_gaussian3</span>
-<span id="cb48-2"><a></a><span class="fu">str</span>(rmse_alt_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a>rmse_alt_diff <span class="ot">&lt;-</span> rmse_alt_epi_student1 <span class="sc">-</span> rmse_alt_epi_gaussian3</span>
+<span id="cb49-2"><a></a><span class="fu">str</span>(rmse_alt_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 0.182 -0.641 -0.491 0.105 -0.928 ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a>se_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
-<span id="cb50-2"><a></a></span>
-<span id="cb50-3"><a></a>se_rmse_alt_diff <span class="ot">&lt;-</span> <span class="fu">se_mean</span>(rmse_alt_diff)</span>
-<span id="cb50-4"><a></a>se_rmse_alt_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>se_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
+<span id="cb51-2"><a></a></span>
+<span id="cb51-3"><a></a>se_rmse_alt_diff <span class="ot">&lt;-</span> <span class="fu">se_mean</span>(rmse_alt_diff)</span>
+<span id="cb51-4"><a></a>se_rmse_alt_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.3671</code></pre>
 </div>
@@ -1746,7 +1772,7 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="likelihood-density-scores">2.6.1 Likelihood Density Scores</h4>
 <div style="font-size: xx-large">
-<p>We have looked at variations of <span class="math inline">\(R^2\)</span> and RMSE metrics. Here we use the log-likelihood of models as predictive metric more generally.</p>
+<p>We have looked at variations of <span class="math inline">\(R^2\)</span> and RMSE metrics. Next we use the log-likelihood of models as predictive metric more generally.</p>
 <p>The log-likelihood plays a pivotal role not only in to derive the posterior in Bayesian statistics but also to obtain maximum likelihood estimates in a frequentist framework. Intuitively, the higher the likelihood of the data given the model’s parameters estimates (represented as either posterior draws or point estimates), the better the fit of the model to the data. Many important predictive metrics, Bayesian or otherwise, are based on log-likelihood scores.</p>
 </div>
 </section>
@@ -1754,11 +1780,11 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="likelihood-density-scores-1">2.6.1 Likelihood Density Scores</h4>
 <div style="font-size: xx-large">
-<p>Recall that since the log is a strictly monotonic transformation, we are not changing anything fundamental by looking at log likelihoods instead of likelihoods. However, we are making a lot of math much simpler by now working with sums instead of products. In particular, this concerns computing gradients because the gradient of a sum is just the sum of the individual (pointwise) gradients. In fact, much of the modern statistics and machine learning relies on this property, so we are working with something quite fundamental here.</p>
+<p>Since log is a strictly monotonic transformation, we are not changing anything fundamental by looking at log likelihoods instead of likelihoods. However, we are making the math much simpler by working with sums instead of products. In particular, this concerns computing gradients because the gradient of a sum is just the sum of the individual (pointwise) gradients. Much of the modern statistics and ML relies on this property.</p>
 <p><code>brms</code> comes with a dedicated <code>log_lik</code> method that does all the required math.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a>ll_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3)</span>
-<span id="cb52-2"><a></a><span class="fu">str</span>(ll_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>ll_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3)</span>
+<span id="cb53-2"><a></a><span class="fu">str</span>(ll_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] -2.98 -2.97 -3.01 -2.99 -2.99 ...
  - attr(*, "dimnames")=List of 2
@@ -1772,8 +1798,12 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="likelihood-density-scores-2">2.6.1 Likelihood Density Scores</h4>
 <div style="font-size: x-large">
-<p>The output of log_lik has the same structure and posterior_predict and friends, that is, it has as many columns as we have observations and as many rows as we posterior draws.</p>
+<p>The output of <code>log_lik</code> has the same structure as <code>posterior_predict</code> and friends, that is, it has as many columns as we have observations and as many rows as we posterior draws.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="fu">colMeans</span>(ll_epi_gaussian3), <span class="at">nint=</span><span class="dv">30</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1789,16 +1819,16 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="likelihood-density-scores-3">2.6.1 Likelihood Density Scores</h4>
 <div style="font-size: x-large">
-<p>Similar to the RMSE_alt metric earlier, we will average over posterior draws per observation (to be justified more shortly) such that we obtain one log-likelihood value per observation.</p>
+<p>Similar to the RMSE_alt metric earlier, we average over posterior draws per observation such that we obtain one log-likelihood value per observation.</p>
 <p>The mean of the log-likelihood differences is slightly positive which points to a slightly better fit of the Student-t model.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a></a>llm_epi_student1  <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_student1) )</span>
-<span id="cb54-2"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3) )</span>
-<span id="cb54-3"><a></a></span>
-<span id="cb54-4"><a></a>llm_epi_diff <span class="ot">&lt;-</span> llm_epi_student1 <span class="sc">-</span> llm_epi_gaussian3</span>
-<span id="cb54-5"><a></a><span class="fu">mean</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a>llm_epi_student1  <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_student1) )</span>
+<span id="cb56-2"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3) )</span>
+<span id="cb56-3"><a></a></span>
+<span id="cb56-4"><a></a>llm_epi_diff <span class="ot">&lt;-</span> llm_epi_student1 <span class="sc">-</span> llm_epi_gaussian3</span>
+<span id="cb56-5"><a></a><span class="fu">mean</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.5012</code></pre>
@@ -1822,16 +1852,16 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <div style="font-size: x-large">
 <p>It is more typical to work with sums instead of means of log-likelihood values over observations, a quantity that we call LPD:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a>(lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a>(lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 118.3</code></pre>
 </div>
 </div>
 <p>The corresponding standard error is also not particular difficult to obtain:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a>se_sum <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
-<span id="cb58-2"><a></a></span>
-<span id="cb58-3"><a></a>(se_lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a>se_sum <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
+<span id="cb60-2"><a></a></span>
+<span id="cb60-3"><a></a>(se_lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 30.99</code></pre>
 </div>
@@ -1841,45 +1871,66 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <section id="generative-modelling-with-brms-29" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="out-of-sample-predictions">2.7 Out-of-sample predictions</h4>
+<div style="font-size: x-large">
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a><span class="fu">set.seed</span>(<span class="dv">8973</span>)</span>
-<span id="cb60-2"><a></a>splits <span class="ot">&lt;-</span> epilepsy <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
-<span id="cb60-3"><a></a>epilepsy_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(splits)</span>
-<span id="cb60-4"><a></a>epilepsy_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a><span class="fu">set.seed</span>(<span class="dv">8973</span>)</span>
+<span id="cb62-2"><a></a>splits <span class="ot">&lt;-</span> epilepsy <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb62-3"><a></a>epilepsy_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(splits)</span>
+<span id="cb62-4"><a></a>epilepsy_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb61-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb61-3"><a></a>    fit_student1_train <span class="ot">&lt;-</span> </span>
-<span id="cb61-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>(), <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
-<span id="cb61-5"><a></a>  )</span>
-<span id="cb61-6"><a></a>llm_epi_gaussian3_test <span class="ot">&lt;-</span>  brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_student1_train, <span class="at">newdata =</span> epilepsy_test)</span>
-<span id="cb61-7"><a></a></span>
-<span id="cb61-8"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb61-9"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb61-10"><a></a>    fit_gaussian3_train <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
-<span id="cb61-11"><a></a>  )</span>
-<span id="cb61-12"><a></a>llm_epi_student1_test <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_gaussian3_train, <span class="at">newdata =</span> epilepsy_test) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb63-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb63-3"><a></a>    fit_student1_train <span class="ot">&lt;-</span> </span>
+<span id="cb63-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>(), <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
+<span id="cb63-5"><a></a>  )</span>
+<span id="cb63-6"><a></a>llm_epi_gaussian3_test <span class="ot">&lt;-</span>  brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_student1_train, <span class="at">newdata =</span> epilepsy_test)</span>
+<span id="cb63-7"><a></a></span>
+<span id="cb63-8"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb63-9"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb63-10"><a></a>    fit_gaussian3_train <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>)</span>
+<span id="cb63-11"><a></a>  )</span>
+<span id="cb63-12"><a></a>llm_epi_student1_test <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_gaussian3_train, <span class="at">newdata =</span> epilepsy_test) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
 </div>
 </section>
 <section id="generative-modelling-with-brms-30" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="out-of-sample-predictions-1">2.7 Out-of-sample predictions</h4>
-
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-43-1.png" width="960" class="r-stretch"><div class="cell">
+<div style="font-size: x-large">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a>llm_epi_diff_test <span class="ot">&lt;-</span> llm_epi_student1_test <span class="sc">-</span> llm_epi_gaussian3_test</span>
+<span id="cb64-2"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(llm_epi_diff_test <span class="sc">|&gt;</span> <span class="fu">matrix</span>(), <span class="at">nint=</span><span class="dv">50</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-43-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -49646</code></pre>
 </div>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a></a>(se_elpd_epi_diff_test <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 742</code></pre>
+</div>
 </div>
 </div>
 </section>
@@ -1888,10 +1939,9 @@ R2   0.5794     0.027 0.5217 0.6271</code></pre>
 <h4 id="out-of-sample-predictions-2">2.7 Out-of-sample predictions</h4>
 <div style="font-size: x-large">
 <p>In leave-one-out cross-validation (LOO-CV), we perform <span class="math inline">\(N\)</span> training-test splits, where each time we are leaving out a single observations, fitting the model on the remaining <span class="math inline">\(N-1\)</span> observations before evaluating model fit on that single left-out observation.</p>
-</div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a>loo_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_gaussian3)</span>
-<span id="cb64-2"><a></a>loo_epi_gaussian3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a></a>loo_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_gaussian3)</span>
+<span id="cb68-2"><a></a>loo_epi_gaussian3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Computed from 4000 by 236 log-likelihood matrix.
@@ -1913,8 +1963,8 @@ See help('pareto-k-diagnostic') for details.</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a></a>loo_epi_student1 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_student1)</span>
-<span id="cb66-2"><a></a>loo_epi_student1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a></a>loo_epi_student1 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_student1)</span>
+<span id="cb70-2"><a></a>loo_epi_student1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Computed from 4000 by 236 log-likelihood matrix.
@@ -1980,6 +2030,7 @@ fit_epi_student1     0.0       0.0
 fit_epi_gaussian3 -127.0      36.5 </code></pre>
 </div>
 </div>
+</div>
 </section>
 <section id="generative-modelling-with-brms-32" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
@@ -1987,13 +2038,13 @@ fit_epi_gaussian3 -127.0      36.5 </code></pre>
 <div style="font-size: x-large">
 <p>We will now take a fundamentally different approach by evaluating prior predictive distribution, that is, by looking at what predictions a model implies before seeing any data. The starting point to investigating prior predictive performance is to perform graphical prior predictive checks.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a></a>prior_epi_gaussian6 <span class="ot">&lt;-</span></span>
-<span id="cb70-2"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">6</span>, <span class="dv">3</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span></span>
-<span id="cb70-3"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1"</span>) <span class="sc">+</span></span>
-<span id="cb70-4"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Base"</span>) <span class="sc">+</span></span>
-<span id="cb70-5"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1:Base"</span>) <span class="sc">+</span></span>
-<span id="cb70-6"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">15</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
-<span id="cb70-7"><a></a>prior_epi_gaussian6 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a>prior_epi_gaussian6 <span class="ot">&lt;-</span></span>
+<span id="cb74-2"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">6</span>, <span class="dv">3</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span></span>
+<span id="cb74-3"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1"</span>) <span class="sc">+</span></span>
+<span id="cb74-4"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Base"</span>) <span class="sc">+</span></span>
+<span id="cb74-5"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1:Base"</span>) <span class="sc">+</span></span>
+<span id="cb74-6"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">15</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
+<span id="cb74-7"><a></a>prior_epi_gaussian6 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         prior     class      coef group resp dpar
   normal(6, 3) Intercept                          
@@ -2015,21 +2066,21 @@ fit_epi_gaussian3 -127.0      36.5 </code></pre>
 <h2>Generative modelling with BRMS</h2>
 <h4 id="prior-predictive-performance-1">2.8 Prior predictive performance</h4>
 <div style="font-size: x-large">
-<p>Now that we are done, we are “fitting” the model with the option sample_prior = “only”, which ensures that Stan ignores the likelihood contribution to the posterior, such that the posterior directly resembles the prior.</p>
+<p>Here we are “fitting” the model with the option sample_prior = “only”, which ensures that Stan ignores the likelihood contribution to the posterior, such that the posterior directly resembles the prior.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb72-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb72-3"><a></a>    fit_prior_epi_gaussian6 <span class="ot">&lt;-</span> </span>
-<span id="cb72-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb72-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base,</span>
-<span id="cb72-6"><a></a>        <span class="at">data =</span> epilepsy,</span>
-<span id="cb72-7"><a></a>        <span class="at">prior =</span> prior_epi_gaussian6,</span>
-<span id="cb72-8"><a></a>        <span class="at">sample_prior =</span> <span class="st">"only"</span></span>
-<span id="cb72-9"><a></a>      )</span>
-<span id="cb72-10"><a></a>  )</span>
-<span id="cb72-11"><a></a><span class="fu">summary</span>(fit_prior_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb76-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb76-3"><a></a>    fit_prior_epi_gaussian6 <span class="ot">&lt;-</span> </span>
+<span id="cb76-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb76-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base,</span>
+<span id="cb76-6"><a></a>        <span class="at">data =</span> epilepsy,</span>
+<span id="cb76-7"><a></a>        <span class="at">prior =</span> prior_epi_gaussian6,</span>
+<span id="cb76-8"><a></a>        <span class="at">sample_prior =</span> <span class="st">"only"</span></span>
+<span id="cb76-9"><a></a>      )</span>
+<span id="cb76-10"><a></a>  )</span>
+<span id="cb76-11"><a></a><span class="fu">summary</span>(fit_prior_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
@@ -2071,7 +2122,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>For all practical purposes, our “prior-only” brms model can be post-processed as any other brms model.</p>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_prior_epi_gaussian6, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_prior_epi_gaussian6, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-52-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
@@ -2081,7 +2132,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div style="font-size: x-large">
 <p>To mathematically formalize the prior predictive performance of a model, consider the marginal likelihood that we find in the denominator of Bayes theorem (aka evidence): <span class="math display">\[
 p(y)=\int p(y\vert\theta)p(\theta)d\theta
-\]</span> We can write this as thelikelihood of the data given the model and we can do inference about the models based on the marginal likelihood. <span class="math display">\[
+\]</span> We can write this as the likelihood of the data given the model and we can do inference about the models based on the marginal likelihood. <span class="math display">\[
 p(y\vert M)=\int p(y\vert\theta,M)p(\theta\vert M)d\theta
 \]</span> The absolute marginal likelihood values <span class="math inline">\(p(y\vert M)\)</span>are very hard to interpret. We only know that higher is better.</p>
 </div>
@@ -2090,7 +2141,7 @@ p(y\vert M)=\int p(y\vert\theta,M)p(\theta\vert M)d\theta
 <h2>Generative modelling with BRMS</h2>
 <h4 id="marginal-likelihood-based-metrics-1">2.8 Marginal likelihood-based metrics</h4>
 <div style="font-size: x-large">
-<p>The most common such comparative metric is the Bayes factors that is defined as the ratio of two models’ marginal likelihoods:</p>
+<p>The most common such comparative metric is the Bayes factor, defined as the ratio of two models’ marginal likelihoods:</p>
 <p><span class="math display">\[
 \mathrm{BF}_{1,2}=\frac{p(y\vert M_{1})}{p(y\vert M_{2})}
 \]</span> If the Bayes factor is greater than 1, the data <span class="math inline">\(y\)</span> have a higher likelihood given model <span class="math inline">\(M_1\)</span> compared to <span class="math inline">\(M_2\)</span>, and vice versa.</p>
@@ -2111,21 +2162,21 @@ p(y\vert M)=\int p(y\vert\theta,M)p(\theta\vert M)d\theta
 <h4 id="marginal-likelihood-based-metrics-3">2.8 Marginal likelihood-based metrics</h4>
 <div style="font-size: x-large">
 <p>Since the Bayes factor is based on marginal likelihoods, the computational challenges are substantial. Fortunately, there is one class of algorithms that enables reliable computation of (log) marginal likelihood on the basis of posterior draws. This class of algorithms is called bridge sampling.</p>
-<p>Marginal likelihood estimation via bridgesampling usually requires several times more posterior draws than the estimation of posterior moments or quantiles (i.e., what we usually do with posterior draws).</p>
+<p>Marginal likelihood estimation via bridge sampling usually requires several times more posterior draws than the estimation of posterior moments or quantiles (i.e., what we usually do with posterior draws).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb75-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb75-3"><a></a>    fit_epi_gaussian6 <span class="ot">&lt;-</span> </span>
-<span id="cb75-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb75-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy,</span>
-<span id="cb75-6"><a></a>        <span class="at">prior =</span> prior_epi_gaussian6,</span>
-<span id="cb75-7"><a></a>        <span class="at">save_pars =</span> brms<span class="sc">::</span><span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb75-8"><a></a>        <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span></span>
-<span id="cb75-9"><a></a>      )</span>
-<span id="cb75-10"><a></a>  )</span>
-<span id="cb75-11"><a></a>logml_epi_gaussian6 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">bridge_sampler</span>(fit_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb79-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb79-3"><a></a>    fit_epi_gaussian6 <span class="ot">&lt;-</span> </span>
+<span id="cb79-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb79-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy,</span>
+<span id="cb79-6"><a></a>        <span class="at">prior =</span> prior_epi_gaussian6,</span>
+<span id="cb79-7"><a></a>        <span class="at">save_pars =</span> brms<span class="sc">::</span><span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb79-8"><a></a>        <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span></span>
+<span id="cb79-9"><a></a>      )</span>
+<span id="cb79-10"><a></a>  )</span>
+<span id="cb79-11"><a></a>logml_epi_gaussian6 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">bridge_sampler</span>(fit_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Iteration: 1
@@ -2136,7 +2187,7 @@ Iteration: 5</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a><span class="fu">summary</span>(logml_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a><span class="fu">summary</span>(logml_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -2209,7 +2260,7 @@ All error measures are approximate.</code></pre>
 <h2>Likelihood Function</h2>
 <p>Note that a Poisson process is quite different than the Gaussian process, so we can’t use a OLS model.</p>
 <p>We need a glm model instead, e.g the regression should be modeled as</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a><span class="fu">glm</span>(volume <span class="sc">~</span> <span class="fu">log</span>(price), <span class="at">family =</span> <span class="st">'poisson'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a><span class="fu">glm</span>(volume <span class="sc">~</span> <span class="fu">log</span>(price), <span class="at">family =</span> <span class="st">'poisson'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="economics" class="slide level2">
 <h2>Economics</h2>
@@ -2233,54 +2284,54 @@ All error measures are approximate.</code></pre>
 <div class="cell" data-output.var="Y">
 <details class="code-fold">
 <summary>Poisson elasticity model implemented in the Stan language</summary>
-<div class="sourceCode cell-code" id="cb80" data-code-line-numbers="1-14|16-19|21-28|30-39|41-48"><pre class="sourceCode numberSource stan number-lines code-with-copy"><code class="sourceCode stan"><span id="cb80-1"><a></a><span class="kw">data</span> {</span>
-<span id="cb80-2"><a></a>  <span class="co">/* Dimensions */</span></span>
-<span id="cb80-3"><a></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; N; <span class="co">// rows</span></span>
-<span id="cb80-4"><a></a></span>
-<span id="cb80-5"><a></a>  <span class="co">/* log price vector (integer) */</span></span>
-<span id="cb80-6"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> P;</span>
-<span id="cb80-7"><a></a>  </span>
-<span id="cb80-8"><a></a>  <span class="co">/* demand vector (integer) */</span></span>
-<span id="cb80-9"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; Y;</span>
-<span id="cb80-10"><a></a></span>
-<span id="cb80-11"><a></a>  <span class="co">/* hyperparameters*/</span></span>
-<span id="cb80-12"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; s;       <span class="co">// scale parameter for intercept prior</span></span>
-<span id="cb80-13"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; e_scale; <span class="co">// scale parameter for elasticity prior</span></span>
-<span id="cb80-14"><a></a>}</span>
-<span id="cb80-15"><a></a></span>
-<span id="cb80-16"><a></a><span class="kw">parameters</span> {</span>
-<span id="cb80-17"><a></a>  <span class="dt">real</span> &lt;<span class="kw">upper</span>=<span class="dv">0</span>&gt; elasticity;      <span class="co">// elasticities variable &lt; 0 </span></span>
-<span id="cb80-18"><a></a>  <span class="dt">real</span> intercept;                 <span class="co">// intercepts variable</span></span>
-<span id="cb80-19"><a></a>}</span>
-<span id="cb80-20"><a></a></span>
-<span id="cb80-21"><a></a><span class="kw">transformed parameters</span> {</span>
-<span id="cb80-22"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> log_lambda;       <span class="co">// log volume for likelihoods</span></span>
-<span id="cb80-23"><a></a>  </span>
-<span id="cb80-24"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span>:N){</span>
-<span id="cb80-25"><a></a>    log_lambda[i] = intercept + elasticity * P[i];</span>
-<span id="cb80-26"><a></a>  }</span>
-<span id="cb80-27"><a></a>  </span>
-<span id="cb80-28"><a></a>}</span>
-<span id="cb80-29"><a></a></span>
-<span id="cb80-30"><a></a><span class="kw">model</span> {</span>
-<span id="cb80-31"><a></a>  <span class="co">/* Priors on the parameters */</span></span>
-<span id="cb80-32"><a></a>  <span class="kw">target +=</span> normal_lpdf(intercept  | <span class="dv">0</span>, s);</span>
-<span id="cb80-33"><a></a>  <span class="kw">target +=</span> cauchy_lpdf(elasticity | <span class="dv">0</span>, e_scale);</span>
-<span id="cb80-34"><a></a></span>
-<span id="cb80-35"><a></a>  <span class="co">/* Conditional log-likelihoods for each observed volume */</span></span>
-<span id="cb80-36"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
-<span id="cb80-37"><a></a>    <span class="kw">target +=</span> poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
-<span id="cb80-38"><a></a>  }</span>
-<span id="cb80-39"><a></a>}</span>
-<span id="cb80-40"><a></a></span>
-<span id="cb80-41"><a></a><span class="kw">generated quantities</span> {</span>
-<span id="cb80-42"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=-<span class="dv">1</span>&gt; y_new;  <span class="co">// estimate volumes</span></span>
-<span id="cb80-43"><a></a>  <span class="dt">vector</span>[N] log_lik;             <span class="co">// compute log-likelihood for this model</span></span>
-<span id="cb80-44"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
-<span id="cb80-45"><a></a>      y_new[i]   = poisson_rng( exp(log_lambda[i]) );</span>
-<span id="cb80-46"><a></a>      log_lik[i] = poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
-<span id="cb80-47"><a></a>  }</span>
-<span id="cb80-48"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84" data-code-line-numbers="1-14|16-19|21-28|30-39|41-48"><pre class="sourceCode numberSource stan number-lines code-with-copy"><code class="sourceCode stan"><span id="cb84-1"><a></a><span class="kw">data</span> {</span>
+<span id="cb84-2"><a></a>  <span class="co">/* Dimensions */</span></span>
+<span id="cb84-3"><a></a>  <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">1</span>&gt; N; <span class="co">// rows</span></span>
+<span id="cb84-4"><a></a></span>
+<span id="cb84-5"><a></a>  <span class="co">/* log price vector (integer) */</span></span>
+<span id="cb84-6"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> P;</span>
+<span id="cb84-7"><a></a>  </span>
+<span id="cb84-8"><a></a>  <span class="co">/* demand vector (integer) */</span></span>
+<span id="cb84-9"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; Y;</span>
+<span id="cb84-10"><a></a></span>
+<span id="cb84-11"><a></a>  <span class="co">/* hyperparameters*/</span></span>
+<span id="cb84-12"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; s;       <span class="co">// scale parameter for intercept prior</span></span>
+<span id="cb84-13"><a></a>  <span class="dt">real</span>&lt;<span class="kw">lower</span>=<span class="dv">0</span>&gt; e_scale; <span class="co">// scale parameter for elasticity prior</span></span>
+<span id="cb84-14"><a></a>}</span>
+<span id="cb84-15"><a></a></span>
+<span id="cb84-16"><a></a><span class="kw">parameters</span> {</span>
+<span id="cb84-17"><a></a>  <span class="dt">real</span> &lt;<span class="kw">upper</span>=<span class="dv">0</span>&gt; elasticity;      <span class="co">// elasticities variable &lt; 0 </span></span>
+<span id="cb84-18"><a></a>  <span class="dt">real</span> intercept;                 <span class="co">// intercepts variable</span></span>
+<span id="cb84-19"><a></a>}</span>
+<span id="cb84-20"><a></a></span>
+<span id="cb84-21"><a></a><span class="kw">transformed parameters</span> {</span>
+<span id="cb84-22"><a></a>  <span class="dt">array</span>[N] <span class="dt">real</span> log_lambda;       <span class="co">// log volume for likelihoods</span></span>
+<span id="cb84-23"><a></a>  </span>
+<span id="cb84-24"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span>:N){</span>
+<span id="cb84-25"><a></a>    log_lambda[i] = intercept + elasticity * P[i];</span>
+<span id="cb84-26"><a></a>  }</span>
+<span id="cb84-27"><a></a>  </span>
+<span id="cb84-28"><a></a>}</span>
+<span id="cb84-29"><a></a></span>
+<span id="cb84-30"><a></a><span class="kw">model</span> {</span>
+<span id="cb84-31"><a></a>  <span class="co">/* Priors on the parameters */</span></span>
+<span id="cb84-32"><a></a>  <span class="kw">target +=</span> normal_lpdf(intercept  | <span class="dv">0</span>, s);</span>
+<span id="cb84-33"><a></a>  <span class="kw">target +=</span> cauchy_lpdf(elasticity | <span class="dv">0</span>, e_scale);</span>
+<span id="cb84-34"><a></a></span>
+<span id="cb84-35"><a></a>  <span class="co">/* Conditional log-likelihoods for each observed volume */</span></span>
+<span id="cb84-36"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
+<span id="cb84-37"><a></a>    <span class="kw">target +=</span> poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
+<span id="cb84-38"><a></a>  }</span>
+<span id="cb84-39"><a></a>}</span>
+<span id="cb84-40"><a></a></span>
+<span id="cb84-41"><a></a><span class="kw">generated quantities</span> {</span>
+<span id="cb84-42"><a></a>  <span class="dt">array</span>[N] <span class="dt">int</span>&lt;<span class="kw">lower</span>=-<span class="dv">1</span>&gt; y_new;  <span class="co">// estimate volumes</span></span>
+<span id="cb84-43"><a></a>  <span class="dt">vector</span>[N] log_lik;             <span class="co">// compute log-likelihood for this model</span></span>
+<span id="cb84-44"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span> : N) {</span>
+<span id="cb84-45"><a></a>      y_new[i]   = poisson_rng( exp(log_lambda[i]) );</span>
+<span id="cb84-46"><a></a>      log_lik[i] = poisson_lpmf(Y[i] | exp(log_lambda[i]) );</span>
+<span id="cb84-47"><a></a>  }</span>
+<span id="cb84-48"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
