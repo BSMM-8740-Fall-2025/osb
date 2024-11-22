@@ -1,0 +1,316 @@
+---
+title: "Bayes"
+---
+
+{{< include 00-setup.qmd >}}
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito
+  , magrittr, ggplot2, estimatr, Formula, gt, gtExtras,
+  brms, tidybayesm, bayesplot, ggthemes)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+We express the likelihood for our coin toss example as
+
+$$y_{i} \sim \operatorname{Bernoulli}(\theta)$$
+
+Our prior will be
+
+$$\theta \sim \operatorname{Beta}(\alpha, \beta)$$
+
+```{r}
+#|echo: true
+my_data <- readr::read_csv("data/z15N50.csv", show_col_types = FALSE)
+summary(my_data)
+
+my_data |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y)) +
+  geom_bar() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal()
+```
+
+```{r}
+#| message: false
+#| output: false
+
+fit8.1 <-
+  brms::brm(data = my_data, 
+      family = brms::bernoulli(link = identity),
+      formula = y ~ 1,
+      brms::prior(beta(2, 2), class = Intercept, lb = 0, ub = 1),
+      iter = 500 + 3334, warmup = 500, chains = 3,
+      seed = 8,
+      file = "fits/fit08.01")
+```
+
+```{r}
+#| message: false
+plot(fit8.1)
+```
+
+```{r}
+#| message: false
+#| output: false
+draws <- brms::as_draws_df(fit8.1) 
+draws
+
+```
+
+```{r}
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_dens_overlay(pars = vars(b_Intercept)) 
+
+```
+
+```{r}
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_acf(pars = vars(b_Intercept), lags = 35) +
+  theme_minimal()
+```
+
+```{r}
+brms::rhat(fit8.1)["b_Intercept"]
+brms::neff_ratio(fit8.1)["b_Intercept"]
+```
+
+```{r}
+print(fit8.1)
+```
+
+```{r}
+brms::posterior_summary(fit8.1, robust = T)
+```
+
+```{r}
+brms::posterior_summary(fit8.1, probs = c(.025, .25, .75, .975))
+
+```
+
+```{r}
+bayesplot::mcmc_areas(
+  draws, 
+  pars = vars(b_Intercept),
+  prob = 0.5,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Theta via bayesplot::mcmc_areas()",
+       x = expression(theta)) +
+  theme_minimal() +
+  theme(plot.title.position = "plot")
+```
+
+```{r}
+library(tidybayes)
+
+draws |> 
+  ggplot(aes(x = b_Intercept, y = 0)) +
+  tidybayes::stat_halfeye(point_interval = tidybayes::mode_hdi, .width = c(.95, .5)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(theta*" via tidybayes::stat_halfeye()"),
+       x = expression(theta)) +
+  theme_minimal()
+
+draws |> 
+  ggplot(aes(x = b_Intercept, y = 0)) +
+  tidybayes::stat_histinterval(point_interval = tidybayes::mode_hdi, .width = c(.95, .5)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(theta*" via tidybayes::stat_histinterval()"),
+       x = expression(theta)) +
+  theme_minimal()
+```
+
+```{r}
+dat <- readr::read_csv("data/z6N8z2N7.csv", show_col_types = FALSE) |> 
+  dplyr::mutate(
+    s = 
+      dplyr::case_when(s == "Reginald" ~ "Windsor", TRUE ~ "London")
+  )
+```
+
+```{r}
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y, fill = s)) +
+  geom_bar(show.legend = F) +
+  ggthemes::scale_fill_colorblind() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal() +
+  facet_wrap(~ s)
+```
+
+```{r}
+#| output: false
+#| echo: true
+#| label: fit8.2
+fit8.2 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      brms::prior(beta(2, 2), class = b, lb = 0, ub = 1),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      seed = 8,
+      file = "fits/fit08.02")
+```
+
+```{r}
+plot(fit8.2, widths = c(2, 3))
+```
+
+```{r}
+summary(fit8.2)
+```
+
+```{r}
+pairs(fit8.2,
+      off_diag_args = list(size = 1/3, alpha = 1/3))
+```
+
+```{r}
+draws <- brms::as_draws_df(fit8.2)
+
+draws <-
+  draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  dplyr::mutate(`theta_Windsor - theta_London` = theta_Windsor - theta_London)
+
+dplyr::glimpse(draws |> dplyr::slice_head(n=6))
+```
+
+```{r}
+#| warning: false
+#| echo: true
+long_draws <-
+  draws |> 
+  dplyr::select(starts_with("theta")) |> 
+  tidyr::pivot_longer(everything()) |> 
+  dplyr::mutate(name = factor(name, levels = c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"))) 
+  
+long_draws |> 
+  ggplot(aes(x = value, y = 0, fill = name)) +
+  stat_histinterval(point_interval = mode_hdi, .width = .95,
+                    slab_color = "white", outline_bars = T,
+                    normalize = "panels") +
+  scale_fill_manual(values = ggthemes::colorblind_pal()(8)[2:4], breaks = NULL) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  theme_minimal() +
+  facet_wrap(~ name, scales = "free")
+```
+
+```{r}
+long_draws |> 
+  dplyr::group_by(name) |> 
+  tidybayes::mode_hdi()
+```
+
+```{r}
+#| output: false
+#| warning: false
+#| echo: true
+#| label: fit8.3
+
+fit8.3 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      prior =
+        c(brms::prior(beta(2, 2), class = b, coef = sWindsor),
+          brms::prior(beta(2, 2), class = b, coef = sLondon),
+          # this just sets the lower and upper bounds
+          brms::prior(beta(2, 2), class = b, lb = 0, ub = 1)),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      sample_prior = "only",
+      seed = 8,
+      file = "fits/fit08.03")
+```
+
+```{r}
+draws <- brms::as_draws_df(fit8.3) |> 
+  dplyr::select(starts_with("b_"))
+
+head(draws)
+```
+
+```{r}
+dat |> 
+  dplyr::group_by(s) |> 
+  dplyr::summarise(z = sum(y),
+            N = dplyr::n()) |> 
+  dplyr::mutate(`z/N` = z / N)
+
+levels <- c("theta_Windsor", "theta_London", "theta_Windsor - theta_London")
+
+d_line <-
+  tibble::tibble(value = c(.75, .286, .75 - .286),
+         name  =  factor(c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"), 
+                         levels = levels))
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  dplyr::mutate("theta_Windsor - theta_London" = theta_Windsor - theta_London) |> 
+  tidyr::pivot_longer(contains("theta")) |> 
+  dplyr::mutate(name = factor(name, levels = levels)) |>
+  
+  ggplot(aes(x = value, y = 0)) +
+  stat_histinterval(point_interval = tidybayes::mode_hdi, .width = .95,
+                    fill = ggthemes::colorblind_pal()(8)[5], normalize = "panels") +
+  geom_vline(data = d_line, 
+             aes(xintercept = value), 
+             linetype = 2) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("The dashed vertical lines mark off "*italic(z[s])/italic(N[s]))) +
+  cowplot::theme_cowplot() +
+  facet_wrap(~ name, scales = "free")
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  
+  ggplot(aes(x = theta_Windsor, y = theta_London)) +
+  geom_point(alpha = 1/4, color = ggthemes::colorblind_pal()(8)[6]) +
+  coord_equal() +
+  cowplot::theme_minimal_grid()
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  
+  ggplot(aes(x = theta_Windsor, y = theta_London)) +
+  stat_density_2d(aes(fill = stat(density)), 
+                  geom = "raster", contour = F) +
+  scale_fill_viridis_c(option = "B", breaks = NULL) +
+  scale_x_continuous(expression(theta[1]), 
+                     expand = c(0, 0), limits = c(0, 1),
+                     breaks = 0:4 / 4, labels = c("0", ".25", ".5", ".75", "1")) +
+  scale_y_continuous(expression(theta[2]), 
+                     expand = c(0, 0), limits = c(0, 1),
+                     breaks = 0:4 / 4, labels = c("0", ".25", ".5", ".75", "1")) +
+  coord_equal() +
+  cowplot::theme_minimal_grid()
+```
