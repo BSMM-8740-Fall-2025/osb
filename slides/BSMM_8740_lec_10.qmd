@@ -26,6 +26,25 @@ execute:
 
 {{< include 00-setup.qmd >}}
 
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito
+  , magrittr, ggplot2, estimatr, Formula, gt, gtExtras,
+  brms, tidybayesm, bayesplot, ggthemes, patchwork)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
 ## Recap of last week
 
 -   Last week we introduced Markov Chain methods for integration and sampling from probability distributions.
@@ -37,6 +56,8 @@ execute:
 -   We will use one of the popular R packages for Bayesian analysis.
 
 # Bayesian Regression
+
+## Bayesian Regression
 
 ::: {style="font-size: x-large"}
 From Bayes' Rule we have
@@ -53,6 +74,56 @@ $$
 \overbrace{P(\mathcal{D} \vert \theta)}^{\text{Likelihood}}\overbrace{P(\theta)}^{\text{Prior}}
 $$
 :::
+
+## Bayesian Regression
+
+::: {style="font-size: x-large"}
+A statistical model $M$ is a model of a random process that could have generated our observable data. The observable data $\mathcal{D}$ contains both dependent variables $\mathcal{D}_\mathrm{DV}$ and independent variables $\mathcal{D}_\mathrm{IV}$ A model $M$ for data $\mathcal{D}$ fixes a likelihood function for $\mathcal{D}_\mathrm{DV}$. The likelihood function often has parameters, represented by a parameter vector $\theta$.
+
+If $B$ is interpreted as the data $\mathcal{D}$ and $A$ is chosen to be the set of parameters that you'd want to estimate, call this set $\theta$, then
+
+$$
+\underbrace{P_M(\theta \vert \mathcal{D})}_{\text{Posterior}} = 
+    \frac{1}{\underbrace{P(\mathcal{D},\theta)}_{\text{Normalization}}}
+\overbrace{P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta)}^{\text{Likelihood}}\overbrace{P_M(\theta)}^{\text{Prior}}
+$$
+:::
+
+## Bayesian Regression
+
+#### Binomial Model
+
+::: {style="font-size: x-large"}
+The data we are interested in comes from a sequence of flips of a coin with bias $\theta_c\in [0,1]$.We have observed that $k$ of the $N$ flips turned out to be heads. We know $N$ and $k$, but we do not know $\theta_c$. We use the Binomial Model to infer the latent (= not directly observable) coin bias $\theta_c$
+
+The coin’s bias $\theta_c$ is the only parameter of this model. The dependent variable is $k$. $N$ is another data observation (treated here as an independent variable.
+
+The likelihood function for this model is the Binomial distribution:
+
+$$
+P_M(k \mid \theta_c, N) = \text{Binomial}(k, N, \theta_c) = \binom{N}{k}\theta_c^k(1-\theta_c)^{N-k}
+$$ We use a Beta distribution for the prior of $\theta_c$. $P_M(\theta_c) = \text{Beta}(\theta_c, 1, 1)$
+:::
+
+## Bayesian Regression
+
+#### Priors
+
+::: {style="font-size: large"}
+-   uninformative : $\theta_c\sim\mathrm{Beta}(1,1)$
+-   weakly informative : $\theta_c\sim\mathrm{Beta}(5,2)$
+-   strongly informative : $\theta_c\sim\mathrm{Beta}(50,20)$
+-   point-valued : $\theta_c\sim\mathrm{Beta}(\alpha,\beta)$ with $\alpha,\beta\rightarrow\infty$ and $\alpha,\beta=52$
+:::
+
+![](images/ch-03-02-models-types-of-priors-1.png){fig-align="center" width="900"}
+
+## Bayesian Regression
+
+Predictions:
+
+-   prior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta)$
+-   posterior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta \vert \mathcal{D})$
 
 ## Maximum likelihood (MLE)
 
@@ -360,6 +431,355 @@ Generative Bayesian modeling is widely used in areas requiring a deep understand
 
 ## Generative modelling with BRMS
 
+#### Basic model: manufacturing failures per $N$ units
+
+:::::: {style="font-size: xx-large"}
+::::: columns
+::: {.column width="50%"}
+We express the likelihood for our coin toss example as
+
+$$y_{i} \sim \operatorname{Bernoulli}(\theta)$$
+
+and our prior will be
+
+$$\theta \sim \operatorname{Beta}(\alpha, \beta)$$
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+#| fig-height: 9
+dat <- readr::read_csv("data/z15N50.csv", show_col_types = FALSE)
+
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y)) +
+  geom_bar() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal(base_size = 36)
+```
+:::
+:::::
+::::::
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+```{r}
+#| echo: true
+#| message: false
+#| output: false
+#| code-fold: true
+#| code-summary: fit the model
+
+fit8.1 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(link = identity),
+      formula = y ~ 1,
+      brms::prior(beta(2, 2), class = Intercept, lb = 0, ub = 1),
+      iter = 500 + 3334, warmup = 500, chains = 3,
+      seed = 8,
+      file = "fits/fit08.01")
+```
+
+```{r}
+#| fig-align: center
+#| code-fold: true
+#| code-summary: plot the chains
+plot(fit8.1)
+```
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+:::: {style="font-size: xx-large"}
+::: panel-tabset
+## fit
+
+```{r}
+#| echo: true
+print(fit8.1)
+```
+
+## posterior summary
+
+```{r}
+#| echo: true
+brms::posterior_summary(fit8.1, robust = T)
+```
+:::
+::::
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+::: panel-tabset
+## draws
+
+```{r}
+#| message: false
+#| echo: true
+#| output: true
+#| code-fold: true
+#| code-summary: extract the draws
+draws <- brms::as_draws_df(fit8.1) 
+draws
+```
+
+## density
+
+```{r}
+#| echo: true
+#| message: false
+#| fig-height: 5
+#| fig-width: 6
+#| fig-align: center
+#| code-fold: true
+#| code-summary: plot the draws by chain
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_dens_overlay(pars = vars(b_Intercept)) 
+```
+
+## ACF
+
+```{r}
+#| echo: true
+#| message: false
+#| fig-height: 5
+#| fig-width: 10
+#| fig-align: center
+#| code-fold: true
+#| code-summary: plot acf by chain
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_acf(pars = vars(b_Intercept), lags = 35) +
+  theme_minimal()
+```
+:::
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+```{r}
+#| echo: false
+dat <- readr::read_csv("data/z6N8z2N7.csv", show_col_types = FALSE) |> 
+  dplyr::mutate(
+    s = 
+      dplyr::case_when(s == "Reginald" ~ "Windsor", TRUE ~ "London")
+  )
+```
+
+```{r}
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y, fill = s)) +
+  geom_bar(show.legend = F) +
+  ggthemes::scale_fill_colorblind() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal() +
+  facet_wrap(~ s)
+```
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+```{r}
+#| echo: true
+#| message: false
+#| output: false
+#| code-fold: true
+#| code-summary: fit the two-site model
+fit8.2 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      brms::prior(beta(2, 2), class = b, lb = 0, ub = 1),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      seed = 8,
+      file = "fits/fit08.02")
+```
+
+```{r}
+#| fig-align: center
+#| code-fold: true
+#| code-summary: plot chains for both sites
+plot(fit8.2, widths = c(2, 3))
+```
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+:::: {style="font-size: x-large"}
+::: panel-tabset
+## fit
+
+```{r}
+#| echo: true
+summary(fit8.2)
+```
+
+## pairs
+
+```{r}
+#| echo: true
+#| fig-align: center
+#| fig-height: 4
+#| fig-width: 6
+#| code-fold: true
+pairs(fit8.2,
+      off_diag_args = list(size = 1/3, alpha = 1/3))
+```
+
+## draws
+
+```{r}
+#| fig-align: center
+#| fig-height: 4
+#| fig-width: 9
+#| echo: true
+#| code-fold: true
+draws <- brms::as_draws_df(fit8.2)
+
+draws <-
+  draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor, theta_London  = b_sLondon) |> 
+  dplyr::mutate(`theta_Windsor - theta_London` = theta_Windsor - theta_London)
+
+long_draws <-
+  draws |> 
+  dplyr::select(starts_with("theta")) |> 
+  tidyr::pivot_longer(everything()) |> 
+  dplyr::mutate(name = factor(name, levels = c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"))) 
+  
+long_draws |> 
+  ggplot(aes(x = value, y = 0, fill = name)) +
+  tidybayes::stat_histinterval(point_interval = tidybayes::mode_hdi, .width = .95,
+                    slab_color = "white", outline_bars = T,
+                    normalize = "panels") +
+  scale_fill_manual(values = ggthemes::colorblind_pal()(8)[2:4], breaks = NULL) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  theme_minimal() +
+  facet_wrap(~ name, scales = "free")
+```
+
+## table
+
+```{r}
+#| echo: true
+#| code-fold: true
+long_draws |> 
+  dplyr::group_by(name) |> 
+  tidybayes::mode_hdi()
+```
+:::
+::::
+
+## Generative modelling with BRMS
+
+#### Basic model: manufacturing failures per $N$ units
+
+:::: {style="font-size: x-large"}
+::: panel-tabset
+## fit
+
+```{r}
+#| output: false
+#| warning: false
+#| echo: true
+#| label: fit8.3
+#| code-fold: true
+#| code-summary: separate theta estimates
+
+fit8.3 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      prior =
+        c(brms::prior(beta(2, 2), class = b, coef = sWindsor),
+          brms::prior(beta(2, 2), class = b, coef = sLondon),
+          # this just sets the lower and upper bounds
+          brms::prior(beta(2, 2), class = b, lb = 0, ub = 1)),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      sample_prior = "only",
+      seed = 8,
+      file = "fits/fit08.03")
+```
+
+## plots
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: separate theta estimates
+#| fig-height: 4
+#| fig-width: 9
+#| fig-align: center
+draws <- brms::as_draws_df(fit8.3) |> 
+  dplyr::select(starts_with("b_"))
+
+# dat |> 
+#   dplyr::group_by(s) |> 
+#   dplyr::summarise(z = sum(y), N = dplyr::n()) |> 
+#   dplyr::mutate(`z/N` = z / N)
+
+levels <- c("theta_Windsor", "theta_London", "theta_Windsor - theta_London")
+d_line <-
+  tibble::tibble(value = c(.75, .286, .75 - .286),
+         name  =  factor(c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"), 
+                         levels = levels))
+
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  dplyr::mutate("theta_Windsor - theta_London" = theta_Windsor - theta_London) |> 
+  tidyr::pivot_longer(contains("theta")) |> 
+  dplyr::mutate(name = factor(name, levels = levels)) |>
+  
+  ggplot(aes(x = value, y = 0)) +
+  tidybayes::stat_histinterval(point_interval = tidybayes::mode_hdi, .width = .95,
+                    fill = ggthemes::colorblind_pal()(8)[5], normalize = "panels") +
+  geom_vline(data = d_line, 
+             aes(xintercept = value), 
+             linetype = 2) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("The dashed vertical lines mark off "*italic(z[s])/italic(N[s]))) +
+  cowplot::theme_cowplot() +
+  facet_wrap(~ name, scales = "free")
+```
+
+## independence
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: separate theta estimates
+#| fig-height: 4
+#| fig-width: 6
+#| fig-align: center
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  
+  ggplot(aes(x = theta_Windsor, y = theta_London)) +
+  geom_point(alpha = 1/4, color = ggthemes::colorblind_pal()(8)[6]) +
+  coord_equal() +
+  cowplot::theme_minimal_grid()
+
+```
+
+:::
+:::
+
+## Generative modelling with BRMS
+
 #### BRMS example
 
 :::::: {style="font-size: x-large"}
@@ -386,7 +806,8 @@ epilepsy
 output <- 
   capture.output(
     fit_epi_gaussian1 <- 
-      brms::brm(count ~ 1 + Trt, data = epilepsy, silent = 2, seed = 8740)
+      brms::brm(
+        count ~ 1 + Trt, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian1")
   )
   
 fit_epi_gaussian1
@@ -625,7 +1046,7 @@ output <-
         count ~ Trt * Base,
         data = epilepsy,
         family = brms::student()
-        , silent = 2, seed = 8740
+        , silent = 2, seed = 8740, file = "fits/fit_epi_student1"
       )
   )
 
@@ -663,12 +1084,12 @@ brms::pp_check(fit_epi_student1) + xlim(-30, 30)
 #| cache: true
 output <- 
   capture.output(
-    fit_epi_gaussian2 <- brms::brm(count ~ Trt + Base, data = epilepsy, silent = 2, seed = 8740)
+    fit_epi_gaussian2 <- brms::brm(count ~ Trt + Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian2")
   )
 # find a spot for this
 output <- 
   capture.output(
-    fit_epi_gaussian3 <- brms::brm(count ~ Trt * Base, data = epilepsy, silent = 2, seed = 8740)
+    fit_epi_gaussian3 <- brms::brm(count ~ Trt * Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian3")
   )
 brms::pp_check(fit_epi_gaussian2) + theme_minimal(base_size = 18) + theme(legend.position = "side")
 ```
@@ -959,7 +1380,6 @@ se_sum <- function(x) {sd(x) * sqrt(length(x))}
 #### 2.7 Out-of-sample predictions
 
 ::: {style="font-size: x-large"}
-
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -976,13 +1396,13 @@ epilepsy_test  <- rsample::testing(splits)
 output <- 
   capture.output(
     fit_student1_train <- 
-      brms::brm(count ~ Trt * Base, data = epilepsy_train, family = brms::student(), silent = 2, seed = 8740)
+      brms::brm(count ~ Trt * Base, data = epilepsy_train, family = brms::student(), silent = 2, seed = 8740, file = "fits/fit_student1_train")
   )
 llm_epi_gaussian3_test <-  brms::log_lik(fit_student1_train, newdata = epilepsy_test)
 
 output <- 
   capture.output(
-    fit_gaussian3_train <- brms::brm(count ~ Trt * Base, data = epilepsy_train, silent = 2, seed = 8740)
+    fit_gaussian3_train <- brms::brm(count ~ Trt * Base, data = epilepsy_train, silent = 2, seed = 8740, file = "fits/fit_gaussian3_train")
   )
 llm_epi_student1_test <- colMeans( brms::log_lik(fit_gaussian3_train, newdata = epilepsy_test) )
 ```
@@ -1018,7 +1438,6 @@ lattice::histogram(llm_epi_diff_test |> matrix(), nint=50, type = "density")
 
 ::: {style="font-size: x-large"}
 In leave-one-out cross-validation (LOO-CV), we perform $N$ training-test splits, where each time we are leaving out a single observations, fitting the model on the remaining $N-1$ observations before evaluating model fit on that single left-out observation.
-
 
 ```{r}
 #| echo: true
@@ -1161,7 +1580,8 @@ output <-
         count ~ 1 + Trt * Base, data = epilepsy,
         prior = prior_epi_gaussian6,
         save_pars = brms::save_pars(all = TRUE),
-        iter = 5000, warmup = 1000
+        iter = 5000, warmup = 1000,
+        file = "fits/fit_epi_gaussian6"
       )
   )
 logml_epi_gaussian6 <- brms::bridge_sampler(fit_epi_gaussian6)
