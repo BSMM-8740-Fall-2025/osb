@@ -52,35 +52,27 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## This week
 
--   We will explore Bayesian methods in more detail.
--   We will use one of the popular R packages for Bayesian analysis.
+-   We will explore Bayesian methods in greater detail, including Bayesian workflow and model comparison.
+-   We will use BRMS (Bayesian regression models with Stan) one of the popular R packages for Bayesian analysis.
 
-# Bayesian Regression
+## BRMS
 
-## Bayesian Regression
+-   Reference materials for BRMS can be found [here](https://learnb4ss.github.io/learnB4SS/index.html) and [here](https://michael-franke.github.io/Bayesian-Regression/practice-sheets/01b-regression-BRMS.html).
+-   Instructions for installing BRMS can be found [here](https://learnb4ss.github.io/learnB4SS/articles/install-brms.html) and [here](https://mc-stan.org/users/interfaces/). The basic steps (in order) are
+    1.  Configure the C++ toolchain (use RTools in Windows)
+    2.  [Install Stan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started) and verify the Stan installation
+    3.  [Install BRMS](https://paulbuerkner.com/brms/)
 
-::: {style="font-size: x-large"}
-From Bayes' Rule we have
+# Bayesian Estimation
 
-$$
-P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)} 
-$$
-
-If $B$ is interpreted as the data $\mathcal{D}$ and $A$ is chosen to be the set of parameters that you'd want to estimate, call this set $\theta$, then
-
-$$
-\underbrace{P(\theta \vert \mathcal{D})}_{\text{Posterior}} = 
-    \frac{1}{\underbrace{P(\mathcal{D})}_{\text{Normalization}}}
-\overbrace{P(\mathcal{D} \vert \theta)}^{\text{Likelihood}}\overbrace{P(\theta)}^{\text{Prior}}
-$$
-:::
-
-## Bayesian Regression
+## Bayesian Estimation
 
 ::: {style="font-size: x-large"}
-A statistical model $M$ is a model of a random process that could have generated our observable data. The observable data $\mathcal{D}$ contains both dependent variables $\mathcal{D}_\mathrm{DV}$ and independent variables $\mathcal{D}_\mathrm{IV}$ A model $M$ for data $\mathcal{D}$ fixes a likelihood function for $\mathcal{D}_\mathrm{DV}$. The likelihood function often has parameters, represented by a parameter vector $\theta$.
+A statistical model $M$ is a model of a random process that could have generated our observable data. The observable data $\mathcal{D}$ contains both dependent variables $\mathcal{D}_\mathrm{DV}$ and independent variables $\mathcal{D}_\mathrm{IV}$
 
-If $B$ is interpreted as the data $\mathcal{D}$ and $A$ is chosen to be the set of parameters that you'd want to estimate, call this set $\theta$, then
+A model $M$ for data $\mathcal{D}$ fixes a likelihood function for $\mathcal{D}_\mathrm{DV}$. The likelihood function often has parameters, represented by a parameter vector $\theta$.
+
+Using Bayes rule we can estimate the model parameters $\theta$ from the data
 
 $$
 \underbrace{P_M(\theta \vert \mathcal{D})}_{\text{Posterior}} = 
@@ -88,42 +80,6 @@ $$
 \overbrace{P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta)}^{\text{Likelihood}}\overbrace{P_M(\theta)}^{\text{Prior}}
 $$
 :::
-
-## Bayesian Regression
-
-#### Binomial Model
-
-::: {style="font-size: x-large"}
-The data we are interested in comes from a sequence of flips of a coin with bias $\theta_c\in [0,1]$.We have observed that $k$ of the $N$ flips turned out to be heads. We know $N$ and $k$, but we do not know $\theta_c$. We use the Binomial Model to infer the latent (= not directly observable) coin bias $\theta_c$
-
-The coin’s bias $\theta_c$ is the only parameter of this model. The dependent variable is $k$. $N$ is another data observation (treated here as an independent variable.
-
-The likelihood function for this model is the Binomial distribution:
-
-$$
-P_M(k \mid \theta_c, N) = \text{Binomial}(k, N, \theta_c) = \binom{N}{k}\theta_c^k(1-\theta_c)^{N-k}
-$$ We use a Beta distribution for the prior of $\theta_c$. $P_M(\theta_c) = \text{Beta}(\theta_c, 1, 1)$
-:::
-
-## Bayesian Regression
-
-#### Priors
-
-::: {style="font-size: large"}
--   uninformative : $\theta_c\sim\mathrm{Beta}(1,1)$
--   weakly informative : $\theta_c\sim\mathrm{Beta}(5,2)$
--   strongly informative : $\theta_c\sim\mathrm{Beta}(50,20)$
--   point-valued : $\theta_c\sim\mathrm{Beta}(\alpha,\beta)$ with $\alpha,\beta\rightarrow\infty$ and $\alpha,\beta=52$
-:::
-
-![](images/ch-03-02-models-types-of-priors-1.png){fig-align="center" width="900"}
-
-## Bayesian Regression
-
-Predictions:
-
--   prior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta)$
--   posterior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta \vert \mathcal{D})$
 
 ## Maximum likelihood (MLE)
 
@@ -167,7 +123,7 @@ where the parameters are $\theta=\{\beta,\sigma^2\}$.
 In words: the joint probability of the parameters given the observed volume data is equal to (to within a scaling constant) the probability of the observed volume data given the parameters, times the prior probabilities of the parameters. In practice we refer to the probabilities as likelihoods, and use log-likelihoods to avoid numerical problems arising from the product of small probabilities.
 :::
 
-## Maximum a posteriori estimate (MAPE)
+## Max a posteriori estimate (MAPE)
 
 The maximum a posteriori estimate of the parameters is
 
@@ -179,7 +135,7 @@ $$
 \end{align*}
 $$
 
-## Maximum a posteriori estimate (MAPE)
+## Max a posteriori estimate (MAPE)
 
 ::: {style="font-size: x-large"}
 If $\theta$ is not uncertain/random, then $\pi(\theta)=1\rightarrow\log\pi(\theta)=0$ and the MAPE is equal to the MLE.
@@ -192,9 +148,9 @@ $$
 $$
 :::
 
-## Maximum a posteriori estimate (MAPE)
+## Max a posteriori estimate (MAPE)
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 With Gaussian $\pi(\beta)$ as in the last slide, and likelihood
 
 $$
@@ -213,7 +169,7 @@ $$
 which turns out to be a linear interpolation between the prior mean and the sample mean weighted by their respective covariances.
 :::
 
-## Maximum a posteriori estimate (MAPE)
+## Max a posteriori estimate (MAPE)
 
 In this MAPE for linear regression, with Gaussian priors, the posterior is also a Gaussian, since the product of Gaussian distributions is proportional to a Gaussian distribution, and the denominator in Bayes rule reflects the proportionality.
 
@@ -223,7 +179,7 @@ However, this a special case where the likelihood and prior distributions are [*
 
 If the posterior distribution $\pi_{\theta\vert\mathcal{D}}$ is in the same probability distribution family as the prior probability distribution $\pi_\theta$ (generally this means they are the same to within a normalizing constant), the prior and posterior are then called conjugate distributions, and the prior is called a conjugate prior for the likelihood function $\pi_{\mathcal{D}}$.
 
-A conjugate prior is an algebraic convenience, giving a closed-form expression for the posterior.
+A [**conjugate prior**]{.underline} is an algebraic convenience, giving a closed-form expression for the posterior.
 
 ## Conjugate priors
 
@@ -321,7 +277,7 @@ so $\pi\left(y\vert\lambda\right)\times \pi_\theta(x;\alpha,\beta)\sim \lambda^{
 ::::::: columns
 :::: {.column width="60%"}
 ::: {style="font-size: large"}
-Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might arbitrarily take the prior as a Gamma with $\alpha=9;\;\beta = 2$ so that the prior and posterior look like this:
+Given our observations $\lambda=\frac{3+4+1}{3}\approx 2.67$, we might arbitrarily take the prior as a Gamma with $\alpha=9;\;\beta = 2$ (mean $\alpha/\beta$) so that the prior and posterior look like this:
 
 ```{r}
 #| echo: true
@@ -353,7 +309,7 @@ ci <- qgamma(c(0.05,0.95), shape=.shape, rate = .rate) |>
   purrr::map_dbl(function(x){round( x^5 * exp(-x)/factorial(5),digits=3)})
 ```
 
-Given the posterior hyperparameters, we can finally compute the posterior predictive distribution and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
+Given the posterior hyperparameters, we can finally compute the posterior predictive distribution ($\alpha=9+3\times2.67$, $\beta=3\times2$, $\mu=2.835$) and estimate the 90% confidence intervals for the probability as `{r} as.character(ci)`. This much more conservative estimate reflects the uncertainty in the model parameters, which the posterior predictive takes into account.
 :::
 ::::
 :::::::
@@ -375,9 +331,11 @@ Limitations of Conjugate Priors
 -   Less Suitable for Non-Standard Likelihoods: Conjugate priors work best with specific likelihood functions, and many real-world problems don’t have standard likelihoods that match conjugate prior forms. In these cases, using a conjugate prior may be infeasible, forcing the use of non-conjugate methods.
 :::
 
+# Generative (bayesian) modelling
+
 ## Generative (bayesian) modelling
 
--   Generative Bayesian modeling is an approach in Bayesian statistics where we create models that describe how data is generated, often by specifying probability distributions for both observed and latent (unobserved) variables.
+-   Generative Bayesian modeling is an approach in Bayesian statistics where we create models that describe how data is generated, often by specifying probability distributions for both observed and latent (unobserved) variables/parameters.
 
 -   This process involves defining a generative process — a step-by-step probabilistic framework that models how data could have arisen.
 
@@ -385,7 +343,7 @@ Limitations of Conjugate Priors
 
 Note the similarity to DAGs:
 
-Given a DAG, we next assign probability distributions to each node, relate the nodes through the parameters of the distributions and finally assign priors for any remaining/undetermined parameters, including parameters used to define the relationships between variables.
+Given a DAG, we next assign probability distributions to each node/variable, relate the nodes through the parameters of the distributions and finally assign priors for any remaining/undetermined parameters, including parameters used to define the relationships between variables.
 
 ## Generative (bayesian) modelling
 
@@ -429,6 +387,8 @@ Generative Bayesian modeling is widely used in areas requiring a deep understand
 
 `BRMS` is useful for performing complex Bayesian analyses in R without diving into raw Stan code.
 
+We'll start with a very simple example.
+
 ## Generative modelling with BRMS
 
 #### Basic model: manufacturing failures per $N$ units
@@ -466,12 +426,25 @@ dat |>
 
 ## Generative modelling with BRMS
 
+#### Basic model: Prior
+
+::: {style="font-size: large"}
+-   uninformative : $\theta_c\sim\mathrm{Beta}(1,1)$
+-   weakly informative : $\theta_c\sim\mathrm{Beta}(5,2)$
+-   strongly informative : $\theta_c\sim\mathrm{Beta}(50,20)$
+-   point-valued : $\theta_c\sim\mathrm{Beta}(\alpha,\beta)$ with $\alpha,\beta\rightarrow\infty$ and $\alpha,\beta=52$
+:::
+
+![](images/ch-03-02-models-types-of-priors-1.png){fig-align="center" width="900"}
+
+## Generative modelling with BRMS
+
 #### Basic model: manufacturing failures per $N$ units
 
 ```{r}
 #| echo: true
 #| message: false
-#| output: false
+#| output: true
 #| code-fold: true
 #| code-summary: fit the model
 
@@ -483,12 +456,6 @@ fit8.1 <-
       iter = 500 + 3334, warmup = 500, chains = 3,
       seed = 8,
       file = "fits/fit08.01")
-```
-
-```{r}
-#| fig-align: center
-#| code-fold: true
-#| code-summary: plot the chains
 plot(fit8.1)
 ```
 
@@ -496,7 +463,7 @@ plot(fit8.1)
 
 #### Basic model: manufacturing failures per $N$ units
 
-:::: {style="font-size: xx-large"}
+:::: {style="font-size: x-large"}
 ::: panel-tabset
 ## fit
 
@@ -518,6 +485,7 @@ brms::posterior_summary(fit8.1, robust = T)
 
 #### Basic model: manufacturing failures per $N$ units
 
+:::: {style="font-size: x-large"}
 ::: panel-tabset
 ## draws
 
@@ -536,8 +504,8 @@ draws
 ```{r}
 #| echo: true
 #| message: false
-#| fig-height: 5
-#| fig-width: 6
+#| fig-height: 4
+#| fig-width: 5
 #| fig-align: center
 #| code-fold: true
 #| code-summary: plot the draws by chain
@@ -551,8 +519,8 @@ draws |>
 ```{r}
 #| echo: true
 #| message: false
-#| fig-height: 5
-#| fig-width: 10
+#| fig-height: 4
+#| fig-width: 8
 #| fig-align: center
 #| code-fold: true
 #| code-summary: plot acf by chain
@@ -562,6 +530,7 @@ draws |>
   theme_minimal()
 ```
 :::
+::::
 
 ## Generative modelling with BRMS
 
@@ -761,7 +730,7 @@ draws |>
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: separate theta estimates
+#| code-summary: method for separate theta estimates
 #| fig-height: 4
 #| fig-width: 6
 #| fig-align: center
@@ -803,7 +772,7 @@ The value of $\kappa$ governs how near $\theta$ is to $\omega$, with larger valu
 ## Generative modelling with BRMS
 
 ::: {style="font-size: large"}
-Using $s$ for shape and $r$ for rate, Kruschke's Equations 9.7 and 9.8 are as follows:
+Using $s$ for shape and $r$ for rate are as follows:
 
 $$
 \begin{align*}
@@ -811,6 +780,8 @@ s & =\frac{\mu^{2}}{\sigma^{2}}\;\;\;\text{and}\;\;\;r=\frac{\mu}{\sigma^{2}}\;\
 s & =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sigma^{2}}}{2\sigma^{2}}\;\;\;\text{for mode}\;\;\;\omega>0
 \end{align*}
 $$
+
+The value of $\kappa$ governs how near $\theta$ is to $\omega$, with larger values of $\kappa$ generating values of $\theta$ more concentrated near $\omega$.
 
 ```{r}
 #| echo: true
@@ -892,7 +863,7 @@ dat |>
 
 ## Generative modelling with BRMS
 
-#### fit model
+#### fit multiple sites \| hierarchical
 
 ::::: {style="font-size: x-large"}
 :::: panel-tabset
@@ -1093,14 +1064,14 @@ dat |>
 #### speeding up model fits
 
 ::: {style="font-size: x-large"}
-Full Bayesian inference is a computationally very demanding task and often we wish to run our models faster in shorter walltime (elapsed real time). With modern computers we nowadays have multiple processors available on a given machine such that the use of running the inference in parallel will shorten the overall walltime.
+Full Bayesian inference is a computationally very demanding task and often we need to run our models faster in shorter walltime (elapsed real time). With modern computers we have multiple processors available on a given machine such that the use of running the inference in parallel will shorten the overall walltime.
 
-While between-chain parallelization is straightforward by merely launching multiple chains at the same time, the use of within-chain parallelization is more complicated in various ways. [This vignette](https://cran.r-project.org/web/packages/brms/vignettes/brms_threading.html) aims to introduce the user to within-chain parallelization with brms, since its efficient use depends on various aspects specific to the users model.
+While between-chain parallelization is straightforward by merely launching multiple chains at the same time, the use of within-chain parallelization is more complicated in various ways. [This vignette](https://cran.r-project.org/web/packages/brms/vignettes/brms_threading.html) is an introduction to within-chain parallelization with brms.
 :::
 
 ## Generative modelling with BRMS
 
-#### BRMS example
+#### regression models
 
 :::::: {style="font-size: large"}
 ::::: columns
@@ -1127,24 +1098,15 @@ output <-
   capture.output(
     fit_epi_gaussian1 <- 
       brms::brm(
-        count ~ 1 + Trt, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian1")
+        count ~ 1 + Trt, data = epilepsy, 
+        silent = 2, seed = 8740, file = "fits/fit_epi_gaussian1"
+      )
   )
-  
 fit_epi_gaussian1
 ```
 :::
 :::::
 ::::::
-
-## Generative modelling with BRMS
-
-::: {style="font-size: x-large"}
-At the top of the output, we see the formula and dataset. Moving to the actual posterior results, brms shows two blocks of parameters here, namely *Regression Coefficients* and *Further Distributional Parameters*. The latter refers to additional parameters of the likelihood that we did not specify with our regression, i.e. the residual standard deviation (sigma).
-
-For each of the displayed parameters, we see seven summary statistics. The Estimate column is simply the empirical mean of the posterior draws, which is a sampling-based estimate of the analytical posterior mean.
-
-The Est.Error columns denotes (the empirical estimate of) the posterior standard deviation, while the lower and upper bounds of the 95% credible interval are computed as the 2.5% and 97.5% quantile of the posterior samples, respectively. The three remaining columns, Rhat, Bulk_ESS, and Tail_ESS give us information about convergence and sampling eﬀiciency, as also shortly explained at the bottom of the summary output.
-:::
 
 ## Generative modelling with BRMS
 
@@ -1239,7 +1201,7 @@ plot(ce, points = TRUE)
 ## Generative modelling with BRMS
 
 ::: {style="font-size: large"}
-What we do in `conditional_effects` by default, and have done above, is visualizing the expected value (mean parameter) of the likelihood distribution, conditional on certain predictor values. In brms, this is done via the `posterior_epred` (posterior expected predictions) method. For example, we can run the code below to create expected posterior predictions for both groups. The resulting object contains the posterior draws in the rows and the different conditions (here, treatment groups) in the columns.
+What we do in `conditional_effects` by default is visualize the expected value (mean parameter) of the likelihood distribution, conditional on certain predictor values. In brms, this is done via the `posterior_epred` (posterior expected predictions) method. For example, we can run the code below to create expected posterior predictions for both groups. The resulting object contains the posterior draws in the rows and the different conditions (here, treatment groups) in the columns.
 
 ```{r}
 #| echo: true
@@ -1269,17 +1231,22 @@ In contrast, if we are interested in prediction of hypothetical new data points 
 $$
 y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)} \right)
 $$
-
-This is exactly what happens behind the scenes when we execute the code below:
 :::
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+This is exactly what happens behind the scenes when we execute the code below:
 
 ```{r}
 #| echo: true
 #| code-fold: true
 #| fig-align: center
+#| fig-height: 4.5
 options(brms.plot_points = TRUE)
 brms::conditional_effects(fit_epi_gaussian1, method = "posterior_predict")
 ```
+:::
 
 ## Generative modelling with BRMS
 
@@ -1359,19 +1326,13 @@ brms::pp_check(fit_epi_gaussian1, type = "help_me")
 #| echo: true
 #| code-fold: true
 #| message: false
-
-output <- 
-  capture.output(
-    fit_epi_student1 <- 
-      brms::brm(
-        count ~ Trt * Base,
-        data = epilepsy,
-        family = brms::student()
-        , silent = 2, seed = 8740, file = "fits/fit_epi_student1"
-      )
+fit_epi_student1 <- 
+  brms::brm(
+    count ~ Trt * Base,
+    data = epilepsy,
+    family = brms::student()
+    , silent = 2, seed = 8740, file = "fits/fit_epi_student1"
   )
-
-
 summary(fit_epi_student1)
 ```
 :::
@@ -1390,6 +1351,8 @@ brms::pp_check(fit_epi_student1) + xlim(-30, 30)
 ::::::
 :::::::
 
+# Model comparison
+
 ## Generative modelling with BRMS
 
 #### Absolute predictive performance
@@ -1402,16 +1365,14 @@ brms::pp_check(fit_epi_student1) + xlim(-30, 30)
 #| code-fold: true
 #| fig-align: center
 #| fig-height: 7.5
-#| fig-cap: Default posterior predictive check for model fit_epi_skew_normal1
-
-output <- 
-  capture.output(
-    fit_epi_gaussian2 <- brms::brm(count ~ Trt + Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian2")
+#| fig-cap: Default posterior predictive check for model fit_epi_gaussian2
+# fit with a covariate
+fit_epi_gaussian2 <- brms::brm(
+  count ~ Trt + Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian2"
   )
-# find a spot for this
-output <- 
-  capture.output(
-    fit_epi_gaussian3 <- brms::brm(count ~ Trt * Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian3")
+# fit with a covariate and interaction
+fit_epi_gaussian3 <- brms::brm(
+  count ~ Trt * Base, data = epilepsy, silent = 2, seed = 8740, file = "fits/fit_epi_gaussian3"
   )
 brms::pp_check(fit_epi_gaussian2) + theme_minimal(base_size = 18) + theme(legend.position = "side")
 ```
@@ -1435,7 +1396,7 @@ brms::pp_check(fit_epi_gaussian2, type = "error_scatter_avg") + theme_minimal(ba
 #### Measures of explained variance: $R^2$
 
 ::: {style="font-size: x-large"}
-The standard $R^2$ measure is defined only for Gaussian models and is often referred to as the percentage of explained variance. Note that in the Gaussian context we compute draws from the posterior $R^2$
+The standard $R^2_{\mathrm{basic}}$ measure is defined only for Gaussian models and is often referred to as the percentage of explained variance. Note that in the Gaussian context we compute draws from the posterior $R^2_{\mathrm{basic}}$
 
 ```{r}
 #| echo: true
@@ -1573,16 +1534,16 @@ ppmean_epi_gaussian3 <- colMeans(brms::posterior_epred(fit_epi_gaussian3))
 str(ppmean_epi_gaussian3)
 
 # compute RMSE based on the responses and point predictions
-(rmse_point_epi_gaussian3 <- sqrt(mean((epilepsy$count - ppmean_epi_gaussian3)^2)) )
+rmse_point_epi_gaussian3 <- sqrt(mean((epilepsy$count - ppmean_epi_gaussian3)^2))
 ```
 :::
 
 ## Generative modelling with BRMS
 
-#### 2.6 Relative predictive performance
+#### Relative predictive performance
 
 ::: {style="font-size: x-large"}
-In general, it is more common to compare multiple models against each other and thus investigating their relative predictive performance.
+In general, it is more common to compare multiple models against each other and thus investigate their relative predictive performance.
 
 ```{r}
 #| echo: true
@@ -1607,7 +1568,7 @@ se_rmse_alt_diff
 
 ## Generative modelling with BRMS
 
-#### 2.6.1 Likelihood Density Scores
+#### Likelihood Density Scores
 
 ::: {style="font-size: x-large"}
 We have looked at variations of $R^2$ and RMSE metrics. Next we use the log-likelihood of models as predictive metric more generally.
@@ -1617,7 +1578,7 @@ The log-likelihood plays a pivotal role not only in to derive the posterior in B
 
 ## Generative modelling with BRMS
 
-#### 2.6.1 Likelihood Density Scores
+#### Likelihood Density Scores
 
 ::: {style="font-size: x-large"}
 Since log is a strictly monotonic transformation, we are not changing anything fundamental by looking at log likelihoods instead of likelihoods. However, we are making the math much simpler by working with sums instead of products. In particular, this concerns computing gradients because the gradient of a sum is just the sum of the individual (pointwise) gradients. Much of the modern statistics and ML relies on this property.
@@ -1633,7 +1594,7 @@ str(ll_epi_gaussian3)
 
 ## Generative modelling with BRMS
 
-#### 2.6.1 Likelihood Density Scores
+#### Likelihood Density Scores
 
 ::: {style="font-size: large"}
 The output of `log_lik` has the same structure as `posterior_predict` and friends, that is, it has as many columns as we have observations and as many rows as we posterior draws.
@@ -1649,42 +1610,53 @@ lattice::histogram(colMeans(ll_epi_gaussian3), nint=30, type = "density")
 
 ## Generative modelling with BRMS
 
-#### 2.6.1 Likelihood Density Scores
+#### Likelihood Density Scores
 
-::: {style="font-size: large"}
+:::::: {style="font-size: large"}
 Similar to the RMSE_alt metric earlier, we average over posterior draws per observation such that we obtain one log-likelihood value per observation.
 
 The mean of the log-likelihood differences is slightly positive which points to a slightly better fit of the Student-t model.
 
+::::: columns
+::: {.column width="25%"}
 ```{r}
 #| echo: true
 #| code-fold: true
-llm_epi_student1  <- colMeans( brms::log_lik(fit_epi_student1) )
-llm_epi_gaussian3 <- colMeans( brms::log_lik(fit_epi_gaussian3) )
+llm_epi_student1  <- 
+  colMeans( brms::log_lik(fit_epi_student1) )
+llm_epi_gaussian3 <- 
+  colMeans( brms::log_lik(fit_epi_gaussian3) )
 
-llm_epi_diff <- llm_epi_student1 - llm_epi_gaussian3
+llm_epi_diff <- 
+  llm_epi_student1 - llm_epi_gaussian3
 mean(llm_epi_diff)
 ```
+:::
 
+::: {.column width="75%"}
 ```{r}
+#| echo: true
+#| code-fold: true
 #| fig-cap: Pointwise log-likelihood values of model fit_epi_gaussian3 and fit_epi_student1 as well as their pointwise log-likelihood differences.
 #| fig-align: center
-#| fig-height: 4
+#| fig-height: 3.7
 llm_epi_gaussian3 <- colMeans(ll_epi_gaussian3)
 lattice::histogram(~llm_epi_gaussian3 + llm_epi_student1 + llm_epi_diff, nint=50, type = "density")
 ```
 :::
+:::::
+::::::
 
 ## Generative modelling with BRMS
 
-#### 2.6.1 Likelihood Density Scores
+#### Likelihood Density Scores
 
 ::: {style="font-size: x-large"}
-It is more typical to work with sums instead of means of log-likelihood values over observations, a quantity that we call LPD:
+It is more typical to work with sums instead of means of log-likelihood values over observations, a quantity that we call LPD[^2]:
 
 ```{r}
 #| echo: true
-(lpd_epi_diff <- sum(llm_epi_diff))
+lpd_epi_diff <- sum(llm_epi_diff)
 ```
 
 The corresponding standard error is also not particular difficult to obtain:
@@ -1693,9 +1665,11 @@ The corresponding standard error is also not particular difficult to obtain:
 #| echo: true
 se_sum <- function(x) {sd(x) * sqrt(length(x))}
 
-(se_lpd_epi_diff <- se_sum(llm_epi_diff))
+se_lpd_epi_diff <- se_sum(llm_epi_diff)
 ```
 :::
+
+[^2]: LLM (Log-Likelihood Mean) and LPD (Log Posterior Density)
 
 ## Generative modelling with BRMS
 
@@ -1714,26 +1688,27 @@ epilepsy_test  <- rsample::testing(splits)
 ```{r}
 #| echo: true
 #| code-fold: true
-output <- 
-  capture.output(
-    fit_student1_train <- 
-      brms::brm(count ~ Trt * Base, data = epilepsy_train, family = brms::student(), silent = 2, seed = 8740, file = "fits/fit_student1_train")
-  )
-llm_epi_gaussian3_test <-  brms::log_lik(fit_student1_train, newdata = epilepsy_test)
+fit_student1_train <- 
+  brms::brm(
+    count ~ Trt * Base, data = epilepsy_train, family = brms::student()
+    , silent = 2, seed = 8740, file = "fits/fit_student1_train")
 
-output <- 
-  capture.output(
-    fit_gaussian3_train <- brms::brm(count ~ Trt * Base, data = epilepsy_train, silent = 2, seed = 8740, file = "fits/fit_gaussian3_train")
-  )
-llm_epi_student1_test <- colMeans( brms::log_lik(fit_gaussian3_train, newdata = epilepsy_test) )
+llm_epi_student1_test <-  brms::log_lik(fit_student1_train, newdata = epilepsy_test)
+
+fit_gaussian3_train <- 
+  brms::brm(
+    count ~ Trt * Base, data = epilepsy_train
+    , silent = 2, seed = 8740, file = "fits/fit_gaussian3_train")
+
+llm_epi_gaussian3_test <- colMeans( brms::log_lik(fit_gaussian3_train, newdata = epilepsy_test) )
 ```
 :::
 
 ## Generative modelling with BRMS
 
-#### 2.7 Out-of-sample predictions
+#### Out-of-sample predictions
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 ```{r}
 #| eval: true
 #| echo: true
@@ -1759,13 +1734,13 @@ lattice::histogram(llm_epi_diff_test |> matrix(), nint=50, type = "density")
 
 ## Generative modelling with BRMS
 
-#### 2.7 Out-of-sample predictions
+#### Out-of-sample predictions
 
-:::: {style="font-size: x-large"}
+:::: {style="font-size: large"}
 In leave-one-out cross-validation (LOO-CV), we perform $N$ training-test splits, where each time we are leaving out a single observations, fitting the model on the remaining $N-1$ observations before evaluating model fit on that single left-out observation.
 
 ::: panel-tabset
-## loo
+## loo-gauss3
 
 ```{r}
 #| echo: true
@@ -1775,7 +1750,7 @@ loo_epi_gaussian3 <- brms::loo(fit_epi_gaussian3)
 loo_epi_gaussian3
 ```
 
-## loo1
+## loo-student1
 
 ```{r}
 #| echo: true
@@ -1784,32 +1759,25 @@ loo_epi_student1 <- brms::loo(fit_epi_student1)
 loo_epi_student1
 ```
 
-## loo2
+## loo diff
 
 ```{r}
+#| echo: true
+#| warning: false
 brms::loo_compare(loo_epi_gaussian3, loo_epi_student1)
 ```
 
-## loo3
+## loo both
+
 ```{r}
 brms::loo(fit_epi_gaussian3, fit_epi_student1)
 ```
-
 :::
-
 ::::
 
 ## Generative modelling with BRMS
 
-#### 2.7 Out-of-sample predictions
-
-::: {style="font-size: x-large"}
-In leave-one-out cross-validation (LOO-CV), we perform $N$ training-test splits, where each time we are leaving out a single observations, fitting the model on the remaining $N-1$ observations before evaluating model fit on that single left-out observation.
-:::
-
-## Generative modelling with BRMS
-
-#### 2.8 Prior predictive performance
+#### Prior predictive performance
 
 ::: {style="font-size: x-large"}
 We will now take a fundamentally different approach by evaluating prior predictive distribution, that is, by looking at what predictions a model implies before seeing any data. The starting point to investigating prior predictive performance is to perform graphical prior predictive checks.
@@ -1829,7 +1797,7 @@ prior_epi_gaussian6
 
 ## Generative modelling with BRMS
 
-#### 2.8 Prior predictive performance
+#### Prior predictive performance
 
 ::: {style="font-size: x-large"}
 Here we are “fitting” the model with the option sample_prior = "only", which ensures that Stan ignores the likelihood contribution to the posterior, such that the posterior directly resembles the prior.
@@ -1851,7 +1819,7 @@ summary(fit_prior_epi_gaussian6)
 
 ## Generative modelling with BRMS
 
-#### 2.8 Prior predictive performance
+#### Prior predictive performance
 
 ::: {style="font-size: x-large"}
 For all practical purposes, our “prior-only” brms model can be post-processed as any other brms model.
@@ -1866,7 +1834,7 @@ brms::pp_check(fit_prior_epi_gaussian6, ndraws = 100) + xlim(-150, 150)
 
 ## Generative modelling with BRMS
 
-#### 2.8 Marginal likelihood-based metrics
+#### Marginal likelihood-based metrics
 
 ::: {style="font-size: large"}
 To mathematically formalize the prior predictive performance of a model, consider the marginal likelihood that we find in the denominator of Bayes theorem (aka evidence): $$
@@ -1878,7 +1846,7 @@ $$ The absolute marginal likelihood values $p(y\vert M)$are very hard to interpr
 
 ## Generative modelling with BRMS
 
-#### 2.8 Marginal likelihood-based metrics
+#### Marginal likelihood-based metrics
 
 ::: {style="font-size: x-large"}
 The most common such comparative metric is the Bayes factor, defined as the ratio of two models’ marginal likelihoods:
@@ -1890,7 +1858,7 @@ $$ If the Bayes factor is greater than 1, the data $y$ have a higher likelihood 
 
 ## Generative modelling with BRMS
 
-#### 2.8 Marginal likelihood-based metrics
+#### Marginal likelihood-based metrics
 
 ::: {style="font-size: x-large"}
 We can say "Given the data $y$, model $M_1$ is more likely than model $M_2$” if we use the posterior odds:
@@ -1902,9 +1870,9 @@ $$ We often set the prior odds to 1 not actually because we really believe in mo
 
 ## Generative modelling with BRMS
 
-#### 2.8 Marginal likelihood-based metrics
+#### Marginal likelihood-based metrics
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Since the Bayes factor is based on marginal likelihoods, the computational challenges are substantial. Fortunately, there is one class of algorithms that enables reliable computation of (log) marginal likelihood on the basis of posterior draws. This class of algorithms is called bridge sampling.
 
 Marginal likelihood estimation via bridge sampling usually requires several times more posterior draws than the estimation of posterior moments or quantiles (i.e., what we usually do with posterior draws).
@@ -2099,4 +2067,70 @@ The Stan programme produces samples from the posterior distributions of the para
 
 ## Recap
 
--   We've had the smallest possible taste of statistical programming using Bayes theorem and sampling methods, in the context of adressing the limitations of off-the-shelf implementations of statistical methods and algorithms.
+-   We've had the smallest possible taste of statistical programming using Bayes theorem and sampling methods, in the context of addressing the limitations of off-the-shelf implementations of statistical methods and algorithms.
+
+# EXTRAS
+
+## Bayesian Regression
+
+::: {style="font-size: x-large"}
+From Bayes' Rule we have
+
+$$
+P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)} 
+$$
+
+If $B$ is interpreted as the data $\mathcal{D}$ and $A$ is chosen to be the set of parameters that you'd want to estimate, call this set $\theta$, then
+
+$$
+\underbrace{P(\theta \vert \mathcal{D})}_{\text{Posterior}} = 
+    \frac{1}{\underbrace{P(\mathcal{D})}_{\text{Normalization}}}
+\overbrace{P(\mathcal{D} \vert \theta)}^{\text{Likelihood}}\overbrace{P(\theta)}^{\text{Prior}}
+$$
+:::
+
+## Bayesian Regression
+
+#### Binomial Model
+
+::: {style="font-size: x-large"}
+The data we are interested in comes from a sequence of flips of a coin with bias $\theta_c\in [0,1]$.We have observed that $k$ of the $N$ flips turned out to be heads. We know $N$ and $k$, but we do not know $\theta_c$. We use the Binomial Model to infer the latent (= not directly observable) coin bias $\theta_c$
+
+The coin’s bias $\theta_c$ is the only parameter of this model. The dependent variable is $k$. $N$ is another data observation (treated here as an independent variable.
+
+The likelihood function for this model is the Binomial distribution:
+
+$$
+P_M(k \mid \theta_c, N) = \text{Binomial}(k, N, \theta_c) = \binom{N}{k}\theta_c^k(1-\theta_c)^{N-k}
+$$ We use a Beta distribution for the prior of $\theta_c$. $P_M(\theta_c) = \text{Beta}(\theta_c, 1, 1)$
+:::
+
+## Bayesian Regression
+
+#### Priors
+
+::: {style="font-size: large"}
+-   uninformative : $\theta_c\sim\mathrm{Beta}(1,1)$
+-   weakly informative : $\theta_c\sim\mathrm{Beta}(5,2)$
+-   strongly informative : $\theta_c\sim\mathrm{Beta}(50,20)$
+-   point-valued : $\theta_c\sim\mathrm{Beta}(\alpha,\beta)$ with $\alpha,\beta\rightarrow\infty$ and $\alpha,\beta=52$
+:::
+
+![](images/ch-03-02-models-types-of-priors-1.png){fig-align="center" width="900"}
+
+## Bayesian Regression
+
+Predictions:
+
+-   prior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta)$
+-   posterior predictive distributions: $P_M(D_{\text{pred}})  = \sum_{\theta} P_M(\mathcal{D}_\mathrm{DV} \vert\mathcal{D}_\mathrm{IV}, \theta) \ P_M(\theta \vert \mathcal{D})$
+
+## Generative modelling with BRMS
+
+::: {style="font-size: x-large"}
+At the top of the output, we see the formula and dataset. Moving to the actual posterior results, brms shows two blocks of parameters here, namely *Regression Coefficients* and *Further Distributional Parameters*. The latter refers to additional parameters of the likelihood that we did not specify with our regression, i.e. the residual standard deviation (sigma).
+
+For each of the displayed parameters, we see seven summary statistics. The Estimate column is simply the empirical mean of the posterior draws, which is a sampling-based estimate of the analytical posterior mean.
+
+The Est.Error columns denotes (the empirical estimate of) the posterior standard deviation, while the lower and upper bounds of the 95% credible interval are computed as the 2.5% and 97.5% quantile of the posterior samples, respectively. The three remaining columns, Rhat, Bulk_ESS, and Tail_ESS give us information about convergence and sampling eﬀiciency, as also shortly explained at the bottom of the summary output.
+:::
