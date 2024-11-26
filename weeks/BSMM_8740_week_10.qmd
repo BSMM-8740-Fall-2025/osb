@@ -10,23 +10,47 @@ Due date: Project proposal due Fri, Mar 18 at 5:00 pm.
 
 ## Prepare
 
-📖 Read Introduction to Modern Statistics, Chp 9: [Logistic regression](https://openintro-ims.netlify.app/model-logistic.html)
+📖 Read [Logistic regressionStatistical rethinking with brms, ggplot2, and the tidyverse: Second edition](https://bookdown.org/content/4857/)
 
 ## Participate
 
-🖥️ [Lecture 10 - MonteCarlo methods](/slides/BSM_8740_lec_10.html)
-
-## Practice
-
-📋 [Application Exercise 9 - Odds](/ae/ae-9-odds.html)
+🖥️ [Lecture 10 - Bayesian methods](/slides/BSM_8740_lec_10.html)
 
 ## Perform
 
-⌨️ [Lab 10 - MonteCarlo methods](labs/BSMM_8740_lab_10.html)
+⌨️ [Lab 10 - Bayesian methods](labs/BSMM_8740_lab_10.html)
 
 ✍️ [HW 3 - Logistic regression and log transformation](/hw/hw-3.html)
 
-<br><br>
+## Study
+
+### Short Answer Questions
+
+Instructions: Answer the following questions in 2-3 sentences each.
+
+-   What is the fundamental difference between Maximum Likelihood Estimation (MLE) and Maximum A Posteriori (MAP) estimation in the context of Bayesian linear regression?
+-   Explain the concept of conjugate priors and provide one example.
+-   What are the limitations of using conjugate priors in Bayesian modeling?
+-   Describe the key components of a generative Bayesian model.
+-   List three advantages of using generative Bayesian models.
+-   How does the BRMS package simplify Bayesian analysis in R?
+-   What information can be gleaned from the 'Regression Coefficients' section of BRMS output?
+-   Explain the purpose and interpretation of trace plots in assessing MCMC convergence.
+-   What are posterior predictive checks, and how are they useful in evaluating model fit?
+-   What is the purpose of calculating the 'leave-one-out cross-validation' (LOO-CV)?
+
+### Short Answer Key
+
+-   MLE finds parameter values that maximize the likelihood of observing the data, while MAP finds parameter values that maximize the posterior probability, taking into account both the likelihood of the data and the prior distribution of the parameters.
+-   Conjugate priors are prior distributions that, when combined with a particular likelihood function, result in a posterior distribution that belongs to the same family as the prior. This simplifies calculations. An example is the Beta prior for a Binomial likelihood.
+-   Conjugate priors can be restrictive, limiting the choice of priors to specific families. They may not accurately reflect complex prior beliefs or be suitable for complex models with non-standard likelihoods.
+-   A generative Bayesian model includes: defining priors for parameters, specifying the likelihood function that connects data to parameters, performing posterior inference using Bayes' theorem, and potentially incorporating latent variables or hierarchical structures.
+-   Generative Bayesian models offer interpretability by explicitly modeling the data generation process, strong predictive power due to learning underlying data structures, and robust uncertainty quantification for better decision-making.
+-   BRMS provides a user-friendly formula-based interface for specifying and fitting Bayesian models in R, leveraging the power of Stan without requiring users to write raw Stan code.
+-   The 'Regression Coefficients' section provides the estimated posterior means, standard errors, credible intervals, and convergence diagnostics for the regression coefficients in the model.
+-   Trace plots visualize the sampled values of parameters across MCMC iterations. They help assess convergence by checking for stationarity (horizontal trend), good mixing (overlapping chains), and low autocorrelation (random fluctuations).
+-   Posterior predictive checks involve simulating data from the fitted model and comparing these simulations to the observed data. This helps assess if the model can generate data similar to the observed data and identify potential misspecifications.
+-   LOO-CV estimates the model's predictive performance on unseen data. It involves repeatedly fitting the model on a subset of data and evaluating its predictions on the held-out data point, providing a robust measure of generalization ability.
 
 ::: {style="font-size: 0.875em;"}
 Back to [course schedule](/ "Course schedule") ⏎
