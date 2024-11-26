@@ -376,8 +376,12 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#prepare" id="toc-prepare" class="nav-link active" data-scroll-target="#prepare">Prepare</a></li>
   <li><a href="#participate" id="toc-participate" class="nav-link" data-scroll-target="#participate">Participate</a></li>
-  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice">Practice</a></li>
   <li><a href="#perform" id="toc-perform" class="nav-link" data-scroll-target="#perform">Perform</a></li>
+  <li><a href="#study" id="toc-study" class="nav-link" data-scroll-target="#study">Study</a>
+  <ul class="collapse">
+  <li><a href="#short-answer-questions" id="toc-short-answer-questions" class="nav-link" data-scroll-target="#short-answer-questions">Short Answer Questions</a></li>
+  <li><a href="#short-answer-key" id="toc-short-answer-key" class="nav-link" data-scroll-target="#short-answer-key">Short Answer Key</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2024/osb/edit/main/weeks/BSMM_8740_week_10.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2024/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -419,26 +423,55 @@ Important
 </div>
 <section id="prepare" class="level2">
 <h2 class="anchored" data-anchor-id="prepare">Prepare</h2>
-<p>📖 Read Introduction to Modern Statistics, Chp 9: <a href="https://openintro-ims.netlify.app/model-logistic.html">Logistic regression</a></p>
+<p>📖 Read <a href="https://bookdown.org/content/4857/">Logistic regressionStatistical rethinking with brms, ggplot2, and the tidyverse: Second edition</a></p>
 </section>
 <section id="participate" class="level2">
 <h2 class="anchored" data-anchor-id="participate">Participate</h2>
-<p>🖥️ <a href="../slides/BSM_8740_lec_10.html">Lecture 10 - MonteCarlo methods</a></p>
-</section>
-<section id="practice" class="level2">
-<h2 class="anchored" data-anchor-id="practice">Practice</h2>
-<p>📋 <a href="../ae/ae-9-odds.html">Application Exercise 9 - Odds</a></p>
+<p>🖥️ <a href="../slides/BSM_8740_lec_10.html">Lecture 10 - Bayesian methods</a></p>
 </section>
 <section id="perform" class="level2">
 <h2 class="anchored" data-anchor-id="perform">Perform</h2>
-<p>⌨️ <a href="labs/BSMM_8740_lab_10.html">Lab 10 - MonteCarlo methods</a></p>
+<p>⌨️ <a href="labs/BSMM_8740_lab_10.html">Lab 10 - Bayesian methods</a></p>
 <p>✍️ <a href="../hw/hw-3.html">HW 3 - Logistic regression and log transformation</a></p>
-<p><br><br></p>
+</section>
+<section id="study" class="level2">
+<h2 class="anchored" data-anchor-id="study">Study</h2>
+<section id="short-answer-questions" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-questions">Short Answer Questions</h3>
+<p>Instructions: Answer the following questions in 2-3 sentences each.</p>
+<ul>
+<li>What is the fundamental difference between Maximum Likelihood Estimation (MLE) and Maximum A Posteriori (MAP) estimation in the context of Bayesian linear regression?</li>
+<li>Explain the concept of conjugate priors and provide one example.</li>
+<li>What are the limitations of using conjugate priors in Bayesian modeling?</li>
+<li>Describe the key components of a generative Bayesian model.</li>
+<li>List three advantages of using generative Bayesian models.</li>
+<li>How does the BRMS package simplify Bayesian analysis in R?</li>
+<li>What information can be gleaned from the ‘Regression Coefficients’ section of BRMS output?</li>
+<li>Explain the purpose and interpretation of trace plots in assessing MCMC convergence.</li>
+<li>What are posterior predictive checks, and how are they useful in evaluating model fit?</li>
+<li>What is the purpose of calculating the ‘leave-one-out cross-validation’ (LOO-CV)?</li>
+</ul>
+</section>
+<section id="short-answer-key" class="level3">
+<h3 class="anchored" data-anchor-id="short-answer-key">Short Answer Key</h3>
+<ul>
+<li>MLE finds parameter values that maximize the likelihood of observing the data, while MAP finds parameter values that maximize the posterior probability, taking into account both the likelihood of the data and the prior distribution of the parameters.</li>
+<li>Conjugate priors are prior distributions that, when combined with a particular likelihood function, result in a posterior distribution that belongs to the same family as the prior. This simplifies calculations. An example is the Beta prior for a Binomial likelihood.</li>
+<li>Conjugate priors can be restrictive, limiting the choice of priors to specific families. They may not accurately reflect complex prior beliefs or be suitable for complex models with non-standard likelihoods.</li>
+<li>A generative Bayesian model includes: defining priors for parameters, specifying the likelihood function that connects data to parameters, performing posterior inference using Bayes’ theorem, and potentially incorporating latent variables or hierarchical structures.</li>
+<li>Generative Bayesian models offer interpretability by explicitly modeling the data generation process, strong predictive power due to learning underlying data structures, and robust uncertainty quantification for better decision-making.</li>
+<li>BRMS provides a user-friendly formula-based interface for specifying and fitting Bayesian models in R, leveraging the power of Stan without requiring users to write raw Stan code.</li>
+<li>The ‘Regression Coefficients’ section provides the estimated posterior means, standard errors, credible intervals, and convergence diagnostics for the regression coefficients in the model.</li>
+<li>Trace plots visualize the sampled values of parameters across MCMC iterations. They help assess convergence by checking for stationarity (horizontal trend), good mixing (overlapping chains), and low autocorrelation (random fluctuations).</li>
+<li>Posterior predictive checks involve simulating data from the fitted model and comparing these simulations to the observed data. This helps assess if the model can generate data similar to the observed data and identify potential misspecifications.</li>
+<li>LOO-CV estimates the model’s predictive performance on unseen data. It involves repeatedly fitting the model on a subset of data and evaluating its predictions on the held-out data point, providing a robust measure of generalization ability.</li>
+</ul>
 <div style="font-size: 0.875em;">
 <p>Back to <a href=".." title="Course schedule">course schedule</a> ⏎</p>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
