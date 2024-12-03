@@ -403,7 +403,7 @@ $$
 \mathrm{logit}(p_{i}) & =\alpha_{p}+\beta_{p}x_{i}\\
 \log(\lambda_{i}) & =\alpha_{\lambda}+\beta_{\lambda}x_{i},
 \end{align*}
-$$ 
+$$
 
 where both parameters in the likelihood, $p_i$ and $\lambda_i$ might get their own statistical model. In brms, $p_i$ is denoted by zi.
 

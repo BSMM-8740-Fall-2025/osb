@@ -212,8 +212,8 @@ If we sample this random variable and get $s'$ successes and $f=n-s'$ failures, 
 $$
 \begin{align*}
 \pi_{\theta\vert\mathcal{D}}(p=x) & \sim x^{s'}(1-x)^{n-s'}\times x^{\alpha-1}(1-x)^{\beta-1}\\
- & \sim x^{s'+\alpha+1}(1-x)^{(n-s')+\beta-1}\\
- & \sim\pi_{\theta\vert\mathcal{D}}(x;s'+\alpha+1,(n-s')+\beta-1)
+ & \sim x^{s'+\alpha-1}(1-x)^{(n-s')+\beta-1}\\
+ & \sim\pi_{\theta\vert\mathcal{D}}(x;s'+\alpha-1,(n-s')+\beta-1)
 \end{align*}
 $$
 

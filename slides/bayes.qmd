@@ -37,10 +37,9 @@ $$\theta \sim \operatorname{Beta}(\alpha, \beta)$$
 
 ```{r}
 #|echo: true
-my_data <- readr::read_csv("data/z15N50.csv", show_col_types = FALSE)
-summary(my_data)
+dat <- readr::read_csv("data/z15N50.csv", show_col_types = FALSE)
 
-my_data |> 
+dat |> 
   dplyr::mutate(y = y |> as.character()) |> 
   ggplot(aes(x = y)) +
   geom_bar() +
