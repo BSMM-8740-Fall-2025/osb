@@ -564,8 +564,8 @@ L.L. Odette
 <p><span class="math display">\[
 \begin{align*}
 \pi_{\theta\vert\mathcal{D}}(p=x) &amp; \sim x^{s'}(1-x)^{n-s'}\times x^{\alpha-1}(1-x)^{\beta-1}\\
-&amp; \sim x^{s'+\alpha+1}(1-x)^{(n-s')+\beta-1}\\
-&amp; \sim\pi_{\theta\vert\mathcal{D}}(x;s'+\alpha+1,(n-s')+\beta-1)
+&amp; \sim x^{s'+\alpha-1}(1-x)^{(n-s')+\beta-1}\\
+&amp; \sim\pi_{\theta\vert\mathcal{D}}(x;s'+\alpha-1,(n-s')+\beta-1)
 \end{align*}
 \]</span></p>
 <p>And the posterior distribution <span class="math inline">\(\pi_{\theta\vert\mathcal{D}}\)</span> is in the same probability distribution family as the prior probability distribution <span class="math inline">\(\pi_\theta\)</span>.</p>
@@ -632,7 +632,7 @@ L.L. Odette
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-3-1.png" width="864"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-3-1.png" width="864"></p>
 </figure>
 </div>
 </div>
@@ -760,7 +760,7 @@ L.L. Odette
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -799,7 +799,7 @@ L.L. Odette
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-6-1.png" width="672" class="r-stretch"></section>
 <section id="generative-modelling-with-brms-4" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="basic-model-manufacturing-failures-per-n-units-2">Basic model: manufacturing failures per <span class="math inline">\(N\)</span> units</h4>
@@ -889,7 +889,7 @@ lp__        -32.0781   0.31863 -34.34499 -31.8453</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center" width="480"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center" width="480"></p>
 </figure>
 </div>
 </div>
@@ -907,7 +907,7 @@ lp__        -32.0781   0.31863 -34.34499 -31.8453</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center" width="768"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center" width="768"></p>
 </figure>
 </div>
 </div>
@@ -920,26 +920,42 @@ lp__        -32.0781   0.31863 -34.34499 -31.8453</code></pre>
 <section id="generative-modelling-with-brms-6" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="basic-model-manufacturing-failures-per-n-units-4">Basic model: manufacturing failures per <span class="math inline">\(N\)</span> units</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">y =</span> y <span class="sc">|&gt;</span> <span class="fu">as.character</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> y, <span class="at">fill =</span> s)) <span class="sc">+</span></span>
+<span id="cb13-4"><a></a>  <span class="fu">geom_bar</span>(<span class="at">show.legend =</span> F) <span class="sc">+</span></span>
+<span id="cb13-5"><a></a>  ggthemes<span class="sc">::</span><span class="fu">scale_fill_colorblind</span>() <span class="sc">+</span></span>
+<span id="cb13-6"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>))) <span class="sc">+</span></span>
+<span id="cb13-7"><a></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-8"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section>
+</div>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-13-1.png" width="672" class="r-stretch"></section>
 <section id="generative-modelling-with-brms-7" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="basic-model-manufacturing-failures-per-n-units-5">Basic model: manufacturing failures per <span class="math inline">\(N\)</span> units</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>fit the two-site model</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>fit8<span class="fl">.2</span> <span class="ot">&lt;-</span></span>
-<span id="cb13-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat, </span>
-<span id="cb13-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(identity),</span>
-<span id="cb13-4"><a></a>      y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> s,</span>
-<span id="cb13-5"><a></a>      brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">lb =</span> <span class="dv">0</span>, <span class="at">ub =</span> <span class="dv">1</span>),</span>
-<span id="cb13-6"><a></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
-<span id="cb13-7"><a></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
-<span id="cb13-8"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit08.02"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>fit8<span class="fl">.2</span> <span class="ot">&lt;-</span></span>
+<span id="cb14-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat, </span>
+<span id="cb14-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(identity),</span>
+<span id="cb14-4"><a></a>      y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> s,</span>
+<span id="cb14-5"><a></a>      brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">lb =</span> <span class="dv">0</span>, <span class="at">ub =</span> <span class="dv">1</span>),</span>
+<span id="cb14-6"><a></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb14-7"><a></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb14-8"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit08.02"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>plot chains for both sites</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">plot</span>(fit8<span class="fl">.2</span>, <span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+</div>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-8" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="basic-model-manufacturing-failures-per-n-units-6">Basic model: manufacturing failures per <span class="math inline">\(N\)</span> units</h4>
@@ -949,7 +965,7 @@ lp__        -32.0781   0.31863 -34.34499 -31.8453</code></pre>
 <div class="tab-content">
 <div id="tabset-3-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">summary</span>(fit8<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">summary</span>(fit8<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: bernoulli 
   Links: mu = identity 
@@ -976,13 +992,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">pairs</span>(fit8<span class="fl">.2</span>,</span>
-<span id="cb16-2"><a></a>      <span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">pairs</span>(fit8<span class="fl">.2</span>,</span>
+<span id="cb18-2"><a></a>      <span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
 </figure>
 </div>
 </div>
@@ -992,33 +1008,39 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit8<span class="fl">.2</span>)</span>
-<span id="cb17-2"><a></a></span>
-<span id="cb17-3"><a></a>draws <span class="ot">&lt;-</span></span>
-<span id="cb17-4"><a></a>  draws <span class="sc">|&gt;</span> </span>
-<span id="cb17-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor, <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
-<span id="cb17-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta_Windsor - theta_London</span><span class="st">`</span> <span class="ot">=</span> theta_Windsor <span class="sc">-</span> theta_London)</span>
-<span id="cb17-7"><a></a></span>
-<span id="cb17-8"><a></a>long_draws <span class="ot">&lt;-</span></span>
-<span id="cb17-9"><a></a>  draws <span class="sc">|&gt;</span> </span>
-<span id="cb17-10"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb17-11"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb17-12"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>))) </span>
-<span id="cb17-13"><a></a>  </span>
-<span id="cb17-14"><a></a>long_draws <span class="sc">|&gt;</span> </span>
-<span id="cb17-15"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
-<span id="cb17-16"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> tidybayes<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
-<span id="cb17-17"><a></a>                    <span class="at">slab_color =</span> <span class="st">"white"</span>, <span class="at">outline_bars =</span> T,</span>
-<span id="cb17-18"><a></a>                    <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
-<span id="cb17-19"><a></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb17-20"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb17-21"><a></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb17-22"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit8<span class="fl">.2</span>)</span>
+<span id="cb19-2"><a></a></span>
+<span id="cb19-3"><a></a>draws <span class="ot">&lt;-</span></span>
+<span id="cb19-4"><a></a>  draws <span class="sc">|&gt;</span> </span>
+<span id="cb19-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor, <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta_Windsor - theta_London</span><span class="st">`</span> <span class="ot">=</span> theta_Windsor <span class="sc">-</span> theta_London)</span>
+<span id="cb19-7"><a></a></span>
+<span id="cb19-8"><a></a>long_draws <span class="ot">&lt;-</span></span>
+<span id="cb19-9"><a></a>  draws <span class="sc">|&gt;</span> </span>
+<span id="cb19-10"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb19-11"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb19-12"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>))) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Dropping 'draws_df' class as required
+metadata was removed.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>long_draws <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
+<span id="cb21-3"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> tidybayes<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
+<span id="cb21-4"><a></a>                    <span class="at">slab_color =</span> <span class="st">"white"</span>, <span class="at">outline_bars =</span> T,</span>
+<span id="cb21-5"><a></a>                    <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb21-7"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-9"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-18-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-18-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
 </figure>
 </div>
 </div>
@@ -1028,9 +1050,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>long_draws <span class="sc">|&gt;</span> </span>
-<span id="cb18-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(name) <span class="sc">|&gt;</span> </span>
-<span id="cb18-3"><a></a>  tidybayes<span class="sc">::</span><span class="fu">mode_hdi</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>long_draws <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(name) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a></a>  tidybayes<span class="sc">::</span><span class="fu">mode_hdi</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 7
@@ -1057,19 +1079,19 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>separate theta estimates</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>fit8<span class="fl">.3</span> <span class="ot">&lt;-</span></span>
-<span id="cb20-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat, </span>
-<span id="cb20-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(identity),</span>
-<span id="cb20-4"><a></a>      y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> s,</span>
-<span id="cb20-5"><a></a>      <span class="at">prior =</span></span>
-<span id="cb20-6"><a></a>        <span class="fu">c</span>(brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> sWindsor),</span>
-<span id="cb20-7"><a></a>          brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> sLondon),</span>
-<span id="cb20-8"><a></a>          <span class="co"># this just sets the lower and upper bounds</span></span>
-<span id="cb20-9"><a></a>          brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">lb =</span> <span class="dv">0</span>, <span class="at">ub =</span> <span class="dv">1</span>)),</span>
-<span id="cb20-10"><a></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
-<span id="cb20-11"><a></a>      <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb20-12"><a></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
-<span id="cb20-13"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit08.03"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>fit8<span class="fl">.3</span> <span class="ot">&lt;-</span></span>
+<span id="cb24-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat, </span>
+<span id="cb24-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(identity),</span>
+<span id="cb24-4"><a></a>      y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> s,</span>
+<span id="cb24-5"><a></a>      <span class="at">prior =</span></span>
+<span id="cb24-6"><a></a>        <span class="fu">c</span>(brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> sWindsor),</span>
+<span id="cb24-7"><a></a>          brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">coef =</span> sLondon),</span>
+<span id="cb24-8"><a></a>          <span class="co"># this just sets the lower and upper bounds</span></span>
+<span id="cb24-9"><a></a>          brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">beta</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">class =</span> b, <span class="at">lb =</span> <span class="dv">0</span>, <span class="at">ub =</span> <span class="dv">1</span>)),</span>
+<span id="cb24-10"><a></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">500</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb24-11"><a></a>      <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb24-12"><a></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb24-13"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit08.03"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -1077,42 +1099,48 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>separate theta estimates</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit8<span class="fl">.3</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb21-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"b_"</span>))</span>
-<span id="cb21-3"><a></a></span>
-<span id="cb21-4"><a></a><span class="co"># dat |&gt; </span></span>
-<span id="cb21-5"><a></a><span class="co">#   dplyr::group_by(s) |&gt; </span></span>
-<span id="cb21-6"><a></a><span class="co">#   dplyr::summarise(z = sum(y), N = dplyr::n()) |&gt; </span></span>
-<span id="cb21-7"><a></a><span class="co">#   dplyr::mutate(`z/N` = z / N)</span></span>
-<span id="cb21-8"><a></a></span>
-<span id="cb21-9"><a></a>levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>)</span>
-<span id="cb21-10"><a></a>d_line <span class="ot">&lt;-</span></span>
-<span id="cb21-11"><a></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">value =</span> <span class="fu">c</span>(.<span class="dv">75</span>, .<span class="dv">286</span>, .<span class="dv">75</span> <span class="sc">-</span> .<span class="dv">286</span>),</span>
-<span id="cb21-12"><a></a>         <span class="at">name  =</span>  <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>), </span>
-<span id="cb21-13"><a></a>                         <span class="at">levels =</span> levels))</span>
-<span id="cb21-14"><a></a></span>
-<span id="cb21-15"><a></a>draws <span class="sc">|&gt;</span> </span>
-<span id="cb21-16"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor,</span>
-<span id="cb21-17"><a></a>         <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
-<span id="cb21-18"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">"theta_Windsor - theta_London"</span> <span class="ot">=</span> theta_Windsor <span class="sc">-</span> theta_London) <span class="sc">|&gt;</span> </span>
-<span id="cb21-19"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">contains</span>(<span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb21-20"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> levels)) <span class="sc">|&gt;</span></span>
-<span id="cb21-21"><a></a>  </span>
-<span id="cb21-22"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb21-23"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> tidybayes<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
-<span id="cb21-24"><a></a>                    <span class="at">fill =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">5</span>], <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
-<span id="cb21-25"><a></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> d_line, </span>
-<span id="cb21-26"><a></a>             <span class="fu">aes</span>(<span class="at">xintercept =</span> value), </span>
-<span id="cb21-27"><a></a>             <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb21-28"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb21-29"><a></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"The dashed vertical lines mark off "</span><span class="sc">*</span><span class="fu">italic</span>(z[s])<span class="sc">/</span><span class="fu">italic</span>(N[s]))) <span class="sc">+</span></span>
-<span id="cb21-30"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>() <span class="sc">+</span></span>
-<span id="cb21-31"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit8<span class="fl">.3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"b_"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Dropping 'draws_df' class as required
+metadata was removed.</code></pre>
+</div>
+<details class="code-fold">
+<summary>separate theta estimates</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="co"># dat |&gt; </span></span>
+<span id="cb27-2"><a></a><span class="co">#   dplyr::group_by(s) |&gt; </span></span>
+<span id="cb27-3"><a></a><span class="co">#   dplyr::summarise(z = sum(y), N = dplyr::n()) |&gt; </span></span>
+<span id="cb27-4"><a></a><span class="co">#   dplyr::mutate(`z/N` = z / N)</span></span>
+<span id="cb27-5"><a></a></span>
+<span id="cb27-6"><a></a>levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>)</span>
+<span id="cb27-7"><a></a>d_line <span class="ot">&lt;-</span></span>
+<span id="cb27-8"><a></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">value =</span> <span class="fu">c</span>(.<span class="dv">75</span>, .<span class="dv">286</span>, .<span class="dv">75</span> <span class="sc">-</span> .<span class="dv">286</span>),</span>
+<span id="cb27-9"><a></a>         <span class="at">name  =</span>  <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"theta_Windsor"</span>, <span class="st">"theta_London"</span>, <span class="st">"theta_Windsor - theta_London"</span>), </span>
+<span id="cb27-10"><a></a>                         <span class="at">levels =</span> levels))</span>
+<span id="cb27-11"><a></a></span>
+<span id="cb27-12"><a></a>draws <span class="sc">|&gt;</span> </span>
+<span id="cb27-13"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor,</span>
+<span id="cb27-14"><a></a>         <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
+<span id="cb27-15"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">"theta_Windsor - theta_London"</span> <span class="ot">=</span> theta_Windsor <span class="sc">-</span> theta_London) <span class="sc">|&gt;</span> </span>
+<span id="cb27-16"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">contains</span>(<span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb27-17"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> levels)) <span class="sc">|&gt;</span></span>
+<span id="cb27-18"><a></a>  </span>
+<span id="cb27-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb27-20"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> tidybayes<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
+<span id="cb27-21"><a></a>                    <span class="at">fill =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">5</span>], <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
+<span id="cb27-22"><a></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> d_line, </span>
+<span id="cb27-23"><a></a>             <span class="fu">aes</span>(<span class="at">xintercept =</span> value), </span>
+<span id="cb27-24"><a></a>             <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb27-25"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb27-26"><a></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"The dashed vertical lines mark off "</span><span class="sc">*</span><span class="fu">italic</span>(z[s])<span class="sc">/</span><span class="fu">italic</span>(N[s]))) <span class="sc">+</span></span>
+<span id="cb27-27"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>() <span class="sc">+</span></span>
+<span id="cb27-28"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
 </figure>
 </div>
 </div>
@@ -1122,19 +1150,19 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>method for separate theta estimates</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>draws <span class="sc">|&gt;</span> </span>
-<span id="cb22-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor,</span>
-<span id="cb22-3"><a></a>         <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
-<span id="cb22-4"><a></a>  </span>
-<span id="cb22-5"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> theta_Windsor, <span class="at">y =</span> theta_London)) <span class="sc">+</span></span>
-<span id="cb22-6"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">6</span>]) <span class="sc">+</span></span>
-<span id="cb22-7"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
-<span id="cb22-8"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_grid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>draws <span class="sc">|&gt;</span> </span>
+<span id="cb28-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">theta_Windsor =</span> b_sWindsor,</span>
+<span id="cb28-3"><a></a>         <span class="at">theta_London  =</span> b_sLondon) <span class="sc">|&gt;</span> </span>
+<span id="cb28-4"><a></a>  </span>
+<span id="cb28-5"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> theta_Windsor, <span class="at">y =</span> theta_London)) <span class="sc">+</span></span>
+<span id="cb28-6"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">colorblind_pal</span>()(<span class="dv">8</span>)[<span class="dv">6</span>]) <span class="sc">+</span></span>
+<span id="cb28-7"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb28-8"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_grid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
 </figure>
 </div>
 </div>
@@ -1172,21 +1200,21 @@ s &amp; =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sig
 <div class="cell">
 <details class="code-fold">
 <summary>re-parameterization functions</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>gamma_s_and_r_from_mean_sd <span class="ot">&lt;-</span> <span class="cf">function</span>(mean, sd) {</span>
-<span id="cb23-2"><a></a>  <span class="cf">if</span> (mean <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"mean must be &gt; 0"</span>)</span>
-<span id="cb23-3"><a></a>  <span class="cf">if</span> (sd   <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"sd must be &gt; 0"</span>)</span>
-<span id="cb23-4"><a></a>  shape <span class="ot">&lt;-</span> mean<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> sd<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb23-5"><a></a>  rate  <span class="ot">&lt;-</span> mean   <span class="sc">/</span> sd<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb23-6"><a></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">shape =</span> shape, <span class="at">rate =</span> rate))</span>
-<span id="cb23-7"><a></a>}</span>
-<span id="cb23-8"><a></a></span>
-<span id="cb23-9"><a></a>gamma_s_and_r_from_mode_sd <span class="ot">&lt;-</span> <span class="cf">function</span>(mode, sd) {</span>
-<span id="cb23-10"><a></a>  <span class="cf">if</span> (mode <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"mode must be &gt; 0"</span>)</span>
-<span id="cb23-11"><a></a>  <span class="cf">if</span> (sd   <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"sd must be &gt; 0"</span>)</span>
-<span id="cb23-12"><a></a>  rate  <span class="ot">&lt;-</span> (mode <span class="sc">+</span> <span class="fu">sqrt</span>(mode<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">4</span> <span class="sc">*</span> sd<span class="sc">^</span><span class="dv">2</span>)) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> sd<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb23-13"><a></a>  shape <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> mode <span class="sc">*</span> rate</span>
-<span id="cb23-14"><a></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">shape =</span> shape, <span class="at">rate =</span> rate))</span>
-<span id="cb23-15"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>gamma_s_and_r_from_mean_sd <span class="ot">&lt;-</span> <span class="cf">function</span>(mean, sd) {</span>
+<span id="cb29-2"><a></a>  <span class="cf">if</span> (mean <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"mean must be &gt; 0"</span>)</span>
+<span id="cb29-3"><a></a>  <span class="cf">if</span> (sd   <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"sd must be &gt; 0"</span>)</span>
+<span id="cb29-4"><a></a>  shape <span class="ot">&lt;-</span> mean<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> sd<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb29-5"><a></a>  rate  <span class="ot">&lt;-</span> mean   <span class="sc">/</span> sd<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb29-6"><a></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">shape =</span> shape, <span class="at">rate =</span> rate))</span>
+<span id="cb29-7"><a></a>}</span>
+<span id="cb29-8"><a></a></span>
+<span id="cb29-9"><a></a>gamma_s_and_r_from_mode_sd <span class="ot">&lt;-</span> <span class="cf">function</span>(mode, sd) {</span>
+<span id="cb29-10"><a></a>  <span class="cf">if</span> (mode <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"mode must be &gt; 0"</span>)</span>
+<span id="cb29-11"><a></a>  <span class="cf">if</span> (sd   <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">stop</span>(<span class="st">"sd must be &gt; 0"</span>)</span>
+<span id="cb29-12"><a></a>  rate  <span class="ot">&lt;-</span> (mode <span class="sc">+</span> <span class="fu">sqrt</span>(mode<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">4</span> <span class="sc">*</span> sd<span class="sc">^</span><span class="dv">2</span>)) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> sd<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb29-13"><a></a>  shape <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> mode <span class="sc">*</span> rate</span>
+<span id="cb29-14"><a></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">shape =</span> shape, <span class="at">rate =</span> rate))</span>
+<span id="cb29-15"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -1200,15 +1228,28 @@ s &amp; =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sig
 <div class="tab-content">
 <div id="tabset-5-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>dat <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"data/TherapeuticTouchData.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>dat <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"data/TherapeuticTouchData.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div id="tabset-5-2">
 <div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">y =</span> y <span class="sc">|&gt;</span> <span class="fu">as.character</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a></a>  </span>
+<span id="cb31-4"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb31-5"><a></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">after_stat</span>(count))) <span class="sc">+</span></span>
+<span id="cb31-6"><a></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"A"</span>, <span class="at">end =</span> .<span class="dv">7</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb31-7"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span> <span class="sc">*</span> <span class="dv">2</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb31-8"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_vgrid</span>() <span class="sc">+</span></span>
+<span id="cb31-9"><a></a>  cowplot<span class="sc">::</span><span class="fu">panel_border</span>() <span class="sc">+</span></span>
+<span id="cb31-10"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> s, <span class="at">ncol =</span> <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-25-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-25-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1216,10 +1257,24 @@ s &amp; =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sig
 </div>
 <div id="tabset-5-3">
 <div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>a_purple <span class="ot">&lt;-</span> viridis<span class="sc">::</span><span class="fu">viridis_pal</span>(<span class="at">option =</span> <span class="st">"A"</span>)(<span class="dv">9</span>)[<span class="dv">4</span>]</span>
+<span id="cb32-2"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(s) <span class="sc">|&gt;</span> </span>
+<span id="cb32-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a></a>  </span>
+<span id="cb32-6"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mean)) <span class="sc">+</span></span>
+<span id="cb32-7"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">color =</span> <span class="st">"white"</span>, <span class="at">fill =</span> a_purple,</span>
+<span id="cb32-8"><a></a>                 <span class="at">linewidth =</span> .<span class="dv">2</span>, <span class="at">binwidth =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb32-9"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="st">"Proportion Not Failing"</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb32-10"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"# Practitioners"</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb32-11"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_hgrid</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-26-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-26-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1241,16 +1296,16 @@ s &amp; =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sig
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>fit9<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
-<span id="cb25-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat,</span>
-<span id="cb25-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(<span class="at">link =</span> logit),</span>
-<span id="cb25-4"><a></a>      y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> s),</span>
-<span id="cb25-5"><a></a>      <span class="at">prior =</span> <span class="fu">c</span>(brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb25-6"><a></a>                brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sd)),</span>
-<span id="cb25-7"><a></a>      <span class="at">iter =</span> <span class="dv">20000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">thin =</span> <span class="dv">10</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb25-8"><a></a>      <span class="at">seed =</span> <span class="dv">9</span>,</span>
-<span id="cb25-9"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit09.01"</span>)</span>
-<span id="cb25-10"><a></a><span class="fu">print</span>(fit9<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>fit9<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
+<span id="cb33-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(<span class="at">data =</span> dat,</span>
+<span id="cb33-3"><a></a>      <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">bernoulli</span>(<span class="at">link =</span> logit),</span>
+<span id="cb33-4"><a></a>      y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> s),</span>
+<span id="cb33-5"><a></a>      <span class="at">prior =</span> <span class="fu">c</span>(brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb33-6"><a></a>                brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sd)),</span>
+<span id="cb33-7"><a></a>      <span class="at">iter =</span> <span class="dv">20000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">thin =</span> <span class="dv">10</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb33-8"><a></a>      <span class="at">seed =</span> <span class="dv">9</span>,</span>
+<span id="cb33-9"><a></a>      <span class="at">file =</span> <span class="st">"fits/fit09.01"</span>)</span>
+<span id="cb33-10"><a></a><span class="fu">print</span>(fit9<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: bernoulli 
@@ -1284,12 +1339,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">plot</span>(fit9<span class="fl">.1</span>, <span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">plot</span>(fit9<span class="fl">.1</span>, <span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-28-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-28-1.png" width="672"></p>
 <figcaption>population parameter estimates (log-odds)</figcaption>
 </figure>
 </div>
@@ -1300,16 +1355,16 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28" data-cap-location="margin"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit9<span class="fl">.1</span>)</span>
-<span id="cb28-2"><a></a>draws <span class="sc">|&gt;</span> </span>
-<span id="cb28-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">chain =</span> .chain) <span class="sc">|&gt;</span> </span>
-<span id="cb28-4"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_acf</span>(<span class="at">pars =</span> <span class="fu">vars</span>(b_Intercept, sd_s__Intercept), <span class="at">lags =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb28-5"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36" data-cap-location="margin"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>draws <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">as_draws_df</span>(fit9<span class="fl">.1</span>)</span>
+<span id="cb36-2"><a></a>draws <span class="sc">|&gt;</span> </span>
+<span id="cb36-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">chain =</span> .chain) <span class="sc">|&gt;</span> </span>
+<span id="cb36-4"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_acf</span>(<span class="at">pars =</span> <span class="fu">vars</span>(b_Intercept, sd_s__Intercept), <span class="at">lags =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb36-5"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center margin-caption">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-29-1.png" class="margin-caption" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-29-1.png" class="margin-caption" width="672"></p>
 <figcaption>acf by chain; population parameters</figcaption>
 </figure>
 </div>
@@ -1320,14 +1375,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29" data-cap-location="margin"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">neff_ratio</span>(fit9<span class="fl">.1</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb29-2"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_neff</span>() <span class="sc">+</span></span>
-<span id="cb29-3"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>(<span class="at">font_size =</span> <span class="dv">12</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37" data-cap-location="margin"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">neff_ratio</span>(fit9<span class="fl">.1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb37-2"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_neff</span>() <span class="sc">+</span></span>
+<span id="cb37-3"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_cowplot</span>(<span class="at">font_size =</span> <span class="dv">12</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center margin-caption">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-30-1.png" class="margin-caption" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-30-1.png" class="margin-caption" width="672"></p>
 <figcaption>effective samples by variable</figcaption>
 </figure>
 </div>
@@ -1338,36 +1393,36 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell fig-cap-location-top">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30" data-cap-location="top"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>draws_small <span class="ot">&lt;-</span></span>
-<span id="cb30-2"><a></a>  draws <span class="sc">|&gt;</span> </span>
-<span id="cb30-3"><a></a>  <span class="co"># convert the linear model parameters to the probability space with `inv_logit_scaled()`</span></span>
-<span id="cb30-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S01,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>(),</span>
-<span id="cb30-5"><a></a>         <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S14,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>(),</span>
-<span id="cb30-6"><a></a>         <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span> <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S28,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb30-7"><a></a>  <span class="co"># make the difference distributions</span></span>
-<span id="cb30-8"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta[1] - theta[14]</span><span class="st">`</span>  <span class="ot">=</span> <span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="sc">-</span> <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span>,</span>
-<span id="cb30-9"><a></a>         <span class="st">`</span><span class="at">theta[1] - theta[28]</span><span class="st">`</span>  <span class="ot">=</span> <span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="sc">-</span> <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>,</span>
-<span id="cb30-10"><a></a>         <span class="st">`</span><span class="at">theta[14] - theta[28]</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb30-11"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"theta"</span>))</span>
-<span id="cb30-12"><a></a></span>
-<span id="cb30-13"><a></a>draws_small <span class="sc">|&gt;</span> </span>
-<span id="cb30-14"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb30-15"><a></a>  <span class="co"># this line is unnecessary, but will help order the plots </span></span>
-<span id="cb30-16"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"theta[1]"</span>, <span class="st">"theta[14]"</span>, <span class="st">"theta[28]"</span>, </span>
-<span id="cb30-17"><a></a>                                        <span class="st">"theta[1] - theta[14]"</span>, <span class="st">"theta[1] - theta[28]"</span>, <span class="st">"theta[14] - theta[28]"</span>))) <span class="sc">|&gt;</span> </span>
-<span id="cb30-18"><a></a></span>
-<span id="cb30-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb30-20"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> ggdist<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
-<span id="cb30-21"><a></a>                    <span class="at">fill =</span> a_purple, <span class="at">breaks =</span> <span class="dv">40</span>, <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
-<span id="cb30-22"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb30-23"><a></a>  <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb30-24"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_hgrid</span>() <span class="sc">+</span></span>
-<span id="cb30-25"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38" data-cap-location="top"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>draws_small <span class="ot">&lt;-</span></span>
+<span id="cb38-2"><a></a>  draws <span class="sc">|&gt;</span> </span>
+<span id="cb38-3"><a></a>  <span class="co"># convert the linear model parameters to the probability space with `inv_logit_scaled()`</span></span>
+<span id="cb38-4"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S01,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>(),</span>
+<span id="cb38-5"><a></a>         <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S14,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>(),</span>
+<span id="cb38-6"><a></a>         <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span> <span class="ot">=</span> (b_Intercept <span class="sc">+</span> <span class="st">`</span><span class="at">r_s[S28,Intercept]</span><span class="st">`</span>) <span class="sc">|&gt;</span> brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb38-7"><a></a>  <span class="co"># make the difference distributions</span></span>
+<span id="cb38-8"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">theta[1] - theta[14]</span><span class="st">`</span>  <span class="ot">=</span> <span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="sc">-</span> <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span>,</span>
+<span id="cb38-9"><a></a>         <span class="st">`</span><span class="at">theta[1] - theta[28]</span><span class="st">`</span>  <span class="ot">=</span> <span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="sc">-</span> <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>,</span>
+<span id="cb38-10"><a></a>         <span class="st">`</span><span class="at">theta[14] - theta[28]</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="sc">-</span> <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb38-11"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">"theta"</span>))</span>
+<span id="cb38-12"><a></a></span>
+<span id="cb38-13"><a></a>draws_small <span class="sc">|&gt;</span> </span>
+<span id="cb38-14"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb38-15"><a></a>  <span class="co"># this line is unnecessary, but will help order the plots </span></span>
+<span id="cb38-16"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">factor</span>(name, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"theta[1]"</span>, <span class="st">"theta[14]"</span>, <span class="st">"theta[28]"</span>, </span>
+<span id="cb38-17"><a></a>                                        <span class="st">"theta[1] - theta[14]"</span>, <span class="st">"theta[1] - theta[28]"</span>, <span class="st">"theta[14] - theta[28]"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb38-18"><a></a></span>
+<span id="cb38-19"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb38-20"><a></a>  tidybayes<span class="sc">::</span><span class="fu">stat_histinterval</span>(<span class="at">point_interval =</span> ggdist<span class="sc">::</span>mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
+<span id="cb38-21"><a></a>                    <span class="at">fill =</span> a_purple, <span class="at">breaks =</span> <span class="dv">40</span>, <span class="at">normalize =</span> <span class="st">"panels"</span>) <span class="sc">+</span></span>
+<span id="cb38-22"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb38-23"><a></a>  <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb38-24"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_hgrid</span>() <span class="sc">+</span></span>
+<span id="cb38-25"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">"free"</span>, <span class="at">ncol =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-31-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-31-1.png" width="672"></p>
 <figcaption>selected parameters and contrasts on probability scale</figcaption>
 </figure>
 </div>
@@ -1378,34 +1433,34 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>draws_small <span class="sc">|&gt;</span> </span>
-<span id="cb31-2"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb31-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(name) <span class="sc">|&gt;</span> </span>
-<span id="cb31-4"><a></a>  tidybayes<span class="sc">::</span><span class="fu">mode_hdi</span>(value) <span class="sc">|&gt;</span> </span>
-<span id="cb31-5"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="st">"name"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb31-6"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns=</span>value<span class="sc">:</span>.width, <span class="at">decimals=</span><span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb31-7"><a></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Parameter values and contrasts (logit, aka log-odds)"</span>, <span class="at">subtitle =</span> <span class="st">"sites 1,14,28"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb31-8"><a></a>  gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>draws_small <span class="sc">|&gt;</span> </span>
+<span id="cb39-2"><a></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(name) <span class="sc">|&gt;</span> </span>
+<span id="cb39-4"><a></a>  tidybayes<span class="sc">::</span><span class="fu">mode_hdi</span>(value) <span class="sc">|&gt;</span> </span>
+<span id="cb39-5"><a></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="st">"name"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb39-6"><a></a>  gt<span class="sc">::</span><span class="fu">fmt_number</span>(<span class="at">columns=</span>value<span class="sc">:</span>.width, <span class="at">decimals=</span><span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb39-7"><a></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Parameter values and contrasts (logit, aka log-odds)"</span>, <span class="at">subtitle =</span> <span class="st">"sites 1,14,28"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb39-8"><a></a>  gtExtras<span class="sc">::</span><span class="fu">gt_theme_espn</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="ysugyhepgz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="jatdtqpyqs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-#ysugyhepgz table {
+#jatdtqpyqs table {
   font-family: Lato, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ysugyhepgz thead, #ysugyhepgz tbody, #ysugyhepgz tfoot, #ysugyhepgz tr, #ysugyhepgz td, #ysugyhepgz th {
+#jatdtqpyqs thead, #jatdtqpyqs tbody, #jatdtqpyqs tfoot, #jatdtqpyqs tr, #jatdtqpyqs td, #jatdtqpyqs th {
   border-style: none;
 }
 
-#ysugyhepgz p {
+#jatdtqpyqs p {
   margin: 0;
   padding: 0;
 }
 
-#ysugyhepgz .gt_table {
+#jatdtqpyqs .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1431,12 +1486,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_caption {
+#jatdtqpyqs .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ysugyhepgz .gt_title {
+#jatdtqpyqs .gt_title {
   color: #333333;
   font-size: 24px;
   font-weight: initial;
@@ -1448,7 +1503,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-bottom-width: 0;
 }
 
-#ysugyhepgz .gt_subtitle {
+#jatdtqpyqs .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1460,7 +1515,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-top-width: 0;
 }
 
-#ysugyhepgz .gt_heading {
+#jatdtqpyqs .gt_heading {
   background-color: #FFFFFF;
   text-align: left;
   border-bottom-color: #FFFFFF;
@@ -1472,13 +1527,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_bottom_border {
+#jatdtqpyqs .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_col_headings {
+#jatdtqpyqs .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1493,7 +1548,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_col_heading {
+#jatdtqpyqs .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 80%;
@@ -1513,7 +1568,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   overflow-x: hidden;
 }
 
-#ysugyhepgz .gt_column_spanner_outer {
+#jatdtqpyqs .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 80%;
@@ -1525,15 +1580,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 4px;
 }
 
-#ysugyhepgz .gt_column_spanner_outer:first-child {
+#jatdtqpyqs .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ysugyhepgz .gt_column_spanner_outer:last-child {
+#jatdtqpyqs .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ysugyhepgz .gt_column_spanner {
+#jatdtqpyqs .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1545,11 +1600,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   width: 100%;
 }
 
-#ysugyhepgz .gt_spanner_row {
+#jatdtqpyqs .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ysugyhepgz .gt_group_heading {
+#jatdtqpyqs .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1575,7 +1630,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   text-align: left;
 }
 
-#ysugyhepgz .gt_empty_group_heading {
+#jatdtqpyqs .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1590,15 +1645,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   vertical-align: middle;
 }
 
-#ysugyhepgz .gt_from_md > :first-child {
+#jatdtqpyqs .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ysugyhepgz .gt_from_md > :last-child {
+#jatdtqpyqs .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ysugyhepgz .gt_row {
+#jatdtqpyqs .gt_row {
   padding-top: 7px;
   padding-bottom: 7px;
   padding-left: 5px;
@@ -1617,7 +1672,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   overflow-x: hidden;
 }
 
-#ysugyhepgz .gt_stub {
+#jatdtqpyqs .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 80%;
@@ -1630,7 +1685,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 5px;
 }
 
-#ysugyhepgz .gt_stub_row_group {
+#jatdtqpyqs .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1644,15 +1699,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   vertical-align: top;
 }
 
-#ysugyhepgz .gt_row_group_first td {
+#jatdtqpyqs .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ysugyhepgz .gt_row_group_first th {
+#jatdtqpyqs .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ysugyhepgz .gt_summary_row {
+#jatdtqpyqs .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1662,16 +1717,16 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 5px;
 }
 
-#ysugyhepgz .gt_first_summary_row {
+#jatdtqpyqs .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_first_summary_row.thick {
+#jatdtqpyqs .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ysugyhepgz .gt_last_summary_row {
+#jatdtqpyqs .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1681,7 +1736,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_grand_summary_row {
+#jatdtqpyqs .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1691,7 +1746,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 5px;
 }
 
-#ysugyhepgz .gt_first_grand_summary_row {
+#jatdtqpyqs .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1701,7 +1756,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_last_grand_summary_row_top {
+#jatdtqpyqs .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1711,11 +1766,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_striped {
+#jatdtqpyqs .gt_striped {
   background-color: #FAFAFA;
 }
 
-#ysugyhepgz .gt_table_body {
+#jatdtqpyqs .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1724,7 +1779,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_footnotes {
+#jatdtqpyqs .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1738,7 +1793,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_footnote {
+#jatdtqpyqs .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1747,7 +1802,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 5px;
 }
 
-#ysugyhepgz .gt_sourcenotes {
+#jatdtqpyqs .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1761,7 +1816,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#ysugyhepgz .gt_sourcenote {
+#jatdtqpyqs .gt_sourcenote {
   font-size: 12px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1769,72 +1824,72 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
   padding-right: 5px;
 }
 
-#ysugyhepgz .gt_left {
+#jatdtqpyqs .gt_left {
   text-align: left;
 }
 
-#ysugyhepgz .gt_center {
+#jatdtqpyqs .gt_center {
   text-align: center;
 }
 
-#ysugyhepgz .gt_right {
+#jatdtqpyqs .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ysugyhepgz .gt_font_normal {
+#jatdtqpyqs .gt_font_normal {
   font-weight: normal;
 }
 
-#ysugyhepgz .gt_font_bold {
+#jatdtqpyqs .gt_font_bold {
   font-weight: bold;
 }
 
-#ysugyhepgz .gt_font_italic {
+#jatdtqpyqs .gt_font_italic {
   font-style: italic;
 }
 
-#ysugyhepgz .gt_super {
+#jatdtqpyqs .gt_super {
   font-size: 65%;
 }
 
-#ysugyhepgz .gt_footnote_marks {
+#jatdtqpyqs .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ysugyhepgz .gt_asterisk {
+#jatdtqpyqs .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ysugyhepgz .gt_indent_1 {
+#jatdtqpyqs .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ysugyhepgz .gt_indent_2 {
+#jatdtqpyqs .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ysugyhepgz .gt_indent_3 {
+#jatdtqpyqs .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ysugyhepgz .gt_indent_4 {
+#jatdtqpyqs .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ysugyhepgz .gt_indent_5 {
+#jatdtqpyqs .gt_indent_5 {
   text-indent: 25px;
 }
 
-#ysugyhepgz .katex-display {
+#jatdtqpyqs .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#ysugyhepgz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jatdtqpyqs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1932,22 +1987,22 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell fig-cap-location-top" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32" data-cap-location="top"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">color_scheme_set</span>(<span class="st">"purple"</span>)</span>
-<span id="cb32-2"><a></a>bayesplot<span class="sc">::</span><span class="fu">bayesplot_theme_set</span>(<span class="fu">theme_default</span>() <span class="sc">+</span> cowplot<span class="sc">::</span><span class="fu">theme_minimal_grid</span>())</span>
-<span id="cb32-3"><a></a></span>
-<span id="cb32-4"><a></a>stats<span class="sc">::</span><span class="fu">coef</span>(fit9<span class="fl">.1</span>, <span class="at">summary =</span> F)<span class="sc">$</span>s <span class="sc">|&gt;</span> </span>
-<span id="cb32-5"><a></a>  brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb32-6"><a></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb32-7"><a></a>  <span class="fu">rename</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="ot">=</span> S01.Intercept, </span>
-<span id="cb32-8"><a></a>         <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="ot">=</span> S14.Intercept, </span>
-<span id="cb32-9"><a></a>         <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span> <span class="ot">=</span> S28.Intercept) <span class="sc">|&gt;</span> </span>
-<span id="cb32-10"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>, <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span>, <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb32-11"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_pairs</span>(<span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">8</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">8</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40" data-cap-location="top"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="fu">color_scheme_set</span>(<span class="st">"purple"</span>)</span>
+<span id="cb40-2"><a></a>bayesplot<span class="sc">::</span><span class="fu">bayesplot_theme_set</span>(<span class="fu">theme_default</span>() <span class="sc">+</span> cowplot<span class="sc">::</span><span class="fu">theme_minimal_grid</span>())</span>
+<span id="cb40-3"><a></a></span>
+<span id="cb40-4"><a></a>stats<span class="sc">::</span><span class="fu">coef</span>(fit9<span class="fl">.1</span>, <span class="at">summary =</span> F)<span class="sc">$</span>s <span class="sc">|&gt;</span> </span>
+<span id="cb40-5"><a></a>  brms<span class="sc">::</span><span class="fu">inv_logit_scaled</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb40-6"><a></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb40-7"><a></a>  <span class="fu">rename</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>  <span class="ot">=</span> S01.Intercept, </span>
+<span id="cb40-8"><a></a>         <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span> <span class="ot">=</span> S14.Intercept, </span>
+<span id="cb40-9"><a></a>         <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span> <span class="ot">=</span> S28.Intercept) <span class="sc">|&gt;</span> </span>
+<span id="cb40-10"><a></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">theta[1]</span><span class="st">`</span>, <span class="st">`</span><span class="at">theta[14]</span><span class="st">`</span>, <span class="st">`</span><span class="at">theta[28]</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb40-11"><a></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_pairs</span>(<span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">8</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">8</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-33-1.png" width="384"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-33-1.png" width="384"></p>
 <figcaption>pairs plot on probability scale</figcaption>
 </figure>
 </div>
@@ -1973,28 +2028,28 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>multilevel shrinkage</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>dat <span class="sc">|&gt;</span> </span>
-<span id="cb33-2"><a></a>  <span class="fu">group_by</span>(s) <span class="sc">|&gt;</span> </span>
-<span id="cb33-3"><a></a>  <span class="fu">summarise</span>(<span class="at">p =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span> </span>
-<span id="cb33-4"><a></a>  <span class="fu">mutate</span>(<span class="at">theta =</span> <span class="fu">coef</span>(fit9<span class="fl">.1</span>)<span class="sc">$</span>s[, <span class="dv">1</span>, <span class="st">"Intercept"</span>] <span class="sc">|&gt;</span> <span class="fu">inv_logit_scaled</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb33-5"><a></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>s) <span class="sc">|&gt;</span> </span>
-<span id="cb33-6"><a></a>  <span class="co"># add a little jitter to reduce the overplotting</span></span>
-<span id="cb33-7"><a></a>  <span class="fu">mutate</span>(<span class="at">value =</span> value <span class="sc">+</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">min =</span> <span class="sc">-</span><span class="fl">0.02</span>, <span class="at">max =</span> <span class="fl">0.02</span>),</span>
-<span id="cb33-8"><a></a>         <span class="at">name  =</span> <span class="fu">if_else</span>(name <span class="sc">==</span> <span class="st">"p"</span>, <span class="st">"italic(z/N)"</span>, <span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb33-9"><a></a></span>
-<span id="cb33-10"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> name, <span class="at">group =</span> s)) <span class="sc">+</span></span>
-<span id="cb33-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="fu">alpha</span>(a_purple, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb33-12"><a></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb33-13"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>), <span class="at">limits =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb33-14"><a></a>  <span class="fu">scale_y_discrete</span>(<span class="cn">NULL</span>, <span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
-<span id="cb33-15"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Multilevel shrinkage in model"</span>,</span>
-<span id="cb33-16"><a></a>       <span class="at">x =</span> <span class="st">"data proportion or theta value"</span>) <span class="sc">+</span></span>
-<span id="cb33-17"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_hgrid</span>() <span class="sc">+</span></span>
-<span id="cb33-18"><a></a>  cowplot<span class="sc">::</span><span class="fu">panel_border</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb41-2"><a></a>  <span class="fu">group_by</span>(s) <span class="sc">|&gt;</span> </span>
+<span id="cb41-3"><a></a>  <span class="fu">summarise</span>(<span class="at">p =</span> <span class="fu">mean</span>(y)) <span class="sc">|&gt;</span> </span>
+<span id="cb41-4"><a></a>  <span class="fu">mutate</span>(<span class="at">theta =</span> <span class="fu">coef</span>(fit9<span class="fl">.1</span>)<span class="sc">$</span>s[, <span class="dv">1</span>, <span class="st">"Intercept"</span>] <span class="sc">|&gt;</span> <span class="fu">inv_logit_scaled</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb41-5"><a></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>s) <span class="sc">|&gt;</span> </span>
+<span id="cb41-6"><a></a>  <span class="co"># add a little jitter to reduce the overplotting</span></span>
+<span id="cb41-7"><a></a>  <span class="fu">mutate</span>(<span class="at">value =</span> value <span class="sc">+</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">min =</span> <span class="sc">-</span><span class="fl">0.02</span>, <span class="at">max =</span> <span class="fl">0.02</span>),</span>
+<span id="cb41-8"><a></a>         <span class="at">name  =</span> <span class="fu">if_else</span>(name <span class="sc">==</span> <span class="st">"p"</span>, <span class="st">"italic(z/N)"</span>, <span class="st">"theta"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb41-9"><a></a></span>
+<span id="cb41-10"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> name, <span class="at">group =</span> s)) <span class="sc">+</span></span>
+<span id="cb41-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="fu">alpha</span>(a_purple, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb41-12"><a></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb41-13"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>), <span class="at">limits =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb41-14"><a></a>  <span class="fu">scale_y_discrete</span>(<span class="cn">NULL</span>, <span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
+<span id="cb41-15"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Multilevel shrinkage in model"</span>,</span>
+<span id="cb41-16"><a></a>       <span class="at">x =</span> <span class="st">"data proportion or theta value"</span>) <span class="sc">+</span></span>
+<span id="cb41-17"><a></a>  cowplot<span class="sc">::</span><span class="fu">theme_minimal_hgrid</span>() <span class="sc">+</span></span>
+<span id="cb41-18"><a></a>  cowplot<span class="sc">::</span><span class="fu">panel_border</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-34-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-34-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-16" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="speeding-up-model-fits">speeding up model fits</h4>
@@ -2012,10 +2067,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="co"># load data</span></span>
-<span id="cb34-2"><a></a><span class="fu">data</span>(<span class="st">"epilepsy"</span>, <span class="at">package =</span> <span class="st">"brms"</span>)</span>
-<span id="cb34-3"><a></a></span>
-<span id="cb34-4"><a></a>epilepsy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a><span class="co"># load data</span></span>
+<span id="cb42-2"><a></a><span class="fu">data</span>(<span class="st">"epilepsy"</span>, <span class="at">package =</span> <span class="st">"brms"</span>)</span>
+<span id="cb42-3"><a></a></span>
+<span id="cb42-4"><a></a>epilepsy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Age Base Trt patient visit count obs     zAge
@@ -2498,15 +2553,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>output <span class="ot">&lt;-</span> </span>
-<span id="cb36-2"><a></a>  <span class="fu">capture.output</span>(</span>
-<span id="cb36-3"><a></a>    fit_epi_gaussian1 <span class="ot">&lt;-</span> </span>
-<span id="cb36-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb36-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt, <span class="at">data =</span> epilepsy, </span>
-<span id="cb36-6"><a></a>        <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian1"</span></span>
-<span id="cb36-7"><a></a>      )</span>
-<span id="cb36-8"><a></a>  )</span>
-<span id="cb36-9"><a></a>fit_epi_gaussian1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>output <span class="ot">&lt;-</span> </span>
+<span id="cb44-2"><a></a>  <span class="fu">capture.output</span>(</span>
+<span id="cb44-3"><a></a>    fit_epi_gaussian1 <span class="ot">&lt;-</span> </span>
+<span id="cb44-4"><a></a>      brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb44-5"><a></a>        count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt, <span class="at">data =</span> epilepsy, </span>
+<span id="cb44-6"><a></a>        <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian1"</span></span>
+<span id="cb44-7"><a></a>      )</span>
+<span id="cb44-8"><a></a>  )</span>
+<span id="cb44-9"><a></a>fit_epi_gaussian1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
@@ -2546,11 +2601,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>brms<span class="sc">::</span><span class="fu">mcmc_plot</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>brms<span class="sc">::</span><span class="fu">mcmc_plot</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-37-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-37-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-19" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2559,11 +2614,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>brms<span class="sc">::</span><span class="fu">mcmc_plot</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"hist"</span>, <span class="at">bins=</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a></a>brms<span class="sc">::</span><span class="fu">mcmc_plot</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"hist"</span>, <span class="at">bins=</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-38-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-38-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-20" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2571,13 +2626,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>draws <span class="ot">&lt;-</span> </span>
-<span id="cb40-2"><a></a>  posterior<span class="sc">::</span><span class="fu">as_draws_df</span>(fit_epi_gaussian1) <span class="sc">|&gt;</span> </span>
-<span id="cb40-3"><a></a>  posterior<span class="sc">::</span><span class="fu">mutate_variables</span>(</span>
-<span id="cb40-4"><a></a>    <span class="at">variance =</span> sigma<span class="sc">^</span><span class="dv">2</span>, <span class="at">mu_Trt =</span> b_Intercept <span class="sc">+</span> b_Trt1</span>
-<span id="cb40-5"><a></a>  )</span>
-<span id="cb40-6"><a></a></span>
-<span id="cb40-7"><a></a>draws</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>draws <span class="ot">&lt;-</span> </span>
+<span id="cb48-2"><a></a>  posterior<span class="sc">::</span><span class="fu">as_draws_df</span>(fit_epi_gaussian1) <span class="sc">|&gt;</span> </span>
+<span id="cb48-3"><a></a>  posterior<span class="sc">::</span><span class="fu">mutate_variables</span>(</span>
+<span id="cb48-4"><a></a>    <span class="at">variance =</span> sigma<span class="sc">^</span><span class="dv">2</span>, <span class="at">mu_Trt =</span> b_Intercept <span class="sc">+</span> b_Trt1</span>
+<span id="cb48-5"><a></a>  )</span>
+<span id="cb48-6"><a></a></span>
+<span id="cb48-7"><a></a>draws</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A draws_df: 1000 iterations, 4 chains, and 8 variables
@@ -2617,11 +2672,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(draws, <span class="fu">c</span>(<span class="st">"variance"</span>, <span class="st">"mu_Trt"</span>), <span class="at">bins =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_hist</span>(draws, <span class="fu">c</span>(<span class="st">"variance"</span>, <span class="st">"mu_Trt"</span>), <span class="at">bins =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-40-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-40-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-22" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2630,12 +2685,12 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a>ce <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1)</span>
-<span id="cb43-2"><a></a><span class="fu">plot</span>(ce)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>ce <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1)</span>
+<span id="cb51-2"><a></a><span class="fu">plot</span>(ce)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-41-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-41-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-23" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2645,11 +2700,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a><span class="fu">plot</span>(ce, <span class="at">points =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="fu">plot</span>(ce, <span class="at">points =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-42-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-42-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-24" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: large">
@@ -2657,13 +2712,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb45-2"><a></a>pe <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb53-2"><a></a>pe <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We also can summarize the draws, for example, via</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error  Q2.5 Q97.5
 [1,]    8.416     1.179 6.035 10.70
@@ -2690,13 +2745,13 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a><span class="fu">options</span>(<span class="at">brms.plot_points =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb48-2"><a></a>brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1, <span class="at">method =</span> <span class="st">"posterior_predict"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a><span class="fu">options</span>(<span class="at">brms.plot_points =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb56-2"><a></a>brms<span class="sc">::</span><span class="fu">conditional_effects</span>(fit_epi_gaussian1, <span class="at">method =</span> <span class="st">"posterior_predict"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-45-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-45-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2711,15 +2766,15 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb49-2"><a></a>pp <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_predict</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span>
-<span id="cb49-3"><a></a></span>
-<span id="cb49-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a>newdata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Trt =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb57-2"><a></a>pp <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_predict</span>(fit_epi_gaussian1, <span class="at">newdata =</span> newdata)</span>
+<span id="cb57-3"><a></a></span>
+<span id="cb57-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(pp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error   Q2.5 Q97.5
-[1,]    8.387     12.54 -16.85 33.34
-[2,]    7.902     12.31 -15.71 31.31</code></pre>
+[1,]    8.140     12.38 -15.93 32.63
+[2,]    7.612     12.37 -16.66 32.18</code></pre>
 </div>
 </div>
 </section>
@@ -2731,11 +2786,11 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-47-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-47-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-29" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2751,11 +2806,11 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-48-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-48-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-31" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <div style="font-size: x-large">
@@ -2764,7 +2819,7 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <p>If you don’t know which check types are available, you can simply pass an arbitrary non-supported type name to get a list of all currently supported types:</p>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"help_me"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian1, <span class="at">type =</span> <span class="st">"help_me"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="generative-modelling-with-brms-32" class="slide level2">
@@ -2776,14 +2831,14 @@ y^{(s)}_{\mathrm{Trt}}\sim\mathscr{N}\left(\mu^{(s)}_{\mathrm{Trt}}, \sigma^{(s)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a></a>fit_epi_student1 <span class="ot">&lt;-</span> </span>
-<span id="cb54-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb54-3"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base,</span>
-<span id="cb54-4"><a></a>    <span class="at">data =</span> epilepsy,</span>
-<span id="cb54-5"><a></a>    <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
-<span id="cb54-6"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_student1"</span></span>
-<span id="cb54-7"><a></a>  )</span>
-<span id="cb54-8"><a></a><span class="fu">summary</span>(fit_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a>fit_epi_student1 <span class="ot">&lt;-</span> </span>
+<span id="cb62-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb62-3"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base,</span>
+<span id="cb62-4"><a></a>    <span class="at">data =</span> epilepsy,</span>
+<span id="cb62-5"><a></a>    <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
+<span id="cb62-6"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_student1"</span></span>
+<span id="cb62-7"><a></a>  )</span>
+<span id="cb62-8"><a></a><span class="fu">summary</span>(fit_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: student 
@@ -2823,12 +2878,20 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_student1) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_student1) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 55 rows containing non-finite outside the
+scale range (`stat_density()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 7 rows containing non-finite outside the scale
+range (`stat_density()`).</code></pre>
+</div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-51-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-51-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2850,20 +2913,23 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a></a><span class="co"># fit with a covariate</span></span>
-<span id="cb57-2"><a></a>fit_epi_gaussian2 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb57-3"><a></a>  count <span class="sc">~</span> Trt <span class="sc">+</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian2"</span></span>
-<span id="cb57-4"><a></a>  )</span>
-<span id="cb57-5"><a></a><span class="co"># fit with a covariate and interaction</span></span>
-<span id="cb57-6"><a></a>fit_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb57-7"><a></a>  count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian3"</span></span>
-<span id="cb57-8"><a></a>  )</span>
-<span id="cb57-9"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"side"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a><span class="co"># fit with a covariate</span></span>
+<span id="cb67-2"><a></a>fit_epi_gaussian2 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb67-3"><a></a>  count <span class="sc">~</span> Trt <span class="sc">+</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian2"</span></span>
+<span id="cb67-4"><a></a>  )</span>
+<span id="cb67-5"><a></a><span class="co"># fit with a covariate and interaction</span></span>
+<span id="cb67-6"><a></a>fit_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb67-7"><a></a>  count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian3"</span></span>
+<span id="cb67-8"><a></a>  )</span>
+<span id="cb67-9"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"side"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using 10 posterior draws for ppc type 'dens_overlay' by default.</code></pre>
+</div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-52-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-52-1.png" width="672"></p>
 <figcaption>Default posterior predictive check for model fit_epi_gaussian2</figcaption>
 </figure>
 </div>
@@ -2873,12 +2939,15 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_epi_gaussian2, <span class="at">type =</span> <span class="st">"error_scatter_avg"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'error_scatter_avg' by default.</code></pre>
+</div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-53-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-53-1.png" width="672"></p>
 <figcaption>Posterior predictive check comparing observed responses (y-axis) with the predictive residuals (x-axis) of model fit_epi_gaussian2</figcaption>
 </figure>
 </div>
@@ -2893,26 +2962,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div style="font-size: x-large">
 <p>The standard <span class="math inline">\(R^2_{\mathrm{basic}}\)</span> measure is defined only for Gaussian models and is often referred to as the percentage of explained variance. Note that in the Gaussian context we compute draws from the posterior <span class="math inline">\(R^2_{\mathrm{basic}}\)</span></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
-<span id="cb59-2"><a></a>errors <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian2, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb59-3"><a></a><span class="fu">str</span>(errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
+<span id="cb71-2"><a></a>errors <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian2, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb71-3"><a></a><span class="fu">str</span>(errors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] 1.36 3.07 3.35 3.2 3.09 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a></a><span class="co"># sum errors over observations</span></span>
-<span id="cb61-2"><a></a>error_variation <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(errors<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb61-3"><a></a><span class="fu">str</span>(error_variation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a></a><span class="co"># sum errors over observations</span></span>
+<span id="cb73-2"><a></a>error_variation <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(errors<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb73-3"><a></a><span class="fu">str</span>(error_variation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000] 15385 15225 15062 15072 15047 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a></a><span class="co"># compute R2_basic</span></span>
-<span id="cb63-2"><a></a>overall_variation <span class="ot">&lt;-</span> <span class="fu">sum</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> <span class="fu">mean</span>(epilepsy<span class="sc">$</span>count))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb63-3"><a></a>R2_basic_epi_gaussian2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> error_variation <span class="sc">/</span> overall_variation</span>
-<span id="cb63-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(R2_basic_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a><span class="co"># compute R2_basic</span></span>
+<span id="cb75-2"><a></a>overall_variation <span class="ot">&lt;-</span> <span class="fu">sum</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> <span class="fu">mean</span>(epilepsy<span class="sc">$</span>count))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb75-3"><a></a>R2_basic_epi_gaussian2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> error_variation <span class="sc">/</span> overall_variation</span>
+<span id="cb75-4"><a></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(R2_basic_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Estimate Est.Error  Q2.5  Q97.5
 [1,]   0.5765  0.004541 0.565 0.5816</code></pre>
@@ -2931,7 +3000,7 @@ R^2_{\mathrm{general}} = \frac{\mathrm{Var}(\hat{y})}{\mathrm{Var}(\hat{y})+$\ma
 \]</span></p>
 <p>Where <span class="math inline">\(\mathrm{Var}(\hat{y})\)</span>) is the variance of the posterior predicted mean over observations (again <code>posterior_epred</code>) and <span class="math inline">\(\mathrm{Var}(\hat{e})\)</span>)) is the variance of the model-implied errors over observations, where <span class="math inline">\(\hat{e}=y_n-\hat{y}_n\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a>brms<span class="sc">::</span><span class="fu">bayes_R2</span>(fit_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a>brms<span class="sc">::</span><span class="fu">bayes_R2</span>(fit_epi_gaussian2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Estimate Est.Error Q2.5  Q97.5
 R2   0.5795   0.02776 0.52 0.6274</code></pre>
@@ -2947,18 +3016,18 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
-<span id="cb67-2"><a></a>errors_epi_gaussian3 <span class="ot">&lt;-</span></span>
-<span id="cb67-3"><a></a>brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian3, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb67-4"><a></a><span class="fu">str</span>(errors_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a><span class="co"># compute draws of the predictive errors based on posterior_epred</span></span>
+<span id="cb79-2"><a></a>errors_epi_gaussian3 <span class="ot">&lt;-</span></span>
+<span id="cb79-3"><a></a>brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_gaussian3, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb79-4"><a></a><span class="fu">str</span>(errors_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] 1.15 1.67 1.53 2.42 2.19 ...</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a><span class="co"># root mean of squared errors over observations</span></span>
-<span id="cb69-2"><a></a>rmse_basic_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">rowMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb69-3"><a></a><span class="fu">str</span>(rmse_basic_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a><span class="co"># root mean of squared errors over observations</span></span>
+<span id="cb81-2"><a></a>rmse_basic_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">rowMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb81-3"><a></a><span class="fu">str</span>(rmse_basic_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000] 7.72 7.71 7.71 7.73 7.71 ...</code></pre>
 </div>
@@ -2967,12 +3036,12 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_basic_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_basic_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-60-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-60-1.png" width="672"></p>
 <figcaption>Posterior histogram of RMSE_basic for model fit_epi_gaussian3.</figcaption>
 </figure>
 </div>
@@ -2989,9 +3058,9 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a></a>rmse_alt_epi_gaussian3 <span class="ot">&lt;-</span> </span>
-<span id="cb72-2"><a></a>  <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb72-3"><a></a><span class="fu">str</span>(rmse_alt_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a></a>rmse_alt_epi_gaussian3 <span class="ot">&lt;-</span> </span>
+<span id="cb84-2"><a></a>  <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_gaussian3<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb84-3"><a></a><span class="fu">str</span>(rmse_alt_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 1.96 0.961 1.014 1.813 10.987 ...</code></pre>
 </div>
@@ -3000,12 +3069,12 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_alt_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(rmse_alt_epi_gaussian3) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-62-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-62-1.png" width="672"></p>
 <figcaption>Posterior histogram of RMSE_alt for model fit_epi_gaussian3.</figcaption>
 </figure>
 </div>
@@ -3022,14 +3091,14 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <p>Typically see only a point estimate <span class="math inline">\(\hat{\bar{y}}_n\)</span> being used to represent the model-implied predictions, instead of a (posterior) distribution over such predictions for each <span class="math inline">\(n\)</span>. For example, for a Bayesian model this point estimate could simply be the posterior mean.</p>
 <p>When using such a point prediction approach, our RMSE definition becomes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a></a><span class="co"># extract a point estimate of the predictions per observation</span></span>
-<span id="cb75-2"><a></a>ppmean_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian3))</span>
-<span id="cb75-3"><a></a><span class="fu">str</span>(ppmean_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a></a><span class="co"># extract a point estimate of the predictions per observation</span></span>
+<span id="cb87-2"><a></a>ppmean_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(brms<span class="sc">::</span><span class="fu">posterior_epred</span>(fit_epi_gaussian3))</span>
+<span id="cb87-3"><a></a><span class="fu">str</span>(ppmean_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 3.27 3.27 1.94 2.47 17.91 ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a></a><span class="co"># compute RMSE based on the responses and point predictions</span></span>
-<span id="cb77-2"><a></a>rmse_point_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> ppmean_epi_gaussian3)<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a><span class="co"># compute RMSE based on the responses and point predictions</span></span>
+<span id="cb89-2"><a></a>rmse_point_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((epilepsy<span class="sc">$</span>count <span class="sc">-</span> ppmean_epi_gaussian3)<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
@@ -3039,21 +3108,21 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div style="font-size: x-large">
 <p>In general, it is more common to compare multiple models against each other and thus investigate their relative predictive performance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a></a>errors_epi_student1 <span class="ot">&lt;-</span></span>
-<span id="cb78-2"><a></a>  brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_student1, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
-<span id="cb78-3"><a></a>rmse_alt_epi_student1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_student1<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a>errors_epi_student1 <span class="ot">&lt;-</span></span>
+<span id="cb90-2"><a></a>  brms<span class="sc">::</span><span class="fu">predictive_error</span>(fit_epi_student1, <span class="at">method =</span> <span class="st">"posterior_epred"</span>)</span>
+<span id="cb90-3"><a></a>rmse_alt_epi_student1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">colMeans</span>(errors_epi_student1<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now even compute the pointwise (per-observation) difference in RMSE values:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a></a>rmse_alt_diff <span class="ot">&lt;-</span> rmse_alt_epi_student1 <span class="sc">-</span> rmse_alt_epi_gaussian3</span>
-<span id="cb79-2"><a></a><span class="fu">str</span>(rmse_alt_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a></a>rmse_alt_diff <span class="ot">&lt;-</span> rmse_alt_epi_student1 <span class="sc">-</span> rmse_alt_epi_gaussian3</span>
+<span id="cb91-2"><a></a><span class="fu">str</span>(rmse_alt_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:236] 0.219 -0.627 -0.462 0.144 -0.966 ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a></a>se_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
-<span id="cb81-2"><a></a></span>
-<span id="cb81-3"><a></a>se_rmse_alt_diff <span class="ot">&lt;-</span> <span class="fu">se_mean</span>(rmse_alt_diff)</span>
-<span id="cb81-4"><a></a>se_rmse_alt_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a></a>se_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
+<span id="cb93-2"><a></a></span>
+<span id="cb93-3"><a></a>se_rmse_alt_diff <span class="ot">&lt;-</span> <span class="fu">se_mean</span>(rmse_alt_diff)</span>
+<span id="cb93-4"><a></a>se_rmse_alt_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.367</code></pre>
 </div>
@@ -3075,8 +3144,8 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <p>Since log is a strictly monotonic transformation, we are not changing anything fundamental by looking at log likelihoods instead of likelihoods. However, we are making the math much simpler by working with sums instead of products. In particular, this concerns computing gradients because the gradient of a sum is just the sum of the individual (pointwise) gradients. Much of the modern statistics and ML relies on this property.</p>
 <p><code>brms</code> comes with a dedicated <code>log_lik</code> method that does all the required math.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a></a>ll_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3)</span>
-<span id="cb83-2"><a></a><span class="fu">str</span>(ll_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a></a>ll_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3)</span>
+<span id="cb95-2"><a></a><span class="fu">str</span>(ll_epi_gaussian3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> num [1:4000, 1:236] -3 -2.97 -2.95 -2.98 -3.02 ...
  - attr(*, "dimnames")=List of 2
@@ -3094,12 +3163,12 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="fu">colMeans</span>(ll_epi_gaussian3), <span class="at">nint=</span><span class="dv">30</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="fu">colMeans</span>(ll_epi_gaussian3), <span class="at">nint=</span><span class="dv">30</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-67-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-67-1.png" width="672"></p>
 <figcaption>Per-observation (pointwise) log-likelihoods of model fit_epi_gaussian3.</figcaption>
 </figure>
 </div>
@@ -3118,14 +3187,14 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a></a>llm_epi_student1  <span class="ot">&lt;-</span> </span>
-<span id="cb86-2"><a></a>  <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_student1) )</span>
-<span id="cb86-3"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> </span>
-<span id="cb86-4"><a></a>  <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3) )</span>
-<span id="cb86-5"><a></a></span>
-<span id="cb86-6"><a></a>llm_epi_diff <span class="ot">&lt;-</span> </span>
-<span id="cb86-7"><a></a>  llm_epi_student1 <span class="sc">-</span> llm_epi_gaussian3</span>
-<span id="cb86-8"><a></a><span class="fu">mean</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a>llm_epi_student1  <span class="ot">&lt;-</span> </span>
+<span id="cb98-2"><a></a>  <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_student1) )</span>
+<span id="cb98-3"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> </span>
+<span id="cb98-4"><a></a>  <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_epi_gaussian3) )</span>
+<span id="cb98-5"><a></a></span>
+<span id="cb98-6"><a></a>llm_epi_diff <span class="ot">&lt;-</span> </span>
+<span id="cb98-7"><a></a>  llm_epi_student1 <span class="sc">-</span> llm_epi_gaussian3</span>
+<span id="cb98-8"><a></a><span class="fu">mean</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.5009</code></pre>
@@ -3135,13 +3204,13 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(ll_epi_gaussian3)</span>
-<span id="cb88-2"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="sc">~</span>llm_epi_gaussian3 <span class="sc">+</span> llm_epi_student1 <span class="sc">+</span> llm_epi_diff, <span class="at">nint=</span><span class="dv">50</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a></a>llm_epi_gaussian3 <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(ll_epi_gaussian3)</span>
+<span id="cb100-2"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(<span class="sc">~</span>llm_epi_gaussian3 <span class="sc">+</span> llm_epi_student1 <span class="sc">+</span> llm_epi_diff, <span class="at">nint=</span><span class="dv">50</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-69-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-69-1.png" width="672"></p>
 <figcaption>Pointwise log-likelihood values of model fit_epi_gaussian3 and fit_epi_student1 as well as their pointwise log-likelihood differences.</figcaption>
 </figure>
 </div>
@@ -3156,13 +3225,13 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div style="font-size: x-large">
 <p>It is more typical to work with sums instead of means of log-likelihood values over observations, a quantity that we call LPD<sup>1</sup>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a></a>lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a></a>lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The corresponding standard error is also not particular difficult to obtain:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a></a>se_sum <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
-<span id="cb90-2"><a></a></span>
-<span id="cb90-3"><a></a>se_lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a></a>se_sum <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {<span class="fu">sd</span>(x) <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">length</span>(x))}</span>
+<span id="cb102-2"><a></a></span>
+<span id="cb102-3"><a></a>se_lpd_epi_diff <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <aside><ol class="aside-footnotes"><li id="fn2"><p>LLM (Log-Likelihood Mean) and LPD (Log Posterior Density)</p></li></ol></aside></section>
@@ -3173,28 +3242,28 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a></a><span class="fu">set.seed</span>(<span class="dv">8973</span>)</span>
-<span id="cb91-2"><a></a>splits <span class="ot">&lt;-</span> epilepsy <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
-<span id="cb91-3"><a></a>epilepsy_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(splits)</span>
-<span id="cb91-4"><a></a>epilepsy_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a></a><span class="fu">set.seed</span>(<span class="dv">8973</span>)</span>
+<span id="cb103-2"><a></a>splits <span class="ot">&lt;-</span> epilepsy <span class="sc">|&gt;</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb103-3"><a></a>epilepsy_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(splits)</span>
+<span id="cb103-4"><a></a>epilepsy_test  <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">testing</span>(splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a></a>fit_student1_train <span class="ot">&lt;-</span> </span>
-<span id="cb92-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb92-3"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
-<span id="cb92-4"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_student1_train"</span>)</span>
-<span id="cb92-5"><a></a></span>
-<span id="cb92-6"><a></a>llm_epi_student1_test <span class="ot">&lt;-</span>  brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_student1_train, <span class="at">newdata =</span> epilepsy_test)</span>
-<span id="cb92-7"><a></a></span>
-<span id="cb92-8"><a></a>fit_gaussian3_train <span class="ot">&lt;-</span> </span>
-<span id="cb92-9"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb92-10"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train</span>
-<span id="cb92-11"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_gaussian3_train"</span>)</span>
-<span id="cb92-12"><a></a></span>
-<span id="cb92-13"><a></a>llm_epi_gaussian3_test <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_gaussian3_train, <span class="at">newdata =</span> epilepsy_test) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a></a>fit_student1_train <span class="ot">&lt;-</span> </span>
+<span id="cb104-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb104-3"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train, <span class="at">family =</span> brms<span class="sc">::</span><span class="fu">student</span>()</span>
+<span id="cb104-4"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_student1_train"</span>)</span>
+<span id="cb104-5"><a></a></span>
+<span id="cb104-6"><a></a>llm_epi_student1_test <span class="ot">&lt;-</span>  brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_student1_train, <span class="at">newdata =</span> epilepsy_test)</span>
+<span id="cb104-7"><a></a></span>
+<span id="cb104-8"><a></a>fit_gaussian3_train <span class="ot">&lt;-</span> </span>
+<span id="cb104-9"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb104-10"><a></a>    count <span class="sc">~</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy_train</span>
+<span id="cb104-11"><a></a>    , <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">8740</span>, <span class="at">file =</span> <span class="st">"fits/fit_gaussian3_train"</span>)</span>
+<span id="cb104-12"><a></a></span>
+<span id="cb104-13"><a></a>llm_epi_gaussian3_test <span class="ot">&lt;-</span> <span class="fu">colMeans</span>( brms<span class="sc">::</span><span class="fu">log_lik</span>(fit_gaussian3_train, <span class="at">newdata =</span> epilepsy_test) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -3206,13 +3275,13 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a></a>llm_epi_diff_test <span class="ot">&lt;-</span> llm_epi_student1_test <span class="sc">-</span> llm_epi_gaussian3_test</span>
-<span id="cb93-2"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(llm_epi_diff_test <span class="sc">|&gt;</span> <span class="fu">matrix</span>(), <span class="at">nint=</span><span class="dv">50</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a></a>llm_epi_diff_test <span class="ot">&lt;-</span> llm_epi_student1_test <span class="sc">-</span> llm_epi_gaussian3_test</span>
+<span id="cb105-2"><a></a>lattice<span class="sc">::</span><span class="fu">histogram</span>(llm_epi_diff_test <span class="sc">|&gt;</span> <span class="fu">matrix</span>(), <span class="at">nint=</span><span class="dv">50</span>, <span class="at">type =</span> <span class="st">"density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-74-1.png" width="960"></p>
+<p><img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-74-1.png" width="672"></p>
 </figure>
 </div>
 </div>
@@ -3220,7 +3289,7 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a></a>(elpd_epi_diff_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a></a>(elpd_epi_diff_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(llm_epi_diff_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 49480</code></pre>
@@ -3229,7 +3298,7 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a></a>(se_elpd_epi_diff_test <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a></a>(se_elpd_epi_diff_test <span class="ot">&lt;-</span> <span class="fu">se_sum</span>(llm_epi_diff_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 742.9</code></pre>
@@ -3247,8 +3316,8 @@ R2   0.5795   0.02776 0.52 0.6274</code></pre>
 <div class="tab-content">
 <div id="tabset-7-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a></a>loo_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_gaussian3)</span>
-<span id="cb98-2"><a></a>loo_epi_gaussian3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>loo_epi_gaussian3 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_gaussian3)</span>
+<span id="cb110-2"><a></a>loo_epi_gaussian3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Computed from 4000 by 236 log-likelihood matrix.
@@ -3272,8 +3341,8 @@ See help('pareto-k-diagnostic') for details.</code></pre>
 </div>
 <div id="tabset-7-2">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a></a>loo_epi_student1 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_student1)</span>
-<span id="cb100-2"><a></a>loo_epi_student1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a></a>loo_epi_student1 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_student1)</span>
+<span id="cb112-2"><a></a>loo_epi_student1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Computed from 4000 by 236 log-likelihood matrix.
@@ -3293,7 +3362,7 @@ See help('pareto-k-diagnostic') for details.</code></pre>
 </div>
 <div id="tabset-7-3">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(loo_epi_gaussian3, loo_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(loo_epi_gaussian3, loo_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  elpd_diff se_diff
 fit_epi_student1     0.0       0.0 
@@ -3303,6 +3372,13 @@ fit_epi_gaussian3 -126.9      37.0 </code></pre>
 </div>
 <div id="tabset-7-4">
 <div class="cell">
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a></a>brms<span class="sc">::</span><span class="fu">loo</span>(fit_epi_gaussian3, fit_epi_student1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Found 2 observations with a pareto_k &gt; 0.7 in
+model 'fit_epi_gaussian3'. We recommend to set
+'moment_match = TRUE' in order to perform moment
+matching for problematic observations.</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Output of model 'fit_epi_gaussian3':
 
@@ -3357,13 +3433,13 @@ fit_epi_gaussian3 -126.9      37.0 </code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a></a>prior_epi_gaussian6 <span class="ot">&lt;-</span></span>
-<span id="cb105-2"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">6</span>, <span class="dv">3</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span></span>
-<span id="cb105-3"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1"</span>) <span class="sc">+</span></span>
-<span id="cb105-4"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Base"</span>) <span class="sc">+</span></span>
-<span id="cb105-5"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1:Base"</span>) <span class="sc">+</span></span>
-<span id="cb105-6"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">15</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
-<span id="cb105-7"><a></a>prior_epi_gaussian6 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a></a>prior_epi_gaussian6 <span class="ot">&lt;-</span></span>
+<span id="cb119-2"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">6</span>, <span class="dv">3</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span></span>
+<span id="cb119-3"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1"</span>) <span class="sc">+</span></span>
+<span id="cb119-4"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Base"</span>) <span class="sc">+</span></span>
+<span id="cb119-5"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Trt1:Base"</span>) <span class="sc">+</span></span>
+<span id="cb119-6"><a></a>  brms<span class="sc">::</span><span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">15</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
+<span id="cb119-7"><a></a>prior_epi_gaussian6 </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         prior     class      coef group resp dpar
@@ -3390,15 +3466,15 @@ fit_epi_gaussian3 -126.9      37.0 </code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a></a>fit_prior_epi_gaussian6 <span class="ot">&lt;-</span> </span>
-<span id="cb107-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb107-3"><a></a>    count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base,</span>
-<span id="cb107-4"><a></a>    <span class="at">data =</span> epilepsy,</span>
-<span id="cb107-5"><a></a>    <span class="at">prior =</span> prior_epi_gaussian6,</span>
-<span id="cb107-6"><a></a>    <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb107-7"><a></a>    <span class="at">file =</span> <span class="st">"fits/fit_prior_epi_gaussian6"</span></span>
-<span id="cb107-8"><a></a>  )</span>
-<span id="cb107-9"><a></a><span class="fu">summary</span>(fit_prior_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a></a>fit_prior_epi_gaussian6 <span class="ot">&lt;-</span> </span>
+<span id="cb121-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb121-3"><a></a>    count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base,</span>
+<span id="cb121-4"><a></a>    <span class="at">data =</span> epilepsy,</span>
+<span id="cb121-5"><a></a>    <span class="at">prior =</span> prior_epi_gaussian6,</span>
+<span id="cb121-6"><a></a>    <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb121-7"><a></a>    <span class="at">file =</span> <span class="st">"fits/fit_prior_epi_gaussian6"</span></span>
+<span id="cb121-8"><a></a>  )</span>
+<span id="cb121-9"><a></a><span class="fu">summary</span>(fit_prior_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
@@ -3440,10 +3516,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>For all practical purposes, our “prior-only” brms model can be post-processed as any other brms model.</p>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_prior_epi_gaussian6, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a></a>brms<span class="sc">::</span><span class="fu">pp_check</span>(fit_prior_epi_gaussian6, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="BSMM_8740_lec_10_files/figure-revealjs/unnamed-chunk-83-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="BSMM_8740_lec_10_files/figure-html/unnamed-chunk-83-1.png" class="quarto-figure quarto-figure-center r-stretch" width="672"></section>
 <section id="generative-modelling-with-brms-51" class="slide level2">
 <h2>Generative modelling with BRMS</h2>
 <h4 id="marginal-likelihood-based-metrics">Marginal likelihood-based metrics</h4>
@@ -3484,17 +3560,17 @@ p(y\vert M)=\int p(y\vert\theta,M)p(\theta\vert M)d\theta
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a></a>fit_epi_gaussian6 <span class="ot">&lt;-</span> </span>
-<span id="cb110-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb110-3"><a></a>    count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy,</span>
-<span id="cb110-4"><a></a>    <span class="at">prior =</span> prior_epi_gaussian6,</span>
-<span id="cb110-5"><a></a>    <span class="at">save_pars =</span> brms<span class="sc">::</span><span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb110-6"><a></a>    <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>,</span>
-<span id="cb110-7"><a></a>    <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian6"</span></span>
-<span id="cb110-8"><a></a>  )</span>
-<span id="cb110-9"><a></a></span>
-<span id="cb110-10"><a></a>logml_epi_gaussian6 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">bridge_sampler</span>(fit_epi_gaussian6, <span class="at">silent =</span> <span class="cn">TRUE</span>);</span>
-<span id="cb110-11"><a></a><span class="fu">summary</span>(logml_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a></a>fit_epi_gaussian6 <span class="ot">&lt;-</span> </span>
+<span id="cb124-2"><a></a>  brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb124-3"><a></a>    count <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Trt <span class="sc">*</span> Base, <span class="at">data =</span> epilepsy,</span>
+<span id="cb124-4"><a></a>    <span class="at">prior =</span> prior_epi_gaussian6,</span>
+<span id="cb124-5"><a></a>    <span class="at">save_pars =</span> brms<span class="sc">::</span><span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb124-6"><a></a>    <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>,</span>
+<span id="cb124-7"><a></a>    <span class="at">file =</span> <span class="st">"fits/fit_epi_gaussian6"</span></span>
+<span id="cb124-8"><a></a>  )</span>
+<span id="cb124-9"><a></a></span>
+<span id="cb124-10"><a></a>logml_epi_gaussian6 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">bridge_sampler</span>(fit_epi_gaussian6, <span class="at">silent =</span> <span class="cn">TRUE</span>);</span>
+<span id="cb124-11"><a></a><span class="fu">summary</span>(logml_epi_gaussian6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -3752,44 +3828,6 @@ All error measures are approximate.</code></pre>
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
