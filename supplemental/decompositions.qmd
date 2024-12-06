@@ -1,0 +1,85 @@
+---
+title: "Decompositions"
+---
+
+## Oaxaca-Blinder decomposition
+
+Consider a categorical (or dummy) variable $d$ that splits our dataset into two groups.
+
+In this case we can run regressions to estimate the the mean difference between groups, as follows
+
+$$
+\begin{align*}
+\mathbb{E}\left[y^{0}\right] & =X^{(0)}\beta_{0};\;\text{group }d=0\\
+\mathbb{E}\left[y^{1}\right] & =X^{(1)}\beta_{1};\;\text{group }d=1
+\end{align*}
+$$
+
+The the mean difference in ourcomes is:
+
+$$
+\begin{align*}
+\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1}-\mathbb{E}\left[X^{(0)}\right]\beta_{0}\\
+ & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{1}+\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
+ & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{0}-\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)
+\end{align*}
+$$
+
+Where:
+
+$\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{1}$ is the "explained" component (differences in characteristics) $\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (differences in returns to characteristics)
+
+and we define
+
+$$
+\begin{align*}
+\text{Gap}^{1} & =\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
+\text{Gap}^{0} & =\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)\\
+\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+\delta_{1}d+\delta_{1}X+\epsilon
+\end{align*}
+$$ and under these strong assumptions, a sensible definition of the population unexplained gap is $\delta_0$.
+
+Example
+
+data:
+
+```{r}
+# Load HMDA data
+data('PSID1982', package = "AER")
+dat <- PSID1982
+
+# Prepare data for analysis
+# Looking at income differences between racial groups
+lending_data <- hmda |> 
+  dplyr::mutate(
+    minority = factor(race != "white"),
+    log_income = log(income)
+  ) |> 
+  dplyr::select(log_income, minority, education, hrat, ccred, mcred, pubrec)
+```
+
+```{r}
+# Fit separate regressions
+model_a <- lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='yes'))
+model_b <- lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='no'))
+
+# Get mean characteristics (including intercept)
+X_mean_a <- c(1, colMeans( dat |> dplyr::filter(union=='yes') |> dplyr::select(education, experience) ) )
+X_mean_b <- c(1, colMeans( dat |> dplyr::filter(union=='no') |> dplyr::select(education, experience) ) )
+
+# Get coefficients
+beta_a <- coef(model_a)
+beta_b <- coef(model_b)
+
+# Calculate decomposition
+tibble::tibble(
+  explained = sum((X_mean_a - X_mean_b) * beta_a)
+  , unexplained = sum(X_mean_b * (beta_a - beta_b))
+  , total_gap <- explained + unexplained
+)
+
+# Perform Oaxaca-Blinder decomposition
+decomp <- oaxaca::oaxaca(wage ~ education + experience | union, 
+                 data = dat |> dplyr::mutate(union = dplyr::case_when(union=='yes'~0, TRUE ~1)))
+
+```
