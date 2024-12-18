@@ -2,20 +2,44 @@
 title: "Decompositions"
 ---
 
+```{r}
+#| include: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  magrittr, tidyverse, malcolmbarrett/causalworkshop, ggplot2, patchwork, AER
+)
+
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+# Mind the Gap
+
+When faced with a gap in mean outcomes between two groups, researchers frequently examine how much of the gap can be explained by differences in observable characteristics.
+
+The simple approach is to estimate the pooled regression including an indicator variable for group membership as well as the other observable characteristics, interpreting the coefficient on the group indicator as the unexplained component.
+
+The Oaxaca-Blinder (O-B) decomposition represents an alternative approach
+
 ## Oaxaca-Blinder decomposition
 
 Consider a categorical (or dummy) variable $d$ that splits our dataset into two groups.
 
-In this case we can run regressions to estimate the the mean difference between groups, as follows
+In this case we can run regressions of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows
 
 $$
 \begin{align*}
-\mathbb{E}\left[y^{0}\right] & =X^{(0)}\beta_{0};\;\text{group }d=0\\
-\mathbb{E}\left[y^{1}\right] & =X^{(1)}\beta_{1};\;\text{group }d=1
+\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(0)}\right]\beta_{0};\;\text{group }d=0\\
+\mathbb{E}\left[y^{1}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1};\;\text{group }d=1
 \end{align*}
 $$
 
-The the mean difference in ourcomes is:
+Then the mean difference in outcomes is:
 
 $$
 \begin{align*}
@@ -35,7 +59,7 @@ $$
 \begin{align*}
 \text{Gap}^{1} & =\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
 \text{Gap}^{0} & =\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)\\
-\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+\delta_{1}d+\delta_{1}X+\epsilon
+\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+\delta_{d}d+\delta_{1}X+\epsilon
 \end{align*}
 $$ and under these strong assumptions, a sensible definition of the population unexplained gap is $\delta_0$.
 
@@ -83,3 +107,64 @@ decomp <- oaxaca::oaxaca(wage ~ education + experience | union,
                  data = dat |> dplyr::mutate(union = dplyr::case_when(union=='yes'~0, TRUE ~1)))
 
 ```
+
+We an define another measure $\text{Gap}^{p}$ as
+
+$$
+\begin{align*}
+\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\hat{\beta}^{p}+\text{Gap}^{p}\\
+\text{Gap}^{p} & =\mathbb{E}\left[X^{(1)}\right]\left(\hat{\beta}^{1}-\hat{\beta}^{p}\right)+\mathbb{E}\left[X^{(0)}\right]\left(\hat{\beta}^{p}-\hat{\beta}^{0}\right)
+\end{align*}
+$$ where $\hat{\beta}^{p}$ is the coefficient from the pooled regression of $y$ on $X$.
+
+An O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.
+
+A general expression for an O-B unexplained gap is
+
+$$
+\begin{align*}
+\text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\\
+ & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
+\end{align*}
+$$ {#eq-general-gap} where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept.
+
+So equation @eq-general-gap gives $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0.
+
+$$
+\begin{align*}
+\text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\\
+ & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x\right)+\epsilon}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
+ & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
+ & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}
+\end{align*}
+$$
+
+implying that all the gap expressions are equivalent, except for $\text{Gap}^{p}$. The difference arises because in the pooled regression $d$ is a omitted variable.
+
+$$
+\begin{align*}
+\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\text{b}(y\vert x)\vert d)\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\\
+ & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
+\end{align*}
+$$
+
+## An aside:
+
+Consider the regression $y = \beta_0 + \beta_d d + \beta_x x + \epsilon$ then, per the Frisch-Waugh theorem if
+
+Given the propensity score $P(x) = \frac{\text{cov}(d,x)}{\text{var}(x)}x$ and the regression $y = \beta_0 + \beta_d d + \beta_p P(x) + \epsilon$ then, per the Frisch-Waugh theorem the coefficient $\beta_d$ is equal to the coefficient from regressing
+
+$$
+y-\frac{\text{cov}(P(x),y)}{\text{var}(P(x))}P(x)\text{ on }d-\frac{\text{cov}(P(x),d)}{\text{var}(P(x))}P(x)
+$$ but $\text{cov}(P(x),d) = \text{cov}(\frac{\text{cov}(d,x)}{\text{var}(x)}x,d)=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$, so $d-\frac{\text{cov}(P(x),d)}{\text{var}(P(x))}P(x)$
+
+$P(x)^\top P(x)=\frac{\text{cov}(d,x)}{\text{var}(x)}x^\top x\frac{\text{cov}(d,x)}{\text{var}(x)}=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$
+
+$P(x)\left(P(x)^\top P(x)\right)^{-1}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^2}$
+
+$P(x)\left(P(x)^\top P(x)\right)^{-1}\text{cov(P(x),y)}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^2}\times\frac{\text{cov}(d,x)}{\text{var}(x)}\text{cov}(x,y)=x\frac{\text{cov}(x,y)}{\text{var}(x)}$
+
+and the coefficient due regressing on the propensity score is the same as the coefficient due regressing on the covariates.
