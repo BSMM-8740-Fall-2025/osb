@@ -39,6 +39,15 @@ $$
 \end{align*}
 $$
 
+Alternatively
+
+$$
+\begin{align*}
+\bar{y}_0 & =\bar{X}_0\beta_{0};\;\text{group }d=0\\
+\bar{y}_1 & =\bar{X}_1\beta_{1};\;\text{group }d=1
+\end{align*}
+$$
+
 Then the mean difference in outcomes is:
 
 $$
@@ -49,28 +58,51 @@ $$
 \end{align*}
 $$
 
+Alternatively
+
+$$
+\begin{align*}
+\bar{y}_1-\bar{y}_0 & =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\\
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}-\bar{X}_1\left(\beta_{0}-\beta_{1}\right)
+\end{align*}
+$$ {#eq-gap}
+
 Where:
 
-$\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{1}$ is the "explained" component (differences in characteristics) $\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (differences in returns to characteristics)
+$\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (differences in returns to characteristics), where $\bar{X}_0$ is the baseline (this decomposition is not unique, as you can see from the third line of @eq-gap)
 
 and we define
 
 $$
 \begin{align*}
-\text{Gap}^{1} & =\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
-\text{Gap}^{0} & =\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)\\
+\text{Gap}^{1} & =\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\\
+\text{Gap}^{0} & =\bar{X}_1\left(\beta_{0}-\beta_{1}\right)\\
 \text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+\delta_{d}d+\delta_{1}X+\epsilon
 \end{align*}
-$$ and under these strong assumptions, a sensible definition of the population unexplained gap is $\delta_0$.
+$$ where the strong assumptions that the model is properly specified and that coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
 
 Example
 
 data:
 
 ```{r}
+#| eval: false
+# https://cran.r-project.org/web/packages/oaxaca/vignettes/oaxaca.pdf
+# https://www.worldbank.org/content/dam/Worldbank/document/HDN/Health/HealthEquityCh12.pdf
+# https://pmc.ncbi.nlm.nih.gov/articles/PMC8343972/
+# https://www.sciencedirect.com/science/article/abs/pii/S0169721811004072
+# https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2528391
+# https://link.springer.com/article/10.1186/s12982-021-00100-9
+# https://giacomovagni.com/blog/2023/oaxaca/
+# https://journals.sagepub.com/doi/pdf/10.1177/1536867X0800800401
+# https://ocw.mit.edu/courses/14-662-labor-economics-ii-spring-2015/resources/mit14_662s15_lecnotes1/
+
 # Load HMDA data
 data('PSID1982', package = "AER")
-dat <- PSID1982
+hmda <- PSID1982
+
+# data("nswcps", package = "hettreatreg")
 
 # Prepare data for analysis
 # Looking at income differences between racial groups
@@ -83,6 +115,7 @@ lending_data <- hmda |>
 ```
 
 ```{r}
+#| eval: false
 # Fit separate regressions
 model_a <- lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='yes'))
 model_b <- lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='no'))
@@ -112,8 +145,8 @@ We an define another measure $\text{Gap}^{p}$ as
 
 $$
 \begin{align*}
-\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\hat{\beta}^{p}+\text{Gap}^{p}\\
-\text{Gap}^{p} & =\mathbb{E}\left[X^{(1)}\right]\left(\hat{\beta}^{1}-\hat{\beta}^{p}\right)+\mathbb{E}\left[X^{(0)}\right]\left(\hat{\beta}^{p}-\hat{\beta}^{0}\right)
+\bar{y}_1-\bar{y}_0 & =\left(\bar{X}_1-\bar{X}_0\right)\hat{\beta}^{p}+\text{Gap}^p\\
+\text{Gap}^p & =\bar{X}_1\left(\hat{\beta}_1-\hat{\beta}^{p}\right)+\bar{X}_0\left(\hat{\beta}^{p}-\hat{\beta}^{0}\right)
 \end{align*}
 $$ where $\hat{\beta}^{p}$ is the coefficient from the pooled regression of $y$ on $X$.
 
@@ -128,7 +161,9 @@ $$
 \end{align*}
 $$ {#eq-general-gap} where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept.
 
-So equation @eq-general-gap gives $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0.
+So equation @eq-general-gap gives $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^1].
+
+[^1]: under the data generation process described by $y=\delta_{0}+\delta_{d}d+\delta_{1}X+\epsilon$
 
 $$
 \begin{align*}
@@ -140,7 +175,7 @@ $$
 \end{align*}
 $$
 
-implying that all the gap expressions are equivalent, except for $\text{Gap}^{p}$. The difference arises because in the pooled regression $d$ is a omitted variable.
+implying that all the gap expressions are equivalent, except for $\text{Gap}^{p}$. The difference arises because in the pooled regression used to compute $\text{Gap}^p$, $d$ is a omitted variable.
 
 $$
 \begin{align*}
@@ -151,20 +186,52 @@ $$
 \end{align*}
 $$
 
+Compare this to the $\text{Gap}^{\text{OLS}}$, defining $\tilde{z}(w)$ as the component of $z$ that is orthogonal to $w$ in the population (so that $\tilde{z}(w)=z-w\text{b}(z\vert w)$, alternatively $\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}$)[^2]
+
+[^2]: Note: $\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}$, the linear propensity, and $\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}$, so the coefficient $\delta_d$ is $\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}$.
+
+$$
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\delta_{d}\\
+ & =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\\
+ & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align*}
+$$
+
+and so $\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^{\text{OLS}}$
+
 ## An aside:
 
-Consider the regression $y = \beta_0 + \beta_d d + \beta_x x + \epsilon$ then, per the Frisch-Waugh theorem if
+Consider the regression $y = \beta_0 + \beta_d d + \beta_x x + \epsilon$. Per the Frisch-Waugh theorem, if
 
-Given the propensity score $P(x) = \frac{\text{cov}(d,x)}{\text{var}(x)}x$ and the regression $y = \beta_0 + \beta_d d + \beta_p P(x) + \epsilon$ then, per the Frisch-Waugh theorem the coefficient $\beta_d$ is equal to the coefficient from regressing
+Given the propensity score $P(x) = \frac{\text{cov}(d,x)}{\text{var}(x)}x$ and the regression $y = \beta_0 + \beta_d d + \beta_x x + \epsilon$ then, per the Frisch-Waugh theorem the coefficient $\beta_d$ is equal to the coefficient from regressing
 
 $$
 y-\frac{\text{cov}(P(x),y)}{\text{var}(P(x))}P(x)\text{ on }d-\frac{\text{cov}(P(x),d)}{\text{var}(P(x))}P(x)
 $$ but $\text{cov}(P(x),d) = \text{cov}(\frac{\text{cov}(d,x)}{\text{var}(x)}x,d)=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$, so $d-\frac{\text{cov}(P(x),d)}{\text{var}(P(x))}P(x)$
 
-$P(x)^\top P(x)=\frac{\text{cov}(d,x)}{\text{var}(x)}x^\top x\frac{\text{cov}(d,x)}{\text{var}(x)}=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$
+$P(x)^\top P(x)=\frac{\text{cov}(d,x)}{\text{var}(x)}x^\top x\frac{\text{cov}(y,x)}{\text{var}(x)}=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$
 
 $P(x)\left(P(x)^\top P(x)\right)^{-1}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^2}$
 
 $P(x)\left(P(x)^\top P(x)\right)^{-1}\text{cov(P(x),y)}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^2}\times\frac{\text{cov}(d,x)}{\text{var}(x)}\text{cov}(x,y)=x\frac{\text{cov}(x,y)}{\text{var}(x)}$
 
 and the coefficient due regressing on the propensity score is the same as the coefficient due regressing on the covariates.
+
+Can $P(x) = x\frac{\text{cov}(d,x)}{\text{var}(x)}$ replace $x$ in a regression?
+
+-   The regression $y=\beta_x x+\epsilon$ can be written as $y=x\frac{\text{cov}(x,y)}{\text{var}(x)}+\epsilon$, and
+-   the regression $y=\beta_{P(x)} P(x)+\epsilon$ can be written as $y=P(x)\frac{\text{cov}(P(x),y)}{\text{var}(P(x))}+\epsilon$, but
+-   $P(x)\frac{\text{cov}(P(x),y)}{\text{var}(P(x))} = P(x)\left(P(x)^\top P(x)\right)^{-1}\text{cov(P(x),y)}$, and $$P(x)\left(P(x)^{\top}P(x)\right)^{-1}\text{cov(P(x),y)}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^{2}}\times\frac{\text{cov}(d,x)}{\text{var}(x)}\text{cov}(x,y)
+    $$
+-   since $P(x)^\top P(x)=\frac{\text{cov}(d,x)}{\text{var}(x)}x^\top x\frac{\text{cov}(d,x)}{\text{var}(x)}=\frac{\left(\text{cov}(d,x)\right)^2}{\text{var}(x)}$, and
+-   $\text{cov}(P(x),y) = \text{cov}(\frac{\text{cov}(d,x)}{\text{var}(x)}x,y)=\frac{\text{cov}(d,x)}{\text{var}(x)}\text{cov}(x,y)$
+-   so $P(x)\frac{\text{cov}(P(x),y)}{\text{var}(P(x))} = x\frac{\text{cov}(x,y)}{\text{var}(x)}$ and they are exchangeable.
+
+It follows that in the regression $y = \beta_0 + \beta_d d + \beta_x x + \epsilon$, with the propensity score $P(x) = \frac{\text{cov}(d,x)}{\text{var}(x)}x$, then per the Frisch-Waugh theorem the coefficient $\beta_d$ is equal to the coefficient from regressing
+
+$$
+y-\frac{\text{cov}(P(x),y)}{\text{var}(P(x))}P(x)\text{ on }d-P(x)
+$$
