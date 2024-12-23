@@ -148,7 +148,9 @@ $$
 \bar{y}_1-\bar{y}_0 & =\left(\bar{X}_1-\bar{X}_0\right)\hat{\beta}^{p}+\text{Gap}^p\\
 \text{Gap}^p & =\bar{X}_1\left(\hat{\beta}_1-\hat{\beta}^{p}\right)+\bar{X}_0\left(\hat{\beta}^{p}-\hat{\beta}^{0}\right)
 \end{align*}
-$$ where $\hat{\beta}^{p}$ is the coefficient from the pooled regression of $y$ on $X$.
+$$
+
+where $\hat{\beta}^{p}$ is the coefficient from the pooled regression of $y$ on $X$.
 
 An O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.
 
@@ -159,7 +161,9 @@ $$
 \text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\\
  & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
 \end{align*}
-$$ {#eq-general-gap} where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept.
+$$ {#eq-general-gap}
+
+where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept.
 
 So equation @eq-general-gap gives $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^1].
 
@@ -173,7 +177,7 @@ $$
  & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
  & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}
 \end{align*}
-$$
+$$ {#eq-specific-gap}
 
 implying that all the gap expressions are equivalent, except for $\text{Gap}^{p}$. The difference arises because in the pooled regression used to compute $\text{Gap}^p$, $d$ is a omitted variable.
 
@@ -201,6 +205,62 @@ $$
 $$
 
 and so $\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^{\text{OLS}}$
+
+### Useful expressions
+
+The law of total variance, or variance decomposition formula is
+
+$$
+\text{var}(X)=\mathbb{E}[\text{var}(X\vert Y)]+\text{var}(\mathbb{E}[X\vert Y])
+$$ where the first term is the between-group variance and the second term is the within-group variance.
+
+In our problem, the variance decomposition is
+
+$$
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
+\end{align*}
+$$ but we have
+
+$$
+\mathbb{E}\left[x\right]=\mathbb{E}\left[\mathbb{E}\left[x\vert y\right]\right]=\pi\mathbb{E}\left[x\vert d=1\right] + (1-\pi)\mathbb{E}\left[x\vert d=0\right]
+$$ substituting the RHS for $\mathbb{E}\left[x\right]$ we have
+
+$$
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
+\end{align*}
+$$
+
+but we have $\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]=\text{cov}(x,d)/\text{var}(d)$, and $\text{var}(d)=\pi(1-\pi)$, so
+
+$$
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
+\end{align*}
+$$ by the same logic
+
+$$
+\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
+$$ Now writing $\text{Gap}^{\text{OLS}}=w_1\text{Gap}^1 + w_0\text{Gap}^0$ with $w_1+w_0=1$.
+
+### Gap weights
+
+Based on @eq-specific-gap we have
+
+$$
+\text{Gap}^1=\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
+$$
+
+and
+
+$$
+\text{Gap}^0=\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+$$
 
 ## An aside:
 
