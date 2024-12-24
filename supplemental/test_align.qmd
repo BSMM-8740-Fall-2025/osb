@@ -1,0 +1,44 @@
+---
+title: "test"
+format: pdf
+---
+
+```{r}
+#| include: false
+#| echo: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  magrittr, tidyverse, malcolmbarrett/causalworkshop, ggplot2, patchwork, AER
+)
+
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+# Mind the Gap
+
+When faced with a gap in mean outcomes between two groups, researchers frequently examine how much of the gap can be explained by differences in observable characteristics.
+
+The simple approach is to estimate the pooled regression including an indicator variable for group membership as well as the other observable characteristics, interpreting the coefficient on the group indicator as the unexplained component.
+
+The Oaxaca-Blinder (O-B) decomposition represents an alternative approach
+
+## Oaxaca-Blinder decomposition
+
+Consider a categorical (or dummy) variable $d$ that splits our dataset into two groups.
+
+In this case we can run regressions of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows
+
+
+\begin{align*}
+\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(0)}\right]\beta_{0};\;\text{group }d=0\\
+\mathbb{E}\left[y^{1}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1};\;\text{group }d=1
+\end{align*}
+
+
+Alternatively
