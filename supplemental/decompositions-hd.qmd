@@ -58,11 +58,11 @@ Then the mean difference in outcomes is:
 
 Alternatively
 
-\begin{align*}\label{eq:gap}\tag{1}
+\begin{align}\label{eq:gap}
 \bar{y}_1-\bar{y}_0 & =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
- & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\\
- & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}-\bar{X}_1\left(\beta_{0}-\beta_{1}\right)
-\end{align*}
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\nonumber\\
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}-\bar{X}_1\left(\beta_{0}-\beta_{1}\right)\nonumber
+\end{align}
 
 Where: $\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (differences in returns to characteristics), where $\bar{X}_0$ is the baseline (this decomposition is not unique, as you can see from the second and third lines of equation (\ref{eq:gap}).
 
@@ -93,10 +93,10 @@ An O-B unexplained gap can always be written as the difference in overall mean o
 
 A general expression for an O-B unexplained gap is
 
-\begin{align*}\label{eq:general-gap}\tag{2}
-\text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\\
+\begin{align}\label{eq:general-gap}
+\text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\nonumber\\
  & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
-\end{align*}
+\end{align}
 
 where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept. The choice of $\hat{\beta}$ is what identifies the different O-B decompositions.
 
@@ -104,42 +104,42 @@ So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta
 
 [^1]: under the data generation process described by $y=\delta_{0}+\delta_{d}d+\delta_{1}X+\epsilon$
 
-\begin{align*}\label{eq:specific-gap}\tag{3}
-\text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\\
- & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\\
- & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x\right)+\epsilon}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
- & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
- & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}
-\end{align*}
+\begin{align}
+\text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\label{eq:general-gap}\\
+ & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x\right)+\epsilon}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\nonumber\\
+ & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\label{eq:specific-gap}\\
+ & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}\nonumber
+\end{align}
 
 given our assumption that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$ (and so $\hat{\beta}=\delta_x$ in both group-specific regressions), then all the gap expressions are equivalent, except for $\text{Gap}^{p}$.
 
 $\text{Gap}^{p}$ is different because in the pooled regression used to compute $\text{Gap}^p$, $d$ is a omitted variable. In particular:
 
-\begin{align*}
-\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\text{b}(y\vert x)\vert d)\\
- & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\\
- & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\\
+\begin{align}\label{eq:gap_p_eqn}
+\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\text{b}(y\vert x)\vert d)\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\nonumber\\
  & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
-\end{align*}
+\end{align}
 
 Compare this to $\text{Gap}^{\text{OLS}}$, defining $\tilde{z}(w)$ as the component of $z$ that is orthogonal to $w$ in the population (so that $\tilde{z}(w)=z-w\text{b}(z\vert w)$, alternatively $\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}$)[^2]
 
 [^2]: Note: $\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}$, the linear propensity, and $\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}$, so the coefficient $\delta_d$ is $\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}$.
 
-\begin{align*}
-\text{Gap}^{\text{OLS}} & =\delta_{d}\\
- & =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\\
- & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\\
- & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\\
+\begin{align}\label{eq:gap_OLS_eqn}
+\text{Gap}^{\text{OLS}} & =\delta_{d}\nonumber\\
+ & =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\nonumber\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\nonumber\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\nonumber\\
  & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
-\end{align*}
+\end{align}
 
 and so $\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^{\text{OLS}}$
 
 ### The Case in Which Coefficients Vary across Groups
 
-The relationship between $\text{Gap}^p$ and \text{Gap}\^{\text{OLS}}is exact and general.
+The relationship between $\text{Gap}^p$ and $\text{Gap}\^{\text{OLS}}$ is exact and general.
 
 Here we assume that the coefficient on $x$ varies between the two groups, and that x is a scalar:
 
@@ -149,67 +149,34 @@ $$
 
 Based on equation (\ref{eq:specific-gap}) we have
 
-$$
-\label{eq:gap_1}\tag{4}
-\text{Gap}^1=\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
-$$
+
+\begin{align}\label{eq:gap_1}
+\text{Gap}^1 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
+\end{align}
+
 
 and
 
-$$
-\label{eq:gap_0}\tag{5}
-\text{Gap}^0=\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
-$$
+
+\begin{align}\label{eq:gap_0}
+\text{Gap}^0 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align}
+
+
 and finally,
 
-$$
-\label{eq:gap_OLS}\tag{6}
-\text{Gap}^{\text{OLS}}=w_1\text{Gap}^1+w_0\text{Gap}^0
-$$
+
+\begin{align}\label{eq:gap_OLS}
+\text{Gap}^{\text{OLS}} & =w_1\text{Gap}^1+w_0\text{Gap}^0
+\end{align}
+
+
 where the weights are:
 
-\begin{align*}
-w_{1} & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w1}\tag{7a}\\
-w_{0} & =\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w0}\tag{7b}
-\end{align*}
-
-### Useful expressions
-
-The law of total variance, or variance decomposition formula is:
-
-$$
-\text{var}(X)=\mathbb{E}[\text{var}(X\vert Y)]+\text{var}(\mathbb{E}[X\vert Y])
-$$ where the first term is the between-group variance and the second term is the within-group variance.
-
-In our problem, the correspondng variance decomposition is
-
-\begin{align*}
-\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
- & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
-\end{align*} but we have
-
-$$
-\mathbb{E}\left[x\right]=\mathbb{E}\left[\mathbb{E}\left[x\vert y\right]\right]=\pi\mathbb{E}\left[x\vert d=1\right] + (1-\pi)\mathbb{E}\left[x\vert d=0\right]
-$$ substituting the RHS for $\mathbb{E}\left[x\right]$ we have
-
-\begin{align*}
-\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
- & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
-\end{align*}
-
-but we have $\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]=\text{cov}(x,d)/\text{var}(d)$, and $\text{var}(d)=\pi(1-\pi)$, so
-
-\begin{align*}
-\text{var}(x) & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
- & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
- & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
-\end{align*}
-
-by the same logic
-
-$$
-\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
-$$
+\begin{align}
+w_{1} & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w1}\\
+w_{0} & =\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w0}
+\end{align}
 
 Now writing $\text{Gap}^{\text{OLS}}=w_1\text{Gap}^1 + w_0\text{Gap}^0$ with $w_1+w_0=1$ (equation (\ref{eq:gap_OLS})):
 
@@ -242,6 +209,70 @@ w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =\frac{\text{cov}\left(d,y\right)}{\te
  & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\left(\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}\right)\\
  & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}
 \end{align*}
+
+Now we have 
+
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align*}
+
+and since $\tilde{d}(x)$ represents the residuals from a population regression of $d$ on $x$,
+
+\begin{align*}
+\text{var}\left(\tilde{d}(x)\right) & =\text{var}\left(d-x\frac{\text{cov}\left(d,x\right)}{\text{var}\left(x\right)}\right)\\
+ & =\text{var}\left(d\right)-\frac{\text{cov}\left(d,x\right)^{2}}{\text{var}\left(x\right)}
+\end{align*}
+
+and so
+
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{var}(x)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\\
+ & =w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0}
+\end{align*}
+
+
+
+
+### Appendix
+
+The law of total variance, or variance decomposition formula is:
+
+$$
+\text{var}(X)=\mathbb{E}[\text{var}(X\vert Y)]+\text{var}(\mathbb{E}[X\vert Y])
+$$ where the first term is the between-group variance and the second term is the within-group variance.
+
+In our problem, the corresponding variance decomposition is
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
+\end{align*} but we have
+
+$$
+\mathbb{E}\left[x\right]=\mathbb{E}\left[\mathbb{E}\left[x\vert y\right]\right]=\pi\mathbb{E}\left[x\vert d=1\right] + (1-\pi)\mathbb{E}\left[x\vert d=0\right]
+$$ substituting the RHS for $\mathbb{E}\left[x\right]$ we have
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
+\end{align*}
+
+but we have $\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]=\text{cov}(x,d)/\text{var}(d)$, and $\text{var}(d)=\pi(1-\pi)$, so
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
+\end{align*}
+
+by the same logic
+
+$$
+\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
+$$
+
 
 
 ### Gap weights
