@@ -3,6 +3,10 @@ title: "Decompositions"
 format: pdf
 monofontoptions: 
   - Scale=0.55
+margin-left: 20mm
+margin-right: 20mm
+margin-top: 20mm
+margin-bottom: 25mm
 ---
 
 ```{r}
