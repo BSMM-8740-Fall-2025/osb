@@ -28,24 +28,15 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 # Mind the Gap
 
-When faced with a gap in mean outcomes between two groups, researchers frequently examine how much of the gap can be explained by differences in observable characteristics.
+When observing a gap in mean outcomes between two groups, we often are interested in how much of the gap can be explained by differences in observable characteristics.
 
-The simple approach is to estimate the pooled regression including an indicator variable for group membership as well as the other observable characteristics, interpreting the coefficient on the group indicator as the unexplained component.
+The simplest approach is to estimate a pooled regression of the outcome on the observable characteristics, including an indicator variable for group membership, and interpret the coefficient on the group indicator as the unexplained gap in mean differences.
 
-The Oaxaca-Blinder (O-B) decomposition represents an alternative approach.
+The Oaxaca-Blinder (O-B) decomposition(s) represent an alternative approach that provides further insight into the relationship between the group indicator and the observable characteristics of the groups.
 
 ## Oaxaca-Blinder decomposition
 
-Consider a categorical (or dummy) variable $d$ that splits our dataset into two groups.
-
-In this case we can run regressions of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows
-
-\begin{align*}
-\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(0)}\right]\beta_{0};\;\text{group }d=0\\
-\mathbb{E}\left[y^{1}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1};\;\text{group }d=1
-\end{align*}
-
-Alternatively
+As an alternative to a pooled regression with a categorical (or dummy) variable $d$ that splits our dataset into two groups, we can run regressions of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows:
 
 \begin{align*}
 \bar{y}_0 & =\bar{X}_0\beta_{0};\;\text{group }d=0\\
@@ -54,75 +45,67 @@ Alternatively
 
 Then the mean difference in outcomes is:
 
-\begin{align*}
-\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1}-\mathbb{E}\left[X^{(0)}\right]\beta_{0}\\
- & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{1}+\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
- & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{0}-\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)
-\end{align*}
-
-Alternatively
-
 \begin{align}\label{eq:gap}
 \bar{y}_1-\bar{y}_0 & =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
  & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\nonumber\\
  & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}-\bar{X}_1\left(\beta_{0}-\beta_{1}\right)\nonumber
 \end{align}
 
-Where: $\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (differences in returns to characteristics), where $\bar{X}_0$ is the baseline (this decomposition is not unique, as you can see from the second and third lines of equation (\ref{eq:gap}).
+Where, using $\bar{X}_0$ as the baseline, $\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (since it is based on differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (based on differences in returns to characteristics). This decomposition is not unique, as you can see from the second and third lines of equation (\ref{eq:gap}).
 
-We define
+We define:
 
 \begin{align*}
 \text{Gap}^{1} & =\bar{X}_0\left(\beta_{1}-\beta_{0}\right);\;\bar{X}_0\text{ is the baseline}\\
 \text{Gap}^{0} & =\bar{X}_1\left(\beta_{0}-\beta_{1}\right);\;\bar{X}_1\text{ is the baseline}\\
-\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+d\delta_{d}+X\delta_{1}+\epsilon
+\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+d\delta_{d}+X\delta_{x}+\epsilon
 \end{align*}
 
-where, given the strong assumptions that the model is properly specified and that coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
+where, for $\text{Gap}^{\text{OLS}}$, given the strong assumptions that (i) the model is properly specified and that (ii) coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
 
-We an define another measure $\text{Gap}^{p}$ as
+We an define another measure, $\text{Gap}^{p}$, as
 
 \begin{align*}
 \bar{y}_1-\bar{y}_0 & =\left(\bar{X}_1-\bar{X}_0\right)\hat{\beta}_{p}+\text{Gap}^p\\
 \text{Gap}^p & =\bar{X}_1\left(\hat{\beta}_1-\hat{\beta}_p\right)+\bar{X}_0\left(\hat{\beta}_p-\hat{\beta}_{0}\right)
 \end{align*}
 
-where $\hat{\beta}_p$ is the coefficient from the pooled regression of $y$ on $X$ (i.e. $y=X\beta_p+\epsilon$).
+where $\hat{\beta}_p$ is the coefficient from the pooled regression of $y$ on $X$ (i.e. $y=X\beta_p+\epsilon$). We consider separately the cases where the coefficients are equal across groups and where the coefficients are unequal across groups.
 
 ### The Case in Which Coefficients Are Equal across Groups
 
 Here we assume that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$.
 
-An O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.
+By definition, an O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.
 
-A general expression for an O-B unexplained gap is
+A general expression for an O-B unexplained gap is:
 
 \begin{align}\label{eq:general-gap}
 \text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\nonumber\\
  & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
 \end{align}
 
-where $\hat{\beta}$ is a coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept. The choice of $\hat{\beta}$ is what identifies the different O-B decompositions.
+where $\hat{\beta}$ is some coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept. The choice of $\hat{\beta}$ is what identifies the different O-B decompositions.
 
-So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^1].
+So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and equation (\ref{eq:general-gap}) gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^1].
 
-[^1]: under the data generation process described by $y=\delta_{0}+\delta_{d}d+\delta_{1}X+\epsilon$
+[^1]: under the data generation process described by $y=\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon$
 
 \begin{align}
 \text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\nonumber\\
- & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\label{eq:general-gap}\\
- & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x\right)+\epsilon}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\nonumber\\
- & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\label{eq:specific-gap}\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\label{eq:gen-gap-a}\\
+ & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\nonumber\\
+ & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\label{eq:gen-gap-b}\\
  & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}\nonumber
 \end{align}
 
-given our assumption that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$ (and so $\hat{\beta}=\delta_x$ in both group-specific regressions), then all the gap expressions are equivalent, except for $\text{Gap}^{p}$.
+Given our assumption that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$ (and so $\hat{\beta}=\beta_x$ in both group-specific regressions), then all the gap expressions are equivalent, except for $\text{Gap}^{p}$.
 
 $\text{Gap}^{p}$ is different because in the pooled regression used to compute $\text{Gap}^p$, $d$ is a omitted variable. In particular:
 
 \begin{align}\label{eq:gap_p_eqn}
-\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\text{b}(y\vert x)\vert d)\nonumber\\
- & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\nonumber\\
+\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\times\text{b}(y\vert x)\vert d)\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\times\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\nonumber\\
  & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\nonumber\\
  & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
 \end{align}
@@ -143,37 +126,31 @@ and so $\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^
 
 ### The Case in Which Coefficients Vary across Groups
 
-The relationship between $\text{Gap}^p$ and $\text{Gap}\^{\text{OLS}}$ is exact and general.
+The relationship between $\text{Gap}^p$ and $\text{Gap}^{\text{OLS}}$ is exact and general.
 
-Here we assume that the coefficient on $x$ varies between the two groups, and that x is a scalar:
+Here we assume that the coefficient on $x$ varies between the two groups, and that x is a scalar variable (i.e. a single observable characteristic, not a vector of observable characteristics):
 
 $$
 y=\delta_{0}+d\delta_{d}+\delta_{x}x+\delta_{dx}dx+\epsilon 
 $$
 
-Based on equation (\ref{eq:specific-gap}) we have
-
+Based on equation (\ref{eq:gen-gap-b}) we have
 
 \begin{align}\label{eq:gap_1}
 \text{Gap}^1 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
 \end{align}
 
-
 and
-
 
 \begin{align}\label{eq:gap_0}
 \text{Gap}^0 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
 \end{align}
 
-
 and finally,
-
 
 \begin{align}\label{eq:gap_OLS}
 \text{Gap}^{\text{OLS}} & =w_1\text{Gap}^1+w_0\text{Gap}^0
 \end{align}
-
 
 where the weights are:
 
@@ -190,7 +167,7 @@ w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =w_{1}\left[\frac{\text{cov}\left(d,y\
  & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi
 \end{align*}
 
-where 
+where
 
 \begin{align*}
 \Pi & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
@@ -214,7 +191,7 @@ w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =\frac{\text{cov}\left(d,y\right)}{\te
  & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}
 \end{align*}
 
-Now we have 
+Now we have
 
 \begin{align*}
 \text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
@@ -235,9 +212,6 @@ and so
  & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\\
  & =w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0}
 \end{align*}
-
-
-
 
 ### Appendix
 
@@ -277,11 +251,7 @@ $$
 \text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
 $$
 
-
-
 ### Gap weights
-
-
 
 Example
 
