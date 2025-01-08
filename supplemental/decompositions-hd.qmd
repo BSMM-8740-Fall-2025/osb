@@ -273,8 +273,8 @@ data:
 # https://ocw.mit.edu/courses/14-662-labor-economics-ii-spring-2015/resources/mit14_662s15_lecnotes1/
 
 # Load HMDA data
-data('PSID1982', package = "AER")
-hmda <- PSID1982
+data('CPS1985', package = "AER") # data('PSID1982', package = "AER")
+hmda <- CPS1985 |> tibble::as_tibble()
 
 # data("nswcps", package = "hettreatreg")
 
@@ -282,10 +282,11 @@ hmda <- PSID1982
 # Looking at income differences between racial groups
 lending_data <- hmda |> 
   dplyr::mutate(
-    minority = factor(race != "white"),
-    log_income = log(income)
+    minority = factor(ethnicity != "cauc"), # minority = factor(race != "white"),
+    log_income = log(wage) #log(income)
   ) |> 
-  dplyr::select(log_income, minority, education, hrat, ccred, mcred, pubrec)
+  dplyr::select(wage, log_income, minority, education, experience, union)
+  # dplyr::select(log_income, minority, education, hrat, ccred, mcred, pubrec)
 ```
 
 \AddToHookNext{env/Highlighting/begin}{\tiny}
@@ -295,15 +296,15 @@ lending_data <- hmda |>
 #| code-overflow: wrap
 # Fit separate regressions
 model_a <- 
-  lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='yes'))
+  lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='yes'))
 model_b <- 
-  lm(wage ~ education + experience, data = dat |> dplyr::filter(union=='no'))
+  lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='no'))
 
 # Get mean characteristics (including intercept)
 X_mean_a <- 
   c(1, 
     colMeans( 
-    dat |> 
+    lending_data |> 
       dplyr::filter(union=='yes') |> 
       dplyr::select(education, experience)
     ) 
@@ -311,7 +312,7 @@ X_mean_a <-
 X_mean_b <- 
   c(1, 
     colMeans( 
-      dat |> 
+      lending_data |> 
         dplyr::filter(union=='no') |> 
         dplyr::select(education, experience) 
     ) 
@@ -333,7 +334,7 @@ decomp <-
   oaxaca::oaxaca(
     wage ~ education + experience | union
     , data = 
-      dat |> 
+      lending_data |> 
       dplyr::mutate(union = dplyr::case_when(union=='yes'~0, TRUE ~1))
   )
 
