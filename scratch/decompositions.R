@@ -197,6 +197,7 @@ decomp <-
 # JAN 15, 2025 ----
 
 require(ggplot2)
+require(patchwork)
 
 # (1) just indicator ----
 
@@ -217,15 +218,31 @@ model_c <- lm(wage ~ union, data = lending_data) # pooled regression on educatio
 model_c |> broom::tidy()
 
 gap_dat <- lending_data |> dplyr::group_by(union) |> dplyr::summarize(wage = mean(wage))
+# theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
-lending_data |>
+p_1 <- lending_data |>
   ggplot(aes(x = union, y = wage, color=union)) +
   geom_point() +
   geom_point(data = gap_dat, shape = 15,  size = 5) +
-  theme_minimal()
+  theme_minimal(base_size = 18) + ylim(NA, 30)
 
-model_c |> broom::tidy() |>
-  dplyr::bind_cols( gap_dat |> dplyr::mutate(diff = wage - dplyr::lag(wage)) )
+p_gt_1 <- model_c |> broom::tidy() |>
+  dplyr::bind_cols( gap_dat |> dplyr::mutate(diff = wage - dplyr::lag(wage)) ) |>
+  gt::gt("term") |>
+  gt::cols_label(wage ~ "mean wage") |>
+  gt::fmt_number(-term, decimals = 3) |>
+  gt::tab_style(
+    style = gt::cell_borders(
+      sides = 'left',
+      color = "red",
+      weight = gt::px(2.5),
+      style = "double"
+    ),
+    locations = gt::cells_body(columns = union)
+  ) |>
+  gt::sub_missing(columns = diff)
+
+p_1 / wrap_table(p_gt_1, space = "fixed")
 
 # A tibble: 2 × 8
 # term        estimate std.error statistic   p.value union  wage  diff
@@ -234,11 +251,11 @@ model_c |> broom::tidy() |>
 # 2 unionyes        2.16     0.572      3.78 1.74e-  4 yes   10.8   2.16
 
 
-# (1) indicator & 1 covariate ----
+# (2) indicator & 1 covariate ----
 
 mean_y_diff = gap_dat |> dplyr::mutate(diff = wage - dplyr::lag(wage)) |> dplyr::filter(union=='yes') |> dplyr::pull(diff)
 
-lending_data |>
+p_2 <- lending_data |>
   ggplot(aes(x=education, y=wage, color=union)) +
   geom_point() +
   geom_smooth(method="lm", se= F, aes(colour = union, group = union)) +
@@ -279,6 +296,7 @@ X_mean_b <-
 # Get coefficients
 beta_a <- coef(model_a)
 beta_b <- coef(model_b)
+beta_c <- coef(model_c)
 beta_d <- coef(model_d)
 
 # Calculate decomposition (referenced to union group)
@@ -291,13 +309,36 @@ tibble::tibble(
 sum(X_mean_a * beta_a)
 sum(X_mean_b * beta_b)
 
-# union = 0
+# union
 Gap1    <- sum(X_mean_b * (beta_a - beta_b))
 Gap0    <- sum(X_mean_a * (beta_a - beta_b))
 Gap_OLS <- model_c$coefficients[2]
 Gap_p   <- sum((X_mean_a - X_mean_b) * beta_d) + sum(X_mean_a * (beta_a - beta_d)) + sum(X_mean_b * (beta_d - beta_b))
 
 c(Gap0, Gap1, Gap_OLS, Gap_p, Gap_p - mean_y_diff)
+
+# Calculate decomposition (referenced to union group)
+p_gt_2 <- tibble::tibble(
+  gap = c("Gap0", "Gap1", "Gap_OLS", "Gap_p")
+  , explained =
+    c( sum((X_mean_a - X_mean_b) * beta_b), sum((X_mean_a - X_mean_b) * beta_a ),  sum((X_mean_a - X_mean_b) * beta_c[-2] ),0 )
+  , unexplained = c( Gap0, Gap1, Gap_OLS, Gap_p )
+  , total_gap <- explained + unexplained
+) |>
+gt::gt("gap") |>
+  gt::fmt_number(-gap, decimals = 3) |>
+  gt::tab_style(
+    style = gt::cell_borders(
+      sides = 'left',
+      color = "red",
+      weight = gt::px(2.5),
+      style = "double"
+    ),
+    locations = gt::cells_body(columns = "total_gap <- explained + unexplained")
+  )
+
+p_2 / wrap_table(p_gt_2, space = "fixed")
+
 #                                 unionyes
 # 2.296231e+00  2.240677e+00  2.286172e+00  2.162897e+00 -1.332268e-14
 
@@ -312,3 +353,84 @@ Gap_ <- function(coef, data = lending_data){
 
 c( Gap_(beta_b[2]), Gap_(beta_a[2]) )
 
+
+# (2) indicator & propensity ----
+
+model_d <-
+  lm(
+    union ~ education + + experience
+    , data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))
+  ) # propensity score
+
+propensity_dat <-
+  lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)) |>
+  tibble::add_column(
+    propensity =
+      model_d |> predict(new_data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)))
+  )
+
+p_3 <- propensity_dat |>
+  ggplot(aes(x=propensity, y=wage, color=union)) +
+  geom_point() +
+  geom_smooth(method="lm", se= F, aes(colour = union, group = union)) +
+  ylim(NA,30)+
+  theme_minimal()
+
+P_mean_a <-
+  c(1,
+    colMeans(
+      propensity_dat |>
+        dplyr::filter(union==1) |>
+        dplyr::select(propensity)
+    )
+  )
+
+P_mean_b <-
+  c(1,
+    colMeans(
+      propensity_dat |>
+        dplyr::filter(union==0) |>
+        dplyr::select(propensity)
+    )
+  )
+
+p_model_a <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==1))
+p_model_b <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==0))
+p_model_c <- lm(wage ~ union + propensity, data = propensity_dat) # pooled regression on education and union indicator
+p_model_d <- lm(wage ~ propensity, data = propensity_dat) # pooled regression on education alone
+
+# Get coefficients
+p_beta_a <- coef(p_model_a)
+p_beta_b <- coef(p_model_b)
+p_beta_c <- coef(p_model_c)
+p_beta_d <- coef(p_model_d)
+
+p_Gap1    <- sum(P_mean_b * (p_beta_a - p_beta_b))
+p_Gap0    <- sum(P_mean_a * (p_beta_a - p_beta_b))
+p_Gap_OLS <- p_model_c$coefficients[2]
+p_Gap_p   <- sum((P_mean_a - P_mean_b) * p_beta_d) + sum(P_mean_a * (p_beta_a - p_beta_d)) + sum(P_mean_b * (p_beta_d - p_beta_b))
+
+p_gt_3 <- tibble::tibble(
+  gap = c("p_Gap0", "p_Gap1", "p_Gap_OLS", "p_Gap_p")
+  , explained =
+    c( sum((P_mean_a - P_mean_b) * p_beta_b), sum((P_mean_a - P_mean_b) * p_beta_a ),  sum((P_mean_a - P_mean_b) * p_beta_c[-2] ),0 )
+  , unexplained = c( p_Gap0, p_Gap1, p_Gap_OLS, p_Gap_p )
+  , total_gap <- explained + unexplained
+)|>
+  gt::gt("gap") |>
+  gt::fmt_number(-gap, decimals = 3) |>
+  gt::tab_style(
+    style = gt::cell_borders(
+      sides = 'left',
+      color = "red",
+      weight = gt::px(2.5),
+      style = "double"
+    ),
+    locations = gt::cells_body(columns = "total_gap <- explained + unexplained")
+  )
+
+p_3 / wrap_table(p_gt_3, space = "fixed")
+
+free(p_3, type = "label") / wrap_table(p_gt_3, space = "fixed")
+
+free(p_3, type = "space", side = "l") / wrap_table(p_gt_3, space = "fixed")
