@@ -275,7 +275,7 @@ lending_data |>
 
 
 # Get mean characteristics (including intercept, since ceof includes the intercept)
-X_mean_a <-
+X_mean_a <- # mean education, union members
   c(1,
     colMeans(
       lending_data |>
@@ -284,7 +284,7 @@ X_mean_a <-
     )
   )
 
-X_mean_b <-
+X_mean_b <- # mean education, non-union members
   c(1,
     colMeans(
       lending_data |>
@@ -338,6 +338,30 @@ gt::gt("gap") |>
   )
 
 p_2 / wrap_table(p_gt_2, space = "fixed")
+
+free(p_2, type = "label") / wrap_table(p_gt_2, space = "fixed")
+
+free(p_2, type = "space", side = "l") / wrap_table(p_gt_2, space = "fixed")
+
+# ^^^^^^^ weights
+p_union <-
+  lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)) |>
+  dplyr::summarize(p = sum(union)/length(union)) |>
+  dplyr::pull(p)
+
+var_1_2 <- lending_data |>
+  dplyr::summarise(
+    var_0 = dplyr::case_when(union == 'no' ~ education, TRUE ~ NA) |> var(na.rm = TRUE)
+    , var_1 = dplyr::case_when(union == 'yes' ~ education, TRUE ~ NA) |> var(na.rm = TRUE)
+  ) |> unlist()
+
+p_w1_2 <-  (p_union * var_1_2[2])/( (p_union * var_1_2[2]) + ((1-p_union) * var_1_2[1]) )
+p_w0_2 <-  ((1-p_union) * var_1_2[1])/( (p_union * var_1_2[2]) + ((1-p_union) * var_1_2[1]) )
+p_w0_2 + p_w1_2
+
+p_w0_2*Gap0 + p_w1_2*Gap1
+
+p_w1_2*Gap0 + p_w0_2*Gap1
 
 #                                 unionyes
 # 2.296231e+00  2.240677e+00  2.286172e+00  2.162897e+00 -1.332268e-14
