@@ -215,6 +215,29 @@ and so
 
 ### Appendix
 
+#### Regression on binary variable: coefficient
+
+Recall that for a continuous variable $y$ and a binary variable $d$ (with the proportion of $d=1$ in the data $=p$):
+
+\begin{align*}
+\mathbb{E}\left[d\right] & =p\\
+\text{var}\left(d\right) & =p\left(1-\mathbb{E}\left[d\right]\right)^{2}+\left(1-p\right)\left(-\mathbb{E}\left[d\right]\right)^{2}\\
+ & =p\left(1-p\right)^{2}+\left(1-p\right)p^{2}\\
+ & =p\left(1-p\right)\\
+\text{covar}\left(d,y\right) & =\mathbb{E}_{y,d}\left[\left(y-\overline{y}\right)\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{d}\left[\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d\right],\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right]\times p\left(1-p\right)\\
+ & \;-\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]\times\left(1-p\right)p
+\end{align*}
+
+Then the coefficient $\beta_d$ from the regression $y\sim\beta_d d$ is 
+
+$$
+\beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]
+$$
+
+#### Misc
+
 The law of total variance, or variance decomposition formula is:
 
 $$
