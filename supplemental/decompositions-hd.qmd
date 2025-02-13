@@ -230,7 +230,7 @@ Recall that for a continuous variable $y$ and a binary variable $d$ (with the pr
  & \;-\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]\times\left(1-p\right)p
 \end{align*}
 
-Then the coefficient $\beta_d$ from the regression $y\sim\beta_d d$ is 
+Then the coefficient $\beta_d$ from the regression $y\sim\beta_d d$ is
 
 $$
 \beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]
@@ -273,6 +273,21 @@ by the same logic
 $$
 \text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
 $$
+
+#### OLS Weights
+
+With $\rho\equiv\mathbb{E}[d]=\mathbb{E}\left[\mathbb{E}[d\vert X]\right]$ and $\text{P}(X)=\alpha_p+X\beta_p$ is the propensity score ($\beta_p=\frac{\text{cov}(d,X)}{\text{var}(X)}$). We derive the expression for the derivatives of $w_0$ and $w_1$ wrt the intercept of the propensity model $\alpha_p$, where a shift in the intercept changes $\rho$ by a small amount.
+
+Referencing the weights, per equations (\ref{eq:gap_w0} and \ref{eq:gap_w1})
+
+\begin{align*}
+a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right)\\
+ & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right]\\
+ & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right)\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{align*}
 
 ### Gap weights
 

@@ -14,10 +14,10 @@ lending_data <- hmda |>
   ) |>
   dplyr::select(wage, log_income, minority, education, experience, union)
 
-model_a <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='yes'))
-model_b <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='no'))
-model_c <- lm(wage ~ union + education, data = lending_data) # pooled regression on education and union indicator
-model_d <- lm(wage ~ education, data = lending_data) # pooled regression on education alone
+model_1 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='yes'))
+model_0 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='no'))
+model_OLS <- lm(wage ~ union + education, data = lending_data) # pooled regression on education and union indicator
+propensity <- lm(wage ~ education, data = lending_data) # pooled regression on education alone
 
 lending_data |>
   ggplot(aes(x=education, y=wage, color=union)) +
@@ -27,7 +27,7 @@ lending_data |>
   theme_minimal()
 
 # Get mean characteristics (including intercept, since ceof includes the intercept)
-X_mean_a <-
+X_mean_1 <-
   c(1,
     colMeans(
       lending_data |>
@@ -36,7 +36,7 @@ X_mean_a <-
     )
   )
 
-X_mean_b <-
+X_mean_0 <-
   c(1,
     colMeans(
       lending_data |>
@@ -46,19 +46,19 @@ X_mean_b <-
   )
 
 # Get coefficients
-beta_a <- coef(model_a)
-beta_b <- coef(model_b)
-beta_d <- coef(model_d)
+beta_1 <- coef(model_1)
+beta_0 <- coef(model_0)
+beta_propensity <- coef(propensity)
 
 # Calculate decomposition (referenced to union group)
 tibble::tibble(
-  explained = sum((X_mean_a - X_mean_b) * beta_a)
-  , unexplained = sum(X_mean_b * (beta_a - beta_b))
+  explained = sum((X_mean_1 - X_mean_0) * beta_1)
+  , unexplained = sum(X_mean_0 * (beta_1 - beta_0))
   , total_gap <- explained + unexplained
 )
 
-sum(X_mean_a * beta_a)
-sum(X_mean_b * beta_b)
+sum(X_mean_1 * beta_1)
+sum(X_mean_0 * beta_0)
 
 
 # compare to direct means
@@ -70,12 +70,12 @@ diffs <- lending_data |>
 mean_y_diff = diffs |> dplyr::filter(union=='yes') |> dplyr::pull(diff)
 
 # union = 0
-Gap1    <- sum(X_mean_b * (beta_a - beta_b))
-Gap0    <- sum(X_mean_a * (beta_b - beta_a))
-Gap1    <- sum(X_mean_a * (beta_b - beta_a))
-Gap0    <- sum(X_mean_b * (beta_a - beta_b))
-Gap_OLS <- model_c$coefficients[2]
-Gap_p   <- sum((X_mean_a - X_mean_b) * beta_d) + sum(X_mean_a * (beta_a - beta_d)) + sum(X_mean_b * (beta_d - beta_b))
+Gap1    <- sum(X_mean_0 * (beta_1 - beta_0))
+Gap0    <- sum(X_mean_1 * (beta_0 - beta_1))
+Gap1    <- sum(X_mean_1 * (beta_0 - beta_1))
+Gap0    <- sum(X_mean_0 * (beta_1 - beta_0))
+Gap_OLS <- model_OLS$coefficients[2]
+Gap_p   <- sum((X_mean_1 - X_mean_0) * beta_propensity) + sum(X_mean_1 * (beta_1 - beta_propensity)) + sum(X_mean_0 * (beta_propensity - beta_0))
 
 
 c(Gap0, Gap1, Gap_OLS, Gap_p, Gap_p - mean_y_diff)
@@ -90,10 +90,10 @@ Gap <- function(coef, data = lending_data){
     dplyr::filter(union=='yes') |>
     dplyr::pull(diff)
 
-  X_mean_a <- colMeans( lending_data |> dplyr::filter(union=='yes') |> dplyr::select(education) )
-  X_mean_b <- colMeans( lending_data |> dplyr::filter(union=='no')  |> dplyr::select(education) )
+  X_mean_1 <- colMeans( lending_data |> dplyr::filter(union=='yes') |> dplyr::select(education) )
+  X_mean_0 <- colMeans( lending_data |> dplyr::filter(union=='no')  |> dplyr::select(education) )
 
-  mean_y_diff - coef * (X_mean_a - X_mean_b)
+  mean_y_diff - coef * (X_mean_1 - X_mean_0)
 }
 
 Gap_ <- function(coef, data = lending_data){
@@ -105,9 +105,9 @@ Gap_ <- function(coef, data = lending_data){
   cov_dy/var_d  - coef * (cov_dx/var_d)
 }
 
-c( Gap_(beta_b[2]), Gap_(beta_a[2]) )
+c( Gap_(beta_0[2]), Gap_(beta_1[2]) )
 
-c( Gap(beta_b[2]), Gap(beta_a[2]) )
+c( Gap(beta_0[2]), Gap(beta_1[2]) )
 
 prop <- lending_data |> dplyr::select(union) |> table(); prop <- (prop[2]/prop[1])
 var1 <- lending_data |> dplyr::filter(union=='yes') |> dplyr::pull(education) |> var()
@@ -151,13 +151,13 @@ Gap_OLS
 ( (cov_dy * var_x) - (cov_dx*cov_xy) )/( (var_x * var_d) - cov_dx^2)
 # ==========================================
 # Fit separate regressions
-model_a <-
+model_1 <-
   lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='yes'))
-model_b <-
+model_0 <-
   lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='no'))
 
 # Get mean characteristics (including intercept)
-X_mean_a <-
+X_mean_1 <-
   c(1,
     colMeans(
       lending_data |>
@@ -165,7 +165,7 @@ X_mean_a <-
         dplyr::select(education, experience)
     )
   )
-X_mean_b <-
+X_mean_0 <-
   c(1,
     colMeans(
       lending_data |>
@@ -175,13 +175,13 @@ X_mean_b <-
   )
 
 # Get coefficients
-beta_a <- coef(model_a)
-beta_b <- coef(model_b)
+beta_1 <- coef(model_1)
+beta_0 <- coef(model_0)
 
 # Calculate decomposition
 tibble::tibble(
-  explained = sum((X_mean_a - X_mean_b) * beta_a)
-  , unexplained = sum(X_mean_b * (beta_a - beta_b))
+  explained = sum((X_mean_1 - X_mean_0) * beta_1)
+  , unexplained = sum(X_mean_0 * (beta_1 - beta_0))
   , total_gap <- explained + unexplained
 )
 
@@ -214,8 +214,8 @@ lending_data <- hmda |>
   ) |>
   dplyr::select(wage, log_income, minority, education, experience, union)
 
-model_c <- lm(wage ~ union, data = lending_data) # pooled regression on education and union indicator
-model_c |> broom::tidy()
+model_OLS <- lm(wage ~ union, data = lending_data) # pooled regression on education and union indicator
+model_OLS |> broom::tidy()
 
 gap_dat <- lending_data |> dplyr::group_by(union) |> dplyr::summarize(wage = mean(wage))
 # theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
@@ -226,7 +226,7 @@ p_1 <- lending_data |>
   geom_point(data = gap_dat, shape = 15,  size = 5) +
   theme_minimal(base_size = 18) + ylim(NA, 30)
 
-p_gt_1 <- model_c |> broom::tidy() |>
+p_gt_1 <- model_OLS |> broom::tidy() |>
   dplyr::bind_cols( gap_dat |> dplyr::mutate(diff = wage - dplyr::lag(wage)) ) |>
   gt::gt("term") |>
   gt::cols_label(wage ~ "mean wage") |>
@@ -262,20 +262,21 @@ p_2 <- lending_data |>
   ylim(NA,30)+
   theme_minimal()
 
-model_a <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='yes'))
-model_b <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='no'))
-model_c <- lm(wage ~ union + education, data = lending_data) # pooled regression on education and union indicator
-model_d <- lm(wage ~ education, data = lending_data) # pooled regression on education alone
-model_d <- lm(union ~ education, data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))) # propensity score
+model_1 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='yes'))
+model_0 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='no'))
+model_OLS <- lm(wage ~ union + education, data = lending_data) # pooled regression on education and union indicator
+model_pooled <- lm(wage ~ education, data = lending_data) # pooled regression on education alone
+propensity <- lm(union ~ education, data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))) # propensity score
 
-lending_data |>
-  dplyr::mutate(p = model_d$coefficients[1] + education * model_d$coefficients[2]) |>
-  ggplot(aes(x=education, y=p)) +
-  geom_point()
+
+# lending_data |>
+#   dplyr::mutate(p = propensity$coefficients[1] + education * propensity$coefficients[2]) |>
+#   ggplot(aes(x=education, y=p)) +
+#   geom_point()
 
 
 # Get mean characteristics (including intercept, since ceof includes the intercept)
-X_mean_a <- # mean education, union members
+X_mean_1 <- # mean education, union members
   c(1,
     colMeans(
       lending_data |>
@@ -284,7 +285,7 @@ X_mean_a <- # mean education, union members
     )
   )
 
-X_mean_b <- # mean education, non-union members
+X_mean_0 <- # mean education, non-union members
   c(1,
     colMeans(
       lending_data |>
@@ -294,26 +295,26 @@ X_mean_b <- # mean education, non-union members
   )
 
 # Get coefficients
-beta_a <- coef(model_a)
-beta_b <- coef(model_b)
-beta_c <- coef(model_c)
-beta_d <- coef(model_d)
+beta_1 <- coef(model_1)
+beta_0 <- coef(model_0)
+beta_OLS <- coef(model_OLS)
+beta_pooled <- coef(model_pooled)
 
 # Calculate decomposition (referenced to union group)
 tibble::tibble(
-  explained = sum((X_mean_a - X_mean_b) * beta_a)
-  , unexplained = sum(X_mean_b * (beta_a - beta_b))
+  explained = sum((X_mean_1 - X_mean_0) * beta_1)
+  , unexplained = sum(X_mean_0 * (beta_1 - beta_0))
   , total_gap <- explained + unexplained
 )
 
-sum(X_mean_a * beta_a)
-sum(X_mean_b * beta_b)
+# sum(X_mean_1 * beta_1)
+# sum(X_mean_0 * beta_0)
 
 # union
-Gap1    <- sum(X_mean_b * (beta_a - beta_b))
-Gap0    <- sum(X_mean_a * (beta_a - beta_b))
-Gap_OLS <- model_c$coefficients[2]
-Gap_p   <- sum((X_mean_a - X_mean_b) * beta_d) + sum(X_mean_a * (beta_a - beta_d)) + sum(X_mean_b * (beta_d - beta_b))
+Gap1    <- sum(X_mean_0 * (beta_1 - beta_0))
+Gap0    <- sum(X_mean_1 * (beta_1 - beta_0))
+Gap_OLS <- model_OLS$coefficients[2]
+Gap_p   <- sum((X_mean_1 - X_mean_0) * beta_pooled) + sum(X_mean_1 * (beta_1 - beta_pooled)) + sum(X_mean_0 * (beta_pooled - beta_0))
 
 c(Gap0, Gap1, Gap_OLS, Gap_p, Gap_p - mean_y_diff)
 
@@ -321,7 +322,7 @@ c(Gap0, Gap1, Gap_OLS, Gap_p, Gap_p - mean_y_diff)
 p_gt_2 <- tibble::tibble(
   gap = c("Gap0", "Gap1", "Gap_OLS", "Gap_p")
   , explained =
-    c( sum((X_mean_a - X_mean_b) * beta_b), sum((X_mean_a - X_mean_b) * beta_a ),  sum((X_mean_a - X_mean_b) * beta_c[-2] ),0 )
+    c( sum((X_mean_1 - X_mean_0) * beta_0), sum((X_mean_1 - X_mean_0) * beta_1 ),  sum((X_mean_1 - X_mean_0) * beta_OLS[-2] ), 0 )
   , unexplained = c( Gap0, Gap1, Gap_OLS, Gap_p )
   , total_gap <- explained + unexplained
 ) |>
@@ -361,7 +362,7 @@ p_w0_2 + p_w1_2
 
 p_w0_2*Gap0 + p_w1_2*Gap1
 
-p_w1_2*Gap0 + p_w0_2*Gap1
+# p_w1_2*Gap0 + p_w0_2*Gap1
 
 #                                 unionyes
 # 2.296231e+00  2.240677e+00  2.286172e+00  2.162897e+00 -1.332268e-14
@@ -375,12 +376,12 @@ Gap_ <- function(coef, data = lending_data){
   cov_dy/var_d  - coef * (cov_dx/var_d)
 }
 
-c( Gap_(beta_b[2]), Gap_(beta_a[2]) )
+c( Gap_(beta_0[2]), Gap_(beta_1[2]) )
 
 
 # (2) indicator & propensity ----
 
-model_d <-
+propensity <-
   lm(
     union ~ education + + experience
     , data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))
@@ -390,7 +391,7 @@ propensity_dat <-
   lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)) |>
   tibble::add_column(
     propensity =
-      model_d |> predict(new_data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)))
+      propensity |> predict(new_data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0)))
   )
 
 p_3 <- propensity_dat |>
@@ -418,26 +419,26 @@ P_mean_b <-
     )
   )
 
-p_model_a <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==1))
-p_model_b <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==0))
-p_model_c <- lm(wage ~ union + propensity, data = propensity_dat) # pooled regression on education and union indicator
-p_model_d <- lm(wage ~ propensity, data = propensity_dat) # pooled regression on education alone
+p_model_1 <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==1))
+p_model_0 <- lm(wage ~ propensity, data = propensity_dat |> dplyr::filter(union==0))
+p_model_OLS <- lm(wage ~ union + propensity, data = propensity_dat) # pooled regression on education and union indicator
+p_propensity <- lm(wage ~ propensity, data = propensity_dat) # pooled regression on education alone
 
 # Get coefficients
-p_beta_a <- coef(p_model_a)
-p_beta_b <- coef(p_model_b)
-p_beta_c <- coef(p_model_c)
-p_beta_d <- coef(p_model_d)
+p_beta_1 <- coef(p_model_1)
+p_beta_0 <- coef(p_model_0)
+p_beta_OLS <- coef(p_model_OLS)
+p_beta_propensity <- coef(p_propensity)
 
-p_Gap1    <- sum(P_mean_b * (p_beta_a - p_beta_b))
-p_Gap0    <- sum(P_mean_a * (p_beta_a - p_beta_b))
-p_Gap_OLS <- p_model_c$coefficients[2]
-p_Gap_p   <- sum((P_mean_a - P_mean_b) * p_beta_d) + sum(P_mean_a * (p_beta_a - p_beta_d)) + sum(P_mean_b * (p_beta_d - p_beta_b))
+p_Gap1    <- sum(P_mean_b * (p_beta_1 - p_beta_0))
+p_Gap0    <- sum(P_mean_a * (p_beta_1 - p_beta_0))
+p_Gap_OLS <- p_model_OLS$coefficients[2]
+p_Gap_p   <- sum((P_mean_a - P_mean_b) * p_beta_propensity) + sum(P_mean_a * (p_beta_1 - p_beta_propensity)) + sum(P_mean_b * (p_beta_propensity - p_beta_0))
 
 p_gt_3 <- tibble::tibble(
   gap = c("p_Gap0", "p_Gap1", "p_Gap_OLS", "p_Gap_p")
   , explained =
-    c( sum((P_mean_a - P_mean_b) * p_beta_b), sum((P_mean_a - P_mean_b) * p_beta_a ),  sum((P_mean_a - P_mean_b) * p_beta_c[-2] ),0 )
+    c( sum((P_mean_a - P_mean_b) * p_beta_0), sum((P_mean_a - P_mean_b) * p_beta_1 ),  sum((P_mean_a - P_mean_b) * p_beta_OLS[-2] ),0 )
   , unexplained = c( p_Gap0, p_Gap1, p_Gap_OLS, p_Gap_p )
   , total_gap <- explained + unexplained
 )|>
