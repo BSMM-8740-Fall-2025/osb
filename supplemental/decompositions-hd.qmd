@@ -278,16 +278,31 @@ $$
 
 With $\rho\equiv\mathbb{E}[d]=\mathbb{E}\left[\mathbb{E}[d\vert X]\right]$ and $\text{P}(X)=\alpha_p+X\beta_p$ is the propensity score ($\beta_p=\frac{\text{cov}(d,X)}{\text{var}(X)}$). We derive the expression for the derivatives of $w_0$ and $w_1$ wrt the intercept of the propensity model $\alpha_p$, where a shift in the intercept changes $\rho$ by a small amount.
 
+Define $a_0 = \pi\text{var}\left(\text{P}(x)\vert d=1\right)$ and $a_1 = (1-\pi)\text{var}\left(\text{P}(x)\vert d=0\right)$, such that $w_0=\frac{a_0}{a_0+a_1}$ and  $w_1=\frac{a_1}{a_0+a_1}$ (NOTE: this is different from the previous definition)
+
 Referencing the weights, per equations (\ref{eq:gap_w0} and \ref{eq:gap_w1})
 
-\begin{align*}
-a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right)\\
- & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right]\\
- & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right)\\
+$$
+\begin{array}{rll}
+a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right) & \text{\small by definition}\\
+ & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right] & \text{\small by definition of var}\\
+ & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right) & \small{ \text{since}\,\mathbb{P}\left(A.B\right)=\mathbb{P}\left(A\vert B\right)\mathbb{P}\left(B\right)}\\
  & =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
- & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]} & \text{\small by definition of P}(x)\\
  & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{array}
+$$
+using the definition of the linear propensity ($\text{P}(X)=\alpha_p+X\beta_p$), then
+
+\begin{align*}
+\frac{da_{0}}{d\alpha_{p}} & =3\mathbb{E}\left[\text{P}(x)^{2}\right]-4\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]}{\mathbb{E}\left[\text{P}(x)\right]}+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =-\mathbb{E}\left[\text{P}(x)^{2}\right]+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}-\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\left(\mathbb{E}\left[\text{P}(x)^{2}\right]-\mathbb{E}\left[\text{P}(x)\right]^{2}\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\text{var}\left(\text{P}(x)\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}>0
 \end{align*}
+
+
 
 ### Gap weights
 
