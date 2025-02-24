@@ -266,7 +266,15 @@ model_1 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='yes
 model_0 <- lm(wage ~ education, data = lending_data |> dplyr::filter(union=='no'))
 model_OLS <- lm(wage ~ union + education, data = lending_data) # pooled regression on education and union indicator
 model_pooled <- lm(wage ~ education, data = lending_data) # pooled regression on education alone
+
 propensity <- lm(union ~ education, data = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))) # propensity score
+
+p_dat <- propensity |>
+  broom::augment(
+    newdata = lending_data |> dplyr::mutate(union = ifelse(union == 'yes',1,0))
+  ) |> dplyr::select(wage, union, propensity = .fitted)
+model_propensity <-
+  lm(wage ~ union + propensity, data = p_dat)
 
 
 # lending_data |>
@@ -299,6 +307,7 @@ beta_1 <- coef(model_1)
 beta_0 <- coef(model_0)
 beta_OLS <- coef(model_OLS)
 beta_pooled <- coef(model_pooled)
+beta_propensity = coef(propensity)
 
 # Calculate decomposition (referenced to union group)
 tibble::tibble(
@@ -361,6 +370,10 @@ p_w0_2 <-  ((1-p_union) * var_1_2[1])/( (p_union * var_1_2[2]) + ((1-p_union) * 
 p_w0_2 + p_w1_2
 
 p_w0_2*Gap0 + p_w1_2*Gap1
+
+# p_w0_2*beta_1[2] + p_w1_2*beta_0[2]
+p_w0_2*beta_0[2] + p_w1_2*beta_1[2]
+coef(model_OLS)[3]
 
 # p_w1_2*Gap0 + p_w0_2*Gap1
 

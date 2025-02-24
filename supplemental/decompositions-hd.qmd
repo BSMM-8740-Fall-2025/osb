@@ -36,7 +36,9 @@ The Oaxaca-Blinder (O-B) decomposition(s) represent an alternative approach that
 
 ## Oaxaca-Blinder decomposition
 
-As an alternative to a pooled regression with a categorical (or dummy) variable $d$ that splits our dataset into two groups, we can run regressions of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows:
+As an alternative to a pooled regression with a categorical (or dummy) variable $d$ that splits our dataset into two groups, we can run regressions[^1] of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows:
+
+[^1]: To keep the notation simple, regression coefficients $\beta$ will contain an intercept, i.e. $\beta$ is always a vector whose first element is the intercept, and the data $X$is a design matrix, whose first column is all ones.
 
 \begin{align*}
 \bar{y}_0 & =\bar{X}_0\beta_{0};\;\text{group }d=0\\
@@ -48,7 +50,7 @@ Then the mean difference in outcomes is:
 \begin{align}\label{eq:gap}
 \bar{y}_1-\bar{y}_0 & =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
  & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\nonumber\\
- & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}-\bar{X}_1\left(\beta_{0}-\beta_{1}\right)\nonumber
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}+\bar{X}_1\left(\beta_{1}-\beta_{0}\right)\nonumber
 \end{align}
 
 Where, using $\bar{X}_0$ as the baseline, $\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (since it is based on differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (based on differences in returns to characteristics). This decomposition is not unique, as you can see from the second and third lines of equation (\ref{eq:gap}).
@@ -56,12 +58,25 @@ Where, using $\bar{X}_0$ as the baseline, $\left( \bar{X}_1-\bar{X}_0\right)\bet
 We define:
 
 \begin{align*}
-\text{Gap}^{1} & =\bar{X}_0\left(\beta_{1}-\beta_{0}\right);\;\bar{X}_0\text{ is the baseline}\\
-\text{Gap}^{0} & =\bar{X}_1\left(\beta_{0}-\beta_{1}\right);\;\bar{X}_1\text{ is the baseline}\\
+\text{Gap}^{0} & =\bar{X}_0\left(\beta_{1}-\beta_{0}\right);\;\bar{X}_0\text{ is the baseline}\\
+\text{Gap}^{1} & =\bar{X}_1\left(\beta_{0}-\beta_{1}\right);\;\bar{X}_1\text{ is the baseline}\\
 \text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+d\delta_{d}+X\delta_{x}+\epsilon
 \end{align*}
 
 where, for $\text{Gap}^{\text{OLS}}$, given the strong assumptions that (i) the model is properly specified and that (ii) coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
+
+Using the fact (equation \ref{eq-binary-reg}) that 
+
+$$
+\frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+$$
+then equation (\ref{eq:gap}) can be written as:
+
+\begin{align*}
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)} & =\overline{X}_{0}\left(\beta_{1}-\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right)\\
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)} & =\overline{X}_{1}\left(\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}-\beta_{0}\right)
+\end{align*}
+
 
 We an define another measure, $\text{Gap}^{p}$, as
 
@@ -87,9 +102,9 @@ A general expression for an O-B unexplained gap is:
 
 where $\hat{\beta}$ is some coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept. The choice of $\hat{\beta}$ is what identifies the different O-B decompositions.
 
-So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and equation (\ref{eq:general-gap}) gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^1].
+So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and equation (\ref{eq:general-gap}) gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^2].
 
-[^1]: under the data generation process described by $y=\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon$
+[^2]: under the data generation process described by $y=\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon$
 
 \begin{align}
 \text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\nonumber\\
@@ -110,9 +125,9 @@ $\text{Gap}^{p}$ is different because in the pooled regression used to compute $
  & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
 \end{align}
 
-Compare this to $\text{Gap}^{\text{OLS}}$, defining $\tilde{z}(w)$ as the component of $z$ that is orthogonal to $w$ in the population (so that $\tilde{z}(w)=z-w\text{b}(z\vert w)$, alternatively $\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}$)[^2]
+Compare this to $\text{Gap}^{\text{OLS}}$, defining $\tilde{z}(w)$ as the component of $z$ that is orthogonal to $w$ in the population (so that $\tilde{z}(w)=z-w\text{b}(z\vert w)$, alternatively $\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}$)[^3]
 
-[^2]: Note: $\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}$, the linear propensity, and $\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}$, so the coefficient $\delta_d$ is $\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}$.
+[^3]: Note: $\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}$, the linear propensity, and $\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}$, so the coefficient $\delta_d$ is $\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}$.
 
 \begin{align}\label{eq:gap_OLS_eqn}
 \text{Gap}^{\text{OLS}} & =\delta_{d}\nonumber\\
@@ -233,8 +248,8 @@ Recall that for a continuous variable $y$ and a binary variable $d$ (with the pr
 Then the coefficient $\beta_d$ from the regression $y\sim\beta_d d$ is
 
 $$
-\beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]
-$$
+\beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+$$ {#eq-binary-reg}
 
 #### Misc
 
@@ -278,7 +293,7 @@ $$
 
 With $\rho\equiv\mathbb{E}[d]=\mathbb{E}\left[\mathbb{E}[d\vert X]\right]$ and $\text{P}(X)=\alpha_p+X\beta_p$ is the propensity score ($\beta_p=\frac{\text{cov}(d,X)}{\text{var}(X)}$). We derive the expression for the derivatives of $w_0$ and $w_1$ wrt the intercept of the propensity model $\alpha_p$, where a shift in the intercept changes $\rho$ by a small amount.
 
-Define $a_0 = \pi\text{var}\left(\text{P}(x)\vert d=1\right)$ and $a_1 = (1-\pi)\text{var}\left(\text{P}(x)\vert d=0\right)$, such that $w_0=\frac{a_0}{a_0+a_1}$ and  $w_1=\frac{a_1}{a_0+a_1}$ (NOTE: this is different from the previous definition)
+Define $a_0 = \pi\text{var}\left(\text{P}(x)\vert d=1\right)$ and $a_1 = (1-\pi)\text{var}\left(\text{P}(x)\vert d=0\right)$, such that $w_0=\frac{a_0}{a_0+a_1}$ and $w_1=\frac{a_1}{a_0+a_1}$ (NOTE: this is different from the previous definition)
 
 Referencing the weights, per equations (\ref{eq:gap_w0} and \ref{eq:gap_w1})
 
@@ -291,8 +306,7 @@ a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right) & \text{\small by defini
  & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]} & \text{\small by definition of P}(x)\\
  & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
 \end{array}
-$$
-using the definition of the linear propensity ($\text{P}(X)=\alpha_p+X\beta_p$), then
+$$ using the definition of the linear propensity ($\text{P}(X)=\alpha_p+X\beta_p$), then
 
 \begin{align*}
 \frac{da_{0}}{d\alpha_{p}} & =3\mathbb{E}\left[\text{P}(x)^{2}\right]-4\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]}{\mathbb{E}\left[\text{P}(x)\right]}+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
@@ -301,8 +315,6 @@ using the definition of the linear propensity ($\text{P}(X)=\alpha_p+X\beta_p$),
  & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\left(\mathbb{E}\left[\text{P}(x)^{2}\right]-\mathbb{E}\left[\text{P}(x)\right]^{2}\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
  & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\text{var}\left(\text{P}(x)\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}>0
 \end{align*}
-
-
 
 ### Gap weights
 
