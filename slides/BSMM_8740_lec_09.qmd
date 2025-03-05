@@ -315,15 +315,11 @@ and so $\left.\frac{d^{n}}{dt^{n}}M_{X}(t)\right|_{t=0}=\mathbb{E}\left[X^{n}\ri
 ::: {style="font-size: x-large"}
 The exponential function can be defined by the limit[^1]:
 
-[^1]: [reference](https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function)
-
 $$
 e^x=\lim_{n\rightarrow\infty}\left(1+\frac{x}{n}\right)^n
 $$
 
 A Taylor series around point $a$ can be defined as[^2]:
-
-[^2]: see [here](https://en.wikipedia.org/wiki/Taylor%27s_theorem)
 
 $$
 f(x)=\sum_{n=0}^k\frac{f^{(n)}(a)}{n!}(x-a)^n+h_k(x)(x-a)^k
@@ -331,6 +327,10 @@ $$
 
 where $\lim_{n\rightarrow\infty..}\frac{h_k(x)}{(x-a)^k}=0$
 :::
+
+[^1]: [reference](https://en.wikipedia.org/wiki/Characterizations_of_the_exponential_function)
+
+[^2]: see [here](https://en.wikipedia.org/wiki/Taylor%27s_theorem)
 
 ## Moments and the MGF
 
