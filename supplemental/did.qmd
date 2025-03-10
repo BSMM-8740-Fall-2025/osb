@@ -1,0 +1,77 @@
+---
+title: "DiD"
+---
+
+## The simplest case
+
+In the canonical DiD model, we have:
+
+-   periods: treatment occurs (for some units) in period 2
+-   Identification of the ATT from parallel trends and no anticipation
+-   Estimation using sample analogs, equivalent to OLS with TWFE
+-   A large number of independent observations (or clusters)
+
+## Canonical DiD -- with math
+
+-   Panel data on $Y_{it}$ for $t=1,2$ and $i = 1,...,N$
+-   **Treatment timing:** Some units ($D_i=1$) are treated in period $2$; everyone else is untreated $(D_i=0)$
+-   **Potential outcomes (POs):** Observe $Y_{it}(1) \equiv Y_{it}(0,1)$ for treated units; and $Y_{it}(0) \equiv Y_{it}(0,0)$ for comparison
+
+## Key Identifying Assumption - Parallel Trends
+
+-   The **parallel trends** assumption states that if the treatment hadn't occurred, average outcomes for the treatment and control groups would have evolved in parallel $$\underbrace{ E[Y_{i2}(0) - Y_{i1}(0) \mid D_i =1] }_{\text{Counterfactual change for treated group}}= \underbrace{ E[Y_{i2}(0) - Y_{i1}(0) \mid D_i =0] }_{\text{Change for untreated group}} $$
+-   The parallel trends assumption can also be viewed as a **selection bias stability** assumption:\
+    $$\underbrace{ E[Y_{i2}(0)  \mid D_i =1] - E[Y_{i2}(0) \mid D_i=0] }_{\text{Selection bias in period 2}}= \underbrace{ E[Y_{i1}(0)  \mid D_i =1] - E[Y_{i1}(0) \mid D_i=0] }_{\text{Selection bias in period 1}} $$
+-   PT allows for there to be selection bias! But it must be stable over time
+
+## Key identifying assumptions
+
+-   **Parallel trends**
+
+$$
+    \begin{align}
+    \mathbb{E}[Y_{i2}(0) - Y_{i1}(0) \vert D_i = 1]  = \mathbb{E}[Y_{i2}(0) - Y_{i1}(0) \vert D_i = 0]
+    \end{align}
+$$ {#eq-pt-2periods}
+
+-   **No anticipation:** $Y_{i1}(1) = Y_{i1}(0)$
+    -   Intuitively, outcome in period 1 isn't affected by treatment status in period 2
+    -   Often left implicit in notation, but important for interpreting DiD estimand as a causal effect in period 2
+
+## Identification
+
+-   **Target parameter:** Average treatment effect on the treated (ATT) in period 2 $$\tau_{ATT} = E[Y_{i2}(1) - Y_{i2}(0) | D_i=1] $$
+-   Under parallel trends and no anticipation, can show that
+
+$$
+\tau_{ATT} = \underbrace{(E[Y_{i2} | D_i = 1] - E[Y_{i1}| D_i =1])}_{\text{Change for treated}} - \underbrace{(E[Y_{i2} | D_i = 0] - E[Y_{i1}| D_i =0]) }_{\text{Change for control}}
+$$ a "difference-in-differences"" of population means
+
+## Proof of Identification Argument
+
+-   Start with $$E[Y_{i2}- Y_{i1}| D_i =1] - E[Y_{i2} - Y_{i1}| D_i =0]$$
+-   Apply definition of POs to obtain: $$E[Y_{i2}(1) - Y_{i1}(1)| D_i =1] - E[Y_{i2}(0) - Y_{i1}(0)| D_i =0]$$
+-   Use No Anticipation to substitute $Y_{i1}(0)$ for $Y_{i1}(1)$: $$E[Y_{i2}(1) - Y_{i1}(0)| D_i =1] - E[Y_{i2}(0) - Y_{i1}(0)| D_i =0]$$
+-   Add and subtract \$E\[ Y\_{i2}(0) \| D_i =1\] \$ to obtain: $$
+        \begin{align*}
+            & E[ Y_{i2}(1) - Y_{i2}(0) | D_i =1] + \\
+            & \hspace{1cm} \left[ (E[Y_{i2}(0) | D_i = 1] - E[Y_{i1}(0)| D_i =1]) - (E[Y_{i2}(0) | D_i = 0] - E[Y_{i1}(0)| D_i =0]) \right]
+        \end{align*}
+        $$
+-   Cancel the last terms using PT to get $E[Y_{i2}(1) - Y_{i2}(0) | D_i = 1] = \tau_{ATT}$
+
+## Estimation and Inference
+
+-   The most conceptually simple estimator replaces population means with sample analogs: $$\hat{\tau}_{DiD} = (\bar{Y}_{12} - \bar{Y}_{11}) - (\bar{Y}_{02} - \bar{Y}_{01}) $$ where $\bar{Y}_{dt}$ is sample mean for group $d$ in period $t$
+-   Conveniently, $\hat\tau_{DID}$ is algebraically equal to OLS coefficient $\hat\beta$ from $$\begin{align*}
+    Y_{it} = \alpha_i + \phi_t + D_{it} \beta  + \epsilon_{it}, 
+    \end{align*}$$ {#eq-TWFE-2-periods} where $D_{it} = D_i * 1[t=2]$. Also equivalent to $\beta$ from $\Delta Y_{i} = \alpha +  \Delta D_i \beta + u_{it}$.
+-   **Inference:** And clustered standard errors are valid as number of clusters grows large
+
+## Characterizing the recent literature
+
+We can group the recent innovations in DiD lit by which elements of the canonical model they relax:
+
+-   **Multiple periods and staggered treatment timing**
+-   **Relaxing or allowing PT to be violated**
+-   **Inference with a small number of clusters**
