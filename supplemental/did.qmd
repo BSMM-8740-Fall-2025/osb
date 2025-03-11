@@ -75,3 +75,87 @@ We can group the recent innovations in DiD lit by which elements of the canonica
 -   **Multiple periods and staggered treatment timing**
 -   **Relaxing or allowing PT to be violated**
 -   **Inference with a small number of clusters**
+
+------------------------------------------------------------------------
+
+## Staggered Timing
+
+-   Remember that in the canonical DiD model we had:
+
+    -   Two periods and a common treatment date
+    -   Identification from parallel trends and no anticipation
+    -   A large number of clusters for inference
+
+-   A very active recent literature has focused on relaxing the first assumption: **what if there are multiple periods and units adopt treatment at different times?**
+
+-   This literature typically maintains the remaining ingredients: parallel trends and many clusters
+
+## Overview of Staggered Timing Literature
+
+-   Negative results: TWFE OLS doesn't give us what we want with treatment effect heterogeneity
+-   New estimators: perform better under treatment effect heterogeneity
+
+## Staggered timing set-up
+
+-   Panel of observations for periods $t = 1,...,T$
+-   Suppose units adopt a binary treatment at different dates $G_i \in \{1,...,T \} \cup \infty$ (where $G_i = \infty$ means "never-treated")
+    -   Active literature considering cases with continuous treatment & treatments that turn on/off (see Section 3.4 of review paper)
+-   Potential outcomes $Y_{it}(g)$ -- depend on time and time you were first-treated
+
+## Extending the Identifying Assumptions
+
+-   The key identifying assumptions from the canonical model are extended in the natural way
+
+-   **Parallel trends:** Intuitively, says that if treatment hadn't happened, all "adoption cohorts'' would have parallel average outcomes in all periods $$ E[ Y_{it}(\infty) - Y_{i,t-1}(\infty) | G_i = g ] = E[ Y_{it}(\infty) - Y_{i,t-1}(\infty) | G_i = g' ] \text{ for all } g,g',t$$ Note: can impose slightly weaker versions (e.g. only require PT post-treatment)
+
+-   **No anticipation:** Intuitively, says that treatment has no impact before it is implemented $$Y_{it}(g) = Y_{it}(\infty) \text{ for all } t<g$$
+
+## Negative results
+
+-   Suppose we again run the regression $$Y_{it} = \alpha_i + \phi_t + D_{it} \beta  + \epsilon_{it}, $$ where $D_{it} = 1[t \geq G_i]$ is a treatment indicator.
+-   Suppose we're willing to assume no anticipation and parallel trends across all adoption cohorts as described above
+-   Good news: If each unit has a constant treatment effect over time, $Y_{it}(g) - Y_{it}(\infty) \equiv \tau_i$, get a weighted avg of $\tau_i$
+-   Bad news: if treatment effects are heterogeneous (within unit over time), then $\beta$ may put negative weights on treatment effects for some units and time periods
+    -   E.g., if treatment effect depends on time since treatment, ${Y_{it}(t-r) - Y_{it}(\infty) = \tau_{r}}$, then some $\tau_r$ values may get negative weight
+
+## Where do these negative results come from?
+
+-   The intuition for these negative results is that the TWFE OLS specification combines two sources of comparisons:
+    -   **Clean comparisons:** DiD's between treated and not-yet-treated units
+    -   **Forbidden comparisons:** DiD's between newly-treated and already-treated units
+-   These forbidden comparisons can lead to negative weights: the control group is already treated, so we run into problems if their treatment effects change over time
+
+## Some intuition for forbidden comparisons
+
+-   Consider the two period model, except suppose now that our two groups are **always-treated\* units (treated in both periods) and** switchers\*\* (treated only in period 2)
+-   With two periods, the coefficient $\beta$ from \$ Y\_{it} = \alpha\*i +\* \phi\*t + D\*{it} \beta  + \epsilon{it}\$ is the same as from the first-differenced regression $\Delta Y_i = \alpha + \Delta D_i \beta + u_i$
+-   Observe that $\Delta D_i$ is one for switchers and zero for stayers. \\ That is, the stayers function as the \`\`control group''! Thus, $$\hat\beta =  \underbrace{ \left(\bar{Y}_{Switchers, 2} - \bar{Y}_{Switchers, 1} \right) }_{\text{Change for switchers}} - \underbrace{ \left(\bar{Y}_{AT, 2} - \bar{Y}_{AT, 1} \right) }_{\text{Change for always treated}}  $$
+-   Problem: if the effect for the always-treated grows over time, that will enter $\hat\beta$ negatively!
+-   With staggered timing, units who are treated early are like \`\`always-treated'' in later pairs of periods
+
+## Second Intuition for Negative Weights
+
+The literature has placed a lot of emphasis on the fact that some treatment effects may get negative weights
+
+-   But even if the weights are non-negative, they might not give us the most intuitive parameter
+-   For example, suppose each unit $i$ has treatment effect $\tau_i$ in every period if they are treated (no dynamics). Then $\beta$ gives a weighted average of the $\tau_i$ where the weights are largest for units treated closest to the middle of the panel
+-   It is not obvious that these weights are relevant for policy, even if they are all non-negative!
+
+## Issues with dynamic TWFE
+
+-   {sun_estimating_2020} show that similar issues arise with dynamic TWFE specifications: $$
+        \begin{equation*}
+            Y_{i,t} = \alpha_i + \lambda_t +  \sum_{k \neq 0} \gamma_k D_{i,t}^{k} + \varepsilon_{i,t},
+        \end{equation*}$$ where $D_{i,t}^{k} = 1\left\{t-G_{i}=k\right\}$ are \`\`event-time'' dummies.
+-   Like for the static spec, $\gamma_k$ may be a non-convex weighted average of the dynamic treatment effect $k$ periods after treatment
+-   SA also show that $\gamma_k$ may be \`\`contaminated'' by treatment effects at lags $k'\neq k$
+
+## Dynamic TWFE - Continued
+
+-   The results in SA suggest that interpreting the $\hat\gamma_k$ for $k=1,2,...$ as estimates of the dynamic effects of treatment may be misleading
+
+-   These results also imply that pre-trends tests of the $\gamma_k$ for $k<0$ may be misleading -- could be non-zero even if parallel trends holds, since they may be \`\`contaminated'' by post-treatment effects!
+
+-   The issues discussed in SA arise if dynamic path of treatment effects is heterogeneous across adoption cohorts
+
+    -   Biases may be less severe than for \`\`static'' specs if dynamic patterns are similar across cohorts
