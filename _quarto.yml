@@ -3,11 +3,11 @@ project:
 
 website:
   page-navigation: true
-  title: "BSMM-8740 - Fall 2024"
+  title: "BSMM-8740 - Fall 2025"
   description: "Homepage for BSMM-8740: Data Analytic Methods & Algorithms."
-  site-url: "https://bsmm-8740-fall-2024.github.io/osb/"
+  site-url: "https://bsmm-8740-fall-2025.github.io/osb/"
 
-  repo-url: https://github.com/bsmm-8740-fall-2024/osb
+  repo-url: https://github.com/bsmm-8740-fall-2025/osb
   repo-actions: [edit, issue]
 
   open-graph: true
@@ -28,7 +28,7 @@ website:
     align: center
     tools:
       - icon: github
-        href: https://github.com/bsmm-8740-fall-2024
+        href: https://github.com/bsmm-8740-fall-2025
         text: "GitHub organization"
       - icon: person-fill
         text: "Brightspace"
