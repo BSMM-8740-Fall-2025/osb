@@ -49,7 +49,7 @@ Due date: Lab 6 - Sunday, Oct 27, 5pm ET
 9.  Explain the difference between the autocorrelation function (ACF) and the partial autocorrelation function (PACF).
 10. What are the components of an ARIMA model, and what does each component represent?
 
-**Short-Answer Answer Key**
+### **Short-Answer Answer Key**
 
 1.  A time series is a collection of data points indexed in time order. It is a separate area of study because it often exhibits serial correlation, violating assumptions of simple linear regression.
 2.  Economic and financial time series typically exhibit serial correlation, meaning past values influence present and future values. Changes in one period can impact future periods, and shocks can affect variables over successive quarters.
@@ -62,7 +62,7 @@ Due date: Lab 6 - Sunday, Oct 27, 5pm ET
 9.  The ACF measures the correlation between a time series and its lagged values. The PACF measures the correlation between a time series and its lagged values after removing the influence of intermediate lags.
 10. An ARIMA model combines autoregression (AR), differencing (I), and moving average (MA) components. AR captures the relationship with lagged values, I makes the series stationary, and MA models the relationship with past forecast errors.
 
-**Essay Questions**
+### **Essay Questions**
 
 -   Discuss the importance of stationarity in time series analysis. Explain how to identify and address non-stationarity in a time series.
 -   Compare and contrast AR, MA, and ARMA processes. Provide examples of real-world phenomena that can be modeled by each process.

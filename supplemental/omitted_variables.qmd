@@ -142,7 +142,7 @@ lm(demand1 ~ price1 + unobserved1, data = dat1) %>%
 When estimating a model of the form
 
 $$
-y = \beta_0 + \beta_1x_1 + \beta_1x_2 + u
+y = \beta_0 + \beta_1x_1 + \beta_2x_2 + u
 $$
 
 then the following estimators of $\beta_1$ are equivalent

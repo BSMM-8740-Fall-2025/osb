@@ -33,7 +33,13 @@ execute:
 
 ## This week
 
--   We will look at other methods used to estimate causal effects, along with methods used for special situations.
+We will look at other methods used to estimate causal effects, along with methods used for special situations, including:
+
+-   regression adjustment
+-   doubly robust estimation
+-   matching
+-   difference in differences
+-   fixed effects and methods for panel data
 
 ```{r}
 #| message: false
@@ -46,7 +52,7 @@ if (! "librarian" %in% rownames(installed.packages()) ){
 }
   
 # load packages if not already loaded
-librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, ggplot2, r-causal/propensity, r-causal/causalworkshop, survey, cardx, gtsummary)
+librarian::shelf(tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, ggplot2, r-causal/propensity, r-causal/causalworkshop, survey, cardx, ddsjoberg/gtsummary)
 
 # set the default theme for plotting
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
@@ -70,7 +76,7 @@ Repeating our prior process, first we calculate the ipw weights and estimate the
 #| message: false
 #| warning: false
 #| code-summary: ATE estimate by IPW
-#| cache: true
+#| cache: false
 #| cache-comments: true
 dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
 
@@ -88,13 +94,6 @@ net_data_wts <- propensity_model |>
 net_data_wts |>
   lm(malaria_risk ~ net, data = _, weights = wts) |>
   broom::tidy(conf.int = TRUE) |> gt::gt() |> gtExtras::gt_theme_espn()
-
-  # alternatively:
-  # dplyr::mutate(
-  #   ipw = dplyr::case_when(net == 1 ~ 1/.fitted, TRUE ~ 1/(1-.fitted))
-  #   , wts_alt = (net / .fitted) + ((1 - net) / (1 - .fitted) )
-  # )
-
 ```
 
 ## Inverse Probability Weighting
@@ -102,20 +101,20 @@ net_data_wts |>
 ::: {style="font-size: large"}
 The function [^1]`propensity::wt_ate` calculates **unstabilized** weights by default. In the last lecture we looked at the distribution of weights and decided they were stable enough, because none of the weights were too big or too small.
 
+Let's explore the question of IPW stabilization a bit more.
+
 ```{r}
 #| label: fig-ate-density-net-data
 #| code-fold: true
 # fig.width: 8
 #| fig-asp: 2/5
-#| fig.height: 3
+#| fig.height: 2
 #| fig.cap: >
 #|   A density plot of the average treatment effect (ATE) weights. The plot is skewed, with higher values towards 8. This may indicate a problem with the model, but the weights aren't so extreme to destabilize the variance of the estimate.
 net_data_wts |>
   ggplot(aes(wts)) +
   geom_density(fill = "#CC79A7", color = NA, alpha = 0.8)
 ```
-
-Let's explore the question of IPW stabilization a bit more.
 :::
 
 [^1]: tables created with functions from the package `gtsummary`.
@@ -147,6 +146,8 @@ We know that IPW weighting should create a pseudo-population that make the covar
 ## unweighted
 
 ```{r}
+#| echo: true
+#| code-fold: true
 gtsummary::tbl_summary(
   net_data_wts 
   , by = net
@@ -159,6 +160,8 @@ gtsummary::tbl_summary(
 ## weighted
 
 ```{r}
+#| echo: true
+#| code-fold: true
 net_svy <- survey::svydesign(
   ids = ~1,
   data = net_data_wts,
@@ -181,7 +184,7 @@ Next we use bootstrapping to generate proper confidence intervals for the effect
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: define function for IPW bootstrapping
 #| label: ipw bootstrap function
 
@@ -224,10 +227,10 @@ Next we use our function to bootstrap proper confidence intervals:
 #| message: false
 #| warning: false
 #| error: false
-#| code-fold: true
+#| code-fold: false
 #| code-summary: IPW bootstrap CIs
 #| label: ipw bootstrap process
-#| cache: true
+#| cache: false
 #| cache-comments: true
 # create bootstrap samples
 bootstrapped_net_data <- rsample::bootstraps(
@@ -271,10 +274,10 @@ And we can also bootstrap the regression adjustment estimates to get confidence 
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: regression bootstrap function definition and fits
 #| label: reg bootstrap function
-#| cache: true
+#| cache: false
 #| cache-comments: true
 fit_reg <- function(split, ...) {
   # get bootstrapped data sample with `rsample::analysis()`
@@ -304,7 +307,7 @@ We can compare the results:
 
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: pull coefficient estimates from the fits  
 #| label: combine reg & ipw bootstraps
 both_results_dat <- both_results |>
@@ -377,7 +380,7 @@ dat |>
 
 ```
 
-Note that each mean ate estimate is within the CIs of the other ate mean estimate.
+Note that each mean ATE estimate is within the CIs of the other ATE mean estimate.
 :::
 
 ## IPW vs Regression Adjustment
@@ -393,7 +396,7 @@ There is a package (`boot`) that performs cross-validation and CI estimation at 
 #| warning: false
 #| error: false
 #| label: boot package use
-#| cache: true
+#| cache: false
 #| cache-comments: true
 # bootstrap (1000 times) using the fit_reg function
 boot_out_reg <- boot::boot(
@@ -424,6 +427,8 @@ tibble::tibble(CI = c("lower", "upper"), normal = CIs$normal[-1], basic = CIs$ba
 -   We’ve learned how to use linear regression and propensity score weighting to estimate $E[Y|D=1] - E[Y|D=0] | X$. But which one should we use and when?
 
 -   When in doubt, just use both! **Doubly Robust Estimation** is a way of combining propensity score and linear regression in a way you don’t have to rely on either of them.
+
+# Doubly Robust Estimation
 
 ## Doubly Robust Estimation
 
@@ -480,21 +485,21 @@ doubly_robust <- function(df, X, D, Y){
   
   lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
   
-  idx <- df[,D] %>% dplyr::pull(1) == 0
+  idx <- df[,D] |> dplyr::pull(1) == 0
   mu0 <- # mean response D == 0
-    lm(lin_frml, data = df[idx,]) %>% 
+    lm(lin_frml, data = df[idx,]) |> 
     broom::augment(type.predict = "response", newdata = df[,X]) |>
     dplyr::pull(.fitted)
   
-  idx <- df[,D] %>% dplyr::pull(1) == 1
+  idx <- df[,D] |> dplyr::pull(1) == 1
   mu1 <- # mean response D == 1
     lm(lin_frml, data = df[idx,]) |>  
     broom::augment(type.predict = "response", newdata = df[,X]) |> 
     dplyr::pull(.fitted)
   
   # convert treatment factor to integer | recast as vectors
-  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
-  y <- df[,Y] %>% dplyr::pull(1)
+  d <- df[,D] |> dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] |> dplyr::pull(1)
   
   mean( d*(y - mu1)/ps + mu1 ) -
     mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
@@ -524,7 +529,7 @@ Once again, we can use bootstrap to construct confidence intervals.
 #| message: false
 #| error: false
 #| label: dre bootstrap
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- both_results_dat |>
   dplyr::mutate(
@@ -629,21 +634,21 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
   
   lin_frml <- formula(paste(Y, " ~ ", paste(X, collapse= "+")))
   
-  idx <- df[,D] %>% dplyr::pull(1) == 0
+  idx <- df[,D] |> dplyr::pull(1) == 0
   mu0 <- # mean response D == 0
-    lm(lin_frml, data = df[idx,]) %>%
+    lm(lin_frml, data = df[idx,]) |>
     broom::augment(type.predict = "response", newdata = df[,X]) |>
     dplyr::pull(.fitted)
   
-  idx <- df[,D] %>% dplyr::pull(1) == 1
+  idx <- df[,D] |> dplyr::pull(1) == 1
   mu1 <- # mean response D == 1
     lm(lin_frml, data = df[idx,]) |>
     broom::augment(type.predict = "response", newdata = df[,X]) |>
     dplyr::pull(.fitted)
   
   # convert treatment factor to integer | recast as vectors
-  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
-  y <- df[,Y] %>% dplyr::pull(1)
+  d <- df[,D] |> dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] |> dplyr::pull(1)
   
   mean( d*(y - mu1)/ps + mu1 ) -
     mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
@@ -660,7 +665,7 @@ doubly_robust_bad_ipw <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad ipw estimate plot
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
@@ -756,8 +761,8 @@ doubly_robust_bad_reg <- function(df, X, D, Y){
   mu1 <- rnorm(dim(df)[1], 0, 1) # wrong mean response D == 1
   
   # convert treatment factor to integer | recast as vectors
-  d <- df[,D] %>% dplyr::pull(1) |> as.character() |> as.numeric()
-  y <- df[,Y] %>% dplyr::pull(1)
+  d <- df[,D] |> dplyr::pull(1) |> as.character() |> as.numeric()
+  y <- df[,Y] |> dplyr::pull(1)
   
   mean( d*(y - mu1)/ps + mu1 ) -
     mean(( 1-d)*(y - mu0)/(1-ps) + mu0 )
@@ -772,7 +777,7 @@ doubly_robust_bad_reg <- function(df, X, D, Y){
 #| message: false
 #| error: false
 #| label: bad reg estimate plot
-#| cache: true
+#| cache: false
 #| cache-comments: true
 all_results_dat <- all_results_dat |>
   dplyr::mutate(
@@ -836,15 +841,17 @@ Once more, messing up the conditional mean model alone yields only slightly diff
 One caveat is that, in practice, it’s very hard to model precisely either of those. More often, what ends up happening is that neither the propensity score nor the outcome model are 100% correct. They are both wrong, but in different ways. When this happens, it is not exactly settled [\[1\]](https://www.stat.cmu.edu/~ryantibs/journalclub/kang_2007.pdf) [\[2\]](https://arxiv.org/pdf/0804.2969.pdf) [\[3\]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2798744/) if it’s better to use a single model or doubly robust estimation. At least it gives you two possibilities of being correct.
 :::
 
+# Finite Sample Bias
+
 ## Finite Sample Bias
 
 ::: {style="font-size: x-large"}
-We know that not accounting for confounders can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate with finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
+We know that not accounting for confounders or blocking open backdoor paths can bias our causal estimates, but it turns out that even after accounting for all confounders, we may still get a biased estimate with finite samples. Many of the properties we tout in statistics rely on large samples—how “large” is defined can be opaque. Let’s look at a quick simulation. Here, we have an exposure/treatment, $X$, an outcome, $Y$, and one confounder, $Z$. We will simulate $Y$, which is only dependent on $Z$ (so the true treatment effect is 0), and $X$, which also depends on $Z$.
 :::
 
 $$
 \begin{align*}
-X &\sim \mathscr{N}(0,1)\\
+Z &\sim \mathscr{N}(0,1)\\
 X & = \mathrm{ifelse}(0.5+Z>0,1,0)\\
 Y & = Z +  \mathscr{N}(0,1)
 \end{align*}
@@ -852,9 +859,11 @@ $$
 
 ## Finite Sample Bias
 
+#### Sampling code
+
 ```{r}
 #| echo: true
-#| code-fold: true
+#| code-fold: false
 #| code-summary: simulate finite sample bias
 #| message: false
 #| error: false
@@ -883,7 +892,7 @@ If we fit a propensity score model using the one confounder $Z$ and calculate th
 ```{r}
 #| echo: true
 #| code-fold: true
-#| code-summary: fit the propensity score model wih finite samples
+#| code-summary: fit the propensity score model with finite samples
 ## fit the propensity score model
 finite_sample_wts <- glm(
   x ~ z,
@@ -902,16 +911,20 @@ finite_sample_wts |>
 
 ## Finite Sample Bias
 
+::: {style="font-size: x-large"}
 Our effect of is pretty far from 0, although it’s hard to know if this is really bias, or something we are just seeing by chance in this particular simulated sample.
 
 To explore the potential for finite sample bias, we can rerun this simulation many times at different sample sizes:
 
 ```{r}
-#| cache: true
+#| cache: false
 #| cache-comments: true
 #| code-fold: true
-#| code-summary: fit the propensity score model wih different number of finite samples
+#| code-summary: fit the propensity score model with different number of finite samples
 #| echo: true
+#| warning: false
+#| message: false
+#| error: false
 sim <- function(n) {
   ## create a simulated dataset
   finite_sample <- tibble::tibble(
@@ -951,16 +964,18 @@ finite_sample_sims <- purrr::map_df(
   sim
 )
 
-bias <- finite_sample_sims %>%
-  dplyr::group_by(n) %>%
+bias <- finite_sample_sims |>
+  dplyr::group_by(n) |>
   dplyr::summarise(bias = mean(bias))
 ```
+:::
 
 ## Finite Sample Bias
 
-Ploting the results:
+Plotting the results:
 
 ```{r}
+#| code-fold: true
 #| fig-cap: "Finite sample bias present with ATE weights created using correctly specified propensity score model, varying the sample size from n = 50 to n = 10,000"
 ggplot(bias, aes(x = n, y = bias)) +
   geom_point() +
@@ -980,17 +995,19 @@ Estimands that utilize weights that are unbounded (i.e. that theoretically can b
 3.  the sample size.
 :::
 
+# Matching
+
 ## Matching
 
 ::: {style="font-size: x-large"}
-Regression is good at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for X.
+Regression is good at controlling for additional variables when we do a test vs control comparison. If we have independence, $(Y^0, Y^1)\perp D | X$, then regression can identify the ATE by controlling for $X$.
 
-To get some intuition about controlling for X, let’s remember the case when all variables X are dummy variables.
+To get some intuition about controlling for $X$, let’s remember the case when all variables $X$ are dummy variables.
 
 If that is the case, regression partitions the data into the dummy cells and computes the mean difference between test and control. Effectively we are calculating doing
 
 $$
-E[Y|D=1] - E[Y|D=0] | X=x]
+E[Y|D=1, X=x] - E[Y|D=0, X=x]
 $$
 
 where $x$ is a dummy cell (all dummies set to 1, for example).
@@ -1000,21 +1017,22 @@ Regression then combines the estimate in each of the cells to produce a final AT
 
 ## Matching
 
-::: {style="font-size: x-large"}
-To give an example, suppose we try to estimate the effect of a drug and I have 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
+::: {style="font-size: large"}
+To give an example, suppose we try to estimate the effect of a drug and I have drug data for 6 men and 4 women. The response variable is days hospitalised and I hope my drug can lower that. On men, the true causal effect is -3, so the drug lowers the stay period by 3 days. On women, it is -2.
 
 To make matters more interesting, men are much more affected by this illness and stay longer at the hospital. They also get much more of the drug. Only 1 out of the 6 men does not get the drug. On the other hand, women are more resistant to this illness, so they stay less at the hospital. 50% of the women get the drug.
 :::
 
 ```{r}
+#| code-fold: true
 data_drug <- tibble::tibble(
   sex= c("M","M","M","M","M","M", "W","W","W","W"),
     drug=c(1,1,1,1,1,0,  1,0,1,0),
     days=c(5,5,5,5,5,8,  2,4,2,4)
 ) 
 
-data_drug %>% 
-  gt::gt() %>% 
+data_drug |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
@@ -1027,11 +1045,12 @@ In this case, the estimated ATE is smaller than the true one because men get mor
 :::
 
 ```{r}
-data_drug %>% 
-  dplyr::group_by(drug) %>% 
-  dplyr::summarize(mean_effect = mean(days)) %>% 
-  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
-  gt::gt() %>% 
+#| code-fold: true
+data_drug |> 
+  dplyr::group_by(drug) |> 
+  dplyr::summarize(mean_effect = mean(days)) |> 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
@@ -1076,15 +1095,16 @@ So regression will give a higher weight to women in our example and the ATE will
 :::
 
 ```{r}
-lm(days ~ drug + sex, data=data_drug) %>% 
-  broom::tidy() %>% 
-  gt::gt() %>% 
+#| code-fold: true
+lm(days ~ drug + sex, data=data_drug) |> 
+  broom::tidy() |> 
+  gt::gt() |> 
   gt::tab_header(
     title = "Regression summary (ATE)"
     , subtitle = "days ~ drug + sex"
-  ) %>% 
-  gt::fmt_number(columns = -c(term,estimate), decimals = 3) %>%
-  gt::fmt_number(columns = estimate, decimals = 4) %>%
+  ) |> 
+  gt::fmt_number(columns = -c(term,estimate), decimals = 3) |>
+  gt::fmt_number(columns = estimate, decimals = 4) |>
   gtExtras::gt_theme_espn()
 ```
 
@@ -1099,7 +1119,7 @@ So we’ve seen that regression has its idiosyncrasies. It is linear, parametric
 
 Because of this, it’s important to be aware of other techniques we can use to control for confounders. Not only are they an extra tool in your causal tool belt, but understanding different ways to deal with confounding expands our understanding of the problem.
 
-For this reason, I present you now the Subclassification Estimator!
+For this reason, we'll now examne the Subclassification Estimator!
 :::
 
 ## Matching: subclassification
@@ -1111,7 +1131,7 @@ If we have conditional independence $(Y^0, Y^1)\perp D | X$ , then we can write 
 :::
 
 $$
-ATE = \int(E[Y|X, D=1] - E[Y|X, D=0])dP(x)
+ATE = \int(E[Y|X=x, D=1] - E[Y|X=x, D=0])dP(x)
 $$
 
 ::: {style="font-size: x-large"}
@@ -1123,7 +1143,7 @@ What the integral does is it goes through all the space of the distribution of f
 ::: {style="font-size: x-large"}
 Another way to see this is to think about a discrete set of features.
 
-In this case, we can say that the features X takes on K different cells $\{X_1, X_2, ..., X_k\}$ and what we are doing is computing the treatment effect in each cell and combining them into the ATE.
+In this case, we can say that values the feature set X takes on falls into K different sets $\{X_1, X_2, ..., X_k\}$ and what we are doing is computing the treatment effect in each set and combining them into the ATE.
 
 In this discrete case, converting the integral to a sum, we can derive the subclassifications estimator:
 :::
@@ -1153,10 +1173,10 @@ This allows us to explore other kinds of estimators, such as the Matching Estima
 ## Matching estimator
 
 ::: {style="font-size: x-large"}
-Since some confounder X makes it so that treated and untreated are not initially comparable, we can make them so by matching each treated unit with a similar untreated unit - finding an untreated twin for every treated unit. In making such comparisons, treated and untreated become again comparable.
+When some confounder X makes it so that treated and untreated are not initially comparable, we can make them so by matching each treated unit with a similar untreated unit - finding an untreated twin for every treated unit. In making such comparisons, treated and untreated become again comparable.
 
 As an example, let’s suppose we are trying to estimate the effect of a trainee program on earnings. Here is what the trainees looks like:
-:::
+
 
 ::: panel-tabset
 ## trainees
@@ -1166,10 +1186,10 @@ As an example, let’s suppose we are trying to estimate the effect of a trainee
 #| code-fold: true
 data_trainees <- readr::read_csv("data/trainees.csv", show_col_types = FALSE)
 
-data_trainees %>% 
-  dplyr::filter(trainees==1) %>% 
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_trainees |> 
+  dplyr::filter(trainees==1) |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
@@ -1178,17 +1198,15 @@ data_trainees %>%
 ```{r}
 #| echo: true
 #| code-fold: true
-data_trainees %>% 
-  dplyr::filter(trainees==0) %>% 
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_trainees |> 
+  dplyr::filter(trainees==0) |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 :::
+:::
 
-```{r}
-
-```
 
 ## Matching estimator
 
@@ -1199,11 +1217,11 @@ A simple comparison in means, identifies that the trainees earn less money than 
 ```{r}
 #| echo: true
 #| code-fold: true
-data_trainees %>% 
-  dplyr::group_by(trainees) %>% 
-  dplyr::summarize(mean_effect = mean(earnings)) %>% 
-  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
-  gt::gt() %>% 
+data_trainees |> 
+  dplyr::group_by(trainees) |> 
+  dplyr::summarize(mean_effect = mean(earnings)) |> 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
@@ -1219,25 +1237,25 @@ We can use matching on age to try to correct that.
 We will take unit 1 from the treated and pair it with unit 27, since both are 28 years old. Unit 2 we will pair it with unit 34, unit 3 with unit 37, unit 4 we will pair it with unit 35… When it comes to unit 5, we need to find someone with age 29 from the non treated, but that is unit 37, which is already paired.
 
 This is not a problem, since we can use the same unit multiple times. If more than 1 unit is a match, we can choose randomly between them.
-:::
 
 ```{r}
 #| echo: true
 #| code-fold: true
 #| label: matching on age
-unique_on_age <- data_trainees %>% 
-  dplyr::filter(trainees == 0) %>% 
+unique_on_age <- data_trainees |> 
+  dplyr::filter(trainees == 0) |> 
   dplyr::distinct(age, .keep_all = TRUE)
 
-matches <- data_trainees %>% 
-  dplyr::filter(trainees == 1) %>% 
-  dplyr::left_join(unique_on_age, by = 'age', suffix = c("_t_1", "_t_0")) %>% 
+matches <- data_trainees |> 
+  dplyr::filter(trainees == 1) |> 
+  dplyr::left_join(unique_on_age, by = 'age', suffix = c("_t_1", "_t_0")) |> 
   dplyr::mutate(t1_minus_t0 = earnings_t_1 - earnings_t_0) 
 
-matches %>% dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+matches |> dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
+:::
 
 ## Matching estimator
 
@@ -1248,8 +1266,8 @@ If we take the mean of this last column we get the ATET estimate while controlli
 ```{r}
 #| echo: true
 #| code-fold: true
-matches %>% dplyr::summarize(ATE = mean(t1_minus_t0)) %>% 
-  gt::gt() %>% 
+matches |> dplyr::summarize(ATE = mean(t1_minus_t0)) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
@@ -1284,7 +1302,7 @@ $$
 ::: {style="font-size: x-large"}
 Where $Y_{jm}(i)$ is the sample from the other treatment group which is most similar to $Y_i$.
 
-We do this $2T_i - 1$ to match both ways: treated with controls and controls with the treatment.
+We scale by $2D_i - 1$ to match both ways: treated with controls and controls with the treatment.
 :::
 
 ## Matching estimator
@@ -1302,9 +1320,9 @@ Unfortunately, this effect is confounded by severity, sex and age. We have reaso
 #| code-fold: true
 data_med <- readr::read_csv("data/medicine_impact_recovery.csv", show_col_types = FALSE)
 
-data_med %>% 
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_med |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
 ```
@@ -1312,7 +1330,7 @@ data_med %>%
 ## Matching estimator
 
 ::: {style="font-size: x-large"}
-If we look at a simple difference in means, $E[Y|D=1]-E[Y|D=0]$, we get that the treatment takes, on average, 16.9 more days to recover than the untreated.
+If we look at a simple difference in means, $E[Y|D=1]-E[Y|D=0]$, we get that the treated take, on average, 16.9 more days to recover than the untreated.
 
 This is probably due to confounding, since we don’t expect the medicine to cause harm to the patient.
 :::
@@ -1320,11 +1338,11 @@ This is probably due to confounding, since we don’t expect the medicine to cau
 ```{r}
 #| echo: true
 #| code-fold: true
-data_med %>% 
-  dplyr::group_by(medication) %>% 
-  dplyr::summarize(mean_effect = mean(recovery)) %>% 
-  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) %>% 
-  gt::gt() %>% 
+data_med |> 
+  dplyr::group_by(medication) |> 
+  dplyr::summarize(mean_effect = mean(recovery)) |> 
+  dplyr::mutate(ATE = mean_effect - dplyr::lag( mean_effect) ) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
 ```
@@ -1342,15 +1360,15 @@ To do so, we can standardise the features.
 ```{r}
 #| echo: true
 #| code-fold: true
-data_med %<>% recipes::recipe(recovery ~ .) %>% 
-  recipes::update_role(medication, new_role = 'treatment') %>% 
-  recipes::step_normalize(recipes::all_predictors()) %>% 
-  recipes::prep() %>% 
+data_med <- data_med |> recipes::recipe(recovery ~ .) |> 
+  recipes::update_role(medication, new_role = 'treatment') |> 
+  recipes::step_normalize(recipes::all_predictors()) |> 
+  recipes::prep() |> 
   recipes::bake(new_data=NULL)
 
-data_med %>%   
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_med |>   
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
 ```
@@ -1373,51 +1391,53 @@ The other, $mt_1$, will store the treated point and will find matches in the tre
 #| echo: true
 #| code-fold: true
 #| label: matching using knn
-#| cache: true
+#| cache: false
 #| cache-comments: true
-treated   <- data_med %>% dplyr::filter(medication==1)
-untreated <- data_med %>% dplyr::filter(medication==0)
+treated   <- data_med |> dplyr::filter(medication==1)
+untreated <- data_med |> dplyr::filter(medication==0)
 
 mt0 <- # untreated knn model predicting recovery
-  caret::knnreg(x = untreated %>% dplyr::select(sex,age,severity), y = untreated$recovery, k=1)
+  caret::knnreg(x = untreated |> dplyr::select(sex,age,severity), y = untreated$recovery, k=1)
 mt1 <- # treated knn model predicting recovery
-  caret::knnreg(x = treated %>% dplyr::select(sex,age,severity), y = treated$recovery, k=1)
+  caret::knnreg(x = treated |> dplyr::select(sex,age,severity), y = treated$recovery, k=1)
 
 predicted <-
   # combine the treated and untreated matches
   c(
     # find matches for the treated looking at the untreated knn model
-    treated %>%
-      tibble::rowid_to_column("ID") %>% 
-      split(.$ID) %>% 
+    treated |>
+      tibble::rowid_to_column("ID") |> 
+      {\(y)split(y,y$ID)}() |> # hack for native pipe 
+      # split(.$ID) |>         # this vesion works with magrittr
       purrr::map(
         (\(x){
-          x %>% 
+          x |> 
             dplyr::mutate(
               match = predict( mt0, x[1,c('sex','age','severity')] )
             )
         })
       )
     # find matches for the untreated looking at the treated knn model
-    , untreated %>%
-        tibble::rowid_to_column("ID") %>% 
-        split(.$ID) %>% 
+    , untreated |>
+        tibble::rowid_to_column("ID") |> 
+        {\(y)split(y,y$ID)}() |> 
+        # split(.$ID) |> 
         purrr::map(
           (\(x){
-            x %>% 
+            x |> 
               dplyr::mutate(
                 match = predict( mt1, x[1,c('sex','age','severity')] )
               )
           })
         )
-  ) %>%
+  ) |>
   # bind the treated and untreated data 
   dplyr::bind_rows()
 
-predicted %>%   
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
-  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) %>%
+predicted |>   
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
+  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) |>
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
 ```
@@ -1435,9 +1455,11 @@ $$
 ```{r}
 #| echo: true
 #| code-fold: true
-predicted %>% 
-  dplyr::summarize("ATE (est)" = mean( (2*medication - 1) * (recovery - match) )) %>% 
-  gt::gt() %>% 
+predicted |> 
+  dplyr::summarize(
+    "ATE (est)" = mean( (2*medication - 1) * (recovery - match) )
+  ) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn() |> 
   gt::as_raw_html()
 ```
@@ -1494,8 +1516,8 @@ $$
 ::: {style="font-size: x-large"}
 Now, $\mu_0(X_i) - \mu_0(X_j(i))$ is not so simple to understand, so let’s look at it more carefully.
 
--   $\mu_0(X_i)$ is the outcome Y value of a treated unit $i$ had it not been treated.
--   It is the counterfactual outcome $Y^0$ for unit $i$. $\mu_0(X_j(i))$ is the outcome of the untreated unit $j$ that is the match of unit $i$.
+-   $\mu_0(X_i)$ is the outcome Y value of a treated unit $i$ had it not been treated. It is the counterfactual outcome $Y^0$ for unit $i$.
+-   $\mu_0(X_j(i))$ is the outcome of the untreated unit $j$ that is the match of unit $i$.
 -   It is also the $Y^0$, but for unit $j$ now.
 -   Only this time, it is a factual outcome, because $j$ is in the non treated group.
 -   Now, because $j$ and $i$ are only similar, but not the same, this will likely not be zero. In other words, $X_i \approx X_j$, so, $Y^0_i \approx Y^0_j$.
@@ -1533,29 +1555,29 @@ where $\hat{\mu_0}(x)$ is some estimative of $E[Y|X, D=0]$, like a linear regres
 #| echo: true
 #| code-fold: true
 #| label: bias corrected match
-#| cache: true
+#| cache: false
 #| cache-comments: true
 ols0 <- lm(recovery ~ sex + age + severity, data = untreated) 
 ols1 <- lm(recovery ~ sex + age + severity, data = treated) 
 
 # find the units that match to the treated
 treated_match_index <- # RANN::nn2 does Nearest Neighbour Search
-  (RANN::nn2(mt0$learn$X, treated %>% dplyr::select(sex,age,severity), k=1))$nn.idx %>% 
+  (RANN::nn2(mt0$learn$X, treated |> dplyr::select(sex,age,severity), k=1))$nn.idx |> 
   as.vector()
 
 # find the units that match to the untreated
 untreated_match_index <- # RANN::nn2 does Nearest Neighbour Search
-  (RANN::nn2(mt1$learn$X, untreated %>% dplyr::select(sex,age,severity), k=1))$nn.idx %>% 
+  (RANN::nn2(mt1$learn$X, untreated |> dplyr::select(sex,age,severity), k=1))$nn.idx |> 
   as.vector()
 
 predicted <- 
 c(
   purrr::map2(
     .x = 
-      treated %>% tibble::rowid_to_column("ID") %>% split(.$ID) 
+      treated |> tibble::rowid_to_column("ID") |> {\(y)split(y,y$ID)}() # split(.$ID) 
     , .y = treated_match_index
     , .f = (\(x,y){
-          x %>% 
+          x |> 
             dplyr::mutate(
               match = predict( mt0, x[1,c('sex','age','severity')] )
               , bias_correct =
@@ -1566,10 +1588,10 @@ c(
   )
   , purrr::map2(
     .x = 
-      untreated %>% tibble::rowid_to_column("ID") %>% split(.$ID) 
+      untreated |> tibble::rowid_to_column("ID") |> {\(y)split(y,y$ID)}() # split(.$ID) 
     , .y = untreated_match_index
     , .f = (\(x,y){
-          x %>% 
+          x |> 
             dplyr::mutate(
               match = predict( mt1, x[1,c('sex','age','severity')] )
               , bias_correct =
@@ -1578,14 +1600,14 @@ c(
             )
         })
   )
-) %>% 
+) |> 
   # bind the treated and untreated data 
   dplyr::bind_rows()
 
-predicted %>%   
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
-  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) %>%
+predicted |>   
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
+  gt::fmt_number(columns = c('sex','age','severity'), decimals = 6) |>
   gtExtras::gt_theme_espn()
 ```
 
@@ -1615,17 +1637,17 @@ With the bias correction formula, I get the following ATE estimation.
 
 ```{r}
 #| echo: true
-predicted %>% 
+predicted |> 
   dplyr::summarize(
     "ATE (est)" = 
-      mean( (2*medication - 1) * (recovery - match - bias_correct) )) %>% 
-  gt::gt() %>% 
+      mean( (2*medication - 1) * (recovery - match - bias_correct) )) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
 ## Matching CI
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Of course, we also need to place a confidence interval around this measurement.
 
 In practice, we can simply use someone else’s code and just import a matching estimator. Here is one from the library Matching.
@@ -1636,40 +1658,40 @@ In practice, we can simply use someone else’s code and just import a matching 
 #| message: false
 #| error: false
 #| code-fold: true
-#| cache: true
+#| cache: false
 #| cache-comments: true
 require(Matching)
 #  See https://www.jsekhon.com for additional documentation.
-c("ATE", "ATC", "ATT") %>% 
+c("ATE", "ATC", "ATT") |> 
   purrr::map(
     (\(x){
       pairmatching <- Matching::Match(
         Y = data_med$recovery
         , Tr = data_med$medication
-        , X = data_med %>% dplyr::select('sex','age','severity')
+        , X = data_med |> dplyr::select('sex','age','severity')
         , estimand = x
         , BiasAdjust = TRUE
       )
       tibble::tibble(measure = x, est = pairmatching$est[1,1], se = pairmatching$se)
     })
-  ) %>% 
-  dplyr::bind_rows() %>% 
-  gt::gt() %>% 
-  gt::fmt_number(columns = c('est','se'), decimals = 3) %>%
+  ) |> 
+  dplyr::bind_rows() |> 
+  gt::gt() |> 
+  gt::fmt_number(columns = c('est','se'), decimals = 3) |>
   gt::tab_header(
     title = "Treatment Effect Estimates: Matching"
     , subtitle = "using R package Matching"
-  ) %>% 
+  ) |> 
   gtExtras::gt_theme_espn()
 ```
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Finally, we can say with confidence that our medicine does indeed lower the time someone spends at the hospital. The ATE estimate is just a little bit lower than our algorithm, due to the difference in tie breaking of matches of knn implementation and the `Matching` R package.
 :::
 
 ## Matching bias again
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 We saw that matching is biased when the unit and its match are not so similar. But what causes them to be so different?
 
 As it turns out, the answer is quite simple and intuitive. It is easy to find people that match on a few characteristics, like sex. But if we add more characteristics, like age, income, city of birth and so on, it becomes harder and harder to find matches. In more general terms, [**the more features we have, the higher will be the distance between units and their matches**]{.underline}.
@@ -1699,21 +1721,21 @@ What it does is project all the features X into a single one, the Y dimension. I
 So, in some way, linear regression performs some sort of dimensionality reduction to estimate the ATE. It’s quite elegant.
 :::
 
+# Difference-in-Differences
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
 
+::: {style="font-size: large"}
 To figure out how good billboards were as a marketing channel, A bank placed 3 billboards in the city of Porto Alegre, the capital of the state of Rio Grande do Sul.
 
 They wanted to see if that boosted deposits into our savings account.
 
 Rio Grande do Sul is part of the south of Brazil, one of the most developed regions.
 
-## Difference-in-Differences
 
-#### Three Billboards in the South of Brazil
 
-::: {style="font-size: x-large"}
 Data was also obtained from another capital from the south, Florianopolis, the capital city of the state of Santa Catarina in Brasil. The idea is that Florianopolis could be used as a control sample to estimate the counterfactual when compared to Porto Alegre. The billboard was placed in Porto Alegre for the entire month of June. The resulting data like this:
 :::
 
@@ -1722,15 +1744,22 @@ Data was also obtained from another capital from the south, Florianopolis, the c
 #| code-fold: true
 data_bboard <- readr::read_csv("data/billboard_impact.csv", show_col_types = FALSE)
 
-data_bboard %>% 
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_bboard |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gtExtras::gt_theme_espn()
 ```
 
+
+
+## Difference-in-Differences
+
+#### Three Billboards in the South of Brazil
+
 ::: {style="font-size: x-large"}
-Here deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
+In this example deposits are our outcome variable, the one the bank wishes to increase with the billboards. POA is a dummy variable for the city of Porto Alegre. When it is zero, it means the samples are from Florianopolis. Jul is a dummy for the month of July, or for the post intervention period. When it is zero it refers to samples from May, the pre-intervention period.
 :::
+
 
 ## Difference-in-Differences
 
@@ -1752,6 +1781,7 @@ In words, the causal effect is the outcome in the period post intervention in ca
 
 #### DID Estimator
 
+::: {style="font-size: x-large"}
 One way around this is a before and after comparison.
 
 $$
@@ -1768,24 +1798,34 @@ poa_after  <- data_bboard |> dplyr::filter(poa==1 & jul==1) |> dplyr::pull(depos
 poa_after - poa_before
 ```
 
-This estimator is telling us that we should expect deposits to increase R$\$ 41.04$ after the intervention. But can we trust this?
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-::: {style="font-size: x-large"}
-Notice that $E[Y(0)|D=1]=E[Y^0(0)|D=1]$, the observed outcome for the treated unit before the intervention is equal to the counterfactual outcome for the treated unit also before the intervention. Since we are using this to estimate the counterfactual after the intervention $E[Y^0(1)|D=1]$, this estimation above assumes that $E[Y^0(1)|D=1] = E[Y^0(0)|D=1]$.
-
-It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
-
-For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention. With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
+This estimator is telling us that we should expect deposits to increase R$\$ 41.05$ after the intervention. But can we trust this?
 :::
 
 ## Difference-in-Differences
 
 #### DID Estimator
 
+::: {style="font-size: x-large"}
+Notice that $E[Y(0)|D=1]=E[Y^0(0)|D=1]$, the observed outcome for the treated unit before the intervention is equal to the counterfactual outcome for the treated unit also before the intervention. Since we are using this to estimate $E[Y^0(1)|D=1]$, the counterfactual after the intervention, this estimation above assumes that $E[Y^0(1)|D=1] = E[Y^0(0)|D=1]$.
+
+It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
+:::
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+::: {style="font-size: x-large"}
+For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention.
+
+With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
+:::
+
+## Difference-in-Differences
+
+#### DID Estimator
+
+::: {style="font-size: x-large"}
 Another idea is to compare the treated group with an untreated group that didn’t get the intervention:
 
 $$
@@ -1801,6 +1841,9 @@ fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposi
 poa_after - fl_after
 ```
 
+This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
+:::
+
 ## Difference-in-Differences
 
 #### DID Estimator
@@ -1810,39 +1853,10 @@ This estimator is telling us that the campaign is detrimental and that customers
 
 Notice that $E[Y(1)|D=0]=E[Y^0(1)|D=0]$. And since we are using $E[Y(1)|D=0]$ to estimate the counterfactual for the treated after the intervention, we are assuming we can replace the missing counterfactual like this: $E[Y^0(1)|D=0] = E[Y^0(1)|D=1]$.
 
-But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$. On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
+But notice that this would only be true if both groups have a very similar baseline level. For instance, if Florianopolis has way more deposits than Porto Alegre, this would not be true because $E[Y^0(1)|D=0] > E[Y^0(1)|D=1]$.
+
+On the other hand, if the level of deposits are lower in Florianopolis, we would have $E[Y^0(1)|D=0] < E[Y^0(1)|D=1]$.
 :::
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-::: {style="font-size: x-large"}
-It is saying that in the case of no intervention, the outcome in the latter period would be the same as the outcome from the starting period. This would obviously be false if your outcome variable follows any kind of trend.
-
-For example, if deposits are going up in POA, $E[Y^0(1)|D=1] > E[Y^0(0)|D=1]$, i.e. the outcome of the latter period would be greater than that of the starting period even in the absence of the intervention.
-
-With a similar argument, if the trend in Y is going down, $E[Y^0(1)|D=1] < E[Y^0(0)|D=1]$. This is to show that this before and after thing is not a great estimator.
-:::
-
-## Difference-in-Differences
-
-#### DID Estimator
-
-Another idea is to compare the treated group with an untreated group that didn’t get the intervention:
-
-$$
-\hat{ATET} = E[Y(1)|D=1] - E[Y(1)|D=0]
-$$
-
-In our example, it would be to compare the deposits from POA to that of Florianopolis in the post intervention period.
-
-```{r}
-fl_after  <- data_bboard |> dplyr::filter(poa==0 & jul==1) |> dplyr::pull(deposits) |> mean()
-poa_after - fl_after
-```
-
-This estimator is telling us that the campaign is detrimental and that customers will decrease deposits by R\$ 119.10.
 
 ## Difference-in-Differences
 
@@ -1881,15 +1895,12 @@ What this does is take the treated unit **before the intervention** and adds a t
 
 ::: {style="font-size: x-large"}
 It is important to notice that this assumes that the trends in the treatment and control are the same:
-:::
 
 $$
 E[Y^0(1) − Y^0(0)|D=1] = E[Y^0(1) − Y^0(0)|D=0]
 $$
 
-::: {style="font-size: x-large"}
 where the left hand side is the counterfactual trend. Now, we can replace the estimated counterfactual in the treatment effect definition
-:::
 
 $E[Y^1(1)|D=1] - E[Y^0(1)|D=1]$
 
@@ -1898,6 +1909,7 @@ $$
 $$
 
 It gets that name because it gets the difference between the difference between treatment and control after and before the treatment.
+:::
 
 ## Difference-in-Differences
 
@@ -1932,6 +1944,7 @@ To visualize what diff-in-diff is doing, we can project the growth trend from th
 ```{r}
 #| fig-align: center
 #| fig-height: 4
+#| code-fold: true
 tibble::tibble( 
   mo = c("May", "Jul") |> factor(levels=c("May", "Jul"))
   , fl = c(fl_before, fl_after)
@@ -1945,14 +1958,14 @@ tibble::tibble(
 ```
 
 ::: {style="font-size: x-large"}
-The small difference between the red and the blue dashed lines shows the small treatment effect on Porto Alegre.
+The small difference between the solid and the dashed lines shows the small treatment effect on Porto Alegre.
 :::
 
 ## Difference-in-Differences
 
 #### DID Estimator
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 But how much can we trust this estimator? To get standard errors we use a neat trick that uses regression. Specifically, we will estimate the following linear model
 :::
 
@@ -1960,7 +1973,7 @@ $$
 Y_i = \beta_0 + \beta_1 POA_i + \beta_2 Jul_i + \beta_3 POA_i*Jul_i + e_i
 $$
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Notice that $\beta_0$ is the baseline of the control. In our case, is the level of deposits in Florianopolis in the month of May.
 
 If we turn on the treated city dummy, we get $\beta_1$. So $\beta_0+\beta_1$ is the baseline of Porto Alegre in May, before the intervention, and $\beta_1$ is the increase of Porto Alegre baseline on top of Florianopolis.
@@ -1985,7 +1998,7 @@ lm(deposits ~ poa*jul, data = data_bboard) |> broom::tidy()
 #### Non Parallel Trends
 
 ::: {style="font-size: x-large"}
-One obvious problem with Diff-in-Diff is failure to satisfy the parallel trend assumption. If the growth trend from the treated is different from the trend of the control, diff-in-diff will be biased.
+One obvious potential problem with Diff-in-Diff is failure to satisfy the parallel trend assumption. If the growth trend from the treated is different from the trend of the control, diff-in-diff will be biased.
 
 This is a common problem with non-random data, where the decision to treat a region is based on its potential to respond well to the treatment, or when the treatment is targeted at regions that are not performing very well. In our marketing example we decided to test billboards in Porto Alegre not in order to check the effect of billboards in general. The reason is simply because sales perform poorly there.
 
@@ -2002,6 +2015,8 @@ One way to check if this is happening is to plot the trend using past periods. F
 
 ```{r}
 #| warning: false
+#| fig-align: center
+#| code-fold: true
 tibble::tibble( 
   mo = c("Jan", "Mar", "May", "Jul") |> factor(levels=c("Jan", "Mar", "May", "Jul"))
   , fl = c(120, 150, fl_before, fl_after)
@@ -2011,7 +2026,7 @@ tibble::tibble(
   tidyr::pivot_longer(-mo) |> 
   ggplot(aes(x=mo, y = value, group = name, color = name, linetype = name)) +
   geom_line() +
-  theme_minimal()
+  theme_minimal(base_size = 18)
 ```
 
 ## Difference-in-Differences
@@ -2019,21 +2034,25 @@ tibble::tibble(
 #### Non Parallel Trends
 
 ::: {style="font-size: x-large"}
-One final issue that it’s worth mentioning is that you won’t be able to place confidence intervals around your Diff-in-Diff estimator if you only have aggregated data.
+One final issue that is worth mentioning is that you won’t be able to place confidence intervals around your Diff-in-Diff estimator if you only have aggregated data.
 
 Say for instance you don’t have data on what each of our customers from Florianópolis or Porto Alegre did. Instead, you only have the average deposits before and after the intervention for both cities.
 
 In this case, you will still be able to estimate the causal effect by Diff-in-Diff, but you won’t know the variance of it. That’s because all the variability in your data got squashed out in aggregation.
 :::
 
+# Panel Data and Fixed Effects
+
 ## Panel Data and Fixed Effects
 
 ::: {style="font-size: x-large"}
 In the simple Diff-in-Diff setup, we have a treated and a control group (the city of POA and FLN, respectively) and only two periods, a pre-intervention and a post-intervention period. But what would happen if we had more periods? Or more groups?
 
-This setup is so common and powerful for causal inference and gets its own name: panel data. A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
+This setup is so common and powerful for causal inference and gets its own name: [**panel data**]{.underline}.
 
-To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). We want to see if that sort of offline marketing strategy can boost the usage of our investment products. Specifically, we want to know how much deposits in our investments account would increase if we placed billboards.
+A panel is when we have repeated observations of the same unit over multiple periods of time. This is incredibly common in the industry, where companies track user data over multiple weeks and months.
+
+To understand how we can leverage such data structure, let’s first continue with our diff-in-diff example, where we wanted to estimate the impact of placing a billboard (treatment) in the city of Porto Alegre (POA). Specifically, we want to know how much deposits in our investments account would increase if we placed more billboards.
 :::
 
 ## Panel Data and Fixed Effects
@@ -2041,27 +2060,31 @@ To understand how we can leverage such data structure, let’s first continue wi
 ::: {style="font-size: x-large"}
 In the previous section, we motivated the DiD estimator as an imputation strategy of what would have happened to Porto Alegre had we not placed the billboards in it.
 
-We said that the counterfactual outcome $Y^0$ for Porto Alegre **after the intervention** (placing a billboard) could be inputted as the number of deposits in Porto Alegre **before the intervention** plus a growth factor.
+We said that the counterfactual outcome $Y^0$ for Porto Alegre **after the intervention** (placing a billboard) could be imputed as the number of deposits in Porto Alegre **before the intervention** plus a growth factor.
 
 This growth factor was estimated in a control city, Florianopolis (FLN).
 :::
 
 ## Panel Data and Fixed Effects
 
-::: {style="font-size: x-large"}
+::: {style="font-size: xx-large"}
 To recap some notation, here is how we can estimate this counterfactual outcome
 :::
 
-$$
-\begin{split}
-\underbrace{\widehat{Y^0(1)|D=1}}_{\substack{\text{POA outcome after intervention}} \\ \substack{\text{if no intervention had taken place}}} 
-= \underbrace{Y^0(0)|D=1}_{\substack{\text{POA outcome}} \\ \substack{\text{before intervention}}} 
-+ \big( \underbrace{Y^0(1)|D=0}_{\substack{\text{FLN outcome after}} \\ \substack{\text{intervention in POA}}} 
-- \underbrace{Y^0(0)|D=0}_{\substack{\text{FLN outcome before}} \\ \substack{\text{intervention in POA}}} \big)
-\end{split}
-$$
-
 ::: {style="font-size: x-large"}
+$$
+\begin{align*}
+\begin{split}
+\underbrace{\widehat{Y^0(1)|D=1}}_{\substack{\text{POA outcome after intervention} \\ \text{if no intervention had taken place}}} 
+= \underbrace{Y^0(0)|D=1}_{\substack{\text{POA outcome} \\ \text{before intervention}}} 
++ \big( \underbrace{Y^0(1)|D=0}_{\substack{\text{FLN outcome after} \\ \text{intervention in POA}}} 
+- \underbrace{Y^0(0)|D=0}_{\substack{\text{FLN outcome before} \\ \text{intervention in POA}}} \big)
+\end{split}
+\end{align*}
+$$
+:::
+
+::: {style="font-size: xx-large"}
 where $t$ denotes time, $D$ denotes the treatment (since $t$ is taken), $Y^D(t)$ denote the potential outcome for treatment $D$ in period $t$ (for example, $Y^0(1)$ is the outcome under the control in period 1).
 :::
 
@@ -2094,9 +2117,9 @@ Y^d \perp  D
 $$
 
 ::: {style="font-size: x-large"}
-This means we don’t give more treatment to units with higher outcome (which would cause upward bias in the effect estimation) or lower outcome (which would cause downward bias).
+So we don’t give more treatment to units with higher outcome (causing upward bias in the effect estimation) or lower outcome (causing downward bias).
 
-In this example, let’s say the marketing manager decides to add billboards only to cities that already have very high deposits. That way, he or she can later boast that cities with billboards generate more deposties, so of course the marketing campaign was a success.
+If the marketing manager decides to add billboards only to cities that already have very high deposits, the manager can later boast that cities with billboards generate more deposits, and that the marketing campaign was a success.
 
 This violates the independence assumption: we are giving the treatment to cities with high $Y^0$.
 :::
@@ -2105,7 +2128,7 @@ This violates the independence assumption: we are giving the treatment to cities
 
 #### Parallel Trends
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Recall that a natural extension of this assumption is the conditional independence assumption, which allows the potential outcomes to be dependent on the treatment at first, but independent once we condition on the confounders $X$
 :::
 
@@ -2113,8 +2136,8 @@ $$
 Y^d \perp D | X
 $$
 
-::: {style="font-size: x-large"}
-If the traditional independence assumption states that the treatment assignment can’t be related to **the levels** of potential outcomes, the parallel trends states that the treatment assignment can’t be related to **the growth** in potential outcomes over time. In fact, one way to write the parallel trends assumption is as follows
+::: {style="font-size: large"}
+If the traditional independence assumption states that the treatment assignment can’t be related to **the levels** of potential outcomes, the parallel trends states that the treatment assignment can’t be related to **the growth** in potential outcomes over time, and one way to write the parallel trends assumption is as follows
 :::
 
 $$
@@ -2128,9 +2151,9 @@ $$
 ::: {style="font-size: x-large"}
 This assumption says it is fine that we assign the treatment to units that have a higher or lower level of the outcome. What we can’t do is assign the treatment to units based on how the outcome is growing.
 
-In our billboard example, this means it is OK to place billboards only in cities with originally high deposits level. What we can’t do is place billboards only in cities where the deposits are growing the most.
+In our billboard example, this means it is OK to place billboards only in cities with originally high deposit levels. What we can’t do is place billboards only in cities where the deposits are growing the most.
 
-Remember that DiD is imputting the counterfactual growth in the treated unit with the growth in the control unit. If growth in the treated unit under the control is different than the growth in the control unit, then we are in trouble.
+Remember that DiD is imputing the counterfactual growth in the treated unit with the growth in the control unit. If growth in the treated unit under the control is different than the growth in the control unit, then we are in trouble.
 :::
 
 ## Panel Data and Fixed Effects
@@ -2138,7 +2161,7 @@ Remember that DiD is imputting the counterfactual growth in the treated unit wit
 #### Controlling What you Cannot See
 
 ::: {style="font-size: x-large"}
-Methods like propensity score, linear regression and matching are very good at controlling for confounding in non-random data, but they rely on a key assumption: conditional unconfoundedness
+Methods like propensity score, linear regression and matching are very good at controlling for confounding in non-random/observational data, but they rely on a key assumption: conditional unconfoundedness
 :::
 
 $$
@@ -2153,46 +2176,53 @@ To put it in words, they require that all the confounders are known and measured
 
 #### Controlling What you Cannot See
 
-::: {style="font-size: x-large"}
-One major issue is that sometimes we simply can’t measure a confounder. For instance, take a classical labor economics problem of figuring out the impact of marriage on men’s earnings. It’s a well known fact in economics that married men earn more than single men. However, it is not clear if this relationship is causal or not.
+::: {style="font-size: large"}
+One issue is that sometimes we can’t measure a confounder. For instance, take a classical labor economics problem of figuring out the impact of marriage on men’s earnings. It’s considered a fact in economics that married men earn more than single men. However, it is not clear if this relationship is causal or not.
 
 It could be that more educated men are both more likely to marry and more likely to have a high earnings job, which would mean that education is a confounder of the effect of marriage on earnings. For this confounder, we could measure the education of the person in the study and run a regression controlling for that.
 
-But another confounder could be beauty. It could be that more handsome men are both more likely to get married and more likely to have a high paying job. Unfortunately, beauty is one of those characteristics like intelligence. It’s something we can’t measure very well.
+But another confounder could be physical attractiveness. It could be that more handsome men are both more likely to get married and more likely to have a high paying job. Unfortunately, attractiveness is one of those characteristics like intelligence. It’s something we can’t measure very well.
 :::
 
 ## Panel Data and Fixed Effects
 
 #### Fixed Effects
 
+::::::: columns
+:::: {.column width="40%"}
+::: {style="font-size: large"}
 ```{r}
 #| echo: true
 #| code-fold: true
+#| code-summary: load panel data
 #| label: load panel data
 data_panel <- readr::read_csv("data/wage_panel.csv", show_col_types = FALSE)
 
-data_panel %>% 
-  dplyr::slice_head(n=5) %>% 
-  gt::gt() %>% 
+data_panel |> 
+  dplyr::slice_head(n=5) |> 
+  gt::gt() |> 
   gt::tab_options( table.font.size = gt::px(28) ) |>
   gtExtras::gt_theme_espn()
 ```
-
-::: {style="font-size: x-large"}
-Generally, the fixed effect model is defined as
 :::
+::::
+
+:::: {.column width="60%"}
+::: {style="font-size: large"}
+Generally, the fixed effect model is defined as
 
 $$
 y_{it} = \beta X_{it} + \gamma U_i + e_{it}
 $$
 
-::: {style="font-size: x-large"}
 where $y_{it}$ is the outcome of individual $i$ at time $t$, $X_{it}$ is the vector of variables for individual $i$ at time $t$. $U_i$ is a set of unobservables for individual $i$ .
 
 Notice that those unobservables are unchanging through time, hence the lack of the time subscript.
 
 Finally, $e_{it}$ is the error term. For the education example, $y_{it}$ is log wages, $X_{it}$ are the observable variables that change in time, like marriage and experience and $U_i$ are the variables that are not observed but constant for each individual, like beauty and intelligence.
 :::
+::::
+:::::::
 
 ## Panel Data and Fixed Effects
 
@@ -2201,29 +2231,33 @@ Finally, $e_{it}$ is the error term. For the education example, $y_{it}$ is log 
 ::: {style="font-size: x-large"}
 Using panel data with a fixed effect model is as simple as adding a dummy for the entities.
 
-This is true, but in practice, we don’t actually do it. Imagine a dataset where we have 1 million customers. If we add one dummy for each of them, we would end up with 1 million columns, which is probably not a good idea. Instead, we use the trick of partitioning the linear regression into 2 separate models. We’ve seen this before, but now is a good time to recap it.
+This is true, but in practice, we don’t actually do it.
+
+Imagine a dataset where we have 1 million customers. If we add one dummy for each of them, we would end up with 1 million columns, which is probably not a good idea. Instead, we use the trick of partitioning the linear regression into 2 separate models.
+
+We’ve seen this before, but now is a good time to recap it.
 :::
 
 ## Panel Data and Fixed Effects
 
 #### Fixed Effects
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 Suppose you have a linear regression model with a set of features $X_1$ and another set of features $X_2$.
-:::
 
 $$
 \hat{Y} = \hat{\beta_1} X_1 + \hat{\beta_2} X_2
 $$
 
-::: {style="font-size: x-large"}
-where $X_1$ and $X_2$ are feature matrices (one row per feature and one column per observation) and $\hat{\beta_1}$ and $\hat{\beta_2}$ are row vectors. You can get the exact same $\hat{\beta_1}$ parameter by doing
+where $X_1$ and $X_2$ are feature matrices (one row per feature and one column per observation) and $\hat{\beta_1}$ and $\hat{\beta_2}$ are row vectors. You can get the exact same $\hat{\beta_1}$ parameter by doing[^2]
 
 1.  regress the outcome $y$ on the second set of features $\hat{y^*} = \hat{\gamma_1} X_2$
 2.  regress the first set of features on the second $\hat{X_1} = \hat{\gamma_2} X_2$
-3.  obtain the residuals $\tilde{X}_1 = X_1 - \hat{X_1}$ and $\tilde{y}_1 = y_1 - \hat{y^*}$
-4.  regress the residuals of the outcome on the residuals of the features $\hat{y} = \hat{\beta_1} \tilde{X}_1$
+3.  obtain the residuals $\tilde{X}_1 = X_1 - \hat{X_1}$ and $\tilde{y} = y - \hat{y^*}$
+4.  regress the residuals of the outcome on the residuals of the features $\tilde{y} = \hat{\beta_1} \tilde{X}_1$
 :::
+
+[^2]: See the FWL Theorem
 
 ## Panel Data and Fixed Effects
 
@@ -2231,18 +2265,21 @@ where $X_1$ and $X_2$ are feature matrices (one row per feature and one column p
 
 The parameter from this last regression will be exactly the same as running the regression with all the features.
 
-But how exactly does this help us? Well, we can break the estimation of the model with the entity dummies into 2. First, we use the dummies to predict the outcome and the feature. These are steps 1 and 2 above.
+But how exactly does this help us? Well, we can break the estimation of the model with the entity dummies into 2. First, we use the dummies to predict the outcome and the features. These are steps 1 and 2 above.
 
 ## Panel Data and Fixed Effects
 
 #### Fixed Effects
 
+::: {style="font-size: x-large"}
 Recall how running a regression on a dummy variable is as simple as estimating the mean for that dummy? Let’s run a model where we predict wages as a function of the year dummy.
 
 ```{r}
+#| echo: true
 lm(lwage ~ year, data = data_panel |> dplyr::mutate(year = factor(year))) |> 
   broom::tidy()
 ```
+:::
 
 ## Panel Data and Fixed Effects
 
@@ -2253,6 +2290,8 @@ Notice how this model is predicting the average income in 1980 to be 1.3935, in 
 :::
 
 ```{r}
+#| echo: true
+#| code-fold: true
 data_panel |> dplyr::group_by(year) |> 
   dplyr::summarise(avg_lwage = mean(lwage)) |> 
   gt::gt('year') |> 
@@ -2266,15 +2305,16 @@ data_panel |> dplyr::group_by(year) |>
 
 ::: {style="font-size: x-large"}
 This means that if we get the average for every person in our panel, we are essentially regressing the individual dummy on the other variables. This motivates the following estimation procedure:
-:::
 
-1.  Create time-demeaned variables by subtracting the mean for the individual: $$
+1.  Create time-demeaned variables by subtracting the mean for the individual:
+
+$$
     \begin{align*}
     \ddot{Y}_{it} & =Y_{it}-\bar{Y}_{i}\\
     \ddot{X}_{it} & =X_{it}-\bar{X}_{i}
     \end{align*}
-    $$
-2.  Regress $\ddot{Y}_{it}$ on $\ddot{X}_{it}$
+$$ 2. Regress $\ddot{Y}_{it}$ on $\ddot{X}_{it}$
+:::
 
 ## Panel Data and Fixed Effects
 
@@ -2324,6 +2364,8 @@ To check which variables are those, we can group our data by individual and get 
 :::
 
 ```{r}
+#| echo: true
+#| code-fold: true
 data_panel |> dplyr::group_by(nr) |> 
   dplyr::mutate(across(!starts_with("nr"),sd)) |> 
   dplyr::distinct() |> 
@@ -2339,13 +2381,15 @@ data_panel |> dplyr::group_by(nr) |>
 
 #### Fixed Effects
 
-::: {style="font-size: x-large"}
-For our data, we need to remove ethnicity dummies, `black` and `hisp`, since they are constant for the individual. Also, we need to remove education. We will also not use occupation, since this is probably mediating the effect of marriage on wage (it could be that single men are able to take more time demanding positions). Having selected the features we will use, it’s time to estimate this model.
+::: {style="font-size: large"}
+So, for our data, we need to remove ethnicity dummies, `black` and `hisp`, since they are constant for the individual. Also, we need to remove education. We will also not use occupation, since this is probably mediating the effect of marriage on wage (it could be that single men are able to take more time demanding positions). Having selected the features we will use, it’s time to estimate this model.
 
 To run our fixed effect model, first, let’s get our mean data. We can achieve this by grouping everything by individuals and taking the mean.
 :::
 
 ```{r}
+#| echo: true
+#| code-fold: true
 #| message: false
 data_panel |> dplyr::group_by(nr) |>
   dplyr::select(married, expersq, union, hours, lwage) |> 
@@ -2366,7 +2410,7 @@ To demean the data, we need to set the index of the original data to be the indi
 :::
 
 ```{r}
-#| cache: true
+#| cache: false
 #| cache-comments: true
 #| code-fold: true
 data_panel_baked <- 
@@ -2403,6 +2447,8 @@ Finally, we can run our fixed effect model on the time-demeaned data.
 :::
 
 ```{r}
+#| code-fold: true
+#| echo: true
 lm(lwage ~ married + expersq + union + hours, data = data_panel_baked) |> 
   broom::tidy()
 ```
@@ -2411,11 +2457,13 @@ lm(lwage ~ married + expersq + union + hours, data = data_panel_baked) |>
 
 #### Fixed Effects
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 If we believe that fixed effect eliminates the all omitted variable bias, this model is telling us that marriage increases a man’s wage by 11%. This result is very significant. One detail here is that for fixed effect models, the standard errors need to be clustered. So, instead of doing all our estimation by hand (which is only nice for pedagogical reasons), we can use the library `linearmodels` and set the argument `cluster_entity` to True.
 :::
 
 ```{r}
+#| code-fold: true
+#| echo: true
 # see https://www.r-bloggers.com/2021/05/clustered-standard-errors-with-r/
 estimatr::lm_robust(
   lwage ~ expersq+union+married+hours 
@@ -2427,16 +2475,14 @@ estimatr::lm_robust(
 
 #### Fixed Effects
 
-::: {style="font-size: x-large"}
-Notice how the parameter estimates are identical to the ones we’ve got with time-demeaned data. The only difference is that the standard errors are a bit larger. Now, compare this to the simple OLS model that doesn’t take the time structure of the data into account. For this model, we add back the variables that are constant in time.
-:::
+::: {style="font-size: large"}
+Notice how the parameter estimates are identical to the ones we’ve got with time-demeaned data. The only difference is that the standard errors are a bit larger. Compare this to the simple OLS model that doesn’t take the time structure of the data into account. For this model, we add back the variables that are constant in time.
 
 ```{r}
 lm(lwage ~ expersq+union+married+hours+black+hisp+educ, data = data_panel) |> 
   broom::tidy()
 ```
 
-::: {style="font-size: x-large"}
 This model is saying that marriage increases the man’s wage by 14%. A somewhat larger effect than the one we found with the fixed effect model. This suggests some omitted variable bias due to fixed individual factors, like intelligence and beauty, not being added to the model.
 :::
 
@@ -2444,9 +2490,17 @@ This model is saying that marriage increases the man’s wage by 14%. A somewhat
 
 -   Read [Statistical tools for causal inference](https://chabefer.github.io/STCI/index.html)
 -   Read [Causal inference in R](https://www.r-causal.org/)
+-   Read Scott Cunningham: [Causal Inference The Mixtape](https://mixtape.scunning.com/)
+-   Take a course from Scott Cunningham: [Mixtape Sessions](https://www.mixtapesessions.io/sessions/)
+-   Read [A Crash Course in Good and Bad Control](https://causality.cs.ucla.edu/blog/index.php/category/bad-control/)
+-   Read [A Causal Approach for Business Optimization](https://arxiv.org/ftp/arxiv/papers/2207/2207.01722.pdf)
 
 ## Recap
 
--   We introduced the fundamental problems of inference and the biases of some intuitive estimators,
--   We developed a basic understanding of the tools used to state and then satisfy causality assumptions,
--   We looked at an example of how econometric methods recover treatment effects.
+We looked in some detail at other methods used to estimate causal effects, along with methods used for special situations, including:
+
+-   regression adjustment
+-   doubly robust estimation
+-   matching
+-   difference in differences
+-   fixed effects and methods for panel data

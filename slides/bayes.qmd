@@ -1,0 +1,590 @@
+---
+title: "Bayes"
+---
+
+{{< include 00-setup.qmd >}}
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito
+  , magrittr, ggplot2, estimatr, Formula, gt, gtExtras,
+  brms, tidybayesm, bayesplot, ggthemes, patchwork)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Basic model
+
+### Coin flip
+
+We express the likelihood for our coin toss example as
+
+$$y_{i} \sim \operatorname{Bernoulli}(\theta)$$
+
+Our prior will be
+
+$$\theta \sim \operatorname{Beta}(\alpha, \beta)$$
+
+```{r}
+#|echo: true
+dat <- readr::read_csv("data/z15N50.csv", show_col_types = FALSE)
+
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y)) +
+  geom_bar() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal()
+```
+
+```{r}
+#| message: false
+#| output: false
+
+fit8.1 <-
+  brms::brm(data = my_data, 
+      family = brms::bernoulli(link = identity),
+      formula = y ~ 1,
+      brms::prior(beta(2, 2), class = Intercept, lb = 0, ub = 1),
+      iter = 500 + 3334, warmup = 500, chains = 3,
+      seed = 8,
+      file = "fits/fit08.01")
+```
+
+```{r}
+#| message: false
+plot(fit8.1)
+```
+
+```{r}
+#| message: false
+#| output: false
+draws <- brms::as_draws_df(fit8.1) 
+draws
+
+```
+
+```{r}
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_dens_overlay(pars = vars(b_Intercept)) 
+
+```
+
+```{r}
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_acf(pars = vars(b_Intercept), lags = 35) +
+  theme_minimal()
+```
+
+```{r}
+brms::rhat(fit8.1)["b_Intercept"]
+brms::neff_ratio(fit8.1)["b_Intercept"]
+```
+
+```{r}
+print(fit8.1)
+```
+
+```{r}
+brms::posterior_summary(fit8.1, robust = T)
+```
+
+```{r}
+brms::posterior_summary(fit8.1, probs = c(.025, .25, .75, .975))
+
+```
+
+```{r}
+bayesplot::mcmc_areas(
+  draws, 
+  pars = vars(b_Intercept),
+  prob = 0.5,
+  prob_outer = 0.95,
+  point_est = "mean"
+) +
+  scale_y_discrete(expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Theta via bayesplot::mcmc_areas()",
+       x = expression(theta)) +
+  theme_minimal() +
+  theme(plot.title.position = "plot")
+```
+
+```{r}
+library(tidybayes)
+
+draws |> 
+  ggplot(aes(x = b_Intercept, y = 0)) +
+  tidybayes::stat_halfeye(point_interval = tidybayes::mode_hdi, .width = c(.95, .5)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(theta*" via tidybayes::stat_halfeye()"),
+       x = expression(theta)) +
+  theme_minimal()
+
+draws |> 
+  ggplot(aes(x = b_Intercept, y = 0)) +
+  tidybayes::stat_histinterval(point_interval = tidybayes::mode_hdi, .width = c(.95, .5)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(theta*" via tidybayes::stat_histinterval()"),
+       x = expression(theta)) +
+  theme_minimal()
+```
+
+```{r}
+dat <- readr::read_csv("data/z6N8z2N7.csv", show_col_types = FALSE) |> 
+  dplyr::mutate(
+    s = 
+      dplyr::case_when(s == "Reginald" ~ "Windsor", TRUE ~ "London")
+  )
+```
+
+```{r}
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  ggplot(aes(x = y, fill = s)) +
+  geom_bar(show.legend = F) +
+  ggthemes::scale_fill_colorblind() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal() +
+  facet_wrap(~ s)
+```
+
+```{r}
+#| output: false
+#| echo: true
+#| label: fit8.2
+fit8.2 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      brms::prior(beta(2, 2), class = b, lb = 0, ub = 1),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      seed = 8,
+      file = "fits/fit08.02")
+```
+
+```{r}
+plot(fit8.2, widths = c(2, 3))
+```
+
+```{r}
+summary(fit8.2)
+```
+
+```{r}
+pairs(fit8.2,
+      off_diag_args = list(size = 1/3, alpha = 1/3))
+```
+
+```{r}
+draws <- brms::as_draws_df(fit8.2)
+
+draws <-
+  draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  dplyr::mutate(`theta_Windsor - theta_London` = theta_Windsor - theta_London)
+
+dplyr::glimpse(draws |> dplyr::slice_head(n=6))
+```
+
+```{r}
+#| warning: false
+#| echo: true
+long_draws <-
+  draws |> 
+  dplyr::select(starts_with("theta")) |> 
+  tidyr::pivot_longer(everything()) |> 
+  dplyr::mutate(name = factor(name, levels = c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"))) 
+  
+long_draws |> 
+  ggplot(aes(x = value, y = 0, fill = name)) +
+  stat_histinterval(point_interval = mode_hdi, .width = .95,
+                    slab_color = "white", outline_bars = T,
+                    normalize = "panels") +
+  scale_fill_manual(values = ggthemes::colorblind_pal()(8)[2:4], breaks = NULL) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  theme_minimal() +
+  facet_wrap(~ name, scales = "free")
+```
+
+```{r}
+long_draws |> 
+  dplyr::group_by(name) |> 
+  tidybayes::mode_hdi()
+```
+
+```{r}
+#| output: false
+#| warning: false
+#| echo: true
+#| label: fit8.3
+
+fit8.3 <-
+  brms::brm(data = dat, 
+      family = brms::bernoulli(identity),
+      y ~ 0 + s,
+      prior =
+        c(brms::prior(beta(2, 2), class = b, coef = sWindsor),
+          brms::prior(beta(2, 2), class = b, coef = sLondon),
+          # this just sets the lower and upper bounds
+          brms::prior(beta(2, 2), class = b, lb = 0, ub = 1)),
+      iter = 2000, warmup = 500, cores = 4, chains = 4,
+      sample_prior = "only",
+      seed = 8,
+      file = "fits/fit08.03")
+```
+
+```{r}
+draws <- brms::as_draws_df(fit8.3) |> 
+  dplyr::select(starts_with("b_"))
+
+head(draws)
+```
+
+```{r}
+dat |> 
+  dplyr::group_by(s) |> 
+  dplyr::summarise(z = sum(y),
+            N = dplyr::n()) |> 
+  dplyr::mutate(`z/N` = z / N)
+
+levels <- c("theta_Windsor", "theta_London", "theta_Windsor - theta_London")
+
+d_line <-
+  tibble::tibble(value = c(.75, .286, .75 - .286),
+         name  =  factor(c("theta_Windsor", "theta_London", "theta_Windsor - theta_London"), 
+                         levels = levels))
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  dplyr::mutate("theta_Windsor - theta_London" = theta_Windsor - theta_London) |> 
+  tidyr::pivot_longer(contains("theta")) |> 
+  dplyr::mutate(name = factor(name, levels = levels)) |>
+  
+  ggplot(aes(x = value, y = 0)) +
+  stat_histinterval(point_interval = tidybayes::mode_hdi, .width = .95,
+                    fill = ggthemes::colorblind_pal()(8)[5], normalize = "panels") +
+  geom_vline(data = d_line, 
+             aes(xintercept = value), 
+             linetype = 2) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("The dashed vertical lines mark off "*italic(z[s])/italic(N[s]))) +
+  cowplot::theme_cowplot() +
+  facet_wrap(~ name, scales = "free")
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  
+  ggplot(aes(x = theta_Windsor, y = theta_London)) +
+  geom_point(alpha = 1/4, color = ggthemes::colorblind_pal()(8)[6]) +
+  coord_equal() +
+  cowplot::theme_minimal_grid()
+```
+
+```{r}
+draws |> 
+  dplyr::rename(theta_Windsor = b_sWindsor,
+         theta_London  = b_sLondon) |> 
+  
+  ggplot(aes(x = theta_Windsor, y = theta_London)) +
+  stat_density_2d(aes(fill = stat(density)), 
+                  geom = "raster", contour = F) +
+  scale_fill_viridis_c(option = "B", breaks = NULL) +
+  scale_x_continuous(expression(theta[1]), 
+                     expand = c(0, 0), limits = c(0, 1),
+                     breaks = 0:4 / 4, labels = c("0", ".25", ".5", ".75", "1")) +
+  scale_y_continuous(expression(theta[2]), 
+                     expand = c(0, 0), limits = c(0, 1),
+                     breaks = 0:4 / 4, labels = c("0", ".25", ".5", ".75", "1")) +
+  coord_equal() +
+  cowplot::theme_minimal_grid()
+```
+
+## Hierarchical model
+
+### Coin flip
+
+## A single coin from a single mint
+
+Recall from the last chapter that our likelihood is the Bernoulli distribution,
+
+$$y_i \sim \operatorname{Bernoulli}(\theta).$$
+
+We'll use the beta density for our prior distribution for $\theta$,
+
+$$\theta \sim \operatorname{Beta}(\alpha, \beta).$$
+
+And we can re-express $\alpha$ and $\beta$ in terms of the mode $\omega$ and concentration $\kappa$, such that
+
+$$\alpha = \omega(\kappa - 2) + 1 \;\;\; \textrm{and} \;\;\; \beta = (1 - \omega)(\kappa - 2) + 1.$$
+
+As a consequence, we can re-express $\theta$ as
+
+$$\theta \sim \operatorname{Beta}(\omega(\kappa - 2) + 1, (1 - \omega)(\kappa - 2) + 1).$$
+
+The value of $\kappa$ governs how near $\theta$ is to $\omega$, with larger values of $\kappa$ generating values of $\theta$ more concentrated near $\omega$.
+
+Using $s$ for shape and $r$ for rate, Kruschke's Equations 9.7 and 9.8 are as follows:
+
+$$
+s = \frac{\mu^2}{\sigma^2} \;\;\; \text{and} \;\;\; r = \frac{\mu}{\sigma^2} \;\;\; \text{for mean} \;\;\; \mu > 0 \\
+s = 1 + \omega r \;\;\; \text{where} \;\;\; r = \frac{\omega + \sqrt{\omega^2 + 4\sigma^2}}{2\sigma^2} \;\;\; \text{for mode} \;\;\; \omega > 0.
+$$
+
+```{r}
+gamma_s_and_r_from_mean_sd <- function(mean, sd) {
+  if (mean <= 0) stop("mean must be > 0")
+  if (sd   <= 0) stop("sd must be > 0")
+  shape <- mean^2 / sd^2
+  rate  <- mean   / sd^2
+  return(list(shape = shape, rate = rate))
+}
+
+gamma_s_and_r_from_mode_sd <- function(mode, sd) {
+  if (mode <= 0) stop("mode must be > 0")
+  if (sd   <= 0) stop("sd must be > 0")
+  rate  <- (mode + sqrt(mode^2 + 4 * sd^2)) / (2 * sd^2)
+  shape <- 1 + mode * rate
+  return(list(shape = shape, rate = rate))
+}
+```
+
+```{r}
+gamma_s_and_r_from_mean_sd(mean = 10, sd = 100)
+gamma_s_and_r_from_mode_sd(mode = 10, sd = 100)
+```
+
+```{r}
+dat <- readr::read_csv("data/TherapeuticTouchData.csv", show_col_types = FALSE)
+
+dplyr::glimpse(dat)
+```
+
+```{r}
+dat |> 
+  dplyr::mutate(y = y |> as.character()) |> 
+  
+  ggplot(aes(y = y)) +
+  geom_bar(aes(fill = after_stat(count))) +
+  scale_fill_viridis_c(option = "A", end = .7, breaks = NULL) +
+  scale_x_continuous(breaks = 0:4 * 2, expand = c(0, NA), limits = c(0, 9)) +
+  cowplot::theme_minimal_vgrid() +
+  cowplot::panel_border() +
+  facet_wrap(~ s, ncol = 7)
+```
+
+```{r}
+#| warning: false
+#| code-fold: true
+a_purple <- viridis::viridis_pal(option = "A")(9)[4]
+dat |> 
+  dplyr::group_by(s) |> 
+  dplyr::summarize(mean = mean(y)) |>
+  
+  ggplot(aes(x = mean)) +
+  geom_histogram(color = "white", fill = a_purple,
+                 linewidth = .2, binwidth = .1) +
+  scale_x_continuous("Proportion Correct", limits = c(0, 1)) +
+  scale_y_continuous("# Practitioners", expand = c(0, NA)) +
+  cowplot::theme_minimal_hgrid()
+```
+
+```{r}
+#| warning: false
+#| code-fold: true
+#| message: false
+#| label: fit9.1
+fit9.1 <-
+  brms::brm(data = dat,
+      family = brms::bernoulli(link = logit),
+      y ~ 1 + (1 | s),
+      prior = c(brms::prior(normal(0, 1.5), class = Intercept),
+                brms::prior(normal(0, 1), class = sd)),
+      iter = 20000, warmup = 1000, thin = 10, chains = 4, cores = 4,
+      seed = 9,
+      file = "fits/fit09.01")
+```
+
+```{r}
+plot(fit9.1, widths = c(2, 3))
+```
+
+```{r}
+draws <- brms::as_draws_df(fit9.1)
+```
+
+```{r}
+draws |> 
+  dplyr::mutate(chain = .chain) |> 
+  bayesplot::mcmc_acf(pars = vars(b_Intercept, sd_s__Intercept), lags = 10) +
+  cowplot::theme_cowplot()
+```
+
+```{r}
+bayesplot::neff_ratio(fit9.1) |> 
+  bayesplot::mcmc_neff() +
+  cowplot::theme_cowplot(font_size = 12)
+```
+
+The $N_\textit{eff}/N$ ratio values for our model parameters were excellent. Here's a numeric summary of the model.
+
+```{r}
+print(fit9.1)
+```
+
+We'll need `brms::inv_logit_scaled()` to convert the model parameters to predict $\theta$ rather than $\operatorname{logit}(\theta)$. After the conversions, we'll be ready to make the histograms in the lower portion of Figure 9.10.
+
+```{r}
+# wrangle
+draws_small <-
+  draws |> 
+  # convert the linear model parameters to the probability space with `inv_logit_scaled()`
+  dplyr::mutate(`theta[1]`  = (b_Intercept + `r_s[S01,Intercept]`) |> brms::inv_logit_scaled(),
+         `theta[14]` = (b_Intercept + `r_s[S14,Intercept]`) |> brms::inv_logit_scaled(),
+         `theta[28]` = (b_Intercept + `r_s[S28,Intercept]`) |> brms::inv_logit_scaled()) |> 
+  # make the difference distributions
+  dplyr::mutate(`theta[1] - theta[14]`  = `theta[1]`  - `theta[14]`,
+         `theta[1] - theta[28]`  = `theta[1]`  - `theta[28]`,
+         `theta[14] - theta[28]` = `theta[14]` - `theta[28]`) |> 
+  dplyr::select(starts_with("theta"))
+
+draws_small |> 
+  tidyr::pivot_longer(everything()) |> 
+  # this line is unnecessary, but will help order the plots 
+  dplyr::mutate(name = factor(name, levels = c("theta[1]", "theta[14]", "theta[28]", 
+                                        "theta[1] - theta[14]", "theta[1] - theta[28]", "theta[14] - theta[28]"))) |> 
+
+  ggplot(aes(x = value, y = 0)) +
+  stat_histinterval(point_interval = mode_hdi, .width = .95,
+                    fill = a_purple, breaks = 40, normalize = "panels") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(NULL) +
+  cowplot::theme_minimal_hgrid() +
+  facet_wrap(~ name, scales = "free", ncol = 3)
+```
+
+```{r}
+draws_small |> 
+  tidyr::pivot_longer(everything()) |>
+  dplyr::group_by(name) |> 
+  tidybayes::mode_hdi(value) |> 
+  dplyr::mutate_if(is.double, round, digits = 3)
+```
+
+```{r}
+p1 <-
+  draws_small |> 
+  ggplot(aes(x = `theta[1]`, y = `theta[14]`)) +
+  geom_abline(linetype = 2) +
+  geom_point(color = a_purple, size = 1/8, alpha = 1/8)
+
+p2 <-
+  draws_small |> 
+  ggplot(aes(x = `theta[1]`, y = `theta[28]`)) +
+  geom_abline(linetype = 2) +
+  geom_point(color = a_purple, size = 1/8, alpha = 1/8)
+
+p3 <-
+  draws_small |> 
+  ggplot(aes(x = `theta[14]`, y = `theta[28]`)) +
+  geom_abline(linetype = 2) +
+  geom_point(color = a_purple, size = 1/8, alpha = 1/8)
+
+(p1 + p2 + p3) &
+  coord_cartesian(xlim = c(0, 1),
+                  ylim = c(0, 1)) & 
+  cowplot::theme_minimal_grid()
+```
+
+```{r}
+#| warning: false
+#| code-fold: true
+#| message: false
+# this part makes it easier to set the break points in `scale_x_continuous()` 
+labels <-
+  draws |> 
+  dplyr::mutate(theta = b_Intercept |> inv_logit_scaled(), .keep = "none") |>
+  tidybayes::mode_hdi() |> 
+  tidyr::pivot_longer(theta:.upper) |> 
+  dplyr::mutate(label = value |> round(3) |> as.character())
+  
+draws |> 
+  mutate(theta = b_Intercept |> inv_logit_scaled()) |> 
+
+  ggplot(aes(x = theta, y = 0)) +
+  stat_histinterval(point_interval = mode_hdi, .width = .95,
+                    fill = a_purple, breaks = 40) +
+  scale_x_continuous(expression(theta), 
+                     breaks = labels$value,
+                     labels = labels$label) +  
+  scale_y_continuous(NULL, breaks = NULL) +
+  cowplot::theme_minimal_hgrid()
+```
+
+```{r}
+# the tibble of the primary data
+sigmas <-
+  stats::coef(fit9.1, summary = F)$s |> 
+  tibble::as_tibble() |> 
+  dplyr::mutate(iter = 1:n()) |> 
+  dplyr::group_by(iter) |> 
+  tidyr::pivot_longer(-iter) |> 
+  dplyr::mutate(theta = brms::inv_logit_scaled(value)) |> 
+  dplyr::summarise(sd = sd(theta))
+
+# this, again, is just to customize `scale_x_continuous()`
+labels <-
+  sigmas |> 
+  tidybayes::mode_hdi(sd) |> 
+  tidyr::pivot_longer(sd:.upper) |> 
+  dplyr::mutate(label = value |> round(3) |> as.character())
+  
+# the plot
+sigmas |> 
+  ggplot(aes(x = sd, y = 0)) +
+  stat_histinterval(point_interval = mode_hdi, .width = .95,
+                    fill = a_purple, breaks = 40) +
+  scale_x_continuous(expression(paste(sigma, " of ", theta, " in a probability metric")),
+                     breaks = labels$value,
+                     labels = labels$label) +  
+  scale_y_continuous(NULL, breaks = NULL) +
+  cowplot::theme_minimal_hgrid()
+```
+
+```{r}
+#| warning: false
+#| code-fold: true
+#| message: false
+color_scheme_set("purple")
+bayesplot::bayesplot_theme_set(theme_default() + cowplot::theme_minimal_grid())
+
+stats::coef(fit9.1, summary = F)$s |> 
+  brms::inv_logit_scaled() |> 
+  data.frame() |> 
+  rename(`theta[1]`  = S01.Intercept, 
+         `theta[14]` = S14.Intercept, 
+         `theta[28]` = S28.Intercept) |> 
+  dplyr::select(`theta[1]`, `theta[14]`, `theta[28]`) |> 
+  
+  bayesplot::mcmc_pairs(off_diag_args = list(size = 1/8, alpha = 1/8))
+```
+
+Did you see how we slipped in the `color_scheme_set()` and `bayesplot_theme_set()` lines at the top? Usually, the plots made with **bayesplot** are easy to modify with **ggplot2** syntax. Plots made with `mcmc_pairs()` function are one notable exception. On the back end, these made by combining multiple **ggplot** into a grid, a down-the-line result of which is they are difficult to modify. Happily, one can make some modifications beforehand by altering the global settings with the `color_scheme_set()` and `bayesplot_theme_set()` functions. You can learn more in the discussion on [issue #128](https://github.com/stan-dev/bayesplot/issues/128) on the **bayesplot** GitHub repo.

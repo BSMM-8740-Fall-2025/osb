@@ -1,0 +1,63 @@
+---
+title: "Final Exam"
+subtitle: "BSMM8740-2-R-2024F [WEEK - 12]"
+author: "L.L. Odette"
+footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+logo: "images/logo.png"
+# title-slide-attributes:
+#   data-background-image: images/my-DRAFT.png
+#   data-background-size: contain
+#   data-background-opacity: "0.40"
+format: 
+  revealjs: 
+    chalkboard: true
+    theme: slides.scss
+    multiplex: true
+    transition: fade
+    slide-number: true
+    margin: 0.05
+    html-math-method: mathjax
+editor: visual
+menu:
+  numbers: true
+execute:
+  freeze: auto
+---
+
+{{< include 00-setup.qmd >}}
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Congratulations on Completing the Course
+
+-   Before we wrap up though, complete the [Student Perceptions of Teaching](https://ask.uwindsor.ca/app/answers/detail/a_id/176/kw/Student%20perceptions),
+-   then make sure you have BRMS installed, and
+-   finally, the final exam.
+
+## BRMS
+
+-   Reference materials for BRMS can be found [here](https://learnb4ss.github.io/learnB4SS/index.html) and [here](https://michael-franke.github.io/Bayesian-Regression/practice-sheets/01b-regression-BRMS.html).
+-   Instructions for installing BRMS can be found [here](https://learnb4ss.github.io/learnB4SS/articles/install-brms.html) and [here](https://mc-stan.org/users/interfaces/). The basic steps (in order) are
+    1.  Configure the C++ toolchain (use RTools in Windows)
+    2.  [Install Stan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started) and verify the Stan installation
+    3.  [Install BRMS](https://paulbuerkner.com/brms/)
+
+## Thank You & Enjoy the Holidays
+
+-   If you have emailed me and your questions have not yet been resolved, I will be working to complete everything before I start grading.
+-   Feel free to send a reminder if you think I may have missed your earlier email(s)

@@ -984,6 +984,8 @@ glm(default ~ credit_limit, family=binomial, data = risk_data) |>
 
   lm(default ~ credit_limit + wage +  credit_score1 + credit_score2, data = risk_data)
 
+  # !!!!!!!!!!
+
   debiasing_model <- lm(credit_limit ~ wage +  credit_score1 + credit_score2, data = risk_data)
 
   risk_data_deb <- risk_data |>

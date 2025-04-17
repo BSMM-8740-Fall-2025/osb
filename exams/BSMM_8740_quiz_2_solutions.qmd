@@ -1,0 +1,289 @@
+---
+title: "2024-quiz-2"
+subtitle: "SOLUTIONS"
+author: "Add your name here"
+editor: visual
+format: html
+self-contained: true
+---
+
+# Instructions
+
+-   Log in to **your** github account and then go to the [GitHub organization](https://github.com/bsmm-8740-fall-2024) for the course and find the **2024-quiz-2-\[your github username\]** repository to complete the quiz.
+
+    Create an R project using your **2024-quiz-2-\[your github username\]** repository (remember to create a PAT, etc., as in lab-1) and add your answers by editing the **2024-quiz-2.qmd** file in your project.
+
+-   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
+
+::: callout-important
+To access Github from the lab, you will need to make sure you are logged in as follows:
+
+-   username: **.\\daladmin**
+-   password: **Business507!**
+
+Remember to
+
+-   create your PAT using `usethis::create_github_token()` ,
+-   store your PAT with `gitcreds::gitcreds_set()` ,
+-   set your username and email with
+    -   `usethis::use_git_config( user.name = ___, user.email = ___)`
+:::
+
+## Packages
+
+```{r}
+#| message: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  ggplot2, magrittr, tidymodels, tidyverse, rsample, broom, recipes, parsnip, tidysmd
+)
+
+# set the efault theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Overview
+
+Quiz 2 will be released on Wednesday, November 20, and is designed to be completed in 30 minutes.
+
+The exam will consist of two parts:
+
+1.  **Part 1 - Conceptual:** Simple questions designed to evaluate your familiarity with the written course notes.
+2.  **Part 2 - Applied:** Data analysis in RStudio (like a usual lab, but simpler).
+
+🍀 Good luck! 🍀
+
+## Academic Integrity
+
+By taking this exam, you pledge to that:
+
+-   I will not lie, cheat, or steal in my academic endeavors;
+
+-   I will conduct myself honorably in all my endeavors; and
+
+-   I will act if the Standard is compromised.
+
+## Rules & Notes
+
+-   This is an individual assignment. Everything in your repository is for your eyes only.
+
+-   You may not collaborate or communicate anything about this exam to **anyone** except the instructor. For example, you may not communicate with other students or post/solicit help on the internet, email, chat, or via any other method of communication. No phones are allowed.
+
+-   The exam is open-book, open-note, so you may use any materials from class as you take the exam.
+
+## Submission
+
+-   Your answers should be typed in the document below.
+
+-   Make sure you save and commit any changes and push the changes to the course repository before the end of the quiz.
+
+-   Once the quiz has ended, the contents of your repository will be pulled for grading. This will happen only once, so no changes made after the end of the quiz will be recorded.
+
+------------------------------------------------------------------------
+
+# Quiz-2 (part 1)
+
+## 1 point each:
+
+## Q-1
+
+What is the key assumption of difference-in-differences (DID) estimation.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+*Delete the incorrect answers.*
+
+-   parallel trends
+:::
+
+## Q-2
+
+What is the primary purpose of a randomized controlled trial (RCT)?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+*Delete the incorrect answers.*
+
+-   To establish a causal relationship between two variables
+:::
+
+## Q-3
+
+[*Controlling*]{.underline} *for* a confounding variable in an analysis always guarantees that the observed association between two variables is causal.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+*Delete the incorrect answers.*
+
+-   it's complicated
+:::
+
+## Q-4
+
+What is the primary purpose of sensitivity analysis in causal inference?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+*Delete the incorrect answers.*
+
+-   To assess the robustness of results to unobserved confounding
+:::
+
+## Q-5
+
+Which type of bias occurs when the treatment and control groups differ systematically in their pre-treatment characteristics?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION :
+
+*Delete the incorrect answers*.
+
+-   Selection bias
+:::
+
+# Quiz-2 (part 2)
+
+## Q-6
+
+You are asked to evaluate the effectiveness of a retail marketing campaign. The marketing team has provided the following data:
+
+-   (X1): a measure of customer engagement on social media
+-   (X2): a measure of customer satisfaction
+-   Treatment (D): a new marketing campaign targeting store visits
+-   Outcome (Y): store sales
+
+The data below is representative of the marketing data you have:
+
+```{r}
+#| echo: true
+#| message: false
+#| error: false
+set.seed(8740)
+n <- 500
+dat <- tibble::tibble(
+  D = rbinom(n, 1, 0.5)
+  , Y = 2.0 * D + rnorm(n)
+  , X1 = 4.0 * Y + rnorm(n)
+  , X2 = 2.0 * Y + 3.0 * X1 + rnorm(n)
+)
+```
+
+Calculate the causal effect of the marketing campaign on sales using one of the methods described in lecture.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION : (1 point)
+
+```{r}
+# please show your work to calculate the causal effect of the marketing campaign on sales.
+lm(Y ~ D, data = dat)
+
+```
+
+The causal effect of the marketing campaign on sales is 2.0
+:::
+
+## Q-7
+
+Calculate the Average Treatment Effect (ATE) using inverse probability weighting (IPW) with the following data:
+
+-   Outcome (Y): student_score
+-   Treatment (D): tutoring_program
+-   Covariates/adjustment set (X): previous_grade, study_hours, parent_education
+
+```{r}
+#| echo: true
+#| message: false
+#| error: false
+
+set.seed(123)
+n <- 1000
+dat <-tibble::tibble(
+  previous_grade = rnorm(n, mean = 75, sd = 10),
+  study_hours = rpois(n, lambda = 10),
+  parent_education = sample(c("HS", "College", "Graduate"), n, replace = TRUE),
+  tutoring_program = rbinom(n, 1, 0.4),
+  student_score = 5 * tutoring_program + 0.5 * previous_grade+ 2 * study_hours + rnorm(n, 0, 5)
+)
+```
+
+Execute your code to confirm that it is doing what you expect.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (7-1): (1 point)
+
+Show all your work
+
+```{r}
+#| echo: true
+#| message: false
+# create the model predicting the treatment
+ps_model <- glm(tutoring_program ~ previous_grade + study_hours + parent_education,
+                family = binomial(), data = dat)
+
+# predict the treatment likelihood and calculate the IPW
+dat_aug <- 
+  ps_model |> broom::augment(data = dat, type.predict = "response") |> 
+  dplyr::mutate(ipw = tutoring_program/.fitted + (1-tutoring_program)/(1-.fitted))
+
+# use weighted regression with the IPW to estimate the causal effect
+lm(student_score ~ tutoring_program, data = dat_aug, weights = ipw)
+```
+:::
+
+Calculate the standardized mean differences of the adjustment set variables before and after the IP weighting.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (7-2): (1 point)
+
+```{r}
+plot_df <- tidysmd::tidy_smd(
+  dat_aug,
+  c(previous_grade, study_hours, parent_education),
+  .group = tutoring_program,
+  .wts = ipw
+)
+
+plot_df |> ggplot(
+  aes(x = abs(smd), y = variable,
+    group = method, color = method
+  )
+) + tidysmd::geom_love()
+```
+:::
+
+What is the remaining analysis step that should be performed to support your ATE estimate?
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (7-3): (1 point)
+
+We need to check that the ranges of the IPWs overlap (**positivity** check)
+:::
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION (7-4): (1 point)
+
+```{r}
+ggplot(dat_aug, aes(x = ipw, fill = factor(tutoring_program))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Propensity Score Distribution by Treatment Status")
+```
+
+The IPWs fail the positivity check.
+:::
+
+# Grading (10 pts)
+
+| **Part**                | **Points** |
+|:------------------------|:----------:|
+| **Part 1 - Conceptual** |     5      |
+| **Part 2 - Applied**    |     5      |
+| **Total**               |     10     |

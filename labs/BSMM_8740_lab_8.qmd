@@ -1,0 +1,613 @@
+---
+title: "Lab 8 - Causality: Methods"
+subtitle: "BSMM 8740 Fall 2024"
+author: "Add your name here"
+format: html
+editor: visual
+self-contained: true
+---
+
+## Introduction {FIX=""}
+
+In today's lab, you'll practice making causal estimates.
+
+By the end of the lab you will...
+
+-   Be able to estimate causal effects via regression adjustment, doubly robust estimates and two-way fixed effects.
+-   Be able to use causal estimation to build uplift curves - a improvement over logistic regression in marketing applications.
+
+## Getting started
+
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-8-\[your github username\]** repository .
+
+    Create an R project using your **2024-lab-8-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2024-lab-8.qmd` file in your repository.
+
+-   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
+
+::: callout-important
+To access Github from the lab, you will need to make sure you are logged in as follows:
+
+-   username: **.\\daladmin**
+-   password: **Business507!**
+
+Remember to (create a PAT and set your git credentials)
+
+-   create your PAT using `usethis::create_github_token()` ,
+-   store your PAT with `gitcreds::gitcreds_set()` ,
+-   set your username and email with
+    -   `usethis::use_git_config( user.name = ___, user.email = ___)`
+:::
+
+## Packages
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  tidyverse, broom, rsample, ggdag, causaldata, halfmoon, ggokabeito
+  , magrittr, ggplot2, estimatr, Formula, r-causal/propensity, gt, gtExtras
+  , r-causal/causalworkshop, ggplot2, causaldata)
+
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Q1
+
+Recall that in our last lecture we used several methods to understand the effect of nets on Malaria risk. The regression adjustment approach gave results that were lower than those using IPW or Doubly Robust Estimation.
+
+This is partly due to the regression specification we used, which as a second-order, fixed effects model did not fully capture the relationship between the covariates and the outcome. One simple way to enhance the model is to relax the fixed effects assumption, which you will do here, in the context of a completely different approach.
+
+#### g-computation
+
+The g-computation method (*g for general*) is good to know because it works for both binary/discrete treatments and continuous treatments
+
+```{r}
+dat_ <- causalworkshop::net_data |> dplyr::mutate(net = as.numeric(net))
+```
+
+In this question we'll use g-computation to estimate the effect of net use on Malaria risk. Run the following steps:
+
+1.  Make two copies of the data. Keep the original copy (you'll have three in total).
+2.  Mutate the copied data so that **one copy has net == 1** and the **other copy has net == 0**.
+3.  Bind the data copies together by row to produce a test dataset.
+4.  Model the relationship between net use and malaria risk, incorporating all confounders. The linear model from the lecture is a good start. Fit the model with the original data.
+5.  Use the model to predict the outcomes in the test dataset.
+6.  Group the test dataset by net use, compute the average outcome by group (the effect), and find the difference in effects (the contrast).
+
+::: callout-tip
+## HINT
+
+Try using (net + income + health + temperature + insecticide_resistance)\^2 in the RHS of your formula. This will add interaction terms to your model (i.e. effects of each variable won't be fixed)
+:::
+
+::: {.callout-note icon="false"}
+## YOUR ANSWER
+
+```{r}
+# copy data
+
+# mutate data to fix treatment (one of each) & bind data into single dataset
+
+# Model the outcome, and fit it using the original (unmutated) data. Show the coefficient estimates with broom::tidy() 
+
+# Use the model fit to predict the outcomes in the test data, Use broom::augment to predict the response for each row of the data
+
+# average the predicted outcomes and compute the contrast.
+
+```
+
+The contrast between using a net and not using a net is a increase \| reduction in malaria risk
+:::
+
+In summary the g-computation is as follows
+
+-   Fit a standardized model with all covariates/confounders. Then, use cloned data sets with values set on each level of the exposure you want to study.
+-   Use the model to predict the values for that level of the exposure and compute the effect estimate of interest.
+
+## Q2
+
+Suppose you work for a big tech company and you want to estimate the impact of a billboard marketing campaign on in-app purchases. When you look at data from the past, you see that the marketing department tends to spend more to place billboards in cities where the purchase level is lower. This makes sense right? They wouldn’t need to do lots of advertisement if sales were skyrocketing. If you run a regression model on this data, it looks like higher cost in marketing leads to lower in-app purchase amounts, but only because marketing investments are biased towards low spending regions.
+
+```{r}
+toy_panel <-tibble::tibble(
+    "mkt_costs" = c(5,4,3.5,3, 10,9.5,9,8, 4,3,2,1, 8,7,6,4),
+    "purchase" = c(12,9,7.5,7, 9,7,6.5,5, 15,14.5,14,13, 11,9.5,8,5),
+    "city" = 
+      c("Windsor","Windsor","Windsor","Windsor"
+        , "London","London","London","London"
+        , "Toronto","Toronto","Toronto","Toronto", "Tilbury","Tilbury","Tilbury","Tilbury")
+)
+
+fit_lm <- lm(purchase ~ mkt_costs, data = toy_panel)
+
+toy_panel |> 
+  ggplot(aes(x = mkt_costs, y = purchase)) +
+  geom_point(color = 'blue') +
+  geom_abline(slope = fit_lm$coefficients[2], intercept = fit_lm$coefficients[1], color = 'purple') +
+  labs(title = "Simple OLS Model", x = "Marketing Costs (in 1000)", y = "In-app Purchase (in 1000)") +
+  theme_minimal()
+
+```
+
+Knowing a lot about causal inference (and Simpson's Paradox), you decide to run a fixed effect model, adding the city’s indicator as a dummy variable to your model. The fixed effect model controls for city specific characteristics that are constant in time, so if a city is less open to your product, it will capture that.
+
+::: {.callout-note icon="false"}
+## YOUR ANSWER
+
+```{r}
+#| eval: false
+#| label: toy-panel fixed effects
+
+# mutate the data to make the column 'city' a factor
+
+
+# fit the data using the new data and augment the data with predictions from the model
+fe <- ...
+
+
+# augment the fit with predictions
+fe_toy <- ...
+
+# plot the data points
+p <- fe_toy |> 
+  ggplot(aes(x = mkt_costs, y = purchase, color  = city)) +
+  geom_point() + 
+  labs(title = "Fixed Effect Model", x = "Marketing Costs (in 1000)", y = "In-app Purchase (in 1000)") +
+  theme_minimal() 
+
+  intcpt <- fe$coefficients[1]; slp = fe$coefficients[2]
+  for ( inc in c(0,fe$coefficients[-c(1,2)]) ){
+    p <- p + geom_abline(slope = slp, intercept = intcpt + inc, color = 'purple') 
+  }
+p
+```
+
+What is the image above is telling you about what fixed effect is doing?
+
+How do you interpret the slopes of the lines?
+:::
+
+## Q3
+
+You are an advanced analytics analyst working at a private equity firm. One of the partners, an MBA by training, has suggested that the firm eliminate portfolio companies that are run by their founders or their families, on the basis of poor management quality.
+
+```{r}
+#| code-fold: true
+#| code-summary: portfolio data
+#| label: portfolio data
+data <- readr::read_csv("data/portfolio_companies.csv", show_col_types = FALSE)
+```
+
+The partner opened the data on the portfolio companies in excel and did a simple calculation, the equivalent of the following:
+
+```{r}
+#| code-fold: true
+#| code-summary: management score difference
+data %>%
+  dplyr::group_by(foundfam_owned) %>%
+  dplyr::summarise (
+    "mean management score" = mean(management)
+    , "management score stdev" = sd(management)
+  ) |> 
+  dplyr::mutate(delta = `mean management score` - dplyr::lag(`mean management score`))
+```
+
+The partner concluded that the portfolio firms that are run by their founders or their families result in a management quality that is worse (per the management score) in comparison to other portfolio firms, a significant difference - almost 2/3 of a standard deviation worse.
+
+You, being an **advanced**-analytics analyst, gently suggest that this is a question of causality, and that there may be other factors related to both firm ownership and management quality that bias the management score. The other partners all agree, and ask you to estimate the real effect of firm ownership type on management quality.
+
+So you start by interviewing the partners and others to identify other factors, particularly those that might be related to variations in either ownership structure or management quality.
+
+#### Potential variables
+
+One source of variation in ownership is how a firm starts, whether they were started by a founder or perhaps they were spin-offs, joint ventures, or affiliates of other companies. You don't have this kind of data, but you do have data on the production technology the firm uses. Some technologies are very capital intensive, so they are unlikely to be used by start-ups, even those that become successful. So the technology a firm uses is a source of variation in ownership.
+
+Whether firms start as founder-owned or involve outside owners also depend on cultural or institutional factors in society. This may be important in data collected from firms in many countries, and even within countries. Similar factors may affect management quality.
+
+Some founder/family businesses are sold to investors, so variation may depend on supply and demand (i.e. the level of M&A business). Firm size and age may also be a factor in whether a firm is acquired.
+
+Similarly the competition in the industry may be a factor in both ownership and management quality, as highly competitive industries may have fewer founder owned firms and better management quality.
+
+You build a DAG to represent these assumptions, as follows:
+
+```{r}
+#| code-fold: true
+#| code-summary: business DAG
+#| label: business DAG
+#| fig-width: 8.2
+#| fig-align: center
+set.seed(3534)
+set.seed(534)
+
+fq_dag <- ggdag::dagify(
+  mq ~ ff + m + c + ci + ct,
+  ff ~ c + ct + ci + fsa + fc,
+  m ~ ff,
+  es ~ mq + ff,
+  #fsa ~ mq,
+  exposure = "ff",
+  outcome = "mq",
+  labels = c(
+    mq = "management_quality",
+    ff = "founder_family",
+    m = "managers",
+    fsa = "firm_size_age",
+    c = "competition",
+    ci = "culture_institutions",
+    ct = "complex_technology",
+    fc = "family_circumstances",
+    es = "export share"
+  )
+)
+
+fq_dag |>
+  ggdag::tidy_dagitty() |> 
+  ggdag::node_status() |>
+  ggplot(
+    aes(x, y, xend = xend, yend = yend, color = status)
+  ) +
+  ggdag::geom_dag_edges() +
+  ggdag::geom_dag_point() +
+  ggdag::geom_dag_label_repel(aes(label = label)) +
+  ggokabeito::scale_color_okabe_ito(na.value = "darkgrey") +
+  ggdag::theme_dag() +
+  theme(legend.position = "none") +
+  coord_cartesian(clip = "off")
+```
+
+#### Data
+
+Next you look for data that can measure the casual factors in your DAG. You have the following data:
+
+-   employment count
+-   age of firm
+-   proportion of employees with a college education (except management)
+-   level of competition
+-   industry classification
+-   country of origin
+-   share of exports in sales
+
+Of these:
+
+-   industry can be used as a measure of technology complexity, as is the share of college educated employees.
+-   number of competitors is a measure of competition strength
+-   the country of origin is a measure of cultural and institutional factors
+-   the number of employees is a measure of firm size
+-   the age of the firm is missing for about 14% of the observations
+
+You have data for the share of exports in sales, but as it is a collider you decide not to condition on this variable in your analysis.
+
+#### Q3(1)
+
+Here are the variables you have decided to use in your analysis:
+
+```{r}
+#| label: analytic variables
+
+Y <- "management"      # outcome
+D <- "foundfam_owned"  # treatment
+
+control_vars <- c("degree_nm", "degree_nm_sq", "compet_moder", "compet_strong", 
+                  "lnemp", "age_young", "age_old", "age_unknown")
+control_vars_to_interact <- c("industry", "countrycode")
+
+# confounders
+X <- c(control_vars, control_vars_to_interact)
+```
+
+And here are the formulas for the models you have decided to test:
+
+```{r}
+#| label: model formulas
+
+# basic model without confounders
+formula1 <- as.formula(paste0(Y, " ~ ",D))
+
+# basic model with confounders
+formula2 <- as.formula(paste0(Y, " ~ ",D," + ", 
+                  paste(X, collapse = " + ")))
+
+# model with interactions between variables
+formula3 <- as.formula(paste(Y, " ~ ",D," + ", 
+	paste(control_vars_to_interact, collapse = ":"), 
+	" + (", paste(control_vars, collapse = "+"),")*(",
+	paste(control_vars_to_interact, collapse = "+"),")",sep=""))
+```
+
+Use linear regression to fit each model, and
+
+1.  use fit \|\> broom::tidy() \|\> dplyr::slice(2) to extract the estimated effect for each model, and
+2.  use fit \|\> broom::glance() to extract model performance data
+3.  rank the models by comparing AIC and BIC and select the most suitable.
+
+::: {.callout-note icon="false"}
+## YOUR ANSWER
+
+```{r}
+#| eval: false
+# fit formula1
+ols1 <- ?
+
+# fit formula2
+ols2 <- ?
+
+# fit formula3
+ols3 <- ?
+```
+
+```{r}
+# effect and metrics: formula1
+
+# effect and metrics: formula2
+
+# effect and metrics: formula3
+
+```
+
+Considering the trade-off between model fit and model complexity, the most suitable model is \_\_\_\_
+:::
+
+#### Q3(2)
+
+Having settled on a formula/model, use the selected model in the doubly-robust effect estimation function from class to:
+
+1.  estimate the effect.
+2.  calculate the confidence intervals on the effect estimate, using `rsample::bootstraps` with times = 100.
+
+::: {.callout-note icon="false"}
+## YOUR ANSWER
+
+```{r}
+# double robust estimate using the best model
+
+```
+
+```{r}
+# bootstrap CI estimates
+
+```
+:::
+
+#### Omitted variables and bias
+
+If all potential confounders are captured and included in the models, then we can put the expected effect of changing ownership within our 95% confidence intervals we calculated.
+
+However, we suspect that we do not have a full set of confounders in the data set, either because our measurements don't capture all the variation due to a variable or because we just don't have the data at all.
+
+For example, we don't have information on the the city the business is located in; being in a large city may make a business more attractive to outside investors, reducing the number of family-owned business while making the quality of family-owned businesses better. If this assumption is correct, then without this variable/data in the model, our estimate will be negatively biased and the effect is probably weaker than suggested by our estimates.
+
+If other omitted variables behaved the same way we would see an even smaller effect.
+
+Given your estimated effect and considering omitted variable bias, please provide two bullet points about your analysis for the partners:
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+-   bullet #1: (comment on the comparison of the robust causal estimate and the mean differences)
+-   bullet #2: (comment on omitted variable bias and small sample size bias in context)'
+:::
+
+## Q4
+
+Your firm has a customer intervention that management would like to evaluate. The data from a test of the intervention is as follows (where $D$ is the (binary intervention, $Y$ is the outcome (in units of \$1,000 dollars), and $X_1,\ldots,X_5$ are variables in the adjustment set). Each row in the data represents measurements for a distinct customer:
+
+```{r}
+set.seed(8740)
+n <- 2000; p <- 5;
+
+test_dat <- matrix(rnorm(n * p), n, p, dimnames = list(NULL, paste0("X",1:p)) ) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(
+    D = rbinom(n, 1, 0.5) * as.numeric(abs(X3) < 2)
+    , Y = pmax(X1, 0) * D + X2 + pmin(X3, 0) + rnorm(n)
+  )
+```
+
+Estimate the ATE as follows (hint: it is \>0):
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| eval: false
+# (1) using regression adjustment, with formula Y ~ D*X1 + X2 + X3 + X4 + X5
+ols <- 
+
+# (2) using doubly robust estimation
+dre <- 
+
+```
+
+```{r}
+#| eval: false
+# summarize results
+tibble::tibble(
+  dre_ATE = dre
+  , ols_ATE = 
+    ols |> broom::tidy() |> 
+    dplyr::filter(term == "D") |> 
+    dplyr::pull(estimate)
+)
+```
+:::
+
+Given that the ATE is \>0, the firm would like to roll out the intervention with 1,000 new customers, and the project is budgeted as follows
+
+-   cost of the intervention is \$100 (cost = 0.1 in the scale of the data).
+-   the per-customer average incremental revenue on making the intervention is $(\textrm{ATE}-0.1)\times 1000$.
+
+Given the substantial return on the investment, the budget is approved and the firm decides to implement the intervention with the 1,000 new customers.
+
+However, the firm's good fortune is that you are in the room with management, and you suggest an alternative strategy, based on predicting the individual treatment effects for each new customer using the customer data.
+
+The new customer data is:
+
+```{r}
+# new customer data
+new_dat <- 
+  matrix(rnorm(n * p), n, p, dimnames = list(NULL, paste0("X",1:p)) ) |>
+  tibble::as_tibble() 
+```
+
+You analyse your strategy for management as follows:
+
+1.  make two copies of the new data; mutate one to add a column D=1 and mutate the other to add a column D=0, and
+
+2.  take the regression model used to estimate the ATE, and predict the treatment effects for each customer, using the two data sets from steps 1 (i.e. use broom::augment with each dataset),
+
+3.  select the columns with the predicted responses from each dataset and bind them columnwise. Name the columns r1 (response when D=1) and r0 (response when D=0). Then
+
+    1.  mutate to compute the contrast r1-r0 and subtract the cost of the intervention. Call this new column 'lift' (standing for your new strategy based on estimating individual treatment effects)
+
+    2.  mutate to add a new column with the ATE and subtract the cost of the intervention. Call this new column 'baseline' (standing for baseline strategy)
+
+    3.  sort the rows in descending order by lift
+
+    4.  add two new columns: one for the cumulative sum of the lifts and the other for the cumulative sum of the baseline. Call these columns cumulative_lift and cumulative_baseline respectively.
+
+4.  Plot the cumulative results of the baseline and the lift strategies along with the % of budget spent
+
+5.  Find the maximum difference between the lift and baseline strategies, and the percent of budget spent at the maximum.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| eval: false
+# make two copies of new_dat and,
+
+# mutate one setting the intervention D=1
+new_dat1 <- 
+
+# mutate the other setting the intervention D=0  
+new_dat0 <-
+```
+
+```{r}
+#| eval: false
+# use the linear model (ols) to predict the responses under the two treatments
+predicted1 <-
+  
+predicted0 <- 
+
+```
+
+```{r}
+#| eval: false
+# combine the columns containing the predicted responses to create a two column dataframe, and
+# - add columns for the lift net of costs and the baseline net of costs
+# - sort in descending order by lift, then
+# - add an ID column, using tibble::rowid_to_column("ID")
+# - in the last step, add a column for the cumulative % of budget (use the ID column for this)
+#   along with columns for the cumulative sums of lift and baseline 
+
+result <- 
+```
+
+```{r}
+#| eval: false
+# plot the cumulative results to compare strategies 
+result |>
+  tidyr::pivot_longer(c(cumulative_baseline, cumulative_lift)) |>
+  ggplot(aes(x=cumulative_pct, y=value, color = name)) + geom_line() +
+  theme_minimal(base_size = 18) + 
+  theme(legend.title = element_blank(),legend.position = "top") +
+  labs(title = " Stategy Comparison", x = "cumulative budget spend (%)", y = "net revenue (000's)")
+```
+
+```{r}
+#| eval: false
+# use the result data to 
+# - find the maximum difference predicted between lift and baseline strategies in $'s
+
+# - find the maximum net revenue under either strategy in $'s
+
+# - indicate the percent of original budget necessary for each maximum.
+
+```
+:::
+
+## Q5
+
+Estimate the causal effect of smoking cessation on weight, using the dataset `data(nhefs)` where the treatment variable is quit_smoking, the outcome variable is wt82_71, and the covariates of interest are age, wt71, smokeintensity, exercise, education, sex, and race.
+
+Estimate the causal effect using the matching estimator described in the lecture.
+
+```{r}
+# load data
+nhefs <- 
+  readr::read_csv('data/nhefs_data.csv', show_col_types = FALSE) |> 
+  dplyr::select(wt82_71, quit_smoking, age, wt71, smokeintensity, exercise, education, sex, race)
+```
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+# (1)
+# create a table to calculate the mean difference in effects for the two treatment groups in the raw data
+
+```
+
+```{r}
+#| eval: false
+#(2)
+# create recipe to normalize the numerical covariates of interest (note - some covariates are factors)
+nhefs_data <-
+
+```
+
+```{r}
+#(3)
+# using nhefs_data calculate the un-corrected effect estimate, per the matching method we used in class
+# NOTE: this takes some time to run
+
+
+
+```
+
+The un-corrected treatment effect is: \_\_\_\_
+
+```{r}
+#(4)
+# use the method from class to calculate the correction terms, can compute the revised estimate 
+# NOTE: this takes some time to run
+
+
+```
+
+```{r}
+#(5)
+# calculate the corrected causal estimate for the effect of smoking cessation on weight
+
+
+```
+
+The un-corrected treatment effect is: \_\_\_\_
+:::
+
+::: callout-important
+You're done and ready to submit your work! **Save**, **stage**, **commit**, and **push** all remaining changes. You can use the commit message "Done with Lab 7!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub.
+:::
+
+::: render-commit-push
+## Submission
+
+I will pull (copy) everyone's repository submissions at 5:00pm on the Sunday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (**don't forget to commit and then push your work!**)
+:::
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 5  | 30     |

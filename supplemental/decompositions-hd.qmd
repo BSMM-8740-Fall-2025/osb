@@ -1,0 +1,406 @@
+---
+title: "Decompositions"
+format: pdf
+monofontoptions: 
+  - Scale=0.55
+margin-left: 20mm
+margin-right: 20mm
+margin-top: 20mm
+margin-bottom: 25mm
+---
+
+```{r}
+#| include: false
+#| echo: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  magrittr, tidyverse, malcolmbarrett/causalworkshop, ggplot2, patchwork, AER
+)
+
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+# Mind the Gap
+
+When observing a gap in mean outcomes between two groups, we often are interested in how much of the gap can be explained by differences in observable characteristics.
+
+The simplest approach is to estimate a pooled regression of the outcome on the observable characteristics, including an indicator variable for group membership, and interpret the coefficient on the group indicator as the unexplained gap in mean differences.
+
+The Oaxaca-Blinder (O-B) decomposition(s) represent an alternative approach that provides further insight into the relationship between the group indicator and the observable characteristics of the groups.
+
+## Oaxaca-Blinder decomposition
+
+As an alternative to a pooled regression with a categorical (or dummy) variable $d$ that splits our dataset into two groups, we can run regressions[^1] of the form $y=X\beta+\epsilon$ to estimate the the mean difference between groups, as follows:
+
+[^1]: To keep the notation simple, regression coefficients $\beta$ will contain an intercept, i.e. $\beta$ is always a vector whose first element is the intercept, and the data $X$is a design matrix, whose first column is all ones.
+
+\begin{align*}
+\bar{y}_0 & =\bar{X}_0\beta_{0};\;\text{group }d=0\\
+\bar{y}_1 & =\bar{X}_1\beta_{1};\;\text{group }d=1
+\end{align*}
+
+Then the mean difference in outcomes is:
+
+\begin{align}\label{eq:gap}
+\bar{y}_1-\bar{y}_0 & =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\nonumber\\
+ & =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}+\bar{X}_1\left(\beta_{1}-\beta_{0}\right)\nonumber
+\end{align}
+
+Where, using $\bar{X}_0$ as the baseline, $\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}$ is the "explained" component (since it is based on differences in characteristics), and $\bar{X}_0\left(\beta_{1}-\beta_{0}\right)$) is the "unexplained" component (based on differences in returns to characteristics). This decomposition is not unique, as you can see from the second and third lines of equation (\ref{eq:gap}).
+
+We define:
+
+\begin{align*}
+\text{Gap}^{0} & =\bar{X}_0\left(\beta_{1}-\beta_{0}\right);\;\bar{X}_0\text{ is the baseline}\\
+\text{Gap}^{1} & =\bar{X}_1\left(\beta_{0}-\beta_{1}\right);\;\bar{X}_1\text{ is the baseline}\\
+\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+d\delta_{d}+X\delta_{x}+\epsilon
+\end{align*}
+
+where, for $\text{Gap}^{\text{OLS}}$, given the strong assumptions that (i) the model is properly specified and that (ii) coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
+
+Using the fact (equation \ref{eq-binary-reg}) that 
+
+$$
+\frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+$$
+then equation (\ref{eq:gap}) can be written as:
+
+\begin{align*}
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)} & =\overline{X}_{0}\left(\beta_{1}-\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right)\\
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)} & =\overline{X}_{1}\left(\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}-\beta_{0}\right)
+\end{align*}
+
+
+We an define another measure, $\text{Gap}^{p}$, as
+
+\begin{align*}
+\bar{y}_1-\bar{y}_0 & =\left(\bar{X}_1-\bar{X}_0\right)\hat{\beta}_{p}+\text{Gap}^p\\
+\text{Gap}^p & =\bar{X}_1\left(\hat{\beta}_1-\hat{\beta}_p\right)+\bar{X}_0\left(\hat{\beta}_p-\hat{\beta}_{0}\right)
+\end{align*}
+
+where $\hat{\beta}_p$ is the coefficient from the pooled regression of $y$ on $X$ (i.e. $y=X\beta_p+\epsilon$). We consider separately the cases where the coefficients are equal across groups and where the coefficients are unequal across groups.
+
+### The Case in Which Coefficients Are Equal across Groups
+
+Here we assume that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$.
+
+By definition, an O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.
+
+A general expression for an O-B unexplained gap is:
+
+\begin{align}\label{eq:general-gap}
+\text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\nonumber\\
+ & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
+\end{align}
+
+where $\hat{\beta}$ is some coefficient computed from sample data and $\text{b}(z\vert w)$ is the slope from a regression of $z$ on $w$ and an intercept. The choice of $\hat{\beta}$ is what identifies the different O-B decompositions.
+
+So equation (\ref{eq:general-gap}) resolves to $\text{Gap}^{1}$ when $\hat{\beta}$ is the slope coefficient of a regression of $y$ on $x$ using the data from group 1, and equation (\ref{eq:general-gap}) gives $\text{Gap}^{0}$ when $\hat{\beta}$ is the slope coefficient using data from group 0[^2].
+
+[^2]: under the data generation process described by $y=\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon$
+
+\begin{align}
+\text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\label{eq:gen-gap-a}\\
+ & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\nonumber\\
+ & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\label{eq:gen-gap-b}\\
+ & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}\nonumber
+\end{align}
+
+Given our assumption that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) $x$ (and so $\hat{\beta}=\beta_x$ in both group-specific regressions), then all the gap expressions are equivalent, except for $\text{Gap}^{p}$.
+
+$\text{Gap}^{p}$ is different because in the pooled regression used to compute $\text{Gap}^p$, $d$ is a omitted variable. In particular:
+
+\begin{align}\label{eq:gap_p_eqn}
+\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\times\text{b}(y\vert x)\vert d)\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\times\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\nonumber\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\nonumber\\
+ & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
+\end{align}
+
+Compare this to $\text{Gap}^{\text{OLS}}$, defining $\tilde{z}(w)$ as the component of $z$ that is orthogonal to $w$ in the population (so that $\tilde{z}(w)=z-w\text{b}(z\vert w)$, alternatively $\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}$)[^3]
+
+[^3]: Note: $\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}$, the linear propensity, and $\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}$, so the coefficient $\delta_d$ is $\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}$.
+
+\begin{align}\label{eq:gap_OLS_eqn}
+\text{Gap}^{\text{OLS}} & =\delta_{d}\nonumber\\
+ & =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\nonumber\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\nonumber\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\nonumber\\
+ & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align}
+
+and so $\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^{\text{OLS}}$
+
+### The Case in Which Coefficients Vary across Groups
+
+The relationship between $\text{Gap}^p$ and $\text{Gap}^{\text{OLS}}$ is exact and general.
+
+Here we assume that the coefficient on $x$ varies between the two groups, and that x is a scalar variable (i.e. a single observable characteristic, not a vector of observable characteristics):
+
+$$
+y=\delta_{0}+d\delta_{d}+\delta_{x}x+\delta_{dx}dx+\epsilon 
+$$
+
+Based on equation (\ref{eq:gen-gap-b}) we have
+
+\begin{align}\label{eq:gap_1}
+\text{Gap}^1 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
+\end{align}
+
+and
+
+\begin{align}\label{eq:gap_0}
+\text{Gap}^0 & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align}
+
+and finally,
+
+\begin{align}\label{eq:gap_OLS}
+\text{Gap}^{\text{OLS}} & =w_1\text{Gap}^1+w_0\text{Gap}^0
+\end{align}
+
+where the weights are:
+
+\begin{align}
+w_{1} & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w1}\\
+w_{0} & =\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w0}
+\end{align}
+
+Now writing $\text{Gap}^{\text{OLS}}=w_1\text{Gap}^1 + w_0\text{Gap}^0$ with $w_1+w_0=1$ (equation (\ref{eq:gap_OLS})):
+
+\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =w_{1}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\right]\\
+ & +w_{0}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right]\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi
+\end{align*}
+
+where
+
+\begin{align*}
+\Pi & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+ & +\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align*}
+
+simplifying $\Pi$:
+
+\begin{align*}
+\Pi & =\frac{\pi\text{var}\left(x\vert d=1\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+ & +\frac{\left(1-\text{\ensuremath{\pi}}\right)\text{var}\left(x\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\\
+ & =\frac{\pi\text{cov}\left(x,y\vert d=1\right)+\left(1-\text{\ensuremath{\pi}}\right)\text{cov}\left(x,y\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\\
+ & =\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}
+\end{align*}
+
+and so
+
+\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\left(\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}\right)\\
+ & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}
+\end{align*}
+
+Now we have
+
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align*}
+
+and since $\tilde{d}(x)$ represents the residuals from a population regression of $d$ on $x$,
+
+\begin{align*}
+\text{var}\left(\tilde{d}(x)\right) & =\text{var}\left(d-x\frac{\text{cov}\left(d,x\right)}{\text{var}\left(x\right)}\right)\\
+ & =\text{var}\left(d\right)-\frac{\text{cov}\left(d,x\right)^{2}}{\text{var}\left(x\right)}
+\end{align*}
+
+and so
+
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{var}(x)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\\
+ & =w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0}
+\end{align*}
+
+### Appendix
+
+#### Regression on binary variable: coefficient
+
+Recall that for a continuous variable $y$ and a binary variable $d$ (with the proportion of $d=1$ in the data $=p$):
+
+\begin{align*}
+\mathbb{E}\left[d\right] & =p\\
+\text{var}\left(d\right) & =p\left(1-\mathbb{E}\left[d\right]\right)^{2}+\left(1-p\right)\left(-\mathbb{E}\left[d\right]\right)^{2}\\
+ & =p\left(1-p\right)^{2}+\left(1-p\right)p^{2}\\
+ & =p\left(1-p\right)\\
+\text{covar}\left(d,y\right) & =\mathbb{E}_{y,d}\left[\left(y-\overline{y}\right)\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{d}\left[\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d\right],\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right]\times p\left(1-p\right)\\
+ & \;-\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]\times\left(1-p\right)p
+\end{align*}
+
+Then the coefficient $\beta_d$ from the regression $y\sim\beta_d d$ is
+
+$$
+\beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+$$ {#eq-binary-reg}
+
+#### Misc
+
+The law of total variance, or variance decomposition formula is:
+
+$$
+\text{var}(X)=\mathbb{E}[\text{var}(X\vert Y)]+\text{var}(\mathbb{E}[X\vert Y])
+$$ where the first term is the between-group variance and the second term is the within-group variance.
+
+In our problem, the corresponding variance decomposition is
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
+\end{align*} but we have
+
+$$
+\mathbb{E}\left[x\right]=\mathbb{E}\left[\mathbb{E}\left[x\vert y\right]\right]=\pi\mathbb{E}\left[x\vert d=1\right] + (1-\pi)\mathbb{E}\left[x\vert d=0\right]
+$$ substituting the RHS for $\mathbb{E}\left[x\right]$ we have
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
+\end{align*}
+
+but we have $\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]=\text{cov}(x,d)/\text{var}(d)$, and $\text{var}(d)=\pi(1-\pi)$, so
+
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
+\end{align*}
+
+by the same logic
+
+$$
+\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
+$$
+
+#### OLS Weights
+
+With $\rho\equiv\mathbb{E}[d]=\mathbb{E}\left[\mathbb{E}[d\vert X]\right]$ and $\text{P}(X)=\alpha_p+X\beta_p$ is the propensity score ($\beta_p=\frac{\text{cov}(d,X)}{\text{var}(X)}$). We derive the expression for the derivatives of $w_0$ and $w_1$ wrt the intercept of the propensity model $\alpha_p$, where a shift in the intercept changes $\rho$ by a small amount.
+
+Define $a_0 = \pi\text{var}\left(\text{P}(x)\vert d=1\right)$ and $a_1 = (1-\pi)\text{var}\left(\text{P}(x)\vert d=0\right)$, such that $w_0=\frac{a_0}{a_0+a_1}$ and $w_1=\frac{a_1}{a_0+a_1}$ (NOTE: this is different from the previous definition)
+
+Referencing the weights, per equations (\ref{eq:gap_w0} and \ref{eq:gap_w1})
+
+$$
+\begin{array}{rll}
+a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right) & \text{\small by definition}\\
+ & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right] & \text{\small by definition of var}\\
+ & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right) & \small{ \text{since}\,\mathbb{P}\left(A.B\right)=\mathbb{P}\left(A\vert B\right)\mathbb{P}\left(B\right)}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]} & \text{\small by definition of P}(x)\\
+ & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{array}
+$$ using the definition of the linear propensity ($\text{P}(X)=\alpha_p+X\beta_p$), then
+
+\begin{align*}
+\frac{da_{0}}{d\alpha_{p}} & =3\mathbb{E}\left[\text{P}(x)^{2}\right]-4\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]}{\mathbb{E}\left[\text{P}(x)\right]}+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =-\mathbb{E}\left[\text{P}(x)^{2}\right]+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}-\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\left(\mathbb{E}\left[\text{P}(x)^{2}\right]-\mathbb{E}\left[\text{P}(x)\right]^{2}\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\text{var}\left(\text{P}(x)\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}>0
+\end{align*}
+
+### Gap weights
+
+Example
+
+data:
+
+\AddToHookNext{env/Highlighting/begin}{\scriptsize}
+
+```{r}
+#| eval: false
+#| code-overflow: wrap
+# https://cran.r-project.org/web/packages/oaxaca/vignettes/oaxaca.pdf
+# https://www.worldbank.org/content/dam/Worldbank/document/HDN/Health/HealthEquityCh12.pdf
+# https://pmc.ncbi.nlm.nih.gov/articles/PMC8343972/
+# https://www.sciencedirect.com/science/article/abs/pii/S0169721811004072
+# https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2528391
+# https://link.springer.com/article/10.1186/s12982-021-00100-9
+# https://giacomovagni.com/blog/2023/oaxaca/
+# https://journals.sagepub.com/doi/pdf/10.1177/1536867X0800800401
+# https://ocw.mit.edu/courses/14-662-labor-economics-ii-spring-2015/resources/mit14_662s15_lecnotes1/
+
+# Load HMDA data
+data('CPS1985', package = "AER") # data('PSID1982', package = "AER")
+hmda <- CPS1985 |> tibble::as_tibble()
+
+# data("nswcps", package = "hettreatreg")
+
+# Prepare data for analysis
+# Looking at income differences between racial groups
+lending_data <- hmda |> 
+  dplyr::mutate(
+    minority = factor(ethnicity != "cauc"), # minority = factor(race != "white"),
+    log_income = log(wage) #log(income)
+  ) |> 
+  dplyr::select(wage, log_income, minority, education, experience, union)
+  # dplyr::select(log_income, minority, education, hrat, ccred, mcred, pubrec)
+```
+
+\AddToHookNext{env/Highlighting/begin}{\tiny}
+
+```{r}
+#| eval: false
+#| code-overflow: wrap
+# Fit separate regressions
+model_a <- 
+  lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='yes'))
+model_b <- 
+  lm(wage ~ education + experience, data = lending_data |> dplyr::filter(union=='no'))
+
+# Get mean characteristics (including intercept)
+X_mean_a <- 
+  c(1, 
+    colMeans( 
+    lending_data |> 
+      dplyr::filter(union=='yes') |> 
+      dplyr::select(education, experience)
+    ) 
+  )
+X_mean_b <- 
+  c(1, 
+    colMeans( 
+      lending_data |> 
+        dplyr::filter(union=='no') |> 
+        dplyr::select(education, experience) 
+    ) 
+  )
+
+# Get coefficients
+beta_a <- coef(model_a)
+beta_b <- coef(model_b)
+
+# Calculate decomposition
+tibble::tibble(
+  explained = sum((X_mean_a - X_mean_b) * beta_a)
+  , unexplained = sum(X_mean_b * (beta_a - beta_b))
+  , total_gap <- explained + unexplained
+)
+
+# Perform Oaxaca-Blinder decomposition
+decomp <- 
+  oaxaca::oaxaca(
+    wage ~ education + experience | union
+    , data = 
+      lending_data |> 
+      dplyr::mutate(union = dplyr::case_when(union=='yes'~0, TRUE ~1))
+  )
+
+```

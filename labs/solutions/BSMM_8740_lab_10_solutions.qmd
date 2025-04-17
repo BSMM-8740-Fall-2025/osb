@@ -1,0 +1,538 @@
+---
+title: "lab 10 - Bayesian Methods"
+subtitle: "SOLUTIONS"
+editor: visual
+format: html
+self-contained: true
+reference-location: margin
+---
+
+## Introduction
+
+In this lab, you'll practice creating Bayesian models.
+
+## Packages
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| output: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+# load packages if not already loaded
+librarian::shelf(
+    tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, 
+    ggplot2, r-causal/propensity, r-causal/causalworkshop, survey, cardx, gtsummary,brms, #rmcelreath/rethinking, 
+    shinystan, patchwork, tidybayes, 
+    michael-franke/aida-package, michael-franke/faintr, CogSciPrag/cspplot
+)
+
+# global color scheme from CSP
+project_colors = cspplot::list_colors() |> pull(hex)
+# names(project_colors) <- cspplot::list_colors() |> pull(name)
+
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = project_colors)
+}
+scale_fill_discrete <- function(...) {
+   scale_fill_manual(..., values = project_colors)
+}
+# set the default theme for plotting
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Exercise 1: Bayesian Regression
+
+**Data**:
+
+This data contains roughly 2000 trials of a mouse-tracking experiment,
+
+It is a preprocessed data set from an experiment conducted by Kieslich et al. (2020) in which participants classified specific animals into broader categories. The data set contains response times, MAD, AUC and other attributes as well as all experimental conditions.
+
+```{r}
+dolphin <- aida::data_MT
+
+# aggregate
+dolphin_agg <- dolphin |>
+  dplyr::filter(correct == 1) |> # only correct values
+  dplyr::group_by(subject_id) |> 
+  dplyr::summarize(       # use the median AUC/MAD
+    AUC = median(AUC, na.rm = TRUE),
+    MAD = median(MAD, na.rm = TRUE)) |> 
+  dplyr::ungroup() |> 
+  dplyr::mutate(
+    # the function scale centers and scales the data 
+    AUC = scale(AUC),
+    MAD = scale(MAD)
+  )
+  
+# let's take a look
+head(dolphin_agg)
+
+```
+
+Plot AUC vs MAD
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+ggplot(data = dolphin_agg, 
+       aes(x = AUC, 
+           y = MAD)) + 
+  geom_point(size = 3, alpha = 0.3) +
+  theme_minimal()
+```
+
+This graph displays the distribution of AUC and MAD values. We can see that there is a strong relationship between AUC and MAD. And that makes a lot of sense. The more the cursor strives toward the competitor, the larger is the overall area under the curve.
+:::
+
+Regress AUC against MAD using a bayesian regression using the dolphin_agg data. Save the results in the fits directory as "model1." Use tidybayes::summarise_draws to summarize the model
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+model1 <- brms::brm(
+  # model formula
+  AUC ~ MAD, 
+  # data
+  data = dolphin_agg,
+  file = "fits/model1"
+)
+# show summary in tidy format
+tidybayes::summarise_draws(model1)
+```
+:::
+
+Extract the model coefficients, then redo the graph to add a `geom_abline` with the model slope and intercept.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+#| message: false
+# extract model parameters:
+model_intercept <- summary(model1)$fixed[1,1]
+model_slope <- summary(model1)$fixed[2,1]
+
+ggplot(data = dolphin_agg, 
+       aes(x = AUC, 
+           y = MAD)) + 
+  geom_abline(intercept = model_intercept, slope = model_slope, color = project_colors[2], size  = 1) +
+  geom_point(size = 3, alpha = 0.3, color = project_colors[1]) +
+  theme_minimal()
+```
+:::
+
+Use tidybayes::get_variables to get the model variables, and then use tidybayes::spread_draws with the model1 to get the draws for "b_MAD" and "b_Intercept" as a tibble, bound to the variable posteriors1.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+tidybayes::get_variables(model1)
+```
+
+```{r}
+#| echo: true
+posteriors1 <- model1 |>
+  tidybayes::spread_draws(b_MAD, b_Intercept) |>
+  select(b_MAD, b_Intercept)
+
+posteriors1
+```
+:::
+
+Repeat the last operation, but this time use ndraws = 100 to limit the number of draws (call this posterior2). Again using the first graph, add a line with intercept and slope corresponding to each row of posterior2 (i.e. add 100 lines).
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+# wrangle data frame
+posteriors2 <- model1 |>
+  # parameter 'ndraws' requests 100 random subsamples
+  tidybayes::spread_draws(b_MAD, b_Intercept, ndraws = 100) |>
+  select(b_MAD, b_Intercept)
+  
+# plot
+ggplot(data = dolphin_agg, 
+       aes(x = MAD, 
+           y = AUC)) + 
+  geom_abline(data = posteriors2,
+              aes(intercept = b_Intercept, slope = b_MAD), 
+              color = project_colors[2], size  = 0.1, alpha = 0.4) +
+  geom_point(size = 3, alpha = 0.3, color = project_colors[1])
+```
+:::
+
+Use model1 and tidybayes::gather_draws, to get the draws for "b_MAD" as a tibble in long form, bound to the variable posteriors3. Rename '.variable' to 'parameter' and '.value' to 'posterior' and then keep only those two columns.
+
+Calculate the mean, the lower and the upper bound of a 90% CrI, using the function tidybayes::hdi().
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+posteriors3 <- model1 |>
+   # use the gather_draws() function for "long data"
+   tidybayes::gather_draws(b_MAD) |> 
+   # change names of columns
+   dplyr::rename(parameter = .variable,
+          posterior = .value) |> 
+   # select only those columns that are relevant
+   dplyr::select(parameter, posterior)
+
+head(posteriors3)
+```
+
+```{r}
+posteriors3_agg <- posteriors3 |> 
+  dplyr::group_by(parameter) |> 
+  dplyr::summarise(
+    `90lowerCrI`   = tidybayes::hdi(posterior, credMass = 0.90)[1],
+    mean_posterior = mean(posterior),
+    `90higherCrI`  = tidybayes::hdi(posterior, credMass = 0.90)[2])
+
+posteriors3_agg 
+```
+:::
+
+## Exercise 2: elasticity
+
+In this exercise we will estimate price elasticity. The dataset contains price and monthly unit-volume data for four sites over 12 months. Since the unit-volumes are counts of unit sold, we'll need a discrete pmf to model the data generation process.
+
+```{r}
+#| echo: true
+# read the data
+dat <- 
+  readr::read_csv("data/price_data.csv",show_col_types = FALSE) |> 
+  dplyr::filter(site == "Windsor")
+# plot the data
+dat |> 
+  ggplot(aes(x=price, y=volume, group=site)) +
+  geom_point()
+```
+
+Since elasticity is defined as the percentage change in volume ($\Delta V/V$) for a given percentage change in price ($\Delta p/p$), then with elasticity parameter $\beta$ we write:
+
+$$
+\begin{align*}
+\frac{\Delta V}{V} & = \beta\times\frac{\Delta p}{p} \\
+\frac{\partial V}{V} & = \beta\times\frac{\partial p}{p} \\
+\partial\log(V) & = \beta\times\partial\log(p)
+\end{align*}
+$$
+
+This equation is the justification for the log-log regression model of elasticity, and this model has solution $V = Kp^\beta$, where $K$ is a constant.
+
+As written, the value of $K$ is either the volume when $p=1$ which may or may not be useful, or it is the volume when $\beta=0$, which is uninteresting.
+
+To make the interpretation of the constant $K$ more useful, the model can be written as
+
+$$
+\partial\log(V) = \beta\times\partial\log(p/p_{\text{baseline}});\qquad V = K\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}
+$$
+
+in which case the constant is interpreted as the volume when the price equals the baseline price; the elasticity parameter $\beta$ is unchanged.
+
+The implies that our regression model should be $\mathrm{volume} = \log(K) + \beta\log(p)$ given the $\log$ link in the Poisson model. To analyze the data
+
+-   scale and transform the price data by dividing by the mean price and then taking the log. Assign the modified data to the variable `dat01`.
+
+-   build and fit a Bayesian Poisson model with
+
+    -   a normal(0,5) prior on the intercept, and
+    -   a cauchy(0,10) prior on the independent variable with upper bound 0 (to ensure that elasticities are negative).
+    -   assign the fit to the variable `windsor_01` and save the fit in the folder "fits/windsor_01"
+
+-   once the model is fit, summarize the draws
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+dat01 <- dat |> 
+  dplyr::mutate( price = log( price/mean(price)) )
+
+windsor_01 <- 
+  brm(data =
+    dat01,
+    family = poisson(),
+    volume ~ 1 + price,
+    prior = c(prior(normal(0, 5), class = Intercept),
+              prior(cauchy(0, 10), ub = 0, class = b)
+    ),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4,
+    seed = 4,
+    file = "fits/windsor_01")
+
+tidybayes::summarise_draws(windsor_01)
+```
+
+```{r}
+pairs(windsor_01, variable = c('b_Intercept', 'b_price'))
+```
+:::
+
+In a Poisson model, the mean and variance of the dependent variable are equal. This is clearly not the case here (check this). So we might not expect the Poisson generating process to be a good fit.
+
+An alternative discrete pmf to the Poisson data generation process is the negative binomial process.
+
+-   build and fit a Bayesian Negative Binomial model using the same priors as in the Poisson model
+-   assign the fit to the variable `windsor_02` and save the fit in the folder "fits/windsor_02"
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+windsor_02 <- 
+  brm(data =
+    dat01,
+    family = negbinomial(),
+    volume ~ 1 + price,
+    prior = c(prior(normal(0, 5), class = Intercept),
+              prior(cauchy(0, 10), ub = 0, class = b)
+    ),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4,
+    seed = 4,
+    file = "fits/windsor_02")
+
+tidybayes::summarise_draws(windsor_02)
+```
+
+```{r}
+#| echo: true
+pairs(windsor_02, variable = c('b_Intercept', 'b_price') )
+```
+:::
+
+Since we have discrete outcomes, the continuous distribution that is the default output of `brms::pp_check` is not appropriate here.
+
+Instead use the type = "rootogram" argument of `brms::pp_check` to plot posterior predictive checks for the Poisson and NB models.
+
+Rootograms graphically compare frequencies of empirical distributions and expected (fitted) probability models. For the observed distribution the histogram is drawn on a square root scale (hence the name) and superimposed with a line for the expected frequencies.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+p1 <- brms::pp_check(windsor_01, type = "rootogram") + xlim(20,120)
+p2 <- brms::pp_check(windsor_02, type = "rootogram") + xlim(20,120)
+p1/p2
+```
+:::
+
+Finally, compare the two model fits using `brms::loo` and `brms::loo_compare` and comment on the model comparison based on all the analyses performed in this exercise.
+
+::: {.callout-note appearance="simple" icon="false"}
+## SOLUTION:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+brms::loo_compare(brms::loo(windsor_01), brms::loo(windsor_02))
+```
+
+The loo comparison suggests that negative binomial model is better than the Poisson model, however, as you can see from the plot of the data and the histograms (in the rootograms) there just isn't much data so you might proceed with caution. Note that the NB model does give higher likelihood to the largest value n the right in the histograms (just less than 100), consistent with it being the better model per the loo comparison.
+
+One approach in this case it to use all the sites, estimating a hierachical model for elasticity, with a group level elasticity and site separate site-level adjustment. This might be more useful in practice.
+:::
+
+## Exercise 3:
+
+Consider the a complicated manufacturing process as follows, where production is one unit per day on average and manufacturing equipment maintenance takes 20% of the time on average.
+
+```{r}
+#| echo: true
+# define parameters
+prob_maintenance <- 0.2  # 20% of days
+rate_work        <- 1    # average 1 unit per day
+
+# sample one year of production
+n <- 365
+
+# simulate days of maintenance
+set.seed(365)
+maintenance <- rbinom(n, size = 1, prob = prob_maintenance)
+
+# simulate units completed
+y <- (1 - maintenance) * rpois(n, lambda = rate_work)
+
+dat <-
+  tibble::tibble(maintenance = factor(maintenance, levels = 1:0), y = y)
+  
+dat %>% 
+  ggplot(aes(x = y)) +
+  geom_histogram(aes(fill = maintenance),
+                 binwidth = 1, linewidth = 1/10, color = "grey92") +
+  scale_fill_manual(values = ggthemes::canva_pal("Green fields")(4)[1:2]) +
+  xlab("Units completed") +
+  theme(legend.position = "none")
+```
+
+With this data, the likelihood of observing zero on y, (i.e., the likelihood zero units were completed on a given day) is
+
+$$
+\begin{align*}
+\operatorname{Pr}(0 | p, \lambda) & = \operatorname{Pr}(\text{maintenance} | p) + \operatorname{Pr}(\text{work} | p) \times \operatorname{Pr}(0 | \lambda) \\
+                                   & = p + (1 - p) \exp (- \lambda).
+\end{align*}
+$$
+
+And the likelihood of a non-zero value $y$ is:
+
+$$
+\operatorname{Pr}(y | y > 0, p, \lambda) = \operatorname{Pr}(\text{maintenance} | p) (0) + \operatorname{Pr}(\text{work} | p) \operatorname{Pr}(y | \lambda) = (1 - p) \frac {\lambda^y \exp (- \lambda)}{y!}
+$$
+
+So letting $p$ be the probability that $y$ is zero and $lambda$ be the shape of the distribution, the zero-inflated Poisson (ZIPoisson) regression model might take the basic form:
+
+$$
+\begin{align*}
+y_{i} & \sim\mathrm{ZIPoisson}(p_{i},\lambda_{i})\\
+\mathrm{logit}(p_{i}) & =\alpha_{p}+\beta_{p}x_{i}\\
+\log(\lambda_{i}) & =\alpha_{\lambda}+\beta_{\lambda}x_{i},
+\end{align*}
+$$ where both parameters in the likelihood, $p_i$ and $\lambda_i$ might get their own statistical model. In brms, $p_i$ is denoted by zi.
+
+Create a Bayesian zero-inflated Poisson Model (family = zero_inflated_poisson) with a normal(1,0.5) normal prior on the intercept and a beta(2,6) prior on zi (class = zi) and save the model in "fits/zi_model"
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+zi_model <- 
+  brms::brm(data = dat, 
+      family = zero_inflated_poisson,
+      y ~ 1,
+      prior = c(prior(normal(1, 0.5), class = Intercept),
+                prior(beta(2, 6), class = zi)),  # the brms default is beta(1, 1)
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 12,
+      file = "fits/zi_model") 
+print(zi_model)
+```
+
+```{r}
+fixef(zi_model)
+```
+
+Express the fitted parameters as probabilities:
+
+lambda = exp(Intercept) = exp(0.02) = 1.02
+
+p = zi = 0.23
+:::
+
+## Exercise 4:
+
+Load the regional sales data below
+
+```{r}
+#| echo: true
+dat <- readr::read_csv("data/regional_sales.csv", show_col_types = FALSE)
+```
+
+Build the following sales model. How are the terms (1\|region_id) and (1\|store_id) referred to in the output, and how do you interpret them.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| output: false
+# Fit hierarchical Bayesian model
+sales_model <- brm(
+  formula = log_sales ~ 1 + 
+    scale(store_size) + 
+    scale(competition_density) + 
+    scale(marketing_spend) +
+    seasonal_effect + 
+    (1|region_id) + 
+    (1|store_id),
+  data = dat,
+  family = gaussian(),
+  prior = c(
+    prior(normal(10, 1), class = "Intercept"),
+    prior(normal(0, 0.5), class = "b"),
+    prior(cauchy(0, 0.2), class = "sd"),
+    prior(cauchy(0, 0.2), class = "sigma")
+  ),
+  chains = 4,
+  cores = 4,
+  seed = 456,
+  file = "fits/sales_model"
+)
+```
+
+The terms (1\|region_id) and (1\|store_id) are called random effects or random intercepts in a mixed-effects model.
+
+Random intercepts allow different baseline levels for different groups (in this case, regions and stores) while assuming these levels come from a common distribution. This creates a partial pooling of information across groups - a middle ground between treating groups completely separately and completely the same.
+
+In the model specification:
+
+-   (1\|region_id) means each region gets its own intercept adjustment
+-   (1\|store_id) means each store gets its own intercept adjustment
+:::
+
+Create a tibble and bind it to the variable new_store_data. Give it the following columns:
+
+-   store_size = 5000
+-   competition_density = 5
+-   marketing_spend = 10000
+-   seasonal_effect = 0
+-   region_id = 1
+-   store_id = max(data\$store_id) + 1
+
+Use the model and this data to predict sales for the new store and give the confidence intervals for the prediction.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+new_store_data <- tibble::tibble(
+  store_size = 5000,
+  competition_density = 5,
+  marketing_spend = 10000,
+  seasonal_effect = 0,
+  region_id = 1,
+  store_id = max(dat$store_id) + 1
+)
+```
+
+```{r}
+#| echo: true
+# Make predictions
+predict(sales_model, newdata = new_store_data, allow_new_levels=TRUE)
+```
+:::
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 4  | 30     |

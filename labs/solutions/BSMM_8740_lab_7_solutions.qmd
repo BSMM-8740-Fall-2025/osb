@@ -483,6 +483,7 @@ The de-biasing step is crucial for estimating the correct causal effect, while t
 
 ```{r}
 #| eval: true
+#| message: false
 # create the de-noising model
 denoising_model <- 
     lm(
@@ -491,7 +492,7 @@ denoising_model <-
       , data = risk_data_deb
     )
 
-risk_data_denoise <- risk_data_deb |> 
+risk_data_denoise <-risk_data_deb |> 
   # add a column with the residuals of the de-noised model 
   # (add the residuals to the mean default to give a nice interpretation to the zero residual)
   dplyr::mutate(default_res = denoising_model$residuals + mean(default))

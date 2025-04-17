@@ -1,0 +1,524 @@
+---
+title: "lab 10 - Bayesian Methods"
+subtitle: "BSMM 8740 Fall 2024"
+author: "Add your name here"
+format: html
+editor: visual
+self-contained: true
+---
+
+## Introduction
+
+In today's lab, you'll practice creating Bayesian models.
+
+## Getting started
+
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-10-\[your github username\]** repository .
+
+    Create an R project using your **2024-lab-10-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2024-lab-10.qmd` file in your repository.
+
+-   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
+
+::: callout-important
+To access Github from the lab, you will need to make sure you are logged in as follows:
+
+-   username: **.\\daladmin**
+-   password: **Business507!**
+
+Remember to (create a PAT and set your git credentials)
+
+-   create your PAT using `usethis::create_github_token()` ,
+-   store your PAT with `gitcreds::gitcreds_set()` ,
+-   set your username and email with
+    -   `usethis::use_git_config( user.name = ___, user.email = ___)`
+:::
+
+## Packages
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| output: false
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+    tidyverse, broom, rsample, ggdag, causaldata, magrittr, gt, gtExtras, halfmoon, ggokabeito, 
+    ggplot2, survey, cardx, gtsummary,brms, shinystan, patchwork, tidybayes, ggthemes,
+    michael-franke/aida-package, michael-franke/faintr, CogSciPrag/cspplot
+)
+
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+## Exercise 1:
+
+**Data**:
+
+This data contains roughly 2000 trials of a mouse-tracking experiment,
+
+It is a preprocessed data set from an experiment conducted by Kieslich et al. (2020) in which participants classified specific animals into broader categories. The data set contains response times, MAD, AUC and other attributes as well as all experimental conditions.
+
+```{r}
+dolphin <- aida::data_MT
+
+# aggregate
+dolphin_agg <- dolphin |>
+  dplyr::filter(correct == 1) |> # only correct values
+  dplyr::group_by(subject_id) |> 
+  dplyr::summarize(       # use the median AUC/MAD
+    AUC = median(AUC, na.rm = TRUE),
+    MAD = median(MAD, na.rm = TRUE)) |> 
+  dplyr::ungroup() |> 
+  dplyr::mutate(
+    # the function scale centers and scales the data 
+    AUC = scale(AUC),
+    MAD = scale(MAD)
+  )
+  
+# let's take a look
+head(dolphin_agg)
+
+```
+
+Plot AUC vs MAD. What does the relationship show? Does the relationship make sense?
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# the transition matrix is
+ggplot(data = dolphin_agg, 
+       aes(x = ?, 
+           y = ?)) + 
+  geom_point(size = 3, alpha = 0.3) 
+```
+:::
+
+Regress AUC against MAD using a bayesian regression with the dolphin_agg data. Save the results in the fits directory as "model1." Use all the brms defaults
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# regress AUC against MAD
+model1 <- 
+
+  
+# show summary in tidy format
+  
+```
+:::
+
+Extract the model coefficients, then redo the graph to add a `geom_abline` with the model slope and intercept.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# extract model parameters:
+
+
+# re-create the original plot, with a regression line based on the model coefficients
+ggplot(data = dolphin_agg, 
+       aes(x = AUC, y = MAD)) + 
+  ? +
+  theme_minimal()
+```
+:::
+
+Use tidybayes::get_variables to get the model variables, and then use tidybayes::spread_draws with the model1 to get the draws for "b_MAD" and "b_Intercept" as a tibble, bound to the variable posteriors1.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# get all the variable names for model1
+
+
+```
+
+```{r}
+#| echo: true
+#| eval: false
+# get the draws for "b_MAD" and "b_Intercept"
+posteriors1 <- 
+  
+posteriors1  
+```
+:::
+
+Repeat the last operation, but this time use ndraws = 100 to limit the number of draws (call this posterior2). Again using the first graph, add a line with intercept and slope corresponding to each row of posterior2 (i.e. add 100 lines).
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# spread draws for b_MAD and b_Intercept
+posteriors2 <- 
+  
+# plot the data along with 100 regression lines, one from each of 100 draws
+ggplot(data = dolphin_agg, 
+       aes(x = MAD, y = AUC)) + 
+  ? +
+  geom_point(size = 3, alpha = 0.3, color = ?)
+```
+:::
+
+Use model1 and tidybayes::gather_draws, to get the draws for "b_MAD" as a tibble in long form, bound to the variable posteriors3. Rename '.variable' to 'parameter' and '.value' to 'posterior' and then keep only those two columns.
+
+Calculate the mean, the lower and the upper bound of a 90% CrI, using the function tidybayes::hdi().
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+# gather draws for b_MAD
+posteriors3 <-
+  
+
+# show the top 5 rows  
+head(posteriors3)
+```
+
+```{r}
+#| echo: true
+#| eval: false
+# use dplyr::summarise to calculate the mean and credible intervals for B_MAD
+posteriors3_agg <- 
+
+# display the result 
+posteriors3_agg 
+```
+:::
+
+## Exercise 2: elasticity
+
+In this exercise we will estimate price elasticity. The dataset contains price and monthly unit-volume data for four sites over 12 months. Since the unit-volumes are counts of unit sold, we'll need a discrete pmf to model the data generation process.
+
+```{r}
+#| echo: true
+#| eval: false
+# read the data
+dat <- 
+  readr::read_csv("data/price_data.csv",show_col_types = FALSE) |> 
+  dplyr::filter(site == "Windsor")
+# plot the data
+dat |> 
+  ggplot(aes(x=price, y=volume, group=site)) +
+  geom_point()
+```
+
+Since elasticity is defined as the percentage change in volume ($\Delta V/V$) for a given percentage change in price ($\Delta p/p$), then with elasticity parameter $\beta$ we write:
+
+$$
+\begin{align*}
+\frac{\Delta V}{V} & = \beta\times\frac{\Delta p}{p} \\
+\frac{\partial V}{V} & = \beta\times\frac{\partial p}{p} \\
+\partial\log(V) & = \beta\times\partial\log(p)
+\end{align*}
+$$
+
+This equation is the justification for the log-log regression model of elasticity, and this model has solution $V = Kp^\beta$, where $K$ is a constant.
+
+As written, the value of $K$ is either the volume when $p=1$ which may or may not be useful, or it is the volume when $\beta=0$, which is uninteresting.
+
+To make the interpretation of the constant $K$ more useful, the model can be written as
+
+$$
+\partial\log(V) = \beta\times\partial\log(p/p_{\text{baseline}});\qquad V = K\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}
+$$
+
+in which case the constant is interpreted as the volume when the price equals the baseline price; the elasticity parameter $\beta$ is unchanged.
+
+The implies that our regression model should be $\mathrm{volume} = \log(K) + \beta\log(p)$ given the $\log$ link in the Poisson model. To analyze the data
+
+-   scale and transform the price data by dividing by the mean price and then taking the log. Assign the modified data to the variable `dat01`.
+
+-   build and fit a Bayesian Poisson model with
+
+    -   a normal(0,5) prior on the intercept, and
+    -   a cauchy(0,10) prior on the independent variable with upper bound 0 (to ensure that elasticities are negative).
+    -   assign the fit to the variable `windsor_01` and save the fit in the folder "fits/windsor_01"
+    -   comment on the posterior distributions in the pairs plot
+
+-   once the model is fit, summarize the draws and show the the pairs plot
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+dat01 <- dat |> 
+  ?
+
+windsor_01 <- 
+  ?
+
+tidybayes::summarise_draws(?)
+                
+```
+
+```{r}
+#| echo: true
+#| eval: false
+pairs(?, variable = c('b_Intercept', 'b_price'))
+```
+
+The pairs plot ?
+:::
+
+In a Poisson model, the mean and variance of the dependent variable are equal. This is clearly not the case here (check this). So we might not expect the Poisson generating process to be a good fit.
+
+An alternative discrete pmf to the Poisson data generation process is the negative binomial process.
+
+-   build and fit a Bayesian Negative Binomial model (family = negbinomial()) using the same priors as in the Poisson model
+-   assign the fit to the variable `windsor_02` and save the fit in the folder "fits/windsor_02"
+-   once the model is fit, summarize the draws and show the the pairs plot
+-   comment on the posterior distributions in the pairs plot
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+windsor_02 <- 
+  ?
+
+tidybayes::summarise_draws(?)
+```
+
+```{r}
+#| echo: true
+#| eval: false
+pairs(?, variable = c('b_Intercept', 'b_price'))
+```
+
+The pairs plot ?
+:::
+
+Since we have discrete outcomes, the continuous distribution that is the default output of `brms::pp_check` is not appropriate here.
+
+Instead use the type = "rootogram" argument of `brms::pp_check` to plot posterior predictive checks for the Poisson and NB models.
+
+Rootograms graphically compare frequencies of empirical distributions and expected (fitted) probability models. For the observed distribution the histogram is drawn on a square root scale (hence the name) and superimposed with a line for the expected frequencies.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| eval: false
+p1 <- brms::pp_check(?, type = "rootogram") + xlim(20,120)
+p2 <- brms::pp_check(?, type = "rootogram") + xlim(20,120)
+p1/p2
+```
+:::
+
+Finally, compare the two model fits using `brms::loo` and `brms::loo_compare` and comment on the model comparison based on all the analyses performed in this exercise.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| eval: false
+brms::loo_compare(brms::loo(?), brms::loo(?))
+```
+:::
+
+## Exercise 3:
+
+Consider the a complicated manufacturing process as follows, where production is one unit per day on average and manufacturing equipment maintenance takes 20% of the time on average.
+
+```{r}
+#| echo: true
+# define parameters
+prob_maintenance <- 0.2  # 20% of days
+rate_work        <- 1    # average 1 unit per day
+
+# sample one year of production
+n <- 365
+
+# simulate days of maintenance
+set.seed(365)
+maintenance <- rbinom(n, size = 1, prob = prob_maintenance)
+
+# simulate units completed
+y <- (1 - maintenance) * rpois(n, lambda = rate_work)
+
+dat <-
+  tibble::tibble(maintenance = factor(maintenance, levels = 1:0), y = y)
+  
+dat %>% 
+  ggplot(aes(x = y)) +
+  geom_histogram(aes(fill = maintenance),
+                 binwidth = 1, linewidth = 1/10, color = "grey92") +
+  scale_fill_manual(values = ggthemes::canva_pal("Green fields")(4)[1:2]) +
+  xlab("Units completed") +
+  theme(legend.position = "none")
+```
+
+With this data, the likelihood of observing zero on y, (i.e., the likelihood zero units were completed on a given day) is
+
+$$
+\begin{align*}
+\operatorname{Pr}(0 | p, \lambda) & = \operatorname{Pr}(\text{maintenance} | p) + \operatorname{Pr}(\text{work} | p) \times \operatorname{Pr}(0 | \lambda) \\
+                                   & = p + (1 - p) \exp (- \lambda).
+\end{align*}
+$$
+
+And the likelihood of a non-zero value $y$ is:
+
+$$
+\operatorname{Pr}(y | y > 0, p, \lambda) = \operatorname{Pr}(\text{maintenance} | p) (0) + \operatorname{Pr}(\text{work} | p) \operatorname{Pr}(y | \lambda) = (1 - p) \frac {\lambda^y \exp (- \lambda)}{y!}
+$$
+
+So letting $p$ be the probability that $y$ is zero and $lambda$ be the shape of the distribution, the zero-inflated Poisson (ZIPoisson) regression model might take the basic form:
+
+$$
+\begin{align*}y_{i} & \sim\mathrm{ZIPoisson}(p_{i},\lambda_{i})\\
+\mathrm{logit}(p_{i}) & =\alpha_{p}+\beta_{p}x_{i}\\
+\log(\lambda_{i}) & =\alpha_{\lambda}+\beta_{\lambda}x_{i},
+\end{align*}
+$$
+
+where both parameters in the likelihood, $p_i$ and $\lambda_i$ might get their own statistical model. In brms, $p_i$ is denoted by zi.
+
+Create a Bayesian zero-inflated Poisson Model (family = zero_inflated_poisson) with a normal(1,0.5) normal prior on the intercept and a beta(2,6) prior on zi (class = zi) and save the model in "fits/zi_model"
+
+-   use print() to display a summary of the model, and
+-   noting the link functions in the second line of the model summary, express the parameters a probabilities.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+#| eval: false
+zi_model <- ?
+  
+print(?)
+```
+
+Express the fitted parameters as probabilities:
+
+lambda =
+
+p =
+:::
+
+## Exercise 4:
+
+Load the regional sales data below
+
+```{r}
+#| echo: true
+dat <- readr::read_csv("data/regional_sales.csv", show_col_types = FALSE)
+```
+
+Build the following sales model. How are the terms (1\|region_id) and (1\|store_id) referred to in the output, and how do you interpret them.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+#| output: false
+# Fit hierarchical Bayesian model
+sales_model <- brm(
+  formula = log_sales ~ 1 + 
+    scale(store_size) + 
+    scale(competition_density) + 
+    scale(marketing_spend) +
+    seasonal_effect + 
+    (1|region_id) + 
+    (1|store_id),
+  data = dat,
+  family = gaussian(),
+  prior = c(
+    prior(normal(10, 1), class = "Intercept"),
+    prior(normal(0, 0.5), class = "b"),
+    prior(cauchy(0, 0.2), class = "sd"),
+    prior(cauchy(0, 0.2), class = "sigma")
+  ),
+  chains = 4,
+  cores = 4,
+  seed = 456,
+  file = "fits/sales_model"
+)
+```
+
+The terms (1\|region_id) and (1\|store_id) are called \_\_? in the output, and they are interpreted as \_\_?
+:::
+
+Create a tibble and bind it to the variable new_store_data. Give it the following columns:
+
+-   store_size = 5000
+-   competition_density = 5
+-   marketing_spend = 10000
+-   seasonal_effect = 0
+-   region_id = 1
+-   store_id = max(data\$store_id) + 1
+
+Use the model and this data to predict sales for the new store and give the confidence intervals for the prediction.
+
+::: {.callout-note appearance="simple" icon="false"}
+## YOUR ANSWER:
+
+```{r}
+#| echo: true
+#| eval: false
+new_store_data <- tibble::tibble()
+```
+
+```{r}
+#| echo: true
+#| eval: false
+# Make predictions
+predict(?, newdata = ?, allow_new_levels=TRUE)
+```
+:::
+
+::: render-commit-push
+You're done and ready to submit your work! **Save**, **stage**, **commit**, and **push** all remaining changes. You can use the commit message "Done with Lab 6!" , and make sure you have committed and pushed all changed files to GitHub (your Git pane in RStudio should be empty) and that **all** documents are updated in your repo on GitHub.
+:::
+
+::: callout-important
+## Submission
+
+I will pull (copy) everyone's repository submissions at 5:00pm on the Sunday following class, and I will work only with these copies, so anything submitted after 5:00pm will not be graded. (**don't forget to commit and then push your work!**)
+:::
+
+## Grading
+
+Total points available: 30 points.
+
+| Component | Points |
+|-----------|--------|
+| Ex 1 - 4  | 30     |

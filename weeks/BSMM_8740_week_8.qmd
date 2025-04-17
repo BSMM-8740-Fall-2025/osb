@@ -26,7 +26,43 @@ Due date: Lab 8 - Sunday, Nov 10, 5pm ET
 
 ⌨️ [Lab 8 - Causality: Methods](labs/BSMM_8740_lab_8.html)
 
-<br><br>
+## Study
+
+### Short Answer Questions
+
+**Instructions**: Answer the following questions in 2-3 sentences each.
+
+-   Explain the concept of Inverse Probability Weighting (IPW) and its purpose in causal inference.
+-   What are stabilized weights in IPW, and why are they used?
+-   How does regression adjustment help in estimating causal effects?
+-   Describe the principle of doubly robust estimation and its advantages.
+-   Explain the concept of finite sample bias and factors influencing its likelihood.
+-   What is the main idea behind matching in causal inference?
+-   Explain the concept of subclassification and its limitations in practice.
+-   How does matching estimator work, and how is it different from regression adjustment?
+-   Explain the core principle of difference-in-differences (DID) estimation.
+-   What is the parallel trends assumption in DID, and why is it important?
+
+### Short Answer Key
+
+-   IPW is a technique that creates a pseudo-population where the distribution of confounders is balanced between the treatment and control groups. This helps to estimate causal effects by reducing bias due to confounding.
+-   Stabilized weights are a modified version of IPW weights that are multiplied by the mean of the treatment or a subset of baseline covariates. They are used to reduce the variance of the IPW estimator and improve stability.
+-   Regression adjustment estimates causal effects by building a regression model that predicts the outcome based on the treatment and confounders. By controlling for confounders in the model, it aims to isolate the effect of the treatment.
+-   Doubly robust estimation combines propensity score weighting and regression adjustment. It provides an unbiased estimate of the causal effect if either the propensity score model or the outcome model is correctly specified, offering greater robustness.
+-   Finite sample bias occurs when estimates of causal effects are biased due to the limited size of the sample. The likelihood of finite sample bias depends on the estimand, overlap between treatment groups, and sample size.
+-   Matching aims to create comparable treatment and control groups by pairing individuals based on similarities in their observed characteristics (confounders). This reduces bias by creating a more balanced comparison.
+-   Subclassification involves dividing the data into subgroups based on confounder values and estimating the causal effect within each subgroup. Its practical limitation is the curse of dimensionality, as the number of subgroups grows exponentially with the number of confounders.
+-   Matching estimator directly pairs treated and control units based on proximity in confounder space, while regression adjustment uses a model to control for confounders. Matching focuses on finding similar individuals, while regression statistically adjusts for differences.
+-   DID estimates the causal effect of a treatment by comparing the change in outcomes over time between a treatment group and a control group. It leverages both time and group comparisons to isolate the treatment effect.
+-   The parallel trends assumption in DID states that the treatment and control groups would have followed similar trends in the outcome variable had the treatment not been implemented. It is crucial because DID estimates the treatment effect based on the difference in these trends.
+
+### Essay Questions
+
+-   Discuss the strengths and limitations of both Inverse Probability Weighting (IPW) and regression adjustment in estimating causal effects. When might you prefer one method over the other?
+-   Explain the concept of doubly robust estimation in detail. Why is it considered "doubly robust"? Provide an example scenario where doubly robust estimation would be particularly advantageous.
+-   Discuss the challenges associated with matching in causal inference. How can these challenges be addressed in practice? Explain different distance metrics and their implications in matching.
+-   Describe the difference-in-differences (DID) estimator and its underlying assumptions. What are potential threats to the validity of DID estimates, and how can they be mitigated?
+-   Explain the concept of fixed effects in panel data analysis. How do fixed effects help to control for unobserved confounders? Discuss the advantages and limitations of using fixed effects models.
 
 ::: {style="font-size: 0.875em;"}
 Back to [course schedule](/ "Course schedule") ⏎
