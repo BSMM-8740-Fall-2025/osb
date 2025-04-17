@@ -23,14 +23,19 @@ opts_chunk$set(comment="",
                tidy = FALSE, 
                prompt = TRUE,
                fig.align = 'center')
-require(magrittr)
-require(ggplot2)
-require(mlbench)
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+  magrittr, ggplot2, mlbench, caret, recipes, lattice, kernlab)
+
 data("PimaIndiansDiabetes")
-library(caret)
 data("Sacramento")
-library(recipes)
-library(lattice)
+
 theme_set(theme_bw() + theme(legend.position = "top"))
 ```
 

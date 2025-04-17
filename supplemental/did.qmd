@@ -52,13 +52,14 @@ $$ a "difference-in-differences"" of population means
 -   Start with $$E[Y_{i2}- Y_{i1}| D_i =1] - E[Y_{i2} - Y_{i1}| D_i =0]$$
 -   Apply definition of POs to obtain: $$E[Y_{i2}(1) - Y_{i1}(1)| D_i =1] - E[Y_{i2}(0) - Y_{i1}(0)| D_i =0]$$
 -   Use No Anticipation to substitute $Y_{i1}(0)$ for $Y_{i1}(1)$: $$E[Y_{i2}(1) - Y_{i1}(0)| D_i =1] - E[Y_{i2}(0) - Y_{i1}(0)| D_i =0]$$
--   Add and subtract \$E\[ Y\_{i2}(0) \| D_i =1\] \$ to obtain: $$
+-   Add and subtract $E[ Y_{i2}(0) | D_i =1]$ to obtain:
+
+$$
         \begin{align*}
             & E[ Y_{i2}(1) - Y_{i2}(0) | D_i =1] + \\
             & \hspace{1cm} \left[ (E[Y_{i2}(0) | D_i = 1] - E[Y_{i1}(0)| D_i =1]) - (E[Y_{i2}(0) | D_i = 0] - E[Y_{i1}(0)| D_i =0]) \right]
         \end{align*}
-        $$
--   Cancel the last terms using PT to get $E[Y_{i2}(1) - Y_{i2}(0) | D_i = 1] = \tau_{ATT}$
+        $$ - Cancel the last terms using PT to get $E[Y_{i2}(1) - Y_{i2}(0) | D_i = 1] = \tau_{ATT}$
 
 ## Estimation and Inference
 
