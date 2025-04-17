@@ -1,6 +1,6 @@
-# Website for BSMM 8740 at The University of Windsor (Fall 2024)
+# Website for BSMM 8740 at The University of Windsor (Fall 2025)
 
-🔗 https://bsmm-8740-fall-2024.github.io/osb_2024/
+🔗 https://bsmm-8740-fall-2025.github.io/osb_2025/
 
 ## Colors
 
