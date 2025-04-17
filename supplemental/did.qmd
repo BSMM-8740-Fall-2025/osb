@@ -128,8 +128,8 @@ We can group the recent innovations in DiD lit by which elements of the canonica
 ## Some intuition for forbidden comparisons
 
 -   Consider the two period model, except suppose now that our two groups are **always-treated\* units (treated in both periods) and** switchers\*\* (treated only in period 2)
--   With two periods, the coefficient $\beta$ from \$ Y\_{it} = \alpha\*i +\* \phi\*t + D\*{it} \beta  + \epsilon{it}\$ is the same as from the first-differenced regression $\Delta Y_i = \alpha + \Delta D_i \beta + u_i$
--   Observe that $\Delta D_i$ is one for switchers and zero for stayers. \\ That is, the stayers function as the \`\`control group''! Thus, $$\hat\beta =  \underbrace{ \left(\bar{Y}_{Switchers, 2} - \bar{Y}_{Switchers, 1} \right) }_{\text{Change for switchers}} - \underbrace{ \left(\bar{Y}_{AT, 2} - \bar{Y}_{AT, 1} \right) }_{\text{Change for always treated}}  $$
+-   With two periods, the coefficient $\beta$ from $Y_{it} = \alpha_i + \phi_t + D_{it} \beta  + \epsilon_{it}$ is the same as from the first-differenced regression $\Delta Y_i = \alpha + \Delta D_i \beta + u_i$
+-   Observe that $\Delta D_i$ is one for switchers and zero for stayers. That is, the stayers function as the "control group." Thus, $$\hat\beta =  \underbrace{ \left(\bar{Y}_{Switchers, 2} - \bar{Y}_{Switchers, 1} \right) }_{\text{Change for switchers}} - \underbrace{ \left(\bar{Y}_{AT, 2} - \bar{Y}_{AT, 1} \right) }_{\text{Change for always treated}}  $$
 -   Problem: if the effect for the always-treated grows over time, that will enter $\hat\beta$ negatively!
 -   With staggered timing, units who are treated early are like \`\`always-treated'' in later pairs of periods
 
@@ -153,9 +153,6 @@ The literature has placed a lot of emphasis on the fact that some treatment effe
 ## Dynamic TWFE - Continued
 
 -   The results in SA suggest that interpreting the $\hat\gamma_k$ for $k=1,2,...$ as estimates of the dynamic effects of treatment may be misleading
-
 -   These results also imply that pre-trends tests of the $\gamma_k$ for $k<0$ may be misleading -- could be non-zero even if parallel trends holds, since they may be \`\`contaminated'' by post-treatment effects!
-
 -   The issues discussed in SA arise if dynamic path of treatment effects is heterogeneous across adoption cohorts
-
     -   Biases may be less severe than for \`\`static'' specs if dynamic patterns are similar across cohorts
