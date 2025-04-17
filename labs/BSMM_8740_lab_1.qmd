@@ -23,9 +23,9 @@ By the end of the lab, you will...
 
 ## Getting started
 
--   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-1-\[your github username\]** repository .
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2025) and find the **2025-lab-1-\[your github username\]** repository .
 
-    Create an R project using your **2024-lab-1-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2024-lab-1.qmd` file in your repository.
+    Create an R project using your **2025-lab-1-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2025-lab-1.qmd` file in your repository.
 
 -   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
 

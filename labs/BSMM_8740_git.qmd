@@ -149,7 +149,7 @@ You are now ready interact with GitHub via RStudio!
 
 1.  First make sure you are logged into your own Github account on a web browser.
 
-2.  Next, in a new browser tab, go to the course organization site on GitHub at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2024/ "Course GitHub organization") and click on your personal repository for the lab, quiz, or exam. [These will be created just before each assignment starts]{.underline}. The repository contains the starter documents you need to complete the lab.
+2.  Next, in a new browser tab, go to the course organization site on GitHub at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2025/ "Course GitHub organization") and click on your personal repository for the lab, quiz, or exam. [These will be created just before each assignment starts]{.underline}. The repository contains the starter documents you need to complete the lab.
 
 3.  Click on the green **CODE** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS**). Click on the clipboard icon to copy the repo URL.
 
@@ -176,7 +176,7 @@ Below are the components of a Quarto (.qmd) file.
 The top portion of your R Markdown file (between the three dashed lines) is called **YAML**. It stands for "YAML Ain't Markup Language". It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.
 
 ::: callout-important
-In each lab, quiz, and exam you'll work from a R project based on your personal repository at the course organization site at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2024/ "Course GitHub organization") on GitHub. To start, open the Quarto (\``` .qmd` ``) file in the project, change the [author name to your name]{.underline}, [set the date field in the YAML]{.underline}, and at least once before the deadline render the document to ensure that your code executes properly.
+In each lab, quiz, and exam you'll work from a R project based on your personal repository at the course organization site at [BSMM-8740-Fall-2025](https://github.com/BSMM-8740-Fall-2025/ "Course GitHub organization") on GitHub. To start, open the Quarto (\``` .qmd` ``) file in the project, change the [author name to your name]{.underline}, [set the date field in the YAML]{.underline}, and at least once before the deadline render the document to ensure that your code executes properly.
 :::
 
 ### Committing changes

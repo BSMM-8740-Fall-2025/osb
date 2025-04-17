@@ -2,7 +2,7 @@
 title: "Causality"
 subtitle: "BSMM8740-2-R-2024F [WEEK - 7]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2025.github.io/osb](https://bsmm-8740-fall-2025.github.io/osb/)"
 logo: "images/logo.png"
 # title-slide-attributes:
 #   data-background-image: images/my-DRAFT.png
