@@ -1721,32 +1721,50 @@ So, in some way, linear regression performs some sort of dimensionality reductio
 
 # Difference-in-Differences
 
-## Difference-in-Differences
+## Difference-in-Differences (DiD)
 
 -   Panel data on $Y_{it}$ for $t=1,2$ and $i = 1,...,N$
--   **Treatment timing:** Some units ($D_i=1$) are treated in period $2$; everyone else is untreated $(D_i=0)$
+-   **Treatment timing:** Some units ($D_i=1$) are treated in period $2$; every other unit is untreated $(D_i=0)$
 -   **Potential outcomes (POs):** Observe $Y_{it}(1) \equiv Y_{it}(0,1)$ for treated units; and $Y_{it}(0) \equiv Y_{it}(0,0)$ for comparison.
 
-## Estimation and Inference
+## DiD Estimation and Inference
 
 -   The most conceptually simple estimator replaces population means with sample analogs: $$\hat{\tau}_{DiD} = (\bar{Y}_{12} - \bar{Y}_{11}) - (\bar{Y}_{02} - \bar{Y}_{01}) $$ where $\bar{Y}_{dt}$ is sample mean for group $d$ in period $t$
 -   This is also know as "4 averages and three subtractions"
--   causally we evaluate before treatment vs after treatment
+-   Causally we evaluate before treatment vs after treatment
 
-## Estimation and Inference
+## DiD Estimation and Inference
 
--   Conveniently, $\hat\tau_{DID}$ is algebraically equal to OLS coefficient $\hat\beta$ from $$\begin{align*}
+-   Conveniently, $\hat\tau_{DiD}$ is algebraically equal to OLS coefficient $\hat\beta$ from $$\begin{align*}
     Y_{it} = \alpha_i + \phi_t + D_{it} \beta  + \epsilon_{it}, 
     \end{align*}$$ where $D_{it} = D_i * 1[t=2]$. Also equivalent to $\beta$ from $\Delta Y_{i} = \alpha +  \Delta D_i \beta + u_{it}$.
 -   **Inference:** And clustered standard errors are valid as number of clusters grows large.
 
-## Causal Inference
+## DiD Causal Inference
 
-Under what conditions does DID have a causal interpretation?
+Under what conditions does DiD have a causal interpretation?
 
 Our estimator is $$E[Y_{i2}(1) - Y_{i1}(1)| D_i =1] - E[Y_{i2}(0) - Y_{i1}(0)| D_i =0]$$
 
 If we add zero
+
+$$
+\begin{align*}
+DID & =E[Y_{i2}(1)-Y_{i1}(1)]-E[Y_{i2}(0)-Y_{i1}(0)]\\
+ & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]+\\
+ & E\left[Y_{i2}(1)|D_{i}=0\right]-E\left[Y_{i2}(1)|D_{i}=0\right]\\
+ & =E[Y_{i2}(1)|D_{i}=1]-E\left[Y_{i2}(1)|D_{i}=0\right]+\\
+ & E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]
+\end{align*}
+$$
+
+## Causal Inference
+
+So for our DiD estimator to be a causal estimate (ATT) we need
+
+1.  No anticipation: $E[Y_{i1}(1)|D_{i}=0] = E[Y_{i1}(0)|D_{i}=0]$
+
+2.  parallel trends: $0=E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]$
 
 ## Difference-in-Differences
 
