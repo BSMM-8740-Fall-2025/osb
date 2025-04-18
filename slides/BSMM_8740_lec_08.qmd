@@ -1766,6 +1766,21 @@ So for our DiD estimator to be a causal estimate (ATT) we need
 
 2.  parallel trends: $0=E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]$
 
+## test
+
+```{r}
+require(ggplot2)
+dat <- tibble::tibble(
+  y = c(10,8,6,3)
+  , x = c(2,4,2,4)# c("pre","post","pre","post")
+  , cls = as.factor(c("untreated","untreated","treated","treated"))
+) |> 
+  ggplot(aes(x=x, y=y), group = cls) +
+  geom_line()
+
+dat
+```
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
@@ -1783,12 +1798,32 @@ Data was also obtained from another capital from the south, Florianopolis, the c
 ```{r}
 #| echo: true
 #| code-fold: true
-data_bboard <- readr::read_csv("data/billboard_impact.csv", show_col_types = FALSE)
+dat <- tibble::tibble(
+  y = c(10,8,7.5,3)
+  , x = c(2,4,2,4)# c("pre","post","pre","post")
+  , cls = as.factor(c("untreated","untreated","treated","treated"))
+) |> dplyr::group_by(cls) 
 
-data_bboard |> 
-  dplyr::slice_head(n=5) |> 
-  gt::gt() |> 
-  gtExtras::gt_theme_espn()
+dat |> 
+  ggplot(aes(x=x, y=y, color = cls)) +
+  geom_line() +
+  geom_line(
+    inherit.aes = FALSE,
+    data = tibble::tibble(x = c(2,4), y = c(7.5,5.5)), aes(x=x, y=y, fill = 'black'), linetype = 'dotted') +
+  xlim(1,5) + ylim(0,12) +
+  theme_minimal() + 
+  theme(legend.title = element_blank(), axis.title.x = element_blank()) +
+  scale_x_continuous(breaks=c(2,4), labels=c("Pre", "Post"), limits = c(1.5,4.5)) +
+  ggbrace::stat_brace(
+    data = data.frame(x = c(3.8, 4.0), y = c(5.5, 3)),
+    aes(x, y),
+    rotate = 90, size = .5, col = "blue"
+  ) +
+  annotate("text",
+           x = 4.2, y = 4.35,
+           label = expression(delta),
+           parse = TRUE, size = 3.5, col = "blue"
+  ) 
 ```
 
 ## Difference-in-Differences
