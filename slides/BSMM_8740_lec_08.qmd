@@ -1,8 +1,8 @@
 ---
 title: "Causality Part 2"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 8]"
+subtitle: "BSMM8740-2-R-2025F [WEEK - 8]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2025.github.io/osb](https://bsmm-8740-fall-2025.github.io/osb/)"
 logo: "images/logo.png"
 # title-slide-attributes:
 #   data-background-image: images/my-DRAFT.png
@@ -17,6 +17,8 @@ format:
     slide-number: true
     margin: 0.05
     html-math-method: mathjax
+filters:
+  - parse-latex
 editor: visual
 menu:
   numbers: true
@@ -1721,7 +1723,7 @@ So, in some way, linear regression performs some sort of dimensionality reductio
 
 # Difference-in-Differences
 
-## Difference-in-Differences (DiD)
+## Difference-in-Differences (2x2 DiD)
 
 -   Panel data on $Y_{it}$ for $t=1,2$ and $i = 1,...,N$
 -   **Treatment timing:** Some units ($D_i=1$) are treated in period $2$; every other unit is untreated $(D_i=0)$
@@ -1739,6 +1741,20 @@ So, in some way, linear regression performs some sort of dimensionality reductio
     Y_{it} = \alpha_i + \phi_t + D_{it} \beta  + \epsilon_{it}, 
     \end{align*}$$ where $D_{it} = D_i * 1[t=2]$. Also equivalent to $\beta$ from $\Delta Y_{i} = \alpha +  \Delta D_i \beta + u_{it}$.
 -   **Inference:** And clustered standard errors are valid as number of clusters grows large.
+
+## DiD Estimation and Inference
+
+Aggregating individuals into treated and untreated groups:
+
+$$\begin{align*}
+Y_{it} = \alpha_i + \beta_1 D_i + \beta_2\text{post}_t + \delta (D_i\times\text{post}_t) + \epsilon_{it}
+\end{align*}$$
+
+$Y_{i0}^0=\alpha_i$, $Y_{i1}^0=\alpha_i+\beta_2$ and $Y_{i0}^1=\alpha_i + \beta_1$, $Y_{i1}^1=\alpha_i+\beta_1+\beta_2+\delta$
+
+with $Y_{i1}^0-Y_{i0}^0=\beta_2$ and $Y_{i1}^1-Y_{i0}^1=\beta_2+\delta$
+
+so $(Y_{i1}^1-Y_{i0}^1) - (Y_{i1}^0-Y_{i0}^0)=\delta$
 
 ## DiD Causal Inference
 
@@ -1764,7 +1780,27 @@ So for our DiD estimator to be a causal estimate (ATT) we need
 
 1.  No anticipation: $E[Y_{i1}(1)|D_{i}=0] = E[Y_{i1}(0)|D_{i}=0]$
 
-2.  parallel trends: $0=E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]$
+2.  Parallel trends: $0=E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]$
+
+## Causal Inference
+
+1.  No anticipation: no treatment before treatment, so make sure your baseline is untreated (be aware of ”announcement dates” vs ”implementation dates”)
+
+2.  Parallel trends: this needs to be supported by data, e.g. pre-trends or trends in similar groups
+
+## Causal Inference
+
+$$
+\begin{align*}
+DID & =\text{ATT}_{\text{post}} \\
+ & + \text{non PT bias}\\
+ & + \text{ATT}_{\text{pre}}\,\text{bias}
+\end{align*}
+$$
+
+## DiD
+
+The 2x2 method is interpreted as *before* and *after*, but these periods can be multiple time periods
 
 ## test
 
@@ -1779,6 +1815,128 @@ dat <- tibble::tibble(
   geom_line()
 
 dat
+```
+
+```{r}
+# Load necessary libraries
+# install.packages(c("tidyverse", "fixest", "haven"))
+library(tidyverse)
+library(fixest)
+library(haven)
+
+# Load the data
+data <- haven::read_dta("https://github.com/scunning1975/mixtape/raw/master/castle.dta")
+
+# Filter the data
+data <- data %>%
+  filter(!(effyear %in% c(2005, 2007, 2008, 2009)))
+
+# Generate post and treat variables
+data <- data %>%
+  mutate(
+    year = as.numeric(year),
+    post = ifelse(year >= 2006, 1, 0),
+    treat = ifelse(!is.na(effyear), 1, 0)
+  )
+
+# Calculate means for different groups
+(mean_values <- data %>%
+  group_by(post, treat) %>%
+  summarise(mean_l_homicide = mean(l_homicide, na.rm = TRUE)))
+
+# Calculate the DiD manually
+(did <- with(mean_values, {
+  (mean_l_homicide[post == 1 & treat == 1] - mean_l_homicide[post == 0 & treat == 1]) - 
+  (mean_l_homicide[post == 1 & treat == 0] - mean_l_homicide[post == 0 & treat == 0])
+}))
+
+
+# Run the regression with clustered standard errors
+model <- feols(
+  l_homicide ~ i(post) + i(treat) + post:treat, 
+  data = data, cluster = ~ state
+)
+
+model
+
+# Run the regression with population weights
+model_weighted <- feols(
+  l_homicide ~ i(post) + i(treat) + post:treat, 
+  data = data, cluster = ~ treat,
+  weights = ~ popwt
+)
+
+model_weighted
+```
+
+## Longitudinal Data
+
+-   Two types of longitudinal data:
+
+    -   Panel Data: same units tracked over time (e.g., National Longitudinal Survey of Youth 1997)
+
+-   Repeated Cross-Sections: different units sampled at each time (e.g., Census, Current Population Survey)
+
+    -   Violations of parallel trends can arise differently across data types.
+
+## Longitudinal Data
+
+We have a balanced panel is when all units are observed in every period.
+
+-   Imbalanced panel is when units missing in some periods.
+    -   Anthony is in periods 1-3,
+    -   Bob is in periods 1-3,
+    -   Inez is in periods 1 and 3 only,
+    -   Dignan is in periods 1 and 2 only
+-   Missingness alone does not violate parallel trends, though it does change the parameter.
+
+## Longitudinal Data
+
+In the potential outcomes framework, a treatment effect is defined at the individual level, $\delta_{it}$
+
+-   So if you are missing a person, i, in a period, t, then it does not contribute
+
+-   The more heterogeneity in the treatment effects, the more the broken panel will shift away from what you think you’re after
+
+## Repeated cross-sections
+
+-   One of the risks of a repeated cross-section is that the composition of the sample may have changed between the pre and post period in ways that are correlated with treatment
+-   Hong (2013) uses repeated cross-sectional data from the Consumer Expenditure Survey (CEX) containing music expenditure and internet use for a random sample of households
+-   Study exploits the emergence of Napster (first file sharing software widely used by Internet users) in June 1999 as a natural experiment
+-   Study compares internet users and internet non-users before and after emergence of Napster
+
+## Repeated Cross Section Risks
+
+-   Repeated cross sections have their own challenges that panels don’t in that the group could be shifting compositionally
+-   Detect using a balance table with covariates highly predictive of the missing E\[Y0\|D= 1\] for this exercise
+    -   Percent of cat owners is probably irrelevant to trends in potential outcomes
+    -   But age and income is probably relevant for spending habits
+    -   We’ll discuss covariates more later, but for now just consider what characteristics are relevant to your outcome
+-   Documenting covariates that cannot be affected by the treatment like this table is a way to check for compositional changes in the sample
+
+
+```{=latex}
+  \begin{table*}[htb]
+    \caption{Changes Between Internet and Non-Internet Users Over Time}
+    \begin{tabular}{lcccccc}
+      \toprule
+      \textbf{Characteristic} &
+         \multicolumn{2}{c}{\textbf{1997}} &
+         \multicolumn{2}{c}{\textbf{1998}} &
+         \multicolumn{2}{c}{\textbf{1999}} \\
+         & \textbf{User} & \textbf{Non-user} &
+           \textbf{User} & \textbf{Non-user} &
+           \textbf{User} & \textbf{Non-user} \\
+      \midrule
+      \emph{Demographics} \\
+      Age & 40.2 & 49.0 & 42.3 & 49.0 & 44.1 & 49.4 \\
+      Income & \$52,887 & \$30,459 & \$51,995 & \$26,189 & \$49,970 & \$26,649 \\
+      High school graduate & 0.18 & 0.31 & 0.17 & 0.32 & 0.21 & 0.32 \\
+      Some college & 0.37 & 0.28 & 0.35 & 0.27 & 0.34 & 0.27 \\
+      College grad & 0.43 & 0.21 & 0.45 & 0.21 & 0.42 & 0.20 \\
+      Manager & 0.16 & 0.08 & 0.16 & 0.08 & 0.14 & 0.08 \\
+      \bottomrule
+    \end{tabular*}
 ```
 
 ## Difference-in-Differences
@@ -2090,6 +2248,7 @@ One way to check if this is happening is to plot the trend using past periods. F
 #| warning: false
 #| fig-align: center
 #| code-fold: true
+#| eval: true
 tibble::tibble( 
   mo = c("Jan", "Mar", "May", "Jul") |> factor(levels=c("Jan", "Mar", "May", "Jul"))
   , fl = c(120, 150, fl_before, fl_after)
