@@ -1914,9 +1914,12 @@ In the potential outcomes framework, a treatment effect is defined at the indivi
     -   We’ll discuss covariates more later, but for now just consider what characteristics are relevant to your outcome
 -   Documenting covariates that cannot be affected by the treatment like this table is a way to check for compositional changes in the sample
 
+## Repeated Cross Section Risks
 
 ```{=latex}
-  \begin{table*}[htb]
+  {\tiny
+  \centering
+  \begin{table}[htb]
     \caption{Changes Between Internet and Non-Internet Users Over Time}
     \begin{tabular}{lcccccc}
       \toprule
@@ -1936,7 +1939,9 @@ In the potential outcomes framework, a treatment effect is defined at the indivi
       College grad & 0.43 & 0.21 & 0.45 & 0.21 & 0.42 & 0.20 \\
       Manager & 0.16 & 0.08 & 0.16 & 0.08 & 0.14 & 0.08 \\
       \bottomrule
-    \end{tabular*}
+    \end{tabular}
+  \end{table}
+  }
 ```
 
 ## Difference-in-Differences
@@ -2024,6 +2029,7 @@ In our example, we would compare the average deposits from POA before and after 
 ```{r}
 #| echo: true
 #| code-fold: true
+data_bboard <- readr::read_csv("./data/billboard_impact.csv", show_col_types = FALSE)
 poa_before <- data_bboard |> dplyr::filter(poa==1 & jul==0) |> dplyr::pull(deposits) |> mean()
 poa_after  <- data_bboard |> dplyr::filter(poa==1 & jul==1) |> dplyr::pull(deposits) |> mean()
 poa_after - poa_before
