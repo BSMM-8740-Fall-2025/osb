@@ -1,7 +1,12 @@
 # created April 30, 2025
 
+# Libraries ----
 require(ggplot2)
 require(ggthemes)
+require(stargazer)
+require(foreign)
+require(fixest)
+require(bacondecomp)
 
 # based on https://bookdown.org/paul/applied-causal-analysis/lab-2.html
 
@@ -247,13 +252,13 @@ muni_1516 <- muni[muni$year >= 2015,]
 # with TRUE being equal to 1 and FALSE being equal to 0.
 muni_1516$post_treatment <- muni_1516$year == 2016
 
-# Calculate the difference-in-differences
+# Calculate the difference-in-differences (note: 2x2)
 interaction_mod <- lm(gdvote ~ ever_treated * post_treatment, data = muni_1516)
 interaction_mod2 <- lm(gdvote ~ ever_treated + post_treatment + treatment, data = muni_1516)
 
 texreg::screenreg(list(interaction_mod,interaction_mod2))
 
-# (5) ^^^^
+# (5) Assess the parallel trends assumption
 group_period_averages <-
   stats::aggregate(
     x = muni$gdvote
@@ -280,7 +285,8 @@ ggplot(muni,aes(x=year,y=gdvote,colour=ever_treated)) +
         plot.background = element_rect(color= NA))
 
 
-# (6) fixed effects
+# (6) fixed effects regression: the fixed-effect estimator for the diff-in-diff model requires
+#     “two-way” fixed-effects, i.e. sets of dummy variables for a) units and b) time periods.
 # NOTE: now using all the pre-treatment periods, rather than just 2015).
 fe_mod <- lm(gdvote ~ as.factor(municipality) + as.factor(year) + treatment,
              data  = muni)
@@ -294,13 +300,14 @@ summary(fe_mod)$coefficients['treatment',]
 fe_mod |> broom::tidy() |> dplyr::filter(term == 'treatment')
 
 
-# (6) continuous treatment
+# (6) continuous treatment: swap the treatment variable for the trarrprop variable
 fe_mod2 <- lm(gdvote ~ as.factor(municipality) + as.factor(year) + trarrprop,
               data  = muni)
 
 summary(fe_mod2)$coefficients['trarrprop',]
+fe_mod2 |> broom::tidy() |> dplyr::filter(term == 'trarrprop')
 
-library(stargazer)
+
 
 # Re-run interaction model with interaction already calculated before to help with
 # table formatting
@@ -322,11 +329,11 @@ stargazer::stargazer(post_treat_mod,
           dep.var.labels = "Golden Dawn Vote Share")
 
 
-# (8) parallel trends
+# (8) parallel trends: re-explore the parallel trends assumption, but this time using lags and leads
 
 # create a variable of time relative to treatment
-library(tidyverse) # (for this I will use some tidyverse code - ignore the warnings)
-library(broom)
+# library(tidyverse) # (for this I will use some tidyverse code - ignore the warnings)
+# library(broom)
 
 muni <- muni |>
   dplyr::group_by(municipality) |> # group by unit of treatment
@@ -379,60 +386,523 @@ ggplot(lagsleads, aes(x= time_to_treat, y = estimate)) +
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-# 5.1.2 Minimum wages and employment – Card and Krueger (1994)
+# 5.1.2 Minimum wages and employment – Card and Krueger (1994) ----
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # (5.1.2 a)
-library(foreign)
-min_wage <- read.dta("slides/data/m_wage.dta")
 
-# (5.1.2 b) Pre-Treatment
+min_wage <- foreign::read.dta("slides/data/m_wage.dta")
+
+
+# nj – a dummy variable equal to 1 if the restaurant is located in New Jersey
+# emptot – the total number of full-time employed people in the pre-treatment period
+# emptot2 – the total number of full-time employed people in the post-treatment period
+# wage_st – a variable measuring the average starting wage in the restaurant in the pre-treatment period
+# wage_st2 – a variable measuring the average starting wage in the restaurant in the post-treatment period
+# pmeal – a variable measuring the average price of a meal in the pre-treatment period
+# pmeal2 – a variable measuring the average price of a meal in the post-treatment period
+# co_owned – a dummy variable equal to 1 if the restaurant was co-owned
+# bk – a dummy variable equal to 1 if the restaurant was a Burger King
+# kfc – a dummy variable equal to 1 if the restaurant was a KFC
+# wendys – a dummy variable equal to 1 if the restaurant was a Wendys
+
+
+# (5.1.2 b) Pre-Treatment: the difference-in-difference estimate for the average wage in NJ and PA.
+#           Noting that the wage is not the outcome of interest in this case,
+
 pre_treatment_difference <-
   mean(min_wage$wage_st[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$wage_st[min_wage$nj ==0],  na.rm = T)
-pre_treatment_difference
+pre_treatment_difference # -0.01799783
 
 # Post-Treatment
 post_treatment_difference <-
   mean(min_wage$wage_st2[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$wage_st2[min_wage$nj ==0],  na.rm = T)
-post_treatment_difference
+post_treatment_difference # 0.4633844
 
 # Diff-in-diff (average wage)
 difference_in_difference <- post_treatment_difference - pre_treatment_difference
-difference_in_difference
+difference_in_difference # 0.4813823
 
-# (5.1.2 c) Pre-Treatment
-# difference-in-differences estimator for the outcome of interest (the number of full-time employees)
+# (5.1.2 c) Pre-Treatment: difference-in-differences estimator for the outcome of interest (the number of full-time employees)
 pre_treatment_difference <-
   mean(min_wage$emptot[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$emptot[min_wage$nj ==0],  na.rm = T)
-pre_treatment_difference
+pre_treatment_difference # -2.891761
 
 # Post-Treatment
-post_treatment_difference <- mean(min_wage$emptot2[min_wage$nj ==1],  na.rm = T) -
+post_treatment_difference <-
+  mean(min_wage$emptot2[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$emptot2[min_wage$nj ==0],  na.rm = T)
-post_treatment_difference
+post_treatment_difference # -0.1381549
 
 # Diff-in-diff
 difference_in_difference <- post_treatment_difference - pre_treatment_difference
-difference_in_difference
+difference_in_difference # 2.753606
 
-# (5.1.2 d) Pre-Treatment
-# difference-in-differences estimator for the price of an average meal. Do restaurants that were subject to a wage increase raise their prices for fast–food?
+# (5.1.2 d) Pre-Treatment: difference-in-differences estimator for the price of an average meal.
+#           Do restaurants that were subject to a wage increase raise their prices for fast–food?
 
 pre_treatment_difference <-
   mean(min_wage$pmeal[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$pmeal[min_wage$nj ==0],  na.rm = T)
-pre_treatment_difference
+pre_treatment_difference # 0.3086927
 
 post_treatment_difference <-
   mean(min_wage$pmeal2[min_wage$nj ==1],  na.rm = T) -
   mean(min_wage$pmeal2[min_wage$nj ==0],  na.rm = T)
-post_treatment_difference
+post_treatment_difference # 0.3881344
 
-difference_in_difference <- post_treatment_difference -
-  pre_treatment_difference
+difference_in_difference <- post_treatment_difference - pre_treatment_difference
+difference_in_difference # 0.0794417
 
-difference_in_difference
+# (5.1.2 e) Pre-Treatment: difference-in-differences estimator for the price of an average meal.
+# (i) Convert the dataset from a “wide” format to a “long” format
+# (ii) Estimate the difference-in-differences using linear regression
+# ( iii) Run two models: one which only includes the relevant variables to estimate the diff-in-diff,
+#        and one which additionally includes restaurant-level covariates which do not vary over time
+
+# Version 1
+## Create two data.frames (one for pre-treatment and one for post-treatment period observations)
+min_wage_feb <- min_wage[,c("nj","wage_st","emptot","kfc", "wendys","co_owned")]
+min_wage_nov <- min_wage[,c("nj","wage_st2","emptot2","kfc", "wendys","co_owned")]
+
+## Create a treatment period indicator
+min_wage_feb$treatment_period <- 0
+min_wage_nov$treatment_period <- 1
+
+## Make sure the two data.frames have the same column names
+colnames(min_wage_nov) <- colnames(min_wage_feb)
+
+## Stack the data.frames on top of one another
+min_wage_long <- rbind(min_wage_feb, min_wage_nov)
+
+min_wage_long_alt <- dplyr::bind_rows(
+  min_wage |> dplyr::select(nj,wage_st,emptot,kfc, wendys,co_owned) |> dplyr::mutate(treatment_period = 0)
+  , min_wage |> dplyr::select(nj,wage_st=wage_st2,emptot=emptot2,kfc, wendys,co_owned) |> dplyr::mutate(treatment_period = 1)
+)
+
+## Estimate the simple diff-in-diff
+did <- lm(emptot ~ nj * treatment_period, min_wage_long)
+
+## Estimate the covariate adjusted diff-in-diff
+didcov <- lm(emptot ~ nj * treatment_period + kfc + wendys + co_owned, min_wage_long)
+
+# Let's have a look at only the interaction to get the ATT's
+stargazer::stargazer(did, didcov,
+          type='text',
+          column.labels = c("Simple DiD","Covariate adj. DiD"),
+          dep.var.labels = c("Total Number of FT Employed"),
+          covariate.labels = c("ATT Estimate"),
+          keep = c("nj:treatment_period1"),
+          keep.stat = c("n","adj.rsq"),
+          header = F)
+
+dplyr::bind_cols(
+  broom::tidy(did) |>
+  dplyr::filter(term == "nj:treatment_period") |> dplyr::select(2:3) |>
+  dplyr::rename_with(.fn = ~paste(.,"Simple DiD"))
+, broom::tidy(didcov) |>
+  dplyr::filter(term == "nj:treatment_period") |> dplyr::select(2:3) |>
+  dplyr::rename_with(.fn = ~paste(.,"Covariate adj. DiD"))
+) |>
+  dplyr::mutate(across(dplyr::everything(), ~as.character(round(.,3)) )) |>
+  gt::gt() |>
+  gtExtras::gt_merge_stack(col1=`estimate Simple DiD`,col2=`std.error Simple DiD`) |>
+  gtExtras::gt_merge_stack(col1=`estimate Covariate adj. DiD`,col2=`std.error Covariate adj. DiD`) |>
+  gt::cols_label(
+    `estimate Simple DiD` = "Simple DiD"
+    , `estimate Covariate adj. DiD` = "Covariate adj. DiD"
+  ) |>
+  gt::tab_header(title = "ATT Estimates", subtitle = "Simple vs covariate adjusted DiD") |>
+  gt::tab_footnote(
+    footnote = "std. error underneath estimate",
+    locations = gt::cells_column_labels(columns = 1)
+  )
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Bacon Decomposition ----
+# from https://asjadnaqvi.github.io/DiD/docs/code_r/06_bacon_r/
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+theme_set(
+  theme_linedraw() +
+    theme(
+      panel.grid.minor = element_line(linetype = 3, linewidth = 0.1),
+      panel.grid.major = element_line(linetype = 3, linewidth = 0.1)
+    )
+)
+
+# data
+dat4 = data.frame(
+  id = rep(1:3, times = 10),
+  tt = rep(1:10, each = 3)
+) |>
+  within({
+    D = (id == 2 & tt >= 5) | (id == 3 & tt >= 8)
+    btrue = ifelse(D & id == 3, 4, ifelse(D & id == 2, 2, 0))
+    y = id + 1 * tt + btrue * D
+  })
+
+dat4 |> head()
+
+
+ggplot(dat4, aes(x = tt, y = y, col = factor(id))) +
+  geom_point() + geom_line() +
+  geom_vline(xintercept = c(4.5, 7.5), lty = 2) +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  labs(x = "Time variable", y = "Outcome variable", col = "ID")
+
+# estimating a simple TWFE model
+mod_twfe <- feols(y ~ D | id + tt, dat4)
+mod_twfe |> broom::tidy()
+
+# We can visualize these four comparison sets as follows:
+rbind(
+  dat4 |> subset(id %in% c(1,2)) |> transform(role = ifelse(id==2, "Treatment", "Control"), comp = "1.1. Early vs Untreated"),
+  dat4 |> subset(id %in% c(1,3)) |> transform(role = ifelse(id==3, "Treatment", "Control"), comp = "1.2. Late vs Untreated"),
+  dat4 |> subset(id %in% c(2,3) & tt<8) |> transform(role = ifelse(id==2, "Treatment", "Control"), comp = "2.1. Early vs Untreated"),
+  dat4 |> subset(id %in% c(2:3) & tt>4) |> transform(role = ifelse(id==3, "Treatment", "Control"), comp = "2.2. Late vs Untreated")
+) |>
+  ggplot(aes(tt, y, group = id, col = factor(id), lty = role)) +
+  geom_point() + geom_line() +
+  facet_wrap(~comp) +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_linetype_manual(values = c("Control" = 5, "Treatment" = 1)) +
+  labs(x = "Time variable", y = "Ouroleome variable", col = "ID", lty = "Role")
+
+# Goodman-Bacon decomposition
+bgd <- bacon(y ~ D, dat4, id_var = "id", time_var = "tt")
+
+# check that the weighted mean of these estimates is exactly the same as our earlier (naive) TWFE coefficient estimate
+bgd_wm <- weighted.mean(bgd$estimate, bgd$weight)
+bgd_wm
+
+ggplot(bgd, aes(x = weight, y = estimate, shape = type, col = type)) +
+  geom_hline(yintercept = bgd_wm, lty  = 2) +
+  geom_point(size = 3) +
+  labs(
+    x = "Weight", y = "Estimate", shape = "Type", col = "Type",
+    title = "Bacon-Goodman decomposition example",
+    caption = "Note: The horizontal dotted line depicts the full TWFE estimate."
+  )
+
+
+# translating from stata
+units <- 3
+start <- 1
+end <- 10
+time <- end - start + 1
+obsv <- units * time
+
+# Create data frame with observations
+df <- data.frame(obs = 1:obsv)
+
+# Create panel ID and time variables
+df$id <- rep(1:units, each = time)
+df$t <- rep(start:end, times = units)
+
+# Sort data by id and t
+df <- df[order(df$id, df$t), ]
+rownames(df) <- NULL
+
+# Label variables (using attributes in R)
+# attr(df$id, "label") <- "Panel variable"
+# attr(df$t, "label") <- "Time variable"
+
+# Create treatment variable
+df$D <- 0
+df$D[df$id == 2 & df$t >= 5] <- 1
+df$D[df$id == 3 & df$t >= 8] <- 1
+#attr(df$D, "label") <- "Treated"
+
+
+
+# Create outcome variable
+df$Y <- 0
+df$Y[df$id == 2 & df$t >= 5] <- df$D[df$id == 2 & df$t >= 5] * 2
+df$Y[df$id == 3 & df$t >= 8] <- df$D[df$id == 3 & df$t >= 8] * 4
+attr(df$Y, "label") <- "Outcome variable"
+
+df <- df |> dplyr::rename(
+  "Treated" = D
+  , "Panel variable" = id
+  , "Time variable" = t
+  , "Outcome variable" = Y
+)
+
+# Equivalent to xtset in Stata would be using plm package
+# But for data preparation, we don't need it yet
+# If you need to use panel data models:
+# library(plm)
+# pdata <- pdata.frame(df, index = c("id", "t"))
+
+
+# Assuming df is the data frame we created earlier
+
+# Create the plot
+ggplot(df, aes(x = t, y = Y, color = factor(id), group = factor(id))) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = c(4.5, 7.5), linetype = "dashed") +
+  scale_x_continuous(breaks = 1:10) +
+  scale_color_discrete(name = "", labels = c("id=1", "id=2", "id=3")) +
+  theme_minimal() +
+  labs(x = "Time", y = "Outcome variable") +
+  theme(legend.position = "bottom")
+
+library(plm)
+library(fixest)
+
+# Equivalent to: xtreg Y D i.t, fe
+# Using plm package
+plm_model <- plm(Y ~ D + factor(t),
+                 data = df,
+                 index = c("id", "t"),
+                 model = "within")
+summary(plm_model)
+
+# Equivalent to: reghdfe Y D, absorb(id t)
+# Using fixest package
+fixest_model <- feols(Y ~ D | id + t, data = df)
+summary(fixest_model)
+
+# Goodman-Bacon decomposition
+bgd <- bacon(Y ~ D, df, id_var = "id", time_var = "t")
+
+# check that the weighted mean of these estimates is exactly the same as our earlier (naive) TWFE coefficient estimate
+bgd_wm <- weighted.mean(bgd$estimate, bgd$weight)
+bgd_wm
+
+ggplot(bgd, aes(x = weight, y = estimate, shape = type, col = type)) +
+  geom_hline(yintercept = bgd_wm, lty  = 2) +
+  geom_point(size = 3) +
+  labs(
+    x = "Weight", y = "Estimate", shape = "Type", col = "Type",
+    title = "Bacon-Goodman decomposition example",
+    caption = "Note: The horizontal dotted line depicts the full TWFE estimate."
+  )
+
+# Calculate overall mean of D
+df$d_barbar <- mean(df$D)
+
+# Calculate mean of D by id
+df <- df |>
+  dplyr::group_by(id) |>
+  dplyr::mutate(d_meani = mean(D)) |>
+  dplyr::ungroup()
+
+# Calculate mean of D by t
+df <- df |>
+  dplyr::group_by(t) |>
+  dplyr::mutate(d_meant = mean(D)) |>
+  dplyr::ungroup()
+
+# Calculate d_tilde using the formula
+df$d_tilde <- (df$D - df$d_meani) - (df$d_meant - df$d_barbar)
+
+# Calculate squared d_tilde
+df$d_tilde_sq <- df$d_tilde^2
+
+# Run fixed effects regression with time dummies
+fe_model <- plm::plm(D ~ factor(t),
+                data = df,
+                index = c("id", "t"),
+                model = "within")
+summary(fe_model)
+
+# Get residuals (equivalent to predict double Dtilde, e)
+df$Dtilde <- residuals(fe_model)
+
+# Calculate variance of Dtilde (equivalent to scalar VD calculation)
+Dtilde_summary <- summary(df$Dtilde)
+n <- length(df$Dtilde)
+VD <- ((n - 1) / n) * var(df$Dtilde)
+
+# Print the value
+print(paste("VD =", VD))
+
+# So where do TWFE regressions go wrong? ----
+rm(df)
+
+# Define parameters
+units <- 30
+start <- 1
+end <- 60
+time <- end - start + 1
+obsv <- units * time
+
+# Create data frame with observations
+df <- data.frame(obs = 1:obsv)
+
+# Create panel ID and time variables
+df$id <- rep(1:units, each = time)
+df$t <- rep(start:end, times = units)
+
+# Sort data by id and t
+df <- df[order(df$id, df$t), ]
+rownames(df) <- NULL
+
+# Label variables (using attributes in R)
+attr(df$id, "label") <- "Panel variable"
+attr(df$t, "label") <- "Time variable"
+
+# For panel data analysis (equivalent to xtset)
+# library(plm)
+# pdata <- pdata.frame(df, index = c("id", "t"))
+
+# Set seed for reproducibility
+set.seed(13082021)
+
+# Create new variables (or reset if they exist)
+df$Y <- 0       # outcome variable
+df$D <- 0       # intervention variable
+df$cohort <- NA # total treatment variables
+df$effect <- NA # treatment effect size
+df$timing <- NA # when the treatment happens for each cohort
+
+# Assign cohorts (0-5) randomly to each ID
+for (x in unique(df$id)) {
+  chrt <- sample(0:5, 1)  # equivalent to runiformint(0,5)
+  df$cohort[df$id == x] <- chrt
+}
+
+# For each cohort, assign effect size and timing
+for (x in unique(df$cohort)) {
+  # (a) effect - random integer between 2 and 10
+  eff <- sample(2:10, 1)  # equivalent to runiformint(2,10)
+  df$effect[df$cohort == x] <- eff
+
+  # (b) timing - random integer between start+5 and end-5
+  treatment_time <- sample((start + 5):(end - 5), 1)  # equivalent to runiformint(start+5, end-5)
+  df$timing[df$cohort == x] <- treatment_time
+
+  # Assign treatment indicator
+  df$D[df$cohort == x & df$t >= treatment_time] <- 1
+}
+
+# Create outcome variable with treatment effect
+df$Y <- df$id + df$t + ifelse(df$D == 1, df$effect * (df$t - df$timing), 0)
+
+# Get unique cohort values and IDs
+cohorts <- unique(df$cohort)
+ids <- unique(df$id)
+
+# Create a color mapping based on cohort
+# We'll use a predefined color palette similar to tableau
+# First, create a mapping from id to color based on cohort
+id_colors <- df |>
+  dplyr::select(id, cohort) |>
+  dplyr::distinct() |>
+  dplyr::mutate(color_index = cohort + 1)
+
+# Create the plot
+ggplot(df, aes(x = t, y = Y, group = id, color = factor(id))) +
+  geom_line(linewidth = 0.2) +  # equivalent to lw(vthin)
+  scale_color_manual(values = scales::hue_pal()(length(ids))) +
+  theme_minimal() +
+  theme(legend.position = "none") +  # equivalent to legend(off)
+  labs(x = "Time", y = "Outcome")
+
+library(ggthemes)
+
+ggplot(df, aes(x = t, y = Y, group = id, color = factor(cohort))) +
+  geom_line(linewidth = 0.2) +
+  scale_color_tableau() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Time", y = "Outcome")
+
+# Equivalent to: xtreg Y i.t D, fe
+# Using plm package
+plm_model <- plm::plm(Y ~ factor(t) + D,
+                 data = df,
+                 index = c("id", "t"),
+                 model = "within")
+summary(plm_model)
+
+# Equivalent to: reghdfe Y D, absorb(id t)
+# Using fixest package
+fixest_model <- feols(Y ~ D | id + t, data = df)
+summary(fixest_model)
+
+# Goodman-Bacon decomposition
+bgd <- bacon(Y ~ D, df, id_var = "id", time_var = "t")
+
+# check that the weighted mean of these estimates is exactly the same as our earlier (naive) TWFE coefficient estimate
+bgd_wm <- weighted.mean(bgd$estimate, bgd$weight)
+bgd_wm
+
+ggplot(bgd, aes(x = weight, y = estimate, shape = type, col = type)) +
+  geom_hline(yintercept = bgd_wm, lty  = 2) +
+  geom_point(size = 3) +
+  labs(
+    x = "Weight", y = "Estimate", shape = "Type", col = "Type",
+    title = "Bacon-Goodman decomposition example",
+    caption = "Note: The horizontal dotted line depicts the full TWFE estimate."
+  )
+
+bgd |> dplyr::arrange(estimate )
+(bgd$estimate * bgd$weight) |> sum()
+
+
+# The fix
+# Load required packages
+library(fixest)
+library(ggplot2)
+library(data.table)
+library(dplyr)
+
+# First, create relative time variable for event study
+# This measures time relative to treatment
+df <- df |>
+  dplyr::group_by(id) |>
+  dplyr::mutate(rel_time = t - timing) |>
+  dplyr::ungroup()
+
+# Convert to data.table for faster processing
+data.table::setDT(df)
+
+# Create dummies for relative time
+# Let's use a window of -10 to +20 relative periods
+max_rel_time <- 20
+min_rel_time <- -10
+
+# Code all periods before min_rel_time as min_rel_time
+# Code all periods after max_rel_time as max_rel_time
+df[rel_time < min_rel_time, rel_time := min_rel_time]
+df[rel_time > max_rel_time, rel_time := max_rel_time]
+
+# Run event study regression
+# Omit rel_time = -1 as the reference period
+event_study <- feols(Y ~ i(rel_time, ref = -1) | id + t,
+                     data = df[rel_time >= min_rel_time & rel_time <= max_rel_time])
+
+# Create data frame for plotting
+es_results <- data.frame(
+  rel_time = setdiff(min_rel_time:max_rel_time,c(-1)), #min_rel_time:max_rel_time,
+  coef = coef(event_study),
+  se = se(event_study)
+)
+
+# Add confidence intervals
+es_results$ci_lower <- es_results$coef - 1.96 * es_results$se
+es_results$ci_upper <- es_results$coef + 1.96 * es_results$se
+
+# Create plot
+ggplot(es_results, aes(x = rel_time, y = coef)) +
+  geom_point() +
+  geom_line() +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+  geom_vline(xintercept = -0.5, linetype = "dashed") +
+  labs(x = "Time Relative to Treatment",
+       y = "Treatment Effect",
+       title = "Event Study: Treatment Effect Dynamics") +
+  theme_minimal() +
+  geom_hline(yintercept = 0, linetype = "dotted")
+
+
