@@ -628,12 +628,12 @@ df$Y[df$id == 2 & df$t >= 5] <- df$D[df$id == 2 & df$t >= 5] * 2
 df$Y[df$id == 3 & df$t >= 8] <- df$D[df$id == 3 & df$t >= 8] * 4
 attr(df$Y, "label") <- "Outcome variable"
 
-df <- df |> dplyr::rename(
-  "Treated" = D
-  , "Panel variable" = id
-  , "Time variable" = t
-  , "Outcome variable" = Y
-)
+# df <- df |> dplyr::rename(
+#   "Treated" = D
+#   , "Panel variable" = id
+#   , "Time variable" = t
+#   , "Outcome variable" = Y
+# )
 
 # Equivalent to xtset in Stata would be using plm package
 # But for data preparation, we don't need it yet
@@ -660,11 +660,12 @@ library(fixest)
 
 # Equivalent to: xtreg Y D i.t, fe
 # Using plm package
-plm_model <- plm(Y ~ D + factor(t),
+plm_model <- plm::plm(Y ~ D + factor(t),
                  data = df,
                  index = c("id", "t"),
                  model = "within")
 summary(plm_model)
+plm_model$coefficients[1]
 
 # Equivalent to: reghdfe Y D, absorb(id t)
 # Using fixest package
@@ -708,9 +709,32 @@ df$d_tilde <- (df$D - df$d_meani) - (df$d_meant - df$d_barbar)
 # Calculate squared d_tilde
 df$d_tilde_sq <- df$d_tilde^2
 
+data_df <-
+  df |>
+  dplyr::mutate(d_barbar = mean(D)) |>  # Calculate overall mean of D
+  # Calculate mean of D by id
+  dplyr::group_by(id) |>
+  dplyr::mutate(d_meani = mean(D)) |>
+  dplyr::ungroup() |>
+  # Calculate mean of D by t
+  dplyr::group_by(t) |>
+  dplyr::mutate(d_meant = mean(D)) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(
+    # Calculate d_tilde using the formula
+    d_tilde = (D - d_meani) - (d_meant - d_barbar)
+    # Calculate squared d_tilde
+    , d_tilde_sq = d_tilde^2
+  )
+data_df |>
+  dplyr::summarize(
+    num = sum(Y * d_tilde)
+    , denom = sum(d_tilde_sq)
+    , D = num/denom) |> dplyr::pull(D)
+
 # Run fixed effects regression with time dummies
 fe_model <- plm::plm(D ~ factor(t),
-                data = df,
+                data = data_df,
                 index = c("id", "t"),
                 model = "within")
 summary(fe_model)
