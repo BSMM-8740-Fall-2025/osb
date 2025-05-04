@@ -1944,6 +1944,48 @@ In the potential outcomes framework, a treatment effect is defined at the indivi
   }
 ```
 
+## 2X2 DiD & covariates
+
+-   2x2 relies on parallel trends (PT) and no anticipation (NA) to be causal
+-   What if PT is violated and the violation is due to covariates:
+    -   imbalance between treated an untreated where covariates are related to outcome dynamics
+    -   heterogeneous treatment effects related to covariates
+
+## 2X2 DiD & covariates
+
+As before, for our DiD estimator to be a causal estimate (ATT) we need
+
+1.  No anticipation: $E[Y_{t=1}^1|X,D=1] = E[Y_{t=1}^0|X,D=0]$
+
+2.  Parallel trends: $0=E[Y_{t=2}^0-Y_{t=1}^0|X,D=1]-E[Y_{t=2}^0-Y_{t=1}^0|X,D=0]$
+
+## 2X2 DiD & covariates
+
+consider the following expression, with propensity $\pi=\mathbb{P}(D=1\vert X)$ and $\rho(D)=\frac{D-\pi}{\pi\left(1-\pi\right)}$:
+
+$$
+\begin{align*}
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X] & =\\
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[\frac{1}{\pi}\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\frac{-1}{\left(1-\pi\right)}\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[Y_{t=2}-Y_{t=1}|X,D=1]-E[Y_{t=2}-Y_{t=1}|X,D=0] & =\\
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]
+\end{align*}
+$$
+
+## 2X2 DiD & covariates
+
+so $E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]=E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]$ and so averaging over the covariates:
+
+$$
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{P}(x\vert D=1)\\
+ & =\int E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]d\mathbb{P}(x\vert D=1)\\
+ & =E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)\frac{\mathbb{P}(D=1\vert X)}{\mathbb{P}(D=1)}]\\
+ & =E[\frac{Y_{t=2}-Y_{t=1}}{\mathbb{P}(D=1)}\frac{D-\mathbb{P}(D=1\vert X)}{1-\mathbb{P}(D=1\vert X)}]
+\end{align*}
+$$
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
