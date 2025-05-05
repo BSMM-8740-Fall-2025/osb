@@ -2749,5 +2749,20 @@ DID & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]\\
 += 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+DID & =E[Y_{i2}(1)-Y_{i1}(1)]-E[Y_{i2}(0)-Y_{i1}(0)]\\
+ & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]+\\
+ & E\left[Y_{i2}(1)|D_{i}=0\right]-E\left[Y_{i2}(1)|D_{i}=0\right]\\
+ & =E[Y_{i2}(1)|D_{i}=1]-E\left[Y_{i2}(1)|D_{i}=0\right]+\\
+ & E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

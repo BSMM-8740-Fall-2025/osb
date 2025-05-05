@@ -2764,5 +2764,53 @@ DID & =E[Y_{i2}(1)-Y_{i1}(1)]-E[Y_{i2}(0)-Y_{i1}(0)]\\
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X] & =\\
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[\frac{1}{\pi}\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\frac{-1}{\left(1-\pi\right)}\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[Y_{t=2}-Y_{t=1}|X,D=1]-E[Y_{t=2}-Y_{t=1}|X,D=0] & =\\
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D & =1]\\
+ & =
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{P}(x\vert D=1)\\
+ & =\int E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]d\mathbb{P}(x\vert D=1)\\
+ & =E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)\frac{\mathbb{P}(D=1\vert X)}{\mathbb{P}(D=1)}]\\
+ & =E[\frac{Y_{t=2}-Y_{t=1}}{\mathbb{P}(D=1)}\frac{D-\mathbb{P}(D=1\vert X)}{1-\mathbb{P}(D=1\vert X)}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\equiv$
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
