@@ -1953,15 +1953,50 @@ In the potential outcomes framework, a treatment effect is defined at the indivi
 
 ## 2X2 DiD & covariates
 
-As before, for our DiD estimator to be a causal estimate (ATT) we need
+As before, for our DiD estimator to be a causal estimate (ATT) we need (note: conditional on covariates X)
 
 1.  No anticipation: $E[Y_{t=1}^1|X,D=1] = E[Y_{t=1}^0|X,D=0]$
 
 2.  Parallel trends: $0=E[Y_{t=2}^0-Y_{t=1}^0|X,D=1]-E[Y_{t=2}^0-Y_{t=1}^0|X,D=0]$
 
-## 2X2 DiD & covariates
+## 2X2 DiD & covariates (reg)
 
-consider the following expression, with propensity $\pi=\mathbb{P}(D=1\vert X)$ and $\rho(D)=\frac{D-\pi}{\pi\left(1-\pi\right)}$:
+Under our assumptions, we can model the outcome evolution and estimate the counterfactual untreated outcome in period 2 for the treated group using regression, and our estimator
+
+$$\hat{\tau}_{DiD} = (\bar{Y}_{12} - \bar{Y}_{11}) - (\bar{Y}_{02} - \bar{Y}_{01}) $$
+
+becomes
+
+$$\hat{\tau}_{DiD} = (\bar{Y}_{12} - \bar{Y}_{11}) - (\bar{\hat{\mu}}(X)_{02} - \bar{\hat{\mu}}(X)_{01}) $$
+
+## 2X2 DiD & covariates (reg)
+
+Using regression the $\hat{\tau}_{DiD}$ estimate uses
+
+$$
+\bar{Y}_{d,t}=\sum_{i\vert D_i=d,T_i=t}Y_{it}/n_{d,t}
+$$
+
+and $\hat{\mu}(x)_{dt}$ estimates the true, unknown
+
+$$
+m_{d,t}\equiv\mathbb{E}\left[Y_y\vert D=d,X=x\right]
+$$
+
+## 2X2 DiD & covariates (reg)
+
+Why not just use fixed effects regression?:
+
+$$
+Y_{it}=\beta_1+\beta_2T_i+\beta_3D_i+\tau(T_i\times D_i)+\theta'X_i+\epsilon_{it}
+$$
+
+-   assumes homogeneous treatment effects
+-   trends will not be $X$-specific
+
+## 2X2 DiD & covariates (IPW)
+
+Consider the following expression, with propensity $\pi=\mathbb{P}(D=1\vert X)$ and $\rho(D)=\frac{D-\pi}{\pi\left(1-\pi\right)}$:
 
 $$
 \begin{align*}
@@ -1973,7 +2008,7 @@ E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]
 \end{align*}
 $$
 
-## 2X2 DiD & covariates
+## 2X2 DiD & covariates (IPW)
 
 so $E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]=E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]$ and so averaging over the covariates:
 
@@ -1985,6 +2020,16 @@ E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{
  & =E[\frac{Y_{t=2}-Y_{t=1}}{\mathbb{P}(D=1)}\frac{D-\mathbb{P}(D=1\vert X)}{1-\mathbb{P}(D=1\vert X)}]
 \end{align*}
 $$
+
+## 2X2 DiD & covariates (DR)
+
+We can also use a doubly robust estimator:
+
+$$
+\mathbb{E}\left[\left(\frac{D}{\mathbb{E}[D]}-\frac{\frac{\pi(1-D)}{1-\pi}}{\mathbb{E\left[\frac{\pi(1-D)}{1-\pi}\right]}}\right)(\Delta Y-\hat{\mu}_{0\Delta}(X))\right]
+$$
+
+for ...
 
 ## Difference-in-Differences
 
