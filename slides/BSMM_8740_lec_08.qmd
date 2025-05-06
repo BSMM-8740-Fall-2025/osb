@@ -2031,6 +2031,58 @@ $$
 
 for ...
 
+## 2X2 DiD & Fixed Effects
+
+The regression estimator for the 2x2 DiD (2 groups, 2 time periods) is
+
+$$
+Y_{it} = \alpha + \beta \cdot \text{Post}_t + \gamma \cdot \text{Treat}_i + \delta \cdot (\text{Post}_t \times \text{Treat}i) + \epsilon{it}
+$$
+
+where $\delta$ is the **DiD estimator**: it captures the **treatment effect**. This model is **identical to the DiD formula**:
+
+$$
+\delta = (Y_{treat, post} - Y_{treat, pre}) - (Y_{control, post} - Y_{control, pre})
+$$
+
+## 2X2 DiD & Fixed Effects
+
+The fixed effect estimator is used when you have **more than 2 time periods** and/or **many units**, typically in **panel data**.
+
+$$
+Y_{it} = \alpha_i + \lambda_t + \delta \cdot D_{it} + \epsilon_{it}
+$$
+
+It generalizes the 2x2 model by removing group and time differences via demeaning.
+
+## 
+
+2X2 DiD & Fixed Effects
+
+```{r}
+#| echo: false
+
+tibble::tribble(
+  ~'Feature',~'2×2 Regression DiD',~'Fixed-Effects DiD'
+  #--|--|----
+  ,'Groups','2 (treated/control)','Many units/groups'
+  ,'Controls','Only group/time/treatment','Time and unit fixed effects'
+  ,'Estimator','Coefficient on interaction term','Coefficient on treatment dummy in FE model'
+  ,'Parallel trends','Applies across 2 groups','Applies across time for all units'
+  ,'Flexibility','Limited','Handles richer settings (e.g. unbalanced panels, staggered timing)'
+) |> gt::gt("Feature") |> 
+  gt::cols_width(
+    Feature ~ px(130),
+    starts_with("2x2") ~ px(190),
+    starts_with("Fixed") ~ px(280),
+    #everything() ~ px(260)
+    # ends_with("r") ~ px(100),
+    # starts_with("date") ~ px(200),
+    # everything() ~ px(60)
+  ) |> 
+  gtExtras::gt_theme_espn()
+```
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
