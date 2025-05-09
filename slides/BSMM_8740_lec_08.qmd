@@ -2083,6 +2083,73 @@ tibble::tribble(
   gtExtras::gt_theme_espn()
 ```
 
+## Event Studies & Fixed Effects
+
+It is very common to evaluate the common trend assumption using event studies via a dynamic (TWFE) regression specification including indicators for time relative to treatment. This permits “visual inference” to determine whether the treated group’s trends appear to have deviated from the comparison group’s trends right around the time of treatment.
+
+## Event Studies & Fixed Effects
+
+The dynamic (TWFE) regression specification is, for period $t\in{-T,\ldots,T}$ and treatment at T=0:
+
+$$
+Y_{it} = \alpha_i + \lambda_t + \sum_{r\ne 1}\delta_r \cdot D_{it}\cdot 1_{t=r+1} + \epsilon_{it}
+$$
+
+So $$
+\delta_r=\left(\mathbb{E}[Y_{i,r+1}\vert D=1]-\mathbb{E}[Y_{i,r+1}\vert D=0]\right)-\left(\mathbb{E}[Y_{i,0}\vert D=1]-\mathbb{E}[Y_{i,0}\vert D=0]\right)
+$$
+
+## Event Studies & Fixed Effects
+
+In the case where there are no effects and e.g. $Y^1_{it}=Y^0_{it}=\gamma\cdot t + \epsilon_{it}$ and $\mathbb{E}[\epsilon_{it}]=0$
+
+$$
+\delta_r=\gamma\cdot(r+1)
+$$
+
+and the event study looks like:
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: "Event plot"
+#Set simulation params ----
+N <- 100; firstT <- -15; lastT <- 10; slope <- 0.5; seed <- 123
+
+#Generate data ----
+set.seed(seed)
+
+# df <- purrr::cross_df(.l = list(t = seq(from = firstT, to = lastT),i = seq(from = 1, to = N)))
+df <- tidyr::expand_grid(t = seq(from = firstT, to = lastT),i = seq(from = 1, to = N))
+
+start_dates <- data.frame(i = seq(from =1 , to = N),g = c(rep(1,N/2), rep(Inf, N/2)))
+
+df <- dplyr::left_join(df, start_dates, by = "i"); df$d <- df$g <= df$t
+
+df$y <- slope * df$t * (df$g == 1) + rnorm(NROW(df), mean =0)
+
+# Run TWFE event-study ----
+twfe <- fixest::feols(y ~ i(t, g==1, ref=0) | i + t, data = df, cluster = "i") 
+
+eventplotdf <- as.data.frame(twfe$coeftable[1:(lastT-firstT),])
+eventplotdf$relativeTime <- c(seq(firstT,-1),seq(1,lastT))-1
+eventplotdf$ub <- eventplotdf$Estimate + 1.96 * eventplotdf$`Std. Error`
+eventplotdf$lb <- eventplotdf$Estimate - 1.96 * eventplotdf$`Std. Error`
+
+ggplot(eventplotdf,
+       aes(x = relativeTime,
+           y = Estimate,
+           ymax = ub,
+           ymin = lb)) +
+  geom_point() +
+  geom_point(x=-1,y=0) +
+  geom_errorbar(width = 0.1) +
+  xlab("Relative Time") +
+  ggtitle("TWFE Event-study Coefficients") +
+  theme(plot.title= element_text(hjust=0.5)) +
+  theme_minimal()
+```
+
 ## Difference-in-Differences
 
 #### Three Billboards in the South of Brazil
