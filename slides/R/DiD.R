@@ -929,4 +929,157 @@ ggplot(es_results, aes(x = rel_time, y = coef)) +
   theme_minimal() +
   geom_hline(yintercept = 0, linetype = "dotted")
 
+# event_study_mpdta.R
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Event Study using fixest + mpdta ----
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# 1. Install and Load Packages
+packages <- c("fixest", "did", "ggplot2")
+installed <- rownames(installed.packages())
+
+for (pkg in packages) {
+  if (!(pkg %in% installed)) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
+
+# 2. Load Dataset
+# A dataset containing (the log of) teen employment in 500 counties in the U.S. from 2004 to 2007.
+# This is a subset of the dataset used in Callaway and Sant'Anna (2021).
+data(mpdta, package = "did")
+head(mpdta)
+
+# 3. Create Event-Time Variable
+# mpdta$rel_year <- mpdta$year - mpdta$first.treat
+mpdta <- mpdta |>
+  # Create Event-Time Variable
+  dplyr::mutate(rel_year = year - first.treat) |>
+  dplyr::filter(dplyr::between(rel_year, -5, 5))
+
+# 4. Keep Event Times in Reasonable Range
+mpdta <- subset(mpdta, rel_year >= -5 & rel_year <= 5)
+
+# 5. Estimate Event Study Regression
+event_model <- fixest::feols(
+  lemp ~ i(rel_year, treat, ref = -1) | countyreal + year,
+  data = mpdta
+)
+
+# 6. View Estimates
+print("Event Study Estimates:")
+fixest::etable(event_model)
+
+# 7. Plot Dynamic Effects
+fixest::iplot(
+  event_model,
+  ref.line = 0,
+  xlab = "Years Relative to Treatment",
+  ylab = "Estimated Effect on Log Employment",
+  main = "Event Study: Dynamic Effects of Treatment"
+)
+
+# The parallel trends assumption holds if:
+#   All pre-treatment event-time coefficients (\beta_k for k < 0) are statistically indistinguishable from zero.
+
+summary(event_model)
+
+# If all these:
+# - Have small coefficient magnitudes,
+# - Are not statistically significant (e.g., p > 0.05),
+# - Have confidence intervals containing 0,
+
+# Then the data is consistent with parallel trends.
+
+# Run Wald test for pre-treatment coefficients (rel_year < 0)
+fixest::wald(event_model, keep = "rel_year::(-5|-4|-3|-2)")
+
+# - If the p-value is large (e.g., > 0.10), fail to reject H_0: supports parallel trends.
+# - If the p-value is small, reject H_0: evidence of pre-trends → DiD assumptions may not hold.
+
+# Auto-detect all rel_year < 0 with regex
+fixest::wald(event_model, keep = "rel_year::-\\d")
+
+# 8. Optional: Save Plot
+# ggsave("event_study_plot.png", width = 8, height = 6)
+
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Key ideas from Ishimaru (2022) ----
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Install required packages
+install.packages("fixest")
+install.packages("did")
+install.packages("ggplot2")
+
+library(fixest)
+library(did)
+library(ggplot2)
+
+# %%%%%%%%%%%%%%%%%%%%%%
+# Simulate Panel Dataset
+# %%%%%%%%%%%%%%%%%%%%%%
+set.seed(123)
+n_groups <- 130
+n_periods <- 6
+group_ids <- 1:n_groups
+time_periods <- 1:n_periods
+
+panel <- expand.grid(id = group_ids, t = time_periods)
+panel <- panel[order(panel$id, panel$t), ]
+
+# Assign cohorts
+panel$cohort <- NA
+panel$cohort[panel$id <= 50] <- 3  # early treated
+panel$cohort[panel$id > 50 & panel$id <= 100] <- 5  # late treated
+panel$cohort[panel$id > 100] <- Inf  # never treated
+
+# Treatment indicator
+panel$treated <- as.numeric(panel$t >= panel$cohort)
+
+# Simulate untreated outcomes
+panel$y0 <- 5 + 0.5 * panel$t + rnorm(nrow(panel), 0, 1)
+
+# Heterogeneous effects: early = 2, late = 4, control = 0
+panel$att <- with(panel, ifelse(t >= cohort & cohort == 3, 2,
+                                ifelse(t >= cohort & cohort == 5, 4, 0)))
+
+panel$y <- panel$y0 + panel$att
+
+# %%%%%%%%%%%%%%%%%%%%%%
+# TWFE Event Study Estimate
+# %%%%%%%%%%%%%%%%%%%%%%
+# Reference period is k = -1
+twfe_model <- fixest::feols(y ~ i(t - cohort, treated, ref = -1) | id + t, data = panel)
+twfe_event_study <- broom::tidy(twfe_model)
+
+# %%%%%%%%%%%%%%%%%%%%%%
+# Callaway & Sant’Anna Estimator
+# %%%%%%%%%%%%%%%%%%%%%%
+att_gt <- did::att_gt(yname = "y",
+                 tname = "t",
+                 idname = "id",
+                 gname = "cohort",
+                 data = panel,
+                 est_method = "dr")
+
+agg_effects <- did::aggte(att_gt, type = "dynamic")
+
+# %%%%%%%%%%%%%%%%%%%%%%
+# Plot Callaway & Sant’Anna ATTs
+# %%%%%%%%%%%%%%%%%%%%%%
+plot(agg_effects, main = "Event Study: Callaway & Sant’Anna (2021)")
+
+# %%%%%%%%%%%%%%%%%%%%%%
+# View & Compare TWFE Results
+# %%%%%%%%%%%%%%%%%%%%%%
+print("TWFE Event Study Coefficients:")
+print(twfe_event_study)
