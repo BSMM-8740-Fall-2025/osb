@@ -1,0 +1,229 @@
+---
+title: "Covariance Decomposition"
+---
+
+```{r}
+#| include: false
+#| echo: false
+
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+viridis, ggplot2, patchwork
+)
+
+theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
+```
+
+Here we show that the empirical covariance can be expressed as a difference equation.
+
+For $\Delta_k a_t \equiv a_{t+k}-a_t$ (the difference) and $\bar{a}\equiv\frac{1}{T}\sum_{t=1}^T a_t$ (the mean)
+
+Given sequences $\left\{a_t\right\}_{t=1}^T$ and $\left\{b_t\right\}_{t=1}^T$, we have
+
+$$\frac{1}{T}\sum_{t=1}^T(a_t-\bar{a})(b_t-\bar{b})= \frac{1}{T^2}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k} \Delta_k a_t \Delta_k b_t$$
+
+## Strategy
+
+The empirical covariance can be written as follows:
+
+$$
+\begin{align*}
+\frac{1}{T}\sum_{t=1}^{T}(a_{t}-\bar{a})(b_{t}-\bar{b}) & =\frac{1}{T}\sum_{t=1}^{T}\left(a_{t}b_{t}-\bar{a}b_{t}-a_{t}\bar{b}+\bar{a}\bar{b}\right)\\
+ & =\left(\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}\right)-\bar{a}\bar{b}
+\end{align*}
+$$
+
+so the proof strategy is to show that the difference equation can be reduced to the same form.
+
+## Proof
+
+Since $\Delta_k a_t \equiv a_{t+k}-a_t$ we can expand the difference equation as:
+
+$$
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\Delta_{k}a_{t}\Delta_{k}b_{t} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}-a_{t}\right)\left(b_{t+k}-b_{t}\right)\\
+ & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}b_{t+k}+a_{t}b_{t}\right)\\
+ & -\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t}b_{t+k}-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t}
+\end{align*}
+$$ and we'll evaluate each of the 4 terms in turn.
+
+### term 1:
+
+Making a change of variable: $s=t+k$ and noting that when $t$ ranges from $1$ to $T−k$, $s$ ranges from $1+k$ to $T$, we have:
+
+$$
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t+k} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{s=k+1}^{T}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\sum_{k=1}^{s-1}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\left(s-1\right)a_{s}b_{s}
+\end{align*}
+$$
+
+where in the second-last line we note that $a_s b_s$ doesn't depend on $k$ so we count each $a_s b_s$ exactly $s-1$ times for $s\in[2,T]$. Note that this is
+
+$$
+\frac{1}{T^{2}}\left(a_{2}b_{2}+2a_{3}b_{3}+3a_{4}b_{4}+\cdots++\left(T-2\right)a_{T-1}b_{T-1}+\left(T-1\right)a_{T}b_{T}\right)
+$$
+
+### term 2:
+
+The second term is
+
+$$
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_t b_t
+$$ and it can be decomposed directly to:
+
+$$
+\frac{1}{T^{2}}\left((T-1)a_{1}b_{1}+(T-2)a_{2}b_{2}+(T-3)a_{3}b_{3}+\cdots+a_{T-1}b_{T-1}\right)
+$$
+
+So combining the first and second terms we get $\frac{T-1}{T^2}\sum_{t=1}^{T}a_t b_t$, and we're on our way towards showing that
+
+$$
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\Delta_{k}a_{t}\Delta_{k}b_{t} = \left(\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}\right)-\bar{a}\bar{b}
+$$
+
+### term 3:
+
+The third term is $-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t}$ and again we will use the change of variables $s=t+k$.
+
+Before changing variables, the outer sum goes from $k=1$ to $k=T-1$ and the inner sum goes from $t=1$ to $t=T-k$. The $(k,t)$ indices used in $-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t}$ are shown in figure (A) below (for $T=10$), along with the $s=t+k$ values.
+
+With the change of variable, the outer sum goes from $s=t+k=2$ to $s=t+k=T$ and the inner sum goes from $t=1$ to $t=s-1$. The $(s,t)$ indices used to sum $-\frac{1}{T^{2}}\sum_{s=2}^{T}\sum_{t=1}^{s-1}a_{s}b_{t}$ are shown in figure (B) below (for $T=10$).
+
+The first index ($s$) is along the horizontal axis, while the second index ($t$) is along the vertical axis.
+
+```{r}
+#| label: first grid plot
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+
+T <- 10
+res <- 1:(T-1) |> 
+  purrr::map( 
+    (\(k){ 1:(T-k) |> 
+        purrr::map(\(t)data.frame("k"=k,"t"=t, "s"=t+k)) }
+    ) 
+  ) |> dplyr::bind_rows()
+
+p1 <- res |> 
+  ggplot(aes(x=k,y=t, label = as.character(s))) + geom_label(color = "#3B528B") +
+  #geom_point(color = "#3B528B") +
+  scale_x_continuous(breaks = 1:T) +
+  scale_y_continuous(
+    "t"
+    , breaks = 1:T
+    , labels = 1:T |> as.character()
+  ) +
+  theme_minimal()  +
+  theme(axis.title.y.left = element_text(angle = 0, vjust = 0.5)) +
+  theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
+  labs(title = "s values given k and t", subtitle="T=10")+ coord_fixed()
+# res |> 
+#   ggplot(aes(x=k,y=t))+
+#   geom_point(color = "#3B528B") +
+#   scale_x_continuous(breaks = 1:T) +
+#   scale_y_continuous(
+#     "t"
+#     , breaks = 1:T
+#     , labels = 1:T |> as.character()
+#   ) +
+#   theme_minimal()  +
+#   theme(axis.title.y.left = element_text(angle = 0, vjust = 0.5)) +
+#   theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
+#   labs(title = "k-t indices")
+
+p2 <- res |> 
+  ggplot(aes(x=s,y=t+1))+
+  geom_point(shape=0, color = "#21908C") +
+  scale_color_viridis_d(option = "D") +
+  scale_x_continuous(name = "s", breaks = 1:T) +
+  scale_y_continuous(
+    sec.axis = ggplot2::sec_axis(transform = ~.-1, breaks = 1:(T), name = "t")
+  ) + #lims(x=c(1,10), y = c(1,10))+
+  theme_minimal() +
+  theme(axis.title.y.left = element_blank(), axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
+  theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
+  labs(title = "t-s indices", subtitle="T=10") + coord_fixed()
+  
+  # 
+  # res |> 
+  # ggplot(aes(x=k,y=(s-1)))+
+  # geom_point(shape=0, color = "#21908C") +
+  # scale_color_viridis_d(option = "D") +
+  # scale_x_continuous(name = "t", breaks = 1:T) +
+  # scale_y_continuous(
+  #   sec.axis = ggplot2::sec_axis(transform = ~.+1, breaks = 2:(T), name = "s")
+  # ) +
+  # theme_minimal() +
+  # theme(axis.title.y.left = element_blank(), axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
+  # theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
+  # labs(title = "s-t indices")
+  
+p1 + p2 + plot_annotation(tag_levels = 'A', tag_prefix = "(", , tag_suffix = ")")
+
+```
+
+Note that the inner sum on $t$ gives $s-1$ pairs, so that the total number of pairs is
+
+$$
+\sum_{s=2}^T (s-1) = 1+2+3+\cdots (T-1) = \frac{T(T-1)}{2}
+$$
+
+or half of all $T^2$ index pairs $(t,s)$ less the diagonal $(s,s)$. From figure (B) we see that it sums the lower diagonal of all index pair values, less the diagonal.
+
+This sum also counts the number of unique pairs $(s,t)$ where $2\le s\le T$ and $1\le t<s$ which is equivalent to counting the number of pairs where $1 \le t < s \le T$
+
+### term 4:
+
+The fourth term is $-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t}b_{t+k}$ and again we will use the change of variables $s=t+k$.
+
+With the change of variable, and with $s$ now the second index, the inner sum goes from $s=t+1$ to $s=T$ and the outer sum goes from $t=1$ to $t=T-1$. The $(t,s)$ indices used to sum $-\frac{1}{T^{2}}\sum_{t=1}^{T-1}\sum_{s=t+1}^{T}a_{t}b_{s}$ are shown in figure (B) below (for $T=10$).
+
+In fact the $a_{t}b_{t+k}$ terms are the transpose of the terms $a_{t+k}b_{t}$ of figure (B) as can be seen in figure (C).
+
+```{r}
+#| label: second grid plot
+#| echo: true
+#| code-fold: true
+#| fig-align: center
+
+p3 <- res |> 
+  ggplot(aes(x=t,y=s))+
+  geom_point(shape=0, color = "#21908C") +
+  scale_color_viridis_d(option = "D") +
+  scale_x_continuous(name = "t", breaks = 1:T) +
+  scale_y_continuous(
+    sec.axis = ggplot2::sec_axis(transform = ~., breaks = 2:(T), name = "s")
+  ) + #lims(x=c(1,10), y = c(1,10))+
+  theme_minimal() +
+  theme(axis.title.y.left = element_blank(), axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
+  theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
+  labs(title = "t-s indices", subtitle="T=10") + coord_fixed()
+
+p3 + plot_annotation(tag_levels = list('C'), tag_prefix = "(", , tag_suffix = ")")
+
+```
+
+So per terms 3 & 4, each cross-product ($a_i b_j,\,i\ne j$) appears exactly once with a negative sign, for a total of $T^2-T$ terms (since each of terms 3 & 4 has $\frac{T(T-1)}{2}$ terms.
+
+So we are missing a set of $T$ diagonal terms from the total $T^2$ terms.
+
+but the sum of the first two terms is $\frac{T-1}{T^2}\sum_{t=1}^{T}a_t b_t$, which provides the missing diagonal, so we have:
+
+$$
+\begin{align*}
+\frac{T-1}{T^{2}}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1,\,t\ne s}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T}\sum_{s=1}^{T}b_{s}\times\frac{1}{T}\sum_{t=1}^{T}a_{t} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\bar{b}\bar{a}
+\end{align*}
+$$
+
+

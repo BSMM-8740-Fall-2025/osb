@@ -2764,5 +2764,95 @@ DID & =E[Y_{i2}(1)-Y_{i1}(1)]-E[Y_{i2}(0)-Y_{i1}(0)]\\
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X] & =\\
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[\frac{1}{\pi}\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\frac{-1}{\left(1-\pi\right)}\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[Y_{t=2}-Y_{t=1}|X,D=1]-E[Y_{t=2}-Y_{t=1}|X,D=0] & =\\
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D & =1]\\
+ & =
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{P}(x\vert D=1)\\
+ & =\int E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]d\mathbb{P}(x\vert D=1)\\
+ & =E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)\frac{\mathbb{P}(D=1\vert X)}{\mathbb{P}(D=1)}]\\
+ & =E[\frac{Y_{t=2}-Y_{t=1}}{\mathbb{P}(D=1)}\frac{D-\mathbb{P}(D=1\vert X)}{1-\mathbb{P}(D=1\vert X)}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T}\sum_{t=1}^{T}(a_{t}-\bar{a})(b_{t}-\bar{b}) & =\frac{1}{T}\sum_{t=1}^{T}\left(a_{t}b_{t}-\bar{a}b_{t}-a_{t}\bar{b}+\bar{a}\bar{b}\right)\\
+ & =\left(\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}\right)-\bar{a}\bar{b}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\Delta_{k}a_{t}\Delta_{k}b_{t} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}-a_{t}\right)\left(b_{t+k}-b_{t}\right)\\
+ & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}b_{t+k}+a_{t}b_{t}\right)\\
+ & -\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t}b_{t+k}-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t+k} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{s=k+1}^{T}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\sum_{k=1}^{s-1}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\left(s-1\right)a_{s}b_{s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{T^{2}}\left(a_{2}b_{2}+2a_{3}b_{3}+3a_{4}b_{4}+\cdots+\left(T-1\right)a_{T}b_{T}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
