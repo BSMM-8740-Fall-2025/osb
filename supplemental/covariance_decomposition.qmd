@@ -125,19 +125,6 @@ p1 <- res |>
   theme(axis.title.y.left = element_text(angle = 0, vjust = 0.5)) +
   theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
   labs(title = "s values given k and t", subtitle="T=10")+ coord_fixed()
-# res |> 
-#   ggplot(aes(x=k,y=t))+
-#   geom_point(color = "#3B528B") +
-#   scale_x_continuous(breaks = 1:T) +
-#   scale_y_continuous(
-#     "t"
-#     , breaks = 1:T
-#     , labels = 1:T |> as.character()
-#   ) +
-#   theme_minimal()  +
-#   theme(axis.title.y.left = element_text(angle = 0, vjust = 0.5)) +
-#   theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
-#   labs(title = "k-t indices")
 
 p2 <- res |> 
   ggplot(aes(x=s,y=t+1))+
@@ -148,23 +135,10 @@ p2 <- res |>
     sec.axis = ggplot2::sec_axis(transform = ~.-1, breaks = 1:(T), name = "t")
   ) + #lims(x=c(1,10), y = c(1,10))+
   theme_minimal() +
-  theme(axis.title.y.left = element_blank(), axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
+  theme(axis.title.y.left = element_blank()
+        , axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
   theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
   labs(title = "t-s indices", subtitle="T=10") + coord_fixed()
-  
-  # 
-  # res |> 
-  # ggplot(aes(x=k,y=(s-1)))+
-  # geom_point(shape=0, color = "#21908C") +
-  # scale_color_viridis_d(option = "D") +
-  # scale_x_continuous(name = "t", breaks = 1:T) +
-  # scale_y_continuous(
-  #   sec.axis = ggplot2::sec_axis(transform = ~.+1, breaks = 2:(T), name = "s")
-  # ) +
-  # theme_minimal() +
-  # theme(axis.title.y.left = element_blank(), axis.ticks.y.left=element_blank(), axis.text.y.left=element_blank()) +
-  # theme(axis.title.y.right = element_text(angle = 0, vjust = 0.5), axis.ticks = element_blank()) +
-  # labs(title = "s-t indices")
   
 p1 + p2 + plot_annotation(tag_levels = 'A', tag_prefix = "(", , tag_suffix = ")")
 
@@ -226,4 +200,34 @@ $$
 \end{align*}
 $$
 
+### compute:
 
+```{r}
+#| label: compute test
+#| echo: true
+#| code-fold: true
+
+set.seed(8740); T = 20
+a <- 1 + rnorm(n = T)
+b <- a + 4 + rnorm(n = T, sd = 2)
+
+# calculate using difference equation
+cov_diff <- 
+  1:(T-1) |> purrr::map_vec(
+    (\(k){ ((dplyr::lead(a,k) - a) * (dplyr::lead(b,k) - b)) |> sum(na.rm=TRUE) })
+  ) |> sum(na.rm=TRUE) / (T*T)
+
+# summarize results
+tibble::tibble(x = a, y = b) |> 
+  dplyr::mutate(x = x - mean(x), y = y - mean(y), prod = x*y) |> 
+  dplyr::summarize(pop_cov = mean(prod), smpl_cov = sum(prod)/(dplyr::n()-1) ) |> 
+  tibble::add_column(
+    calc_cov = cov(a,b) # built in covariance 
+    , cov_diff = cov_diff
+  ) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Covariances", subtitle = stringr::str_glue("T={T}")) |> 
+  gtExtras::gt_theme_espn()
+```
+
+$\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}-a_{t}\right)\left(b_{t+k}-b_{t}\right)$
