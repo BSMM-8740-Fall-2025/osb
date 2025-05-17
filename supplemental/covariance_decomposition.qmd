@@ -203,7 +203,7 @@ $$
 ### compute:
 
 ```{r}
-#| label: compute test
+#| label: compute test - covariance
 #| echo: true
 #| code-fold: true
 
@@ -231,3 +231,29 @@ tibble::tibble(x = a, y = b) |>
 ```
 
 $\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}-a_{t}\right)\left(b_{t+k}-b_{t}\right)$
+
+And the same expression hold for variance calculations: the population variance, calculated as the mean of the square of centered values, can also be calculated using all the differences between values.
+
+```{r}
+#| label: compute test - variance
+#| echo: true
+#| code-fold: true
+
+a_var <- (a-mean(a))^2 |> mean()
+
+# calculate using difference equation
+var_diff <- 
+  1:(T-1) |> purrr::map_vec(
+    (\(k){ ((dplyr::lead(a,k) - a)^2) |> sum(na.rm=TRUE) })
+  ) |> sum(na.rm=TRUE) / (T*T)
+
+# summarize results
+tibble::tibble("population variance" = a_var, "by difference calculation" = var_diff) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Covariances", subtitle = stringr::str_glue("variable a | T={T}")) |> 
+  gtExtras::gt_theme_espn()
+```
+
+## Implication for regression coefficients
+
+From FWL we know we can write our regression coefficient of interest as the ratio of a covariance over a variance, and so we can also express our coefficient in terms of differences.
