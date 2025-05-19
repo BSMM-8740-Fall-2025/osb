@@ -65,18 +65,16 @@ We define:
 
 where, for $\text{Gap}^{\text{OLS}}$, given the strong assumptions that (i) the model is properly specified and that (ii) coefficients are equal across groups, a sensible definition of the population unexplained gap is $\delta_d$.
 
-Using the fact (equation \ref{eq-binary-reg}) that 
+Using the fact (equation \ref{eq-binary-reg}) that
 
 $$
 \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
-$$
-then equation (\ref{eq:gap}) can be written as:
+$$ then equation (\ref{eq:gap}) can be written as:
 
 \begin{align*}
 \frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)} & =\overline{X}_{0}\left(\beta_{1}-\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right)\\
 \frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)} & =\overline{X}_{1}\left(\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}-\beta_{0}\right)
 \end{align*}
-
 
 We an define another measure, $\text{Gap}^{p}$, as
 

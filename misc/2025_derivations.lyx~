@@ -2854,5 +2854,19 @@ E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{T-1}{T^{2}}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1,\,t\ne s}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T}\sum_{s=1}^{T}b_{s}\times\frac{1}{T}\sum_{t=1}^{T}a_{t} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\bar{b}\bar{a}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

@@ -250,10 +250,89 @@ var_diff <-
 # summarize results
 tibble::tibble("population variance" = a_var, "by difference calculation" = var_diff) |> 
   gt::gt() |> 
-  gt::tab_header(title = "Covariances", subtitle = stringr::str_glue("variable a | T={T}")) |> 
+  gt::tab_header(title = "Variances", subtitle = stringr::str_glue("variable a | T={T}")) |> 
   gtExtras::gt_theme_espn()
 ```
 
 ## Implication for regression coefficients
 
 From FWL we know we can write our regression coefficient of interest as the ratio of a covariance over a variance, and so we can also express our coefficient in terms of differences.
+
+$$
+\begin{align*}
+Y_{it} & =\alpha_{i}+\lambda_{t}+\delta\cdot D_{it};\;i\in\left\{ 0,1\right\} ,\,t\in\left\{ 0,1\right\} \\
+\Delta_{1}Y_{it} & =\Delta_{1}\lambda_{t}+\delta\cdot\Delta_{1}D_{it}\\
+Y_{i1}^{0}-Y_{i0}^{0} & =\lambda\left(1-0\right)+\delta\left(0-0\right)\\
+Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
+\end{align*}
+$$
+
+```{r}
+# TWFE Example with 40 samples
+# Setting seed for reproducibility
+set.seed(123)
+
+# Parameters
+n_units <- 20        # Number of units/entities
+n_periods <- 2      # Number of time periods
+total_samples <- n_units * n_periods  # Total observations (40)
+
+# Unit and time fixed effects
+unit_effects <- rnorm(n_units, mean = 5, sd = 2)  # Unit-specific effects
+time_effects <- rnorm(n_periods, mean = 0, sd = 1)  # Time-specific effects
+epsilon      <- rnorm(total_samples, mean = 0, sd = 1)  # Error term
+
+# True treatment effect
+true_effect <- 2.5
+
+df <- tibble::tibble(
+  unit = rep(1:n_units, each = n_periods)
+  , time = rep(1:n_periods, times = n_units)
+  , treatment =
+    dplyr::case_when(unit >= 10 ~ 1, TRUE ~ 0)
+  , y = unit_effects[unit] +                  # Unit fixed effects
+    time_effects[time] +                      # Time fixed effects
+    true_effect * treatment +                 # Treatment effect
+    epsilon 
+  , unit_effect = unit_effects[unit]
+  , time_effect = time_effects[time]
+)
+
+# panel data estimators
+twfe_model <- plm::plm(y ~ treatment, 
+                 data = df |> as.data.frame(), 
+                 index = c("unit", "time"), 
+                 model = "pooling", 
+                 effect = "twoways")
+# linear modle
+twfe_lm_model <- lm(y ~ 1 + time + treatment, data = df)
+
+# Display model results
+twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_model', .before = 1) |> 
+  dplyr::bind_rows(
+    twfe_lm_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_lm_model', .before = 1)
+  ) |> dplyr::group_by(model) |> 
+  gt::gt("term") |> 
+  gt::fmt_number(columns = -c(model,term), decimals = 3) |> 
+  gtExtras::gt_theme_espn()
+
+
+```
+
+```{r}
+df |> 
+  dplyr::select(time:y) |> 
+  tidyr::pivot_wider(values_from = treatment:y)
+
+df |> 
+  dplyr::select(unit:y) |> 
+  tidyr::pivot_wider(names_from=unit,values_from = time:y)
+
+df_delta <- df |> dplyr::group_by(unit) |> 
+  dplyr::mutate(across(time:y, .fns = list(diff = ~(dplyr::lead(.x)-.x) ))) |> 
+  tidyr::drop_na() |> 
+  dplyr::ungroup() |> 
+  dplyr::select(ends_with("diff")) |> 
+  lm(y_diff ~ time_diff, data = _)
+
+```
