@@ -1,5 +1,8 @@
 ---
 title: "Covariance Decomposition"
+monofont: 'Source Code Pro'
+monofontoptions: 
+  - Scale=0.55
 ---
 
 ```{r}
@@ -268,12 +271,16 @@ Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
 $$
 
 ```{r}
+#| label: TWFE example
+#| echo: true
+#| code-fold: true
+
 # TWFE Example with 40 samples
 # Setting seed for reproducibility
 set.seed(123)
 
 # Parameters
-n_units <- 20        # Number of units/entities
+n_units <- 280        # Number of units/entities
 n_periods <- 2      # Number of time periods
 total_samples <- n_units * n_periods  # Total observations (40)
 
@@ -289,7 +296,7 @@ df <- tibble::tibble(
   unit = rep(1:n_units, each = n_periods)
   , time = rep(1:n_periods, times = n_units)
   , treatment =
-    dplyr::case_when(unit >= 10 ~ 1, TRUE ~ 0)
+    dplyr::case_when((unit >= n_units/2) & (time == 2) ~ 1, TRUE ~ 0)
   , y = unit_effects[unit] +                  # Unit fixed effects
     time_effects[time] +                      # Time fixed effects
     true_effect * treatment +                 # Treatment effect
@@ -302,37 +309,217 @@ df <- tibble::tibble(
 twfe_model <- plm::plm(y ~ treatment, 
                  data = df |> as.data.frame(), 
                  index = c("unit", "time"), 
-                 model = "pooling", 
+                 model = "within", 
                  effect = "twoways")
+
 # linear modle
 twfe_lm_model <- lm(y ~ 1 + time + treatment, data = df)
+lm(y ~ 1 + factor(unit) + factor(time) + factor(treatment), data = df)
+
+# plm::plm(y ~ + treatment, data = df, index = c("unit", "time"), model = "random", effect = "twoways")
 
 # Display model results
-twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_model', .before = 1) |> 
+twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_plm_model', .before = 1) |> 
   dplyr::bind_rows(
     twfe_lm_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_lm_model', .before = 1)
   ) |> dplyr::group_by(model) |> 
   gt::gt("term") |> 
   gt::fmt_number(columns = -c(model,term), decimals = 3) |> 
+  gt::tab_header(title = "TWFE Estimates", subtitle = "using lm and plm") |> 
   gtExtras::gt_theme_espn()
+```
 
+```{r}
+#| label: 4 means and 3 subtractions
+#| echo: true
+#| code-fold: true 
+
+# Calculate means by group and time
+group_means <- stats::aggregate(y ~ treatment + time, data = df, FUN = mean) |> 
+  dplyr::mutate(group = dplyr::case_when(treatment == 1 ~ "Treated", TRUE ~ "Control"))
+
+group_means |> tidyr::pivot_wider(names_from = group, values_from = y) |> 
+  tibble::add_row(treatment = 1, time = 1, .before = 3) |> 
+  dplyr::mutate(
+    Treated = dplyr::case_when(dplyr::row_number() == 3 ~ mean(df$y[df$unit %in% 11:20 & df$time == 1]), TRUE ~ Treated)
+    , Treated = dplyr::lead(Treated,2)) |> 
+  dplyr::reframe(dplyr::across(.cols=Control:Treated, .fns = ~dplyr::lead(.x)-.x)) |> 
+  tidyr::drop_na() |> 
+  dplyr::mutate(diff = Treated - Control) |> 
+  gt::gt() |> 
+  gt::fmt_number(decimals = 4) |> 
+  gt::tab_header(title = "Manually calculated difference-in-differences") |> 
+  gt::cols_label(
+    Control = "control mean diffs",
+    Treated = "treated mean diffs",
+    diff = "Treated - Control"
+  ) |> 
+  gtExtras::gt_theme_espn()
 
 ```
 
 ```{r}
-df |> 
-  dplyr::select(time:y) |> 
-  tidyr::pivot_wider(values_from = treatment:y)
+#| label: YY
+#| echo: false
+#| eval: false
+#| code-fold: true
 
-df |> 
-  dplyr::select(unit:y) |> 
-  tidyr::pivot_wider(names_from=unit,values_from = time:y)
 
 df_delta <- df |> dplyr::group_by(unit) |> 
   dplyr::mutate(across(time:y, .fns = list(diff = ~(dplyr::lead(.x)-.x) ))) |> 
   tidyr::drop_na() |> 
   dplyr::ungroup() |> 
   dplyr::select(ends_with("diff")) |> 
-  lm(y_diff ~ time_diff, data = _)
+  lm(y_diff ~ time_diff + treatment_diff, data = _)
+df_delta |> broom::tidy()
 
+df |> panelView::panelview(Y="y", D="treatment", index = c("unit","time"))|>class()
+
+
+```
+
+```{r}
+#| label: XX
+#| echo: false
+#| eval: false
+#| code-fold: true
+
+# TWFE Example with 40 samples and 2 time periods
+# Setting seed for reproducibility
+set.seed(123)
+
+# Parameters
+n_units <- 20       # Number of units/entities (increased from 8)
+n_periods <- 2      # Number of time periods (reduced from 5)
+total_samples <- n_units * n_periods  # Total observations (40)
+
+# Create balanced panel data
+create_twfe_data <- function() {
+  # Create unit and time indices
+  unit_id <- rep(1:n_units, each = n_periods)
+  time_id <- rep(1:n_periods, times = n_units)
+  
+  # Unit and time fixed effects
+  unit_effects <- rnorm(n_units, mean = 5, sd = 2)  # Unit-specific effects
+  time_effects <- rnorm(n_periods, mean = 0, sd = 1)  # Time-specific effects
+  
+  # Assign treatment (difference-in-differences design)
+  # Half of the units are treated in the second period
+  treated_units <- 11:20  # Units 11-20 get treated in period 2
+  treatment <- sapply(1:length(unit_id), function(i) {
+    unit_id[i] %in% treated_units && time_id[i] == 2
+  }) * 1
+  
+  # True treatment effect
+  true_effect <- 2.5
+  
+  # Generate outcome with unit fixed effects, time fixed effects, and treatment effect
+  epsilon <- rnorm(total_samples, mean = 0, sd = 1)  # Error term
+  y <- unit_effects[unit_id] +                       # Unit fixed effects
+       time_effects[time_id] +                       # Time fixed effects
+       true_effect * treatment +                     # Treatment effect
+       epsilon                                       # Error term
+  
+  # Create dataframe
+  df <- data.frame(
+    unit = unit_id,
+    time = time_id,
+    treatment = treatment,
+    y = y,
+    unit_effect = unit_effects[unit_id],
+    time_effect = time_effects[time_id]
+  )
+  
+  return(list(df = df, true_effect = true_effect))
+}
+
+# Generate the data and store
+twfe_data <- create_twfe_data()
+df <- twfe_data$df
+true_effect <- twfe_data$true_effect
+
+# Display the data
+print("First few rows of the dataset:")
+head(df, 10)
+print(paste("Total observations:", nrow(df)))
+print(paste("True treatment effect:", true_effect))
+
+# Display treatment patterns
+print("Treatment pattern by unit and time:")
+treatment_pattern <- reshape(df[, c("unit", "time", "treatment")], 
+                            idvar = "unit", 
+                            timevar = "time", 
+                            direction = "wide")
+colnames(treatment_pattern) <- c("unit", "t1", "t2")
+print(treatment_pattern)
+
+# Calculate means by group and time
+group_means <- aggregate(y ~ treatment + time, data = df, FUN = mean)
+group_means$group <- ifelse(group_means$treatment == 1, "Treated", "Control")
+print("Group means by treatment status and time:")
+print(group_means)
+
+# Manually calculate difference-in-differences
+control_t1 <- group_means$y[group_means$group == "Control" & group_means$time == 1]
+control_t2 <- group_means$y[group_means$group == "Control" & group_means$time == 2]
+treated_t1 <- group_means$y[group_means$group == "Treated" & group_means$time == 1]
+treated_t2 <- group_means$y[group_means$group == "Treated" & group_means$time == 2]
+
+# Note: For t1, treated_t1 will actually be from the "Control" group since treatment=0 for all units at t=1
+treated_t1 <- mean(df$y[df$unit %in% 11:20 & df$time == 1])
+
+did_estimate <- (treated_t2 - treated_t1) - (control_t2 - control_t1)
+print(paste("Manual DiD estimate:", round(did_estimate, 4)))
+
+# Estimate the TWFE model
+library(plm)
+twfe_model <- plm::plm(y ~ treatment, 
+                 data = df, 
+                 index = c("unit", "time"), 
+                 model = "within", 
+                 effect = "twoways") |> broom::tidy()
+
+# Display model results
+print("TWFE Model Results:")
+summary(twfe_model)
+
+# Create a more detailed 2x2 DiD table
+did_table <- matrix(c(control_t1, control_t2, treated_t1, treated_t2), ncol=2, byrow=TRUE)
+rownames(did_table) <- c("Control", "Treated")
+colnames(did_table) <- c("t=1", "t=2")
+print("Difference-in-Differences Table:")
+print(did_table)
+print(paste("First difference (Treated): ", round(treated_t2 - treated_t1, 4)))
+print(paste("First difference (Control): ", round(control_t2 - control_t1, 4)))
+print(paste("Difference-in-differences: ", round(did_estimate, 4)))
+
+# Visualize the data
+library(ggplot2)
+
+# Prepare data for plotting group means
+plot_data <- data.frame(
+  time = c(1, 2, 1, 2),
+  group = c("Control", "Control", "Treated", "Treated"),
+  mean_y = c(control_t1, control_t2, treated_t1, treated_t2)
+)
+
+# Plot group means over time
+ggplot(plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  labs(title = "Difference-in-Differences Visual",
+       subtitle = paste("True treatment effect =", true_effect),
+       x = "Time Period", y = "Mean Outcome", color = "Group") +
+  scale_x_continuous(breaks = c(1, 2)) +
+  theme_minimal()
+
+# Plot individual unit trajectories
+ggplot(df, aes(x = time, y = y, group = unit, 
+               color = factor(ifelse(unit <= 10, "Control", "Treated")))) +
+  geom_line(alpha = 0.3,  ) +
+  geom_point() +
+  labs(title = "Individual Unit Trajectories",
+       x = "Time Period", y = "Outcome", color = "Group") +
+  scale_x_continuous(breaks = c(1, 2)) +
+  theme_minimal()
 ```
