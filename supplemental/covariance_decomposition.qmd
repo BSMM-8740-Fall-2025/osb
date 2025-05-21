@@ -16,9 +16,11 @@ if (! "librarian" %in% rownames(installed.packages()) ){
   
 # load packages if not already loaded
 librarian::shelf(
-viridis, ggplot2, patchwork
+viridis, ggplot2, patchwork, showtext, extrafont
 )
 
+sysfonts::font_add_google("Lato")
+showtext::showtext_auto()
 theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ```
 
@@ -274,6 +276,8 @@ $$
 #| label: TWFE example
 #| echo: true
 #| code-fold: true
+#| message: false
+#| warning: false
 
 # TWFE Example with 40 samples
 # Setting seed for reproducibility
@@ -312,14 +316,14 @@ twfe_model <- plm::plm(y ~ treatment,
                  model = "within", 
                  effect = "twoways")
 
-# linear modle
+# linear model
 twfe_lm_model <- lm(y ~ 1 + time + treatment, data = df)
-lm(y ~ 1 + factor(unit) + factor(time) + factor(treatment), data = df)
+# lm(y ~ 1 + factor(unit) + factor(time) + factor(treatment), data = df)
 
 # plm::plm(y ~ + treatment, data = df, index = c("unit", "time"), model = "random", effect = "twoways")
 
 # Display model results
-twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_plm_model', .before = 1) |> 
+g <- twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_plm_model', .before = 1) |> 
   dplyr::bind_rows(
     twfe_lm_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_lm_model', .before = 1)
   ) |> dplyr::group_by(model) |> 
@@ -327,6 +331,84 @@ twfe_model |> broom::tidy() |> dplyr::mutate(model = 'twfe_plm_model', .before =
   gt::fmt_number(columns = -c(model,term), decimals = 3) |> 
   gt::tab_header(title = "TWFE Estimates", subtitle = "using lm and plm") |> 
   gtExtras::gt_theme_espn()
+
+df_plot_data <- df |> dplyr::group_by(unit) |> 
+  dplyr::group_map(
+    .f = 
+      ~dplyr::mutate(
+        .x, treated = dplyr::case_when(1 %in% treatment ~ "treated", TRUE ~ "control" )
+      )
+    , .keep = TRUE
+  ) |> 
+  dplyr::bind_rows() |> dplyr::group_by(time, treated) |> 
+  dplyr::summarize(mean_y = mean(y))
+
+# p1 <- df_plot_data |> 
+#   ggplot(aes(x = time, y = mean_y, group = treated, color = treated)) +
+#   geom_line(linewidth = 1) +
+#   geom_point(size = 3) +
+#   labs(title = "Difference-in-Differences Visual",
+#        subtitle = paste("True treatment effect =", true_effect),
+#        x = "Time Period", y = "Mean Outcome", color = "Group") +
+#   scale_x_continuous(breaks = c(1, 2)) +
+#   theme_minimal() +
+#   theme(legend.position = "none")
+  
+
+# Plot group means over time
+# p1 <- ggplot(plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
+#   geom_line(linewidth = 1) +
+#   geom_point(size = 3) +
+#   labs(title = "Difference-in-Differences Visual",
+#        subtitle = paste("True treatment effect =", true_effect),
+#        x = "Time Period", y = "Mean Outcome", color = "Group") +
+#   scale_x_continuous(breaks = c(1, 2)) +
+#   theme_minimal()
+
+# # Plot individual unit trajectories
+# p2 <- df |> dplyr::group_by(unit) |> 
+#   dplyr::group_map(
+#     .f = ~dplyr::mutate(.x, treated = dplyr::case_when(1 %in% treatment ~ "treated", TRUE ~ "control" ))
+#     , .keep = TRUE
+#   ) |> 
+#   dplyr::bind_rows() |> 
+#   rsample::group_initial_split(group=unit, prop = 0.2, strata = treated) |> 
+#   rsample::training() |> 
+#   ggplot(aes(x = time, y = y, group = unit, 
+#                color = treated)) + # factor(ifelse(unit <= T/2, "Control", "Treated"))
+#   geom_line(alpha = 0.3,  ) +
+#   geom_point() +
+#   # plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
+#   labs(title = "Individual Unit Trajectories",
+#        x = "Time Period", y = "Outcome", color = "Group") +
+#   scale_x_continuous(breaks = c(1, 2)) +
+#   #theme_set(theme_bw(base_size = 12) + theme(legend.position = "top"))
+#   theme_minimal()
+
+p3 <- df |> dplyr::group_by(unit) |> 
+  dplyr::group_map(
+    .f = ~dplyr::mutate(.x, treated = dplyr::case_when(1 %in% treatment ~ "treated", TRUE ~ "control" ))
+    , .keep = TRUE
+  ) |> 
+  dplyr::bind_rows() |> 
+  rsample::group_initial_split(group=unit, prop = 0.2, strata = treated) |> 
+  rsample::training() |> 
+  ggplot(aes(x = time, y = y, group = unit, color = treated)) + 
+  geom_line(alpha = 0.8, linetype=3 ) +
+  geom_point(alpha = 0.8, shape = 15) +
+  geom_line(
+    data=df_plot_data, aes(x = time, y = mean_y, group = treated, color = treated), linewidth = 1
+  ) +
+  labs(x = "Time Period", y = "Outcome", color = "Group") +
+  scale_x_continuous(breaks = c(1, 2)) +
+  theme_minimal() +
+  theme(legend.title = element_blank()) 
+
+p3 + wrap_table(g, panel="full", space = "free_y") + plot_annotation(
+  title = 'Individual Unit Trajectories (dotted), Mean Values (solid), and Model Estimates',
+  subtitle = 
+    stringr::str_glue("True treatment effect = {true_effect} | {n_units} units | {n_periods} periods")
+)
 ```
 
 ```{r}
@@ -347,7 +429,7 @@ group_means |> tidyr::pivot_wider(names_from = group, values_from = y) |>
   tidyr::drop_na() |> 
   dplyr::mutate(diff = Treated - Control) |> 
   gt::gt() |> 
-  gt::fmt_number(decimals = 4) |> 
+  gt::fmt_number(decimals = 3) |> 
   gt::tab_header(title = "Manually calculated difference-in-differences") |> 
   gt::cols_label(
     Control = "control mean diffs",
@@ -359,9 +441,9 @@ group_means |> tidyr::pivot_wider(names_from = group, values_from = y) |>
 ```
 
 ```{r}
-#| label: YY
+#| label: using first diffs
 #| echo: false
-#| eval: false
+#| eval: true
 #| code-fold: true
 
 
@@ -371,9 +453,14 @@ df_delta <- df |> dplyr::group_by(unit) |>
   dplyr::ungroup() |> 
   dplyr::select(ends_with("diff")) |> 
   lm(y_diff ~ time_diff + treatment_diff, data = _)
-df_delta |> broom::tidy()
 
-df |> panelView::panelview(Y="y", D="treatment", index = c("unit","time"))|>class()
+df_delta |> broom::tidy() |> tidyr::drop_na() |> 
+  gt::gt() |> 
+  gt::fmt_number(decimals = 3) |> 
+  gt::tab_header(title = "Estimated by differences") |> 
+  gtExtras::gt_theme_espn()
+
+# df |> panelView::panelview(Y="y", D="treatment", index = c("unit","time"))|>class()
 
 
 ```
@@ -504,7 +591,7 @@ plot_data <- data.frame(
 )
 
 # Plot group means over time
-ggplot(plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
+p1 <- ggplot(plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
   geom_line(linewidth = 1) +
   geom_point(size = 3) +
   labs(title = "Difference-in-Differences Visual",
@@ -514,12 +601,305 @@ ggplot(plot_data, aes(x = time, y = mean_y, group = group, color = group)) +
   theme_minimal()
 
 # Plot individual unit trajectories
-ggplot(df, aes(x = time, y = y, group = unit, 
-               color = factor(ifelse(unit <= 10, "Control", "Treated")))) +
+p2 <- df |> dplyr::group_by(unit) |> 
+  dplyr::group_map(
+    .f = ~dplyr::mutate(.x, treated = dplyr::case_when(1 %in% treatment ~ "treated", TRUE ~ "control" ))
+    , .keep = TRUE
+  ) |> 
+  dplyr::bind_rows() |> 
+  rsample::group_initial_split(group=unit, prop = 0.2, strata = treated) |> 
+  rsample::training() |> 
+  ggplot(aes(x = time, y = y, group = unit, 
+               color = treated)) + # factor(ifelse(unit <= T/2, "Control", "Treated"))
   geom_line(alpha = 0.3,  ) +
   geom_point() +
   labs(title = "Individual Unit Trajectories",
        x = "Time Period", y = "Outcome", color = "Group") +
   scale_x_continuous(breaks = c(1, 2)) +
   theme_minimal()
+
+p1+p2+ plot_layout(axes = "collect_y")
 ```
+
+```{r}
+# TWFE Example with 40 samples, 3 time periods, treatment in period 2 only
+# Setting seed for reproducibility
+# TWFE Example with 100 units, 3 time periods, treatment in period 2 only
+# Setting seed for reproducibility
+set.seed(123)
+
+# Parameters
+n_units <- 100       # Number of units/entities
+n_periods <- 3       # Number of time periods
+total_samples <- n_units * n_periods  # Total observations (300)
+
+# Create balanced panel data
+create_twfe_data <- function() {
+  # Create unit and time indices
+  unit_id <- rep(1:n_units, each = n_periods)
+  time_id <- rep(1:n_periods, times = n_units)
+  
+  # Unit and time fixed effects
+  unit_effects <- rnorm(n_units, mean = 5, sd = 2)  # Unit-specific effects
+  time_effects <- c(0, 0.5, 1)  # Time trend
+  
+  # Assign treatment (only in period 2)
+  # Half of the units are treated, but only in period 2
+  treated_units <- 51:100  # Units 51-100 get treated in period 2 only
+  treatment <- sapply(1:length(unit_id), function(i) {
+    unit_id[i] %in% treated_units && time_id[i] == 2
+  }) * 1
+  
+  # True treatment effect
+  true_effect <- 2.5
+  
+  # Generate outcome with unit fixed effects, time fixed effects, and treatment effect
+  epsilon <- rnorm(total_samples, mean = 0, sd = 1)  # Error term
+  y <- unit_effects[unit_id] +                       # Unit fixed effects
+       time_effects[time_id] +                       # Time fixed effects
+       true_effect * treatment +                     # Treatment effect
+       epsilon                                       # Error term
+  
+  # Create dataframe
+  df <- data.frame(
+    unit = unit_id,
+    time = time_id,
+    treatment = treatment,
+    y = y,
+    unit_effect = unit_effects[unit_id],
+    time_effect = time_effects[time_id]
+  )
+  
+  # Add treatment group indicator
+  df$group <- ifelse(df$unit %in% treated_units, "Treated", "Control")
+  
+  return(list(df = df, true_effect = true_effect))
+}
+
+# Generate the data and store
+twfe_data <- create_twfe_data()
+df <- twfe_data$df
+true_effect <- twfe_data$true_effect
+
+# Basic data summary
+print(paste("Total observations:", nrow(df)))
+print(paste("Number of units:", length(unique(df$unit))))
+print(paste("Number of time periods:", length(unique(df$time))))
+print(paste("True treatment effect:", true_effect))
+
+# Treatment summary
+treatment_summary <- table(df$group, df$time, df$treatment)
+print("Treatment pattern:")
+print(treatment_summary)
+
+# Calculate group means by treatment status and time
+group_means <- aggregate(y ~ group + time, data = df, FUN = mean)
+print("Group means by group and time period:")
+print(group_means)
+
+# Calculate treatment effect using a regression
+library(plm)
+twfe_model <- plm(y ~ treatment, 
+                 data = df, 
+                 index = c("unit", "time"), 
+                 model = "within", 
+                 effect = "twoways")
+
+# Display model results
+print("TWFE Model Results:")
+summary_result <- summary(twfe_model)
+print(summary_result)
+
+# Calculate manual DiD estimate for period 2
+get_did_estimate <- function(df) {
+  # Pre-period difference (time=1)
+  pre_diff <- mean(df$y[df$group == "Treated" & df$time == 1]) - 
+              mean(df$y[df$group == "Control" & df$time == 1])
+  
+  # Treatment period difference (time=2)
+  treat_diff <- mean(df$y[df$group == "Treated" & df$time == 2]) - 
+                mean(df$y[df$group == "Control" & df$time == 2])
+  
+  # DiD estimate
+  did_est <- treat_diff - pre_diff
+  
+  return(did_est)
+}
+
+manual_did <- get_did_estimate(df)
+print(paste("Manual DiD estimate:", round(manual_did, 4)))
+
+# Calculate event study estimates
+event_study_model <- lm(y ~ factor(unit) + factor(time) + 
+                           group:factor(time), data = df)
+
+# Extract coefficients for group:time interactions
+es_coefs <- coef(event_study_model)[grepl("group.*:factor\\(time\\)", names(coef(event_study_model)))]
+print("Event study coefficients (relative to period 1):")
+print(es_coefs)
+
+# Visualize the data
+library(ggplot2)
+
+# Plot group means over time
+ggplot(group_means, aes(x = time, y = y, group = group, color = group)) +
+  geom_line(size = 1) +
+  geom_point(size = 3) +
+  annotate("rect", xmin = 1.5, xmax = 2.5, ymin = -Inf, ymax = Inf, 
+           alpha = 0.2, fill = "lightblue") +
+  annotate("text", x = 2, y = max(group_means$y), 
+           label = "Treatment Period", vjust = -1) +
+  labs(title = "Effect of Treatment in Period 2 Only",
+       subtitle = paste("True treatment effect =", true_effect),
+       x = "Time Period", y = "Mean Outcome", color = "Group") +
+  scale_x_continuous(breaks = 1:3) +
+  theme_minimal()
+
+# Calculate and plot the distribution of treatment effects
+df_period2 <- df[df$time == 2,]
+df_period1 <- df[df$time == 1,]
+
+# Merge period 1 data to period 2
+df_period2$y_pre <- df_period1$y[match(df_period2$unit, df_period1$unit)]
+df_period2$y_diff <- df_period2$y - df_period2$y_pre
+
+# Plot distribution of changes by group
+ggplot(df_period2, aes(x = y_diff, fill = group)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(xintercept = mean(df_period2$y_diff[df_period2$group == "Treated"]), 
+             color = "red", linetype = "dashed") +
+  geom_vline(xintercept = mean(df_period2$y_diff[df_period2$group == "Control"]), 
+             color = "blue", linetype = "dashed") +
+  labs(title = "Distribution of Changes from Period 1 to 2",
+       subtitle = paste("Mean difference (Treated - Control):", 
+                       round(mean(df_period2$y_diff[df_period2$group == "Treated"]) - 
+                             mean(df_period2$y_diff[df_period2$group == "Control"]), 4)),
+       x = "Change in Outcome", y = "Density", fill = "Group") +
+  theme_minimal()
+
+# Plot a subset of individual trajectories (20 units for clarity)
+sampled_units <- c(sample(1:50, 10), sample(51:100, 10))
+df_subset <- df[df$unit %in% sampled_units,]
+
+ggplot(df_subset, aes(x = time, y = y, group = unit, 
+                     color = group)) +
+  geom_line(alpha = 0.7) +
+  geom_point(aes(shape = factor(treatment)), size = 3) +
+  scale_shape_manual(values = c(16, 8), name = "Treated") +
+  annotate("rect", xmin = 1.5, xmax = 2.5, ymin = -Inf, ymax = Inf, 
+           alpha = 0.1, fill = "lightblue") +
+  labs(title = "Sample of Individual Unit Trajectories",
+       subtitle = "Treatment occurs only in period 2 for treated units",
+       x = "Time Period", y = "Outcome", color = "Group") +
+  scale_x_continuous(breaks = 1:3) +
+  theme_minimal()
+
+# Perform placebo test comparing period 1 to period 3 changes (no treatment in either)
+df_period3 <- df[df$time == 3,]
+df_period1$y_post <- df_period3$y[match(df_period1$unit, df_period3$unit)]
+df_period1$y_diff <- df_period1$y_post - df_period1$y
+
+placebo_diff <- mean(df_period1$y_diff[df_period1$group == "Treated"]) - 
+                mean(df_period1$y_diff[df_period1$group == "Control"])
+
+print(paste("Placebo test (period 1 to 3 difference):", round(placebo_diff, 4)))
+
+# Test for heterogeneous treatment effects
+df_treated_p2 <- df[df$treatment == 1,]
+df_treated_p2$unit_effect_quantile <- cut(df_treated_p2$unit_effect, 
+                                         breaks = quantile(df_treated_p2$unit_effect, probs = seq(0, 1, 0.25)),
+                                         labels = c("Q1", "Q2", "Q3", "Q4"), 
+                                         include.lowest = TRUE)
+
+# Calculate treatment effect by unit effect quantile
+df_treated_p1 <- df[df$group == "Treated" & df$time == 1,]
+df_treated_p1$unit_effect_quantile <- cut(df_treated_p1$unit_effect, 
+                                         breaks = quantile(df_treated_p1$unit_effect, probs = seq(0, 1, 0.25)),
+                                         labels = c("Q1", "Q2", "Q3", "Q4"), 
+                                         include.lowest = TRUE)
+
+df_treated_p2$y_pre <- df_treated_p1$y[match(df_treated_p2$unit, df_treated_p1$unit)]
+df_treated_p2$effect_estimate <- df_treated_p2$y - df_treated_p2$y_pre
+
+# Get control trend
+control_trend <- mean(df$y[df$group == "Control" & df$time == 2]) - 
+                mean(df$y[df$group == "Control" & df$time == 1])
+
+df_treated_p2$effect_adjusted <- df_treated_p2$effect_estimate - control_trend
+
+het_effects <- aggregate(effect_adjusted ~ unit_effect_quantile, 
+                        data = df_treated_p2, FUN = mean)
+
+print("Heterogeneous treatment effects by unit effect quantile:")
+print(het_effects)
+
+# Plot heterogeneous effects
+ggplot(het_effects, aes(x = unit_effect_quantile, y = effect_adjusted)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_hline(yintercept = true_effect, linetype = "dashed", color = "red") +
+  labs(title = "Heterogeneous Treatment Effects",
+       subtitle = "By Unit Effect Quantile",
+       x = "Unit Effect Quantile", y = "Estimated Treatment Effect") +
+  theme_minimal()
+
+# Check power of the test
+power_analysis <- function(df, n_simulations = 1000) {
+  # Extract model parameters
+  sigma <- sd(residuals(twfe_model))
+  effect_sizes <- seq(0, 5, 0.5)
+  
+  # Store power results
+  power_results <- data.frame(
+    effect_size = effect_sizes,
+    power = NA
+  )
+  
+  for (i in 1:length(effect_sizes)) {
+    # Track significant results
+    significant_results <- 0
+    
+    for (j in 1:n_simulations) {
+      # Create simulated data with this effect size
+      df_sim <- df
+      df_sim$y <- df_sim$unit_effect + df_sim$time_effect + 
+                 effect_sizes[i] * df_sim$treatment + 
+                 rnorm(nrow(df_sim), mean = 0, sd = sigma)
+      
+      # Run the model
+      model_sim <- plm(y ~ treatment, 
+                      data = df_sim, 
+                      index = c("unit", "time"), 
+                      model = "within", 
+                      effect = "twoways")
+      
+      # Check if result is significant at 5% level
+      p_value <- summary(model_sim)$coefficients[1, "Pr(>|t|)"]
+      if (p_value < 0.05) {
+        significant_results <- significant_results + 1
+      }
+    }
+    
+    # Calculate power
+    power_results$power[i] <- significant_results / n_simulations
+  }
+  
+  return(power_results)
+}
+
+# Run a smaller number of simulations for demonstration
+power_results <- power_analysis(df, n_simulations = 100)
+print("Power analysis results:")
+print(power_results)
+
+# Plot power curve
+ggplot(power_results, aes(x = effect_size, y = power)) +
+  geom_line() +
+  geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = true_effect, linetype = "dashed", color = "blue") +
+  labs(title = "Power Analysis",
+       subtitle = "Power to detect different effect sizes",
+       x = "Effect Size", y = "Power") +
+  theme_minimal()
+```
+
