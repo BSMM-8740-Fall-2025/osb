@@ -903,3 +903,68 @@ ggplot(power_results, aes(x = effect_size, y = power)) +
   theme_minimal()
 ```
 
+```{r}
+#| label: using diffs - three periods
+#| echo: false
+#| eval: true
+#| code-fold: true
+
+
+df_delta <- df |> dplyr::group_by(unit) |> 
+  dplyr::mutate(
+    across(
+      time:y
+      , .fns = list(diff = ~(dplyr::lead(.x)-.x) )
+      , .names = "{.col}_{.fn}"
+    )
+  ) |> 
+  tidyr::drop_na() |> 
+  dplyr::ungroup() |> 
+  dplyr::select(ends_with("diff")) 
+
+df_all_delta <- purrr::reduce(
+  .x = 1:2
+  , .f = (\(x,k){
+    x |>
+      dplyr::mutate(
+        across(
+          time:y
+          , .fns = list(diff = ~(dplyr::lead(.x, n=k)-.x) )
+          , .names = "{.col}_{.fn}_{k}"
+        )
+      )
+  })
+  , .init = df |> dplyr::group_by(unit)
+)
+
+1:2 |> 
+  purrr::map(
+    .f = 
+      (\(k){
+        fml <- formula(stringr::str_glue("y_diff_{k} ~ time_diff_{k} + treatment_diff_{k}"))
+        df_all_delta |> 
+          dplyr::select( ends_with(stringr::str_glue("diff_{k}")) ) |> 
+          dplyr::ungroup() |>
+          tidyr::drop_na() |> 
+          lm(fml, data = _) |> 
+          broom::tidy()
+      })
+  ) |> 
+  dplyr::bind_rows()
+
+|> 
+  lm(y_diff ~ time_diff + treatment_diff, data = _)
+
+
+
+
+
+
+df_delta |> broom::tidy() |> tidyr::drop_na() |> 
+  gt::gt() |> 
+  gt::fmt_number(decimals = 3) |> 
+  gt::tab_header(title = "Estimated by differences") |> 
+  gtExtras::gt_theme_espn()
+
+```
+
