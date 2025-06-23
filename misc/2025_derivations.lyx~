@@ -2868,5 +2868,23 @@ E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Y_{it} & =\alpha_{i}+\lambda_{t}+\delta\cdot D_{it};\;i\in\left\{ 0,1\right\} ,\,t\in\left\{ 0,1\right\} \\
+\Delta_{1}Y_{it} & =\Delta_{1}\lambda_{t}+\delta\cdot\Delta_{1}D_{it}\\
+Y_{i1}^{0}-Y_{i0}^{0} & =\lambda\left(1-0\right)+\delta\left(0-0\right)\\
+Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \end_body
 \end_document
