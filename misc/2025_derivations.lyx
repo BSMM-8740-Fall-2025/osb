@@ -1,0 +1,2901 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Some notes on the model
+\end_layout
+
+\begin_layout Standard
+Emperically, per linear regressions
+\begin_inset Formula 
+\begin{align*}
+\hat{p}_{\text{shell}}\equiv p_{\text{shell}}-b_{0}p_{\text{rack}} & =a_{0}+\sigma_{0}\eta_{0}=5.909+\sigma_{0}\eta_{0}\\
+\hat{p}_{\text{pioneer}}\equiv p_{\text{pioneer}}-b_{1}p_{\text{rack}} & =a_{1}+\sigma_{1}\eta_{1}=5.19+\sigma_{1}\eta_{1}\\
+\hat{p}_{mobil}\equiv p_{mobil}-b_{0}p_{\text{rack}} & =a_{2}+\sigma_{2}\eta_{2}=5.66+\sigma_{2}\eta_{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the regressions give us the constants 
+\begin_inset Formula $a_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+ (
+\begin_inset Formula $i\in\left\{ 1,2,3\right\} $
+\end_inset
+
+), all 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ variables are independent unit normals.
+ We work with the 
+\begin_inset Formula $\hat{p}$
+\end_inset
+
+ variables from here on.
+ 
+\end_layout
+
+\begin_layout Standard
+First we make the pioneer prices a function of the shell prices and account
+ for the observed correlation between 
+\begin_inset Formula $\hat{p}_{\text{shell}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{p}_{\text{pioneer}}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{align*}
+\hat{p}_{pioneer} & =-0.72+\mu_{shell}+\sigma_{1}\eta_{1}\\
+ & =0.8783212\times\mu_{shell}+\sigma_{1}\eta_{1}\\
+ & =-0.72+\mu_{shell}+\sigma_{1}\left(\rho_{\text{shell,pioneer}}\times\eta_{0}+\sqrt{1-\rho_{\text{shell,pioneer}}^{2}}\times\eta_{1}\right)\\
+ & =0.8783212\times\mu_{shell}++\sigma_{1}\left(\frac{\rho_{\text{shell,pioneer}}}{0.8783212}\times0.8783212\times\eta_{0}+\sqrt{1-\rho_{\text{shell,pioneer}}^{2}}\times\eta_{1}\right)
+\end{align*}
+
+\end_inset
+
+where the correlation coefficient 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\rho_{\text{shell,pioneer}}=0.9648227$
+\end_inset
+
+, and 
+\begin_inset Formula $\sqrt{1-\rho_{\text{shell,pioneer}}^{2}}=0.2628389$
+\end_inset
+
+.
+ These are the non-zero entries in the second row of the lower diagonal
+ Cholesky decomposition of the correlation matrix:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{\text{shell}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{\text{pioneer}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{mobil}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{\text{shell}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{\text{pioneer}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.9648227$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.2629013$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{p}_{mobil}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.9557947$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.1403307$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.2583871$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next we make the Mobil price a function of the shell and pioneer prices
+\begin_inset Formula 
+\begin{align*}
+\hat{p}_{mobil} & =\alpha\times\mu_{shell}+\beta\times\mu_{pioneer}+\sigma_{2}\eta_{2}\\
+ & =0.3\times\mu_{shell}+0.75\times\mu_{pioneer}+\sigma_{2}\eta_{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100col%"
+height "4pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Shell prices: (where 
+\begin_inset Formula $\sigma_{0}=3.102127$
+\end_inset
+
+, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\sigma_{1}=3.018563$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+)
+\begin_inset Formula 
+\begin{align*}
+p_{\text{shell}} & =1.004\times p_{\text{rack}}+5.909+\sigma_{0}\eta_{0}\\
+ & =\mu_{shell}+\sigma_{0}\eta_{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pioneer prices:
+\begin_inset Formula 
+\begin{align*}
+p_{\text{pioneer}} & =ap_{\text{shell}}+b+\sigma_{1}\eta_{1}\\
+ & =a\left(\mu_{shell}+\sigma_{0}\eta_{0}\right)+b+\sigma_{1}\eta_{1}\\
+\mu_{pioneer} & =\mathbb{E}\left[p_{\text{pioneer}}\right]=1.004\times p_{\text{rack}}+5.19\\
+1.004\times p_{\text{rack}}+5.19 & =a\mu_{shell}+b\\
+ & =a\left(1.004\times p_{\text{rack}}+5.909\right)+b\\
+5.19 & =\left(a-1\right)\times1.004\times p_{\text{rack}}+a\times5.909+b\\
+\text{Var\left(p_{\text{pioneer}}\right)} & =\mathbb{E}\left[\left(p_{\text{pioneer}}-\mu_{pioneer}\right)^{2}\right]\\
+ & =\mathbb{E}\left[\left(a\sigma_{0}\eta_{0}+\sigma_{1}\eta_{1}\right)^{2}\right]\\
+ & =\mathbb{E}\left[a^{2}\sigma_{0}^{2}\eta_{0}^{2}+\sigma_{1}^{2}\eta_{1}^{2}+2a\sigma_{0}\sigma_{1}\eta_{0}\eta_{1}\right]\\
+ & =a^{2}\sigma_{0}^{2}+\sigma_{1}^{2}+2a\sigma_{0}\sigma_{1}\rho_{1,2}\\
+\\
+Corr\left(p_{\text{pioneer}},p_{\text{shell}}\right) & =\mathbb{E}\left[\left(p_{\text{pioneer}}-\mu_{pioneer}\right)\left(p_{\text{shell}}-\mu_{shell}\right)\right]\\
+ & =\mathbb{E}\left[\left(a\sigma_{0}\eta_{0}+\sigma_{1}\eta_{1}\right)\sigma_{0}\eta_{0}\right]\\
+ & =\mathbb{E}\left[a\sigma_{0}^{2}\eta_{0}^{2}+\sigma_{1}\sigma_{0}\eta_{0}\eta_{1}\right]\\
+ & =a\sigma_{0}^{2}+\sigma_{1}\sigma_{0}\rho_{1,2}\\
+ & =
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula $\mathbb{P}\left(p_{\text{shell}}|\theta_{1}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left(Y=y|\mathbf{\beta}\right)=\mathcal{N}\left(\left.y\right|\mathbf{\mathbf{\beta}},\sigma\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{L}_{OLS}\left(\hat{\beta}\right)=\sum_{i=1}^{n}\left(y_{i}-x_{i}^{'}\hat{\beta}\right)^{2}=\left\Vert y-X\hat{\beta}\right\Vert ^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{Bias}\left(\hat{\mathbf{\beta}}_{OLS}\right)=\mathbb{E\left[\hat{\mathbf{\beta}}_{OLS}\right]=\mathbf{\beta}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\backslash text\{Var\}\backslash left(\backslash hat\{\backslash mathbf\{\backslash beta\}\}\_\{OLS\}\backslash right)=\sigma^{2}\left(X'X\right)^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{}\{Var\}\backslash left(\backslash hat\{\backslash mathbf\{\backslash beta\}\}\_\{OLS\}\backslash right)=\sigma^{2}\left(X'X\right)^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+e & =y-x\hat{\mathbf{\beta}}\\
+\hat{\sigma}^{2} & =\frac{e'e}{n-m}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[e\right] & =\left(\mathbb{E}\left[X\hat{\beta}\right]-X\hat{\beta}\right)^{2}+\mathbb{E}\left[\left(X\hat{\beta}-X\hat{\beta}\right)^{2}\right]+\sigma^{2}\\
+ & =\text{Bias}^{2}+\text{Variance}+\sigma^{2}
+\end{align*}
+
+\end_inset
+
++
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\partial\log(V)=\beta\times\partial\log(\frac{p}{p_{\text{baseline}})}$
+\end_inset
+
+ 
+\begin_inset Formula $\partial\log(V)=\beta\times\partial\log(p/p_{\text{baseline}})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left[\left.\left(K,\beta\right)\right|V\right]=\mathbb{P}\left[\left.V\right|\left(K,\beta\right)\right]\times\mathbb{P}\left[K\right]\times\mathbb{P}\left[\beta\right]\Rightarrow\;\left(\frac{p}{p_{\text{baseline}}}\right)^{\beta}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\text{Bias}\left(\hat{\mathbf{\beta}}_{ridge}\right) & =\lambda(X'X+\lambda I)^{-1}\beta\\
+\text{Var}\left(\hat{\mathbf{\beta}}_{ridge}\right) & =\sigma^{2}(X'X+\lambda I)^{-1}X'X(X'X+\lambda I)^{-1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\pi\left(Y=y|\mathbf{x,\theta}\right)=\mathcal{N}\left(\left.y\right|\beta_{0}+\mathbf{\mathbf{\mathbf{\beta}}}'\mathbf{x},\sigma^{2}\right)$
+\end_inset
+
+ 
+\begin_inset Formula $\left(\beta_{0},\mathbf{\mathbf{\mathbf{\beta}}},\sigma^{2}\right)$
+\end_inset
+
+
+\begin_inset Formula $\left(1,x_{1},\ldots,x_{D}\right)$
+\end_inset
+
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\text{NLL\left(\beta,\sigma^{2}\right)} & =\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
+ & =-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-N\log\left(2\pi\sigma^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{y}\equiv\beta'x_{n}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\text{RSS}\left(\beta\right) & =\frac{1}{2}\sum_{n=1}^{N}\left(y_{n}-\beta'x_{n}\right)^{2}=\frac{1}{2}\left\Vert y_{n}-\beta'x_{n}\right\Vert ^{2}=\frac{1}{2}\left(y_{n}-\beta'x_{n}\right)'\left(y_{n}-\beta'x_{n}\right)\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $f_{x}\equiv\frac{\partial f}{\partial x}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathcal{N}\left(\left.y\right|\mu,\sigma^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(x)=f(\beta_{0})+f'(\beta_{0})(x-\beta_{0})+\frac{1}{2}f''(\beta_{0})(x-\beta_{0})^{2}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+f(x,y) & =f(\alpha_{0},\beta_{0})+f_{x}(\alpha_{0},\beta_{0})(x-\alpha_{0})+f_{y}(\alpha_{0},\beta_{0})(y-\beta_{0})\\
+ & =+f_{x,x}(\alpha_{0},\beta_{0})(x-\alpha_{0})^{2}+f_{y,y}(\alpha_{0},\beta_{0})(y-\beta_{0})^{2}+f_{x,y}(\alpha_{0},\beta_{0})(x-\alpha_{0})(y-\beta_{0})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{align*}\text{RSS}\left(\beta\right) & =\frac{1}{2}\sum_{n=1}^{N}\left(y_{n}-\beta'x_{n}\right)^{2}=\frac{1}{2}\left\Vert y_{n}-\beta'x_{n}\right\Vert ^{2}\\
+ & =\frac{1}{2}\left(y_{n}-\beta'x_{n}\right)'\left(y_{n}-\beta'x_{n}\right)\\
+ & \sqrt{b}
+\end{align*}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+
+\begin_inset Formula $\mathscr{l}$
+\end_inset
+
+
+\begin_inset Formula $\ell\left(y_{n},\theta;x_{n}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{\beta}=\arg\!\min\text{RSS}\left(\beta\right)+\lambda\left\Vert \beta\right\Vert _{2}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathcal{L}\left(\beta\right)=\text{NLL}+\left\Vert \beta\right\Vert _{1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\mathbf{\beta}}_{ridge} & =\left(X'X-\lambda I_{D}\right)^{-1}\left(X'Y\right)\\
+ & =\left(\sum_{n}x_{n}x'_{n}+\lambda I_{D}\right)^{-1}\left(\sum_{n}y_{n}x_{n}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathcal{L}\left(\beta,\lambda,\alpha\right)=\text{NLL}+\lambda\left(\left(1-\alpha\right)\left\Vert \beta\right\Vert _{2}^{2}+\alpha\left\Vert \beta\right\Vert _{1}\right)$
+\end_inset
+
+
+\begin_inset Formula $\alpha\in\left(0,1\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left\{ \sum_{i\in R_{e}}\left(y_{i}-c_{i}\right)^{2}+\sum_{i\in R_{e}}\left(y_{i}-c_{2}\right)^{2}\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left|T\right|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+x^{*} & =\left\{ \begin{array}{cc}
+\frac{x^{\lambda}-1}{\lambda\tilde{x}^{\lambda-1}} & \lambda\ne0\\
+\tilde{x}\log x & \lambda=0
+\end{array}\right.\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{logit}\left(x\right)=\frac{x}{1-x}$
+\end_inset
+
+ 
+\begin_inset Formula $\sqrt{}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{\text{W}}_{\text{pct}}=\frac{1}{1+\left(\frac{RA}{RS}\right)^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{E}\left[\left.Y\right|X\right]=\mu=\text{g}^{-1}\left(X\beta\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left[\left.Y=y\right|X,\lambda\right]=\frac{\lambda^{y}}{y!}e^{-\lambda}=e^{y\log\lambda-\lambda-\log y!}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]\times\mathbb{P}\left[x_{1},\ldots,x_{N}\right]=\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\mathbb{P}\left[\left.x_{1},\ldots,x_{N}\right|C_{k}\right]\times\mathbb{P}\left[C_{k}\right]}{\mathbb{P}\left[x_{1},\ldots,x_{N}\right]}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{P}\left[\left.C_{k}\right|x_{1},\ldots,x_{N}\right]=\frac{\times\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]}{\prod_{n=1}^{N}\mathbb{P}\left[x_{n}\right]}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $C_{k}=\arg\max_{C_{k}}\mathbb{P}\left[C_{k}\right]\prod_{n=1}^{N}\mathbb{P}\left[\left.x_{n}\right|C_{k}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{d}(x,y)=\left(\sum_{i}\left|y_{i}-x_{i}\right|\right)^{1/p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $f\left(x\right)=w^{\top}x+w_{0}$
+\end_inset
+
+ 
+\begin_inset Formula $x=x_{\bot}+r\frac{w}{\left\Vert w\right\Vert }$
+\end_inset
+
+ mnmnmn 
+\begin_inset Formula $f\left(x\right)=\left(w^{\top}x_{\bot}+w_{0}\right)+r\left\Vert w\right\Vert $
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $f\left(x_{\bot}\right)=w^{\top}x_{\bot}+w_{0}=0$
+\end_inset
+
+ nmbm 
+\begin_inset Formula $f\left(x\right)=r\left\Vert w\right\Vert $
+\end_inset
+
+ nmbmmb 
+\begin_inset Formula $f\left(x_{n}\right)\tilde{y}_{n}>0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\max_{w,w_{0}}\min_{n}\left[\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\min_{w,w_{0}}\frac{{1}}{2}\left\Vert w\right\Vert ^{2}\;\text{{s.t.}}\;\tilde{y}_{n}\left(w^{\top}x_{n}+w_{0}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\tilde{x}=\left(\prod_{i=1}^{n}x_{i}\right)^{1/n}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left(-\infty,\infty\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left.\left\{ Y^{1},Y^{0}\right\} \bot D\right|X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $0<\mathbb{P}\left(\left.D=1\right|X\right)<1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{n}r_{i} & =\sum_{i=1}^{n}\log\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
+ & =\log\prod_{i=1}^{n}\frac{\text{Close/Last}_{t=i}}{\text{Close/Last}_{t=i-1}}\\
+ & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=n-1}}\times\cdots\times\frac{\text{Close/Last}_{t=2}}{\text{Close/Last}_{t=1}}\times\frac{\text{Close/Last}_{t=1}}{\text{Close/Last}_{t=0}}\\
+ & =\log\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\exp\left(\sum_{i=1}^{n}r_{i}\right)=\frac{\text{Close/Last}_{t=n}}{\text{Close/Last}_{t=0}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $D_{i}=\textbf{1}_{Y_{i}^{B}\le\bar{Y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Y_{i} & =\begin{cases}
+Y_{i}^{1} & \text{if}\,D_{i}=1\\
+Y_{i}^{1} & \text{if}\,D_{i}=1
+\end{cases}\\
+ & =Y_{i}^{1}D_{i}+Y_{i}^{0}\left(1-D_{i}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+nb
+\begin_inset Formula 
+\[
+\Delta_{TT_{s}}^{Y}=\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+as
+\begin_inset Formula 
+\[
+\Delta_{TT}^{Y}=\mathbb{E}\left[\left.Y_{i}^{1}-Y_{i}^{0}\right|D_{i}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\Delta_{TT_{s}}^{Y} & =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}\left(Y_{i}^{1}-Y_{i}^{0}\right)D_{i}\\
+ & =\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}D_{i}-\frac{1}{\sum_{i=1}^{N}D_{i}}\sum_{i=1}^{N}Y_{i}^{0}D_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+hg
+\begin_inset Formula 
+\begin{align*}
+\Delta_{SB}^{Y} & =\Delta_{WW}^{Y}-\Delta_{TT}^{Y}\\
+ & =\mathbb{E}\left[\left.Y_{i}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}\right|D_{i}=0\right]-\mathbb{E}\left[\left.Y_{i}^{1}-Y_{i}^{0}\right|D_{i}=1\right]\\
+ & =\mathbb{E}\left[\left.Y_{i}^{1}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}^{0}\right|D_{i}=0\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Causality
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $D\in\left\{ 0,1\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Y_{i}$
+\end_inset
+
+ 
+\begin_inset Formula $Y_{i}^{0},Y_{i}^{1}$
+\end_inset
+
+ nn 
+\begin_inset Formula $Y_{i}=\alpha+\delta D_{i}+\epsilon_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $D_{i}\perp Y_{i}^{0},Y_{i}^{1}$
+\end_inset
+
+ __ 
+\begin_inset Formula $\epsilon_{i}=\beta X_{i}+\eta_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{\delta}^{\text{OLS}}=\frac{Cov\left(Y_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}=\delta+\gamma\frac{Cov\left(X_{i},D_{i}\right)}{\text{Var}\left(D_{i}\right)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sum_{i}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}-\sum_{i}\left(x_{i}-\bar{x}\right)\bar{y}\\
+ & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}-\bar{y}\sum_{i}\left(x_{i}-\bar{x}\right)\\
+ & =\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\text{Cov}\left(x_{i},y_{i}\right)}{\text{Var}\left(x_{i}\right)}\\
+ & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)\left(x_{i}-\bar{x}\right)}\\
+ & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)y_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+b
+\begin_inset Formula 
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(\beta_{0}+\beta_{1}x_{i}+u_{i}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}\\
+ & =\frac{\beta_{0}\sum_{i}\left(x_{i}-\bar{x}\right)+\beta_{1}\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}+\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}=\\
+ & =\beta_{1}+\frac{\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+nm
+\begin_inset Formula 
+\begin{align*}
+\hat{\beta_{1}} & =\frac{\sum_{i}\left(x_{i}-\bar{x}\right)\left(\beta_{0}+\beta_{1}x_{i}+z_{i}+u_{i}\right)}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}\\
+ & =\frac{\beta_{0}\sum_{i}\left(x_{i}-\bar{x}\right)+\beta_{1}\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}+\beta_{2}\sum_{i}\left(x_{i}-\bar{x}\right)z_{i}+\sum_{i}\left(x_{i}-\bar{x}\right)u_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}=\\
+ & =\beta_{1}+\beta_{2}\frac{\sum_{i}\left(x_{i}-\bar{x}\right)z_{i}}{\sum_{i}\left(x_{i}-\bar{x}\right)x_{i}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\check{x}$
+\end_inset
+
+ 
+\begin_inset Formula $\text{Cov}\left(w,x\right)=\text{Cov}\left(w,x\right)=\mathbb{E}\left[w\right]=0$
+\end_inset
+
+ 
+\begin_inset Formula $\mathbb{E}\left[\tilde{x}\right]=\mathbb{E}\left[w+x\right]=\mathbb{E}\left[x\right]$
+\end_inset
+
+ 
+\begin_inset Formula $\text{Var}\left(\tilde{x}\right)=\text{Var}\left(x+w\right)\ge\text{Var}\left(x\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\text{Cov}\left(\tilde{x},y\right) & =\text{Cov}\left(x+w,y\right)=\text{Cov}\left(x,y\right)+\text{Cov}\left(w,y\right)\\
+ & =\text{Cov}\left(x,y\right)+\text{Cov}\left(w,\beta_{0}+\beta_{1}x+u\right)\\
+ & =\text{Cov}\left(x,y\right)+\text{Cov}\left(w,u\right)+\beta_{1}\text{Cov}\left(w,x\right)\\
+ & =\text{Cov}\left(x,y\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)} & =\frac{\text{Cov}\left(x,y\right)}{\text{Var}\left(x\right)+\text{Var}\left(w\right)}\\
+ & =\frac{\text{Cov}\left(x,y\right)/\text{Var}\left(x\right)}{1+\text{Var}\left(w\right)/\text{Var}\left(x\right)}\\
+ & =\frac{\beta_{1}}{1+\text{Var}\left(w\right)/\text{Var}\left(x\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left|\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|\le\left|\beta_{1}\right|
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(y\right)} & =\frac{\text{Cov}\left(x,y\right)}{\beta_{1}^{2}\text{Var}\left(x\right)+\text{Var}\left(u\right)}\\
+ & =\frac{\beta_{1}\text{Var}\left(x\right)}{\beta_{1}^{2}\text{Var}\left(x\right)+\text{Var}\left(u\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}=\beta_{1}+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}\text{Var}\left(x\right)}}=\beta_{1}\left[1+\frac{\text{Var}\left(u\right)}{\mathbf{\beta_{1}^{2}\text{Var}\left(x\right)}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\begin_inset Formula 
+\[
+\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|\ge\left|\beta_{1}\right|
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|\ge\left|\beta_{1}\right|\ge\left|\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+r^{2} & =\frac{\text{Cov}\left(\tilde{x},y\right)^{2}}{\text{Var}\left(\tilde{x}\right)\text{Var}\left(y\right)}=\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\times\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(y\right)}\\
+r^{2}\times\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)} & =\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{width}=\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}-\frac{\text{Cov}\left(\tilde{x},y\right)}{\text{Var}\left(\tilde{x}\right)}\right|=\left(1-r^{2}\right)\left|\frac{\text{Var}\left(y\right)}{\text{Cov}\left(\tilde{x},y\right)}\right|
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi & =\frac{1}{1+e^{-\eta}}\;\text{(logistic function)}\\
+\log\left(\frac{\pi}{1-\pi}\right) & =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{1-\frac{1}{1+e^{-\eta}}}\right)\\
+ & =\log\left(\frac{\frac{1}{1+e^{-\eta}}}{\frac{e^{-\eta}}{1+e^{-\eta}}}\right)=log\left(e^{\eta}\right)=\eta
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mapsto\top$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+T_{t} & =1+0.05t\qquad\text{(trend)}\\
+S_{t} & =1.5\cos(t\pi\times0.166)\qquad\text{\text{(seasonality)}}\\
+I_{t} & =0.5I_{t-1}+\epsilon_{t}\qquad\text{(noise)}\sim
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\epsilon_{t}\sim\text{{i.i.d.}}\mathcal{N}\left(0,\sigma_{\epsilon_{t}}^{2}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{E}\left[\epsilon_{t}\right]=\mathbb{E}\left[\left.\epsilon_{t}\right|\epsilon_{t-1},\epsilon_{t-2},\ldots\right]=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+a
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbb{E}\left[\epsilon_{t}\epsilon_{t-j}\right]=\text{cov}\left(\epsilon_{t},\epsilon_{t-j}\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+a
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{var}\left(\epsilon_{t}\right)=\text{cov}\left(\epsilon_{t},\epsilon_{t}\right)=\sigma_{\epsilon_{t}}^{2}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\left.y_{t}\right|y_{t-1}\right] & =\phi y_{t-1}\\
+\text{var}\left(\left.y_{t}\right|y_{t-1}\right) & =\mathbb{E}\left[\phi y_{t-1}+\epsilon_{t}-\phi y_{t-1}\right]^{2}=\mathbb{E}\left[\epsilon\right]^{2}=\sigma^{2}\\
+\text{cov}\left(\left.y_{t}\right|y_{t-1},\left.y_{t-j}\right|y_{t-j-1}\right) & =0;\;j>1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\left.y_{t}\right|y_{t-2}\right] & =\phi^{2}y_{t-2}\\
+\text{var}\left(\left.y_{t}\right|y_{t-2}\right) & =\left(1+\phi^{2}\right)\sigma^{2}\\
+\text{cov}\left(\left.y_{t}\right|y_{t-2},\left.y_{t-j}\right|y_{t-j-2}\right) & =\phi\sigma^{2};\;j=1\\
+ & =0;\;j>1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y_{t}\right] & =0\\
+\text{var}\left(y_{t}\right) & =\frac{\sigma^{2}}{1+\phi}\\
+\text{cov}\left(y_{t},y_{t-j}\right) & =\phi^{j}\text{var}\left(y_{t}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y_{t}\right] & =\bar{y}\\
+\mathbb{E}\left[\left(y_{t}-\bar{y}\right)\left(y_{t-j}-\bar{y}\right)\right] & =\text{cov}\left(y_{t},y_{t-j}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\Delta_{WW}^{Y} & =\mathbb{E}\left[\left.Y_{i}\right|D_{i}=1\right]-\mathbb{E}\left[\left.Y_{i}\right|D_{i}=0\right]\\
+ & =\mathbb{E}\left[Y_{i}\right]-\mathbb{E}\left[Y_{i}\right]\\
+ & =\Delta_{ATE}^{Y}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\bar{X}\sqrt{}\sim$
+\end_inset
+
+p
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $p\left(\left.y_{i}\right|x_{i},\beta,\sigma^{2}\right)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{(y_{i}-\beta x_{i})^{2}}{2\sigma^{2}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\theta}_{\text{\text{MLE}}} & =\arg\max_{\theta}\pi\left(\left.V\right|\theta\right)\times\pi\left(\theta\right)\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\theta}_{\text{\text{MAP}}} & =\arg\max_{\theta}\pi\left(\left.\theta\right|V\right)\\
+ & =\arg\max_{\theta}\log\pi\left(\left.V\right|\theta\right)+\log\pi\left(\theta\right)\\
+ & =\arg\min_{\theta}-\log\pi\left(\left.V\right|\theta\right)-\log\pi\left(\theta\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\pi\left(\left.\theta\right|V\right)=\pi\left(\left.V\right|\theta\right)\times\pi\left(\theta\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d=\frac{\hat{\text{TT}}{}}{\sqrt{\frac{1}{N^{0}}\sum_{i=1}^{N}\left(Y_{i}-\bar{Y^{0}}\right)^{2}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+ES=\frac{\text{TT}}{\sqrt{V^{0}}}=\frac{\bar{\alpha}+\theta\bar{\mu}}{\sqrt{\sigma_{\mu}^{2}+\rho\sigma_{U}^{2}+\sigma_{\epsilon}^{2}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{\sim}$
+\end_inset
+
+
+\begin_inset Formula $\left.D\right|\in\left\{ \right\} $
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\left.Y\right|D=1\right]-\mathbb{E}\left[\left.Y\right|D=0\right] & =\mathbb{E}\left[\left.Y\right|D=1\right]-\mathbb{E}\left[\left.Y\right|D=0\right]+\mathbb{E}\left[\left.Y^{0}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=1\right]\\
+ & =\mathbb{E}\left[\left.Y^{1}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=0\right]+\mathbb{E}\left[\left.Y^{0}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=1\right]\\
+ & =\underbrace{{\mathbb{E}\left[\left.Y^{1}-Y^{0}\right|D=1\right]}}_{\text{{ATT}}}+\underbrace{{\left\{ \mathbb{E}\left[\left.Y^{0}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=0\right]\right\} }}_{\text{\text{BIAS}}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\tilde{\mathbf{D}}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\hat{\sigma}^{2} & =\frac{1}{n-1}\sum_{i}\left(y_{i}-\hat{y}_{i}^{2}\right)\\
+\text{\text{var}\left(\hat{\beta}_{2}\right)} & =\frac{\sigma^{2}}{\sum_{i}\left(x_{i}-\bar{x}\right)^{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\left.Y\right|D=1\right]-\mathbb{E}\left[\left.Y\right|D=0\right] & =\mathbb{E}\left[\left.Y\right|Y>0,D=1\right]\mathbb{P}\left(\left.Y>0\right|D=1\right)-\mathbb{E}\left[\left.Y\right|Y>0,D=0\right]\mathbb{P}\left(\left.Y>0\right|D=0\right)\\
+ & =\underbrace{{\left(\mathbb{P}\left(\left.Y>0\right|D=1\right)-\mathbb{P}\left(\left.Y>0\right|D=0\right)\right)}}_{\text{{participation\,effect}}}\times\mathbb{E}\left[\left.Y\right|Y>0,D=1\right]\\
+ & +\underbrace{{\mathbb{E}\left[\left.Y\right|Y>0,D=1\right]-\mathbb{E}\left[\left.Y\right|Y>0,D=0\right]}}_{\text{{\text{COP\,effect}}}}\times\mathbb{P}\left(\left.Y>0\right|D=0\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\left.Y\right|Y>0,D=1\right]-\mathbb{E}\left[\left.Y\right|Y>0,D=0\right] & =\mathbb{E}\left[\left.Y^{1}\right|Y^{1}>0\right]-\mathbb{E}\left[\left.Y^{0}\right|Y^{0}>0\right]\\
+ & =\underbrace{\mathbb{E}\left[\left.Y^{1}-Y^{0}\right|Y^{1}>0\right]}_{\text{causal effect}}+\underbrace{\mathbb{E}\left[\left.Y^{0}\right|Y^{1}>0\right]-\mathbb{E}\left[\left.Y^{0}\right|Y^{0}>0\right]}_{\text{selection bias}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{educ}_{i} & =\gamma_{0}+\gamma_{1}\times q4_{i}+\gamma_{2}\times\text{yob}_{i}+\gamma_{3}\times\text{sob}_{i}+v_{i}\\
+\log\left(\text{wage}\right)_{i} & =\beta_{0}+\beta_{1}\times\text{educ}_{i}+\beta_{2}\times\text{yob}_{i}+\beta_{3}\times\text{sob}_{i}+u_{i}\\
+ & =\beta_{0}+\beta_{1}\times\left(\gamma_{1}\times q4_{i}+\gamma_{2}\times\text{yob}_{i}+\gamma_{3}\times\text{sob}_{i}+v_{i}\right)+\beta_{2}\times\text{yob}_{i}+\beta_{3}\times\text{sob}_{i}+u_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{{A}}A$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+q_{i,p}=\left\lfloor Y_{i,p}\right\rfloor ;\;Y_{i,p}\sim\mathrm{Weibull}\left(\mu_{i,p},k_{p}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\ln Y\right] & =\ln\mu-\frac{1}{k}\gamma\\
+\mathrm{var}\left(\ln Y\right) & =\frac{\pi^{2}}{6}\frac{1}{k}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[X\right] & =\mu+\sigma\gamma\\
+\mathrm{var}\left(X\right) & =\frac{\pi^{2}}{6}\sigma^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[X\right] & =\eta-\theta\gamma=\log\mu-\frac{1}{k}\gamma\\
+\mathrm{var}\left(X\right) & =\frac{\pi^{2}}{6}\theta^{2}=\frac{1}{6}\left(\frac{\pi}{k}\right)^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{E}[Y^{1}] & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}(Y_{i}-\hat{\mu_{1}}(X_{i}))}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\dfrac{D_{i}\hat{\mu_{1}}(X_{i})}{\hat{P}(X_{i})}+\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}}{\hat{P}(X_{i})}-1\bigg)\hat{\mu_{1}}(X_{i})\bigg)\\
+ & =\frac{1}{N}\sum\bigg(\dfrac{D_{i}Y_{i}}{\hat{P}(X_{i})}-\bigg(\dfrac{D_{i}-\hat{P}(X_{i})}{\hat{P}(X_{i})}\bigg)\hat{\mu_{1}}(X_{i})\bigg)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\ddot{Y}_{it} & =Y_{it}-\bar{Y}_{i}\\
+\ddot{X}_{it} & =X_{it}-\bar{X}_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left\Vert a\right\Vert $
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathrm{softmax}(\mu)_{p} & =\frac{e^{X_{p}\beta+\xi_{p}}}{\sum_{q=1}^{p}e^{X_{q}\beta+\xi_{q}}}\\
+ & =\frac{e^{X_{p}\beta+\xi_{p}}}{1+\sum_{q=2}^{p}e^{X_{q}\beta+\xi_{q}}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dfrac{\lim_{r\to c^{+}}E[Y_{i}|R_{i}=r]-\lim_{r\to c^{-}}E[Y_{i}|R_{i}=r]}{\lim_{r\to c^{+}}E[T_{i}|R_{i}=r]-\lim_{r\to c^{-}}E[T_{i}|R_{i}=r]}=E[Y_{i}^{1}-Y_{i}^{0}|T_{i}^{1}>T_{i}^{0},R_{i}=c]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{align*}\mathbb{E}\left[\left.Y\right|D=1\right]-\mathbb{E}\left[\left.Y\right|D=0\right] & =\mathbb{E}\left[\left.Y\right|D=1\right]-\mathbb{E}\left[\left.Y\right|D=0\right]-\mathbb{E}\left[\left.Y^{0}\right|D=1\right]+\mathbb{E}\left[\left.Y^{0}\right|D=1\right]\\
+ & =\mathbb{E}\left[\left.Y^{1}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=0\right]+\mathbb{E}\left[\left.Y^{0}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=1\right]\\
+ & =\underbrace{\mathbb{E}\left[\left.Y^{1}-Y^{0}\right|D=1\right]}_{\text{ATT}}+\underbrace{\left\{ \mathbb{E}\left[\left.Y^{0}\right|D=1\right]-\mathbb{E}\left[\left.Y^{0}\right|D=0\right]\right\} }_{\text{BIAS}}
+\end{align*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left\Vert D\right\Vert \infty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left(\begin{array}{c}
+y_{t}\\
+y_{t-1}
+\end{array}\right)=\left(\begin{array}{cc}
+\phi_{1} & \phi_{2}\\
+1 & 0
+\end{array}\right)\left(\begin{array}{c}
+y_{t-1}\\
+y_{t-2}
+\end{array}\right)+\left(\begin{array}{c}
+\epsilon_{t}\\
+0
+\end{array}\right)$
+\end_inset
+
+ 
+\begin_inset Formula $\overrightarrow{x}$
+\end_inset
+
+
+\begin_inset Formula $\vec{y}$
+\end_inset
+
+
+\begin_inset Formula $\begin{cases}
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\subset$
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{align*}\mathbf{Y}=\begin{bmatrix}y_{1}\\
+y_{2}\\
+\vdots\\
+y_{n}
+\end{bmatrix}\hspace{15mm}\mathbf{X}=\begin{bmatrix}x_{11} & x_{12} & \dots & x_{1p}\\
+x_{21} & x_{22} & \dots & x_{2p}\\
+\vdots & \vdots & \ddots & \vdots\\
+x_{n1} & x_{n2} & \dots & x_{np}
+\end{bmatrix}\hspace{15mm}\boldsymbol{\beta}=\begin{bmatrix}\beta_{0}\\
+\beta_{1}\\
+\vdots\\
+\beta_{p}
+\end{bmatrix}\hspace{15mm}\boldsymbol{\epsilon}=\begin{bmatrix}\epsilon_{1}\\
+\epsilon_{2}\\
+\vdots\\
+\epsilon_{n}
+\end{bmatrix}\end{align*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\tilde{A}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Var}\left[a_{i,j}\right]=\left\{ \begin{array}{cc}
+\sigma^{2}/N & \mathrm{if}\,i\ne j\\
+\sigma^{2}/N & \mathrm{if}\,i=j
+\end{array}\right.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+n\rightarrow\infty\rightarrow\begin{array}{cc}
+\frac{1}{2\pi\sigma^{2}}\sqrt{4\sigma^{2}-\alpha^{2}} & \mathrm{if}\,\left|\lambda\right|\le2\sigma\\
+0 & \mathrm{otherwise}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+x_{1} & =\sqrt{-2\log y_{1}}\cos(2\pi y_{2})\\
+ & =\sqrt{-2\log y_{1}}\sin(2\pi y_{2})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}_{f}\left[h(x)\right] & =\int_{D}h(x)f(x)dx\\
+ & =\int_{S}h(x)\frac{f(x)}{g(x)}g(x)dx=\mathbb{E}_{g}\left[h(x)\frac{f(x)}{g(x)}\right]\\
+ & =\frac{1}{n}\sum_{i=1}^{n}h(x_{i})\frac{f(x_{i})}{g(x_{i})}\quad x_{i}\sim g
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}\right]=\int\frac{q(X)}{r(X)}g(x)dx=\frac{Z_{q}}{Z_{r}}\\
+\frac{1}{n}\sum_{i=1}^{n}w(x_{i}) & \rightarrow\mathbb{E}_{g}\left[\frac{q(X)}{r(X)}h(X)\right]\\
+ & =\int\frac{q(X)}{r(X)}g(x)h(x)dx\\
+ & =\frac{1}{Z_{r}}\int g(x)h(x)dx
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{P}\left(X\le y,U\le\frac{g(X)}{Kf(X)}\right) & =\mathbb{E}\left[1_{X\le y}1_{U\le\frac{g(X)}{Kf(X)}}\right]\\
+ & =\mathbb{E}\left[1_{X\le y}\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X\right)\right]\\
+ & =\mathbb{E}\left[1_{X\le y}\frac{g(X)}{Kf(X)}\right]=\int_{-\infty}^{y}\frac{g(x)}{Kf(x)}f(x)dx\\
+ & =\int_{-\infty}^{y}\frac{g(x)}{K}dx
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+ & \ensuremath{\mathbb{P}(\mathrm{draw}\,Y=x\,\mathrm{and\,accept})}\\
+= & \mathbb{P}(\mathrm{draw}\,Y=x)\mathbb{P}(\left.\mathrm{accept}\,Y\right|Y=x)\\
+= & f(x)\mathbb{P}(\left.U\le\frac{q(Y)}{Kf(Y)}\right|Y=x)\\
+ & \frac{q(x)}{K}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{P}(\mathrm{{reject}}\,Y) & =\sum_{x\in D}\mathbb{P}(\mathrm{{draw}}\,Y=x\,\mathrm{and\,reject\,it})\\
+ & =\sum_{x\in D}f(x)\mathbb{P}(\left.U\ge\frac{q(Y)}{Kf(Y)}\right|Y=x)\\
+ & =\sum_{x\in D}f(x)(1-\frac{q(x)}{Kf(x)})=1-\frac{1}{K}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\ensuremath{\mathbb{P}(X=x)=}\sum_{i=1}^{n}\mathbb{P}(\mathrm{reject}\,Y)^{n-1}\mathbb{P}(\mathrm{draw}\,Y & =x\,\mathrm{and\,accept})\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{P}(X=x) & =\sum_{n=1}^{\infty}\mathbb{P}(\mathrm{reject}\,Y)^{n-1}\mathbb{P}(\mathrm{draw}\,Y=x\,\mathrm{and\,accept})\\
+ & =\sum_{n=1}^{\infty}\left(1-\frac{1}{K}\right)^{n}\frac{q(x)}{K}=q(x)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{P}\left(X\le x\right) & =\mathbb{P}\left(\left.Y\le x\right|U\le\frac{q(Y)}{Kf(Y)})\right)\\
+ & =\frac{\mathbb{P}\left(Y\le x,U\le\frac{q(Y)}{Kf(Y)})\right)}{\mathbb{P}\left(U\le\frac{q(Y)}{Kf(Y)})\right)}\\
+ & =\frac{\int_{-\infty}^{x}\int_{0}^{\frac{q(Y)}{Kf(Y)}}f_{U,Y}\left(u,y\right)dudy}{\int_{-\infty}^{\infty}\int_{0}^{\frac{q(Y)}{Kf(Y)}}f_{U,Y}\left(u,y\right)dudy}\\
+ & =\frac{\int_{-\infty}^{x}\int_{0}^{\frac{q(Y)}{Kf(Y)}}f\left(y\right)dudy}{\int_{-\infty}^{\infty}\int_{0}^{\frac{q(Y)}{Kf(Y)}}f\left(y\right)dudy}=\int_{-\infty}^{x}q(y)dy
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}_{f}\left[\mathbb{P}\left(U\le\frac{g(X)}{Kf(X)}|X=x\right)\right] & =\mathbb{E}_{f}\left[\frac{g(X)}{Kf(X)}\right]\\
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{Kf(X)}f(x)dx\\
+ & =\int_{-\infty}^{\infty}\frac{g(X)}{K}dx
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+q(x,y)\alpha(x,y)\pi(x) & =q(x,y)\min\left[1,\frac{\pi(Y_{n})q(Y_{n},X_{n-1})}{\pi(X_{n-1})q(X_{n-1},Y_{n})}\right]\pi(x)\\
+ & =\min\left[\pi(x)q(x,y),\pi(y)q(y,x)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\alpha(x,y) & =\mathbb{P}(U_{n}<A_{n}|X_{n-1}=x,Y_{n}=y)\\
+ & \mathbb{P}(U_{n}<\frac{\pi(y)}{\pi(x)})=\min\left[1,\frac{\pi(y)}{\pi(x)}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathsf{P}(i,j)=q(i,j)\alpha(i,j)=q(i,j)\min\left[1,\frac{\pi(y)}{\pi(x)}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi(i)\mathsf{P}(i,j) & =q(i,j)\min\left(\pi(i),\pi(j)\right)\\
+ & =q(j,i)\min\left(\pi(j),\pi(i)\right)=\pi(j)\mathsf{P}(j,i)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{P}(X_{1}=j) & =\sum_{i\in\chi}\mathbb{P}(X_{0}=i)\mathsf{P}(i,j)=\sum_{i\in\chi}\pi(i)\mathsf{P}(i,j)\\
+ & =\sum_{i\in\chi}\pi(j)\mathsf{P}(j,i)=\pi(j)\sum_{i\in\chi}\mathsf{P}(j,i)\\
+ & =\pi(j)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(y|x)=\begin{cases}
+\frac{1}{2} & x\ge1,\,y=x\pm1\\
+1 & x=0,\,y=1\\
+0 & \mathrm{otherwise}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\alpha(y|x\}=\begin{cases}
+\min\left(1,\frac{\lambda}{x+1}\right) & x\ge1,\,y=x+1\\
+\min\left(1,\frac{x}{\lambda}\right) & x\ge2,\,y=x-1
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi-\pi\mathsf{P} & =0\\
+\pi\left(I-\mathsf{P}\right) & =0\\
+\left(I-\mathsf{P}\right)^{\top}\pi^{\top} & =0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+p(
+\begin_inset Formula $\left.x\right|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Var}\acute{}\left({\mathbb{P}(E)}\right) & =\frac{1}{M^{2}}\mathrm{Var}\left(\sum_{i=1}^{M}1_{z_{i}\in S}\right)\\
+ & =\frac{1}{M^{2}}\sum_{i=1}^{M}\mathrm{Var}\left(1_{z_{i}\in S}\right)=\frac{1}{M}\mathrm{Var}\left(1_{z_{i}\in S}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}[e^{tX}] & =\sum_{k=0}^{\infty}\mathbb{E}\left[\frac{(tX)^{k}}{k!}\right]\\
+ & =1+\frac{t}{1!}\mathbb{E}\left[X\right]+\frac{t^{2}}{2!}\mathbb{E}\left[X^{2}\right]+\cdots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left.\frac{d^{2}}{dt^{2}}M_{X}(t)\right|_{t=0} & =\mathbb{E}\left[X^{2}\right]\\
+\left.\frac{d^{2}}{dt^{2}}M_{X}(t)\right|_{t=0} & =\mathbb{E}\left[X^{3}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+e^{t^{2}/2} & =1+\frac{1}{2}t^{2}+\frac{1}{2^{2}}\frac{t^{4}}{2!}+\frac{1}{2^{3}}\frac{t^{6}}{3!}+\frac{1}{2^{4}}\frac{t^{8}}{4!}+\cdots\\
+\left.\frac{d^{n}}{dt^{n}}M_{Y}(t)\right|_{t=0} & =\mathbb{E}\left[Y^{n}\right]=\begin{cases}
+0 & n\,\mathrm{\mathrm{odd}}\\
+2^{-n/2}\frac{n!}{(n/2)!} & n\,\mathrm{even}
+\end{cases}\\
+M_{Y}(t) & =e^{t^{2}/2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Z_{n} & =\frac{\bar{X}_{n}-\mu}{\sigma/\sqrt{n}}=\frac{\sqrt{n}}{\sigma}\left[\frac{X_{1}+X_{2}+\cdots X_{n}}{n}-\mu\right]\\
+ & =\frac{\sqrt{n}}{\sigma}\left[\frac{X_{1}+X_{2}+\cdots X_{n}-n\mu}{n}\right]\\
+ & =\frac{\sqrt{n}}{\sigma}\left[\frac{\frac{X_{1}-\mu}{\sigma}+\frac{X_{2}-\mu}{\sigma}+\cdots\frac{X_{n}-\mu}{\sigma}}{n}\right]=\sum_{i=1}^{n}Z_{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+M_{\bar{Z}_{n}}(t) & =\left(M_{Z/\sqrt{n}}(t)\right)^{n}\\
+M_{Z/\sqrt{n}}(t) & =M_{Z}(\frac{t}{\sqrt{n}})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\log|X|\right] & =\int_{-\infty}^{\infty}\left(\log|t|\right)f(t;\mu,\sigma)dt\\
+ & =\int_{-\infty}^{\infty}\frac{\log|t|}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ \frac{-(t-\mu)^{2}}{2\sigma^{2}}\right\} dt
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p_{ij}(2) & =\sum_{k\in\mathcal{S}}\mathbb{P}(X_{n+1}=k\mid X_{n}=i)\mathbb{P}(X_{n+2}=j\mid X_{n+1}=k)\\
+ & =\sum_{k\in\mathcal{S}}p_{ik}p_{kj}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\underbrace{\widehat{Y^{0}(1)|D=1}}_{\substack{\text{POA outcome after intervention}}
+}=\underbrace{Y^{0}(0)|D=1}_{\substack{\text{POA outcome}}
+}+\big(\underbrace{Y^{0}(1)|D=0}_{\substack{\text{FLN outcome after}}
+}-\underbrace{Y^{0}(0)|D=0}_{\substack{\text{FLN outcome before}}
+}\big)\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hat{\theta}_{\text{MAP}} & =\arg\min_{\theta}-\sum_{i=1}^{N}\left(\log\pi\left(\left.y_{i}\right|x_{i},\theta\right)+\log\pi\left(\theta\right)\right)\\
+ & =\arg\min_{\theta}\Big(\frac{1}{2\sigma^{2}}\sum_{k=1}^{N}(y_{k}-x^{T}w)^{2}+\frac{\lambda}{2}w^{T}w\Big)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula ${n \choose s}\pi(p)=\frac{p^{\alpha-1}(1-p)^{\beta-1}}{B(\alpha,\beta)}$
+\end_inset
+
+
+\begin_inset Formula $\pi_{\theta\vert\mathcal{D}}(p=x)\sim x^{s}(1-x)^{n-s}\times x^{\alpha-1}(1-x)^{\beta-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi_{\theta\vert\mathcal{D}}(p & =x)\sim x^{s}(1-x)^{n-s}\times x^{\alpha-1}(1-x)^{\beta-1}\\
+ & x^{s+\alpha+1}(1-x)^{(n-s)+\beta-1}\\
+ & \pi
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+x^{s}(1-x)^{n-s}\times x^{\alpha-1}(1-x)^{\beta-1} & =x^{s+\alpha+1}(1-x)^{(n-s)+\beta-1}\\
+ & \sim\pi_{\theta\vert\mathcal{D}}(p;s+\alpha+1,(n-s)+\beta-1)
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\pi_{\theta\vert\mathcal{D}}(p & x)\thickapprox x^{s}(1-x)^{n-s}\times x^{\alpha-1}(1-x)^{\beta-1}\sim x^{s+\alpha+1}(1-x)^{(n-s)+\beta-1}\sim\pi_{\theta\vert\mathcal{D}}(p;s+\alpha+1,(n-s)+\beta-1)\\
+ & \thickapprox x^{s+\alpha+1}(1-x)^{(n-s)+\beta-1}\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi_{\theta\vert\mathcal{D}}(x) & \sim x^{s}(1-x)^{n-s}\times x^{\alpha-1}(1-x)^{\beta-1}\\
+ & \sim x^{s+\alpha+1}(1-x)^{(n-s)+\beta-1}\\
+ & \sim\pi_{\theta\vert\mathcal{D}}(x;s+\alpha+1,(n-s)+\beta-1)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\pi\left(y\vert\lambda\right) & =\prod_{i=1}^{n}\frac{\lambda^{y_{i}}e^{-\lambda}}{y_{i}!}\\
+ & =\lambda^{n\bar{y}}e^{-n\lambda}\prod_{i=1}^{n}\frac{1}{y_{i}!}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\underbrace{\widehat{Y^{0}(1)|D=1}}_{\substack{\text{POA outcome after intervention}}
+}=\underbrace{Y^{0}(0)|D=1}_{\substack{\text{POA outcome}}
+}+\big(\underbrace{Y^{0}(1)|D=0}_{\substack{\text{FLN outcome after}}
+}-\underbrace{Y^{0}(0)|D=0}_{\substack{\text{FLN outcome before}}
+}\big)\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+R_{\mathrm{general}}^{2}=\frac{\mathrm{explainedvariance}}{\mathrm{explainedvariance}+\mathrm{errorvarriance}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(y)=\int p(y\vert\theta)p(\theta)d\theta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{BF}_{1,2}=\frac{p(y\vert M_{2})}{p(y\vert M_{2})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{p(M_{1}\vert y)}{p(M_{2}\vert y)}=\frac{p(y\vert M_{1})}{p(y\vert M_{2})}\frac{p(M_{1})}{p(M_{2})}=\mathrm{BF}_{1,2}\times\frac{p(M_{1})}{p(M_{2})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+M_{\bar{Z}_{n}}(t) & =\left(M_{Z/\sqrt{n}}(t)\right)^{n}=\left(M_{Z}(t/\sqrt{n})\right)^{n}\\
+M_{Z}(t/\sqrt{n}) & =1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+\sum_{k=3}^{\infty}M_{Z}^{k}(0)\frac{\left(t/\sqrt{n}\right)^{k}}{k!}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\rightarrow\infty}M_{\bar{Z}_{n}}(t) & =\lim_{n\rightarrow\infty}\left(1+0+\frac{\left(t/\sqrt{n}\right)^{2}}{2!}+R_{2}(t/\sqrt{n})\right)^{n}\\
+ & =\lim_{n\rightarrow\infty}\left(1+\frac{1}{n}\left(\frac{t^{2}}{2}+nR_{2}(t/\sqrt{n})\right)\right)^{n}=\lim_{n\rightarrow\infty}\left(1+\frac{t^{2}/2}{n}\right)^{n}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+s & =\frac{\mu^{2}}{\sigma^{2}}\;\;\;\text{and}\;\;\;r=\frac{\mu}{\sigma^{2}}\;\;\;\text{for mean}\;\;\;\mu>0\\
+s & =1+\omega r\;\;\;\text{where}\;\;\;r=\frac{\omega+\sqrt{\omega^{2}+4\sigma^{2}}}{2\sigma^{2}}\;\;\;\text{for mode}\;\;\;\omega>0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{align*}y_{i} & \sim\mathrm{ZIPoisson}(p_{i},\lambda_{i})\\
+\mathrm{logit}(p_{i}) & ={\color{#5a5f37}\alpha_{p}+\beta_{p}x_{i}}
+\end{align*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{align*}y_{i} & \sim\mathrm{ZIPoisson}(p_{i},\lambda_{i})\\
+\mathrm{logit}(p_{i}) & =\alpha_{p}+\beta_{p}x_{i}\\
+\log(\lambda_{i}) & =\alpha_{\lambda}+\beta_{\lambda}x_{i},
+\end{align*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\$1\text{million}=\begin{cases}
+0.9 & \text{investment grade}\\
+0.1 & \text{junk grade}\\
+0.0 & \text{default grade}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{c}
+\text{I}\\
+\text{J}\\
+\text{D}
+\end{array}\left(\begin{array}{ccc}
+0.90 & 0.05 & 0.05\\
+0.10 & 0.80 & 0.10\\
+0 & 0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+0.0 & 0.4 & 0.6 & 0.0 & 0.0\\
+0.65 & 0.0 & 0.35 & 0.0 & 0.0\\
+0.32 & 0.68 & 0.0 & 0.0 & 0.0\\
+0.0 & 0.0 & 0.0 & 0.12 & 0.88\\
+0.0 & 0.0 & 0.0 & 0.56 & 0.44
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Intercept} & \sim\mathscr{N}\left(0,2\right)\\
+\text{balance} & \sim\mathscr{N}\left(0,1\right)\\
+\text{income} & \sim\mathscr{N}\left(0,0.5\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y^{0}\right] & =X^{(0)}\beta_{0};\;\text{group }d=0\\
+\mathbb{E}\left[y^{1}\right] & =X^{(1)}\beta_{1};\;\text{group }d=1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\mathbb{E}\left[X^{(1)}\right]\beta_{1}-\mathbb{E}\left[X^{(0)}\right]\beta_{0}\\
+ & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{1}+\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
+ & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\beta_{0}-\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap}^{1} & =\mathbb{E}\left[X^{(0)}\right]\left(\beta_{1}-\beta_{0}\right)\\
+\text{Gap}^{0} & =\mathbb{E}\left[X^{(1)}\right]\left(\beta_{0}-\beta_{1}\right)\\
+\text{Gap}^{\text{OLS}} & =\delta_{d};\;\text{where }y=\delta_{0}+\delta_{1}d+\delta_{1}X+\epsilon
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap} & =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\\
+ & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap} & =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\\
+ & =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x\right)+\epsilon}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
+ & =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\\
+ & \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y^{1}\right]-\mathbb{E}\left[y^{0}\right] & =\left(\mathbb{E}\left[X^{(1)}\right]-\mathbb{E}\left[X^{(0)}\right]\right)\hat{\beta}^{p}+\text{Gap}^{p}\\
+\text{Gap}^{p} & =\mathbb{E}\left[X^{(1)}\right]\left(\hat{\beta}^{1}-\hat{\beta}^{p}\right)+\mathbb{E}\left[X^{(0)}\right]\left(\hat{\beta}^{p}-\hat{\beta}^{0}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap}^{p} & =\text{b}(y\vert d)-\text{b}(x\text{b}(y\vert x)\vert d)\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\\
+ & =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+d & =\frac{\text{cov}(d,x)}{\text{var}(x)}x\\
+y & =\frac{\text{cov}(y,x)}{\text{var}(x)}x
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y-\frac{\text{cov}(P(x),y)}{\text{var}(P(x))}P(x)\text{ on }d-\frac{\text{cov}(P(x),d)}{\text{var}(P(x))}P(x)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(x)\left(P(x)^{\top}P(x)\right)^{-1}\text{cov(P(x),y)}=x\frac{\text{cov}(d,x)}{\text{var}(x)}\times\frac{\text{var}(x)}{\left(\text{cov}(d,x)\right)^{2}}\times\frac{\text{cov}(d,x)}{\text{var}(x)}\text{cov}(x,y)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(X(X^{\top}X)^{-1}X^{\top}d\right)^{\top}\times X(X^{\top}X)^{-1}X^{\top}d & =d^{\top}X(X^{\top}X)^{-1}X^{\top}\times X(X^{\top}X)^{-1}X^{\top}d\\
+ & =d^{\top}X(X^{\top}X)^{-1}(X^{\top}X)^{-1}X^{\top}d
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(dX(X^{\top}X)^{-1}X^{\top}\right)^{\top}y & =X(X^{\top}X)^{-1}X^{\top}d^{\top}y\\
+dX(X^{\top}X)^{-1}X^{\top}X(X^{\top}X)^{-1}X^{\top}d^{\top}y & =dX(X^{\top}X)^{-1}X^{\top}d^{\top}y
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(X(X^{\top}X)^{-1}X^{\top}d\right)^{\top}\times X(XX^{\top})^{-1}X^{\top}d=d^{\top}X(X^{\top}X)^{-1}X^{\top}\times X(X^{\top}X)^{-1}X^{\top}d=d^{\top}X(XX^{\top})^{-1}X^{\top}d
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(X(X^{\top}X)^{-1}X^{\top}d\right)^{\top}\times X(XX^{\top})^{-1}X^{\top}d & =d^{\top}X(X^{\top}X)^{-1}X^{\top}\times X(X^{\top}X)^{-1}X^{\top}d\\
+ & =d^{\top}X(XX^{\top})^{-1}X^{\top}d
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\delta_{d}\\
+ & =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\\
+ & =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\\
+ & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
+ & +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{var}(x) & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
+ & =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+w_{1} & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\\
+w_{0} & =\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =w_{1}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\right]\\
+ & +w_{0}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right]\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\Pi & =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+ & +\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\Pi & =\frac{\pi\text{var}\left(x\vert d=1\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+ & +\frac{\left(1-\text{\pi}\right)\text{var}\left(x\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\\
+ & =\frac{\pi\text{cov}\left(x,y\vert d=1\right)+\left(1-\text{\pi}\right)\text{cov}\left(x,y\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\\
+ & =\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi\\
+ & =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\left(\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}\right)\\
+ & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{var}\left(\tilde{d}(x)\right) & =\text{var}\left(d-x\frac{\text{cov}\left(d,x\right)}{\text{var}\left(x\right)}\right)\\
+ & =\text{var}\left(d\right)-\frac{\text{cov}\left(d,x\right)^{2}}{\text{var}\left(x\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Gap}^{\text{OLS}} & =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{var}(x)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ & =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\\
+ & =w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\text{Q}=\text{K}p^{\beta}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[d\right] & =p\\
+\text{var}\left(d\right) & =p\left(1-\mathbb{E}\left[d\right]\right)^{2}+\left(1-p\right)\left(-\mathbb{E}\left[d\right]\right)^{2}\\
+ & =p\left(1-p\right)^{2}+\left(1-p\right)p^{2}\\
+ & =p\left(1-p\right)\\
+\text{covar}\left(d,y\right) & =\mathbb{E}_{y,d}\left[\left(y-\overline{y}\right)\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{d}\left[\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d\right],\left(d-\overline{d}\right)\right]\\
+ & =\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right]\times p\left(1-p\right)\\
+ & \;-\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]\times\left(1-p\right)p
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right)\\
+ & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right]\\
+ & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right)\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rll}
+a_{0} & =\pi\text{var}\left(\text{P}(x)\vert d=1\right) & \text{by definition}\\
+ & =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right] & \text{by definition of var}\\
+ & =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right) & \text{since}\,\mathbb{P}\left(A.B\right)=\mathbb{P}\left(A\vert B\right)\mathbb{P}\left(B\right)\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
+ & =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]} & \text{by definition of P}(x)\\
+ & =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{da_{0}}{d\alpha_{p}} & =3\mathbb{E}\left[\text{P}(x)^{2}\right]-4\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]}{\mathbb{E}\left[\text{P}(x)\right]}+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =-\mathbb{E}\left[\text{P}(x)^{2}\right]+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}-\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\left(\mathbb{E}\left[\text{P}(x)^{2}\right]-\mathbb{E}\left[\text{P}(x)\right]^{2}\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ & =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\text{var}\left(\text{P}(x)\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}>0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)} & =\overline{X}_{0}\left(\beta_{1}-\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right)\\
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)} & =\overline{X}_{1}\left(\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}-\beta_{0}\right)
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+DID & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]\\
+ & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]+\\
+ & E\left[Y_{i2}(1)|D_{i}=0\right]-E\left[Y_{i2}(0)|D_{i}=0\right]\\
+ & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]+-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]
+\end{align*}
+
+\end_inset
+
++= 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+DID & =E[Y_{i2}(1)-Y_{i1}(1)]-E[Y_{i2}(0)-Y_{i1}(0)]\\
+ & =E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=1]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]+\\
+ & E\left[Y_{i2}(1)|D_{i}=0\right]-E\left[Y_{i2}(1)|D_{i}=0\right]\\
+ & =E[Y_{i2}(1)|D_{i}=1]-E\left[Y_{i2}(1)|D_{i}=0\right]+\\
+ & E[Y_{i2}(1)-Y_{i1}(1)|D_{i}=0]-E[Y_{i2}(0)-Y_{i1}(0)|D_{i}=0]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X] & =\\
+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[\frac{1}{\pi}\left(Y_{t=2}-Y_{t=1}\right)|X,D=1]\pi+E[\frac{-1}{\left(1-\pi\right)}\left(Y_{t=2}-Y_{t=1}\right)|X,D=0]\left(1-\pi\right) & =\\
+E[Y_{t=2}-Y_{t=1}|X,D=1]-E[Y_{t=2}-Y_{t=1}|X,D=0] & =\\
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D & =1]\\
+ & =
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[Y_{t=2}^{1}-Y_{t=1}^{0}|D=1] & =\int E[Y_{t=2}^{1}-Y_{t=1}^{0}|X,D=1]d\mathbb{P}(x\vert D=1)\\
+ & =\int E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)|X]d\mathbb{P}(x\vert D=1)\\
+ & =E[\rho(D)\left(Y_{t=2}-Y_{t=1}\right)\frac{\mathbb{P}(D=1\vert X)}{\mathbb{P}(D=1)}]\\
+ & =E[\frac{Y_{t=2}-Y_{t=1}}{\mathbb{P}(D=1)}\frac{D-\mathbb{P}(D=1\vert X)}{1-\mathbb{P}(D=1\vert X)}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T}\sum_{t=1}^{T}(a_{t}-\bar{a})(b_{t}-\bar{b}) & =\frac{1}{T}\sum_{t=1}^{T}\left(a_{t}b_{t}-\bar{a}b_{t}-a_{t}\bar{b}+\bar{a}\bar{b}\right)\\
+ & =\left(\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}\right)-\bar{a}\bar{b}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\Delta_{k}a_{t}\Delta_{k}b_{t} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}-a_{t}\right)\left(b_{t+k}-b_{t}\right)\\
+ & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}\left(a_{t+k}b_{t+k}+a_{t}b_{t}\right)\\
+ & -\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t}b_{t+k}-\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{t=1}^{T-k}a_{t+k}b_{t+k} & =\frac{1}{T^{2}}\sum_{k=1}^{T-1}\sum_{s=k+1}^{T}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\sum_{k=1}^{s-1}a_{s}b_{s}\\
+ & =\frac{1}{T^{2}}\sum_{s=2}^{T}\left(s-1\right)a_{s}b_{s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{T^{2}}\left(a_{2}b_{2}+2a_{3}b_{3}+3a_{4}b_{4}+\cdots+\left(T-1\right)a_{T}b_{T}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{T-1}{T^{2}}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1,\,t\ne s}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T^{2}}\sum_{s=1}^{T}\sum_{t=1}^{T}a_{t}b_{s} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\frac{1}{T}\sum_{s=1}^{T}b_{s}\times\frac{1}{T}\sum_{t=1}^{T}a_{t} & =\\
+\frac{1}{T}\sum_{t=1}^{T}a_{t}b_{t}-\bar{b}\bar{a}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Y_{it} & =\alpha_{i}+\lambda_{t}+\delta\cdot D_{it};\;i\in\left\{ 0,1\right\} ,\,t\in\left\{ 0,1\right\} \\
+\Delta_{1}Y_{it} & =\Delta_{1}\lambda_{t}+\delta\cdot\Delta_{1}D_{it}\\
+Y_{i1}^{0}-Y_{i0}^{0} & =\lambda\left(1-0\right)+\delta\left(0-0\right)\\
+Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
++ & \left(a_{1}b_{1}+a_{2}b_{2}+\cdots+a_{T-2}b_{T-2}+a_{T-1}b_{T-1}\right)\\
++ & \left(a_{1}b_{1}+a_{2}b_{2}+\cdots+a_{T-3}b_{T-3}+a_{T-2}b_{T-2}\right)\\
+ & \qquad\qquad\qquad\vdots\\
++ & \left(a_{1}b_{1}+a_{2}b_{2}\right)\\
++ & \left(a_{1}b_{1}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

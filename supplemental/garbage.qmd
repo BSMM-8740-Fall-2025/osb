@@ -1,0 +1,44 @@
+---
+title: "test"
+format: pdf
+---
+
+Here we are
+
+```{r}
+#| label: compute test - covariance
+#| echo: true
+#| results: asis
+# check if 'librarian' is installed and if not, install it
+if (! "librarian" %in% rownames(installed.packages()) ){
+  install.packages("librarian")
+}
+  
+# load packages if not already loaded
+librarian::shelf(
+viridis, ggplot2, patchwork, showtext, extrafont
+)
+
+set.seed(8740); T = 20
+a <- 1 + rnorm(n = T)
+b <- a + 4 + rnorm(n = T, sd = 2)
+
+# calculate using difference equation
+cov_diff <- 
+  1:(T-1) |> purrr::map_vec(
+    (\(k){ ((dplyr::lead(a,k) - a) * (dplyr::lead(b,k) - b)) |> sum(na.rm=TRUE) })
+  ) |> sum(na.rm=TRUE) / (T*T)
+
+# summarize results
+tibble::tibble(x = a, y = b) |> 
+  dplyr::mutate(x = x - mean(x), y = y - mean(y), prod = x*y) |> 
+  dplyr::summarize(pop_cov = mean(prod), smpl_cov = sum(prod)/(dplyr::n()-1) ) |> 
+  tibble::add_column(
+    calc_cov = cov(a,b) # built in covariance 
+    , cov_diff = cov_diff
+  ) |> 
+  gt::gt() |> 
+  gt::tab_header(title = "Covariances", subtitle = stringr::str_glue("T={T}")) |> 
+  gt::tab_options(table.width = gt::pct(75), table.align = "center") |> 
+  gtExtras::gt_theme_espn() # |> gt::as_latex()
+```
