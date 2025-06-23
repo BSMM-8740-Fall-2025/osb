@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Decompositions – BSMM-8740 - Fall 2025</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-1ea342169d758a9c0b40338005fdbeec.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-6eac65427ccd038043c346349ba30785.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-1ea342169d758a9c0b40338005fdbeec.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<meta property="og:title" content="Decompositions – BSMM-8740 - Fall 2025">
+<meta property="og:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
+<meta property="og:site_name" content="BSMM-8740 - Fall 2025">
+<meta name="twitter:title" content="Decompositions – BSMM-8740 - Fall 2025">
+<meta name="twitter:description" content="Homepage for BSMM-8740: Data Analytic Methods &amp; Algorithms.">
+<meta name="twitter:image" content="https://bsmm-8740-fall-2025.github.io/osb/supplemental/images/twitter-card.png">
+<meta name="twitter:creator" content="@lodette">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Decompositions</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/BSMM-8740.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+      <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/bsmm-8740-fall-2025" title="GitHub organization" class="quarto-navigation-tool px-1" aria-label="GitHub organization"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Brightspace" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Brightspace"><i class="bi bi-person-fill"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://brightspace.uwindsor.ca/d2l/le/144921/discussions/List">
+            Discussion forum
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://brightspace.uwindsor.ca/d2l/lms/dropbox/admin/folders_manage.d2l?ou=144921">
+            Assignments
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://brightspace.uwindsor.ca/d2l/home/144921">
+            Home
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Course information</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course-syllabus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course-support.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Support</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course-team.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Teaching team</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../course-faq.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FAQ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../GitHub.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub username survey</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Weekly materials</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 2</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/BSMM_8740_week_11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 11</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Supplemental notes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/smd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Standardized Mean Differences (SMD)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/omitted_variables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Omitted Variable Bias</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/collinearity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Collinearity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/slr-derivations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SLR derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/model-diagnostics-matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/mlr-matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLR matrix notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/log-transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Log transformations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/model-selection-criteria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model selection criteria</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.cs.cmu.edu/~10715-f18/lectures/pca-2018.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PCA, KPCA, and ICA</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://towardsdatascience.com/qr-matrix-factorization-15bae43a6b2" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">QR decomposition</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/Bias_Variance_Trade_offs.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bias-Variance Trade offs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/PCA_and_component_selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PCA and component selection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://journals.sagepub.com/doi/epub/10.1177/00491241221099552" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A Crash Course in Good and Bad Controls</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../supplemental/exam_questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sample exam questions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mind-the-gap" id="toc-mind-the-gap" class="nav-link active" data-scroll-target="#mind-the-gap">Mind the Gap</a>
+  <ul class="collapse">
+  <li><a href="#oaxaca-blinder-decomposition" id="toc-oaxaca-blinder-decomposition" class="nav-link" data-scroll-target="#oaxaca-blinder-decomposition">Oaxaca-Blinder decomposition</a>
+  <ul class="collapse">
+  <li><a href="#the-case-in-which-coefficients-are-equal-across-groups" id="toc-the-case-in-which-coefficients-are-equal-across-groups" class="nav-link" data-scroll-target="#the-case-in-which-coefficients-are-equal-across-groups">The Case in Which Coefficients Are Equal across Groups</a></li>
+  <li><a href="#the-case-in-which-coefficients-vary-across-groups" id="toc-the-case-in-which-coefficients-vary-across-groups" class="nav-link" data-scroll-target="#the-case-in-which-coefficients-vary-across-groups">The Case in Which Coefficients Vary across Groups</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a></li>
+  <li><a href="#gap-weights" id="toc-gap-weights" class="nav-link" data-scroll-target="#gap-weights">Gap weights</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/bsmm-8740-fall-2025/osb/edit/main/supplemental/decompositions-hd.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2025/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="decompositions-hd.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Decompositions</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="mind-the-gap" class="level1">
+<h1>Mind the Gap</h1>
+<p>When observing a gap in mean outcomes between two groups, we often are interested in how much of the gap can be explained by differences in observable characteristics.</p>
+<p>The simplest approach is to estimate a pooled regression of the outcome on the observable characteristics, including an indicator variable for group membership, and interpret the coefficient on the group indicator as the unexplained gap in mean differences.</p>
+<p>The Oaxaca-Blinder (O-B) decomposition(s) represent an alternative approach that provides further insight into the relationship between the group indicator and the observable characteristics of the groups.</p>
+<section id="oaxaca-blinder-decomposition" class="level2">
+<h2 class="anchored" data-anchor-id="oaxaca-blinder-decomposition">Oaxaca-Blinder decomposition</h2>
+<p>As an alternative to a pooled regression with a categorical (or dummy) variable <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math> that splits our dataset into two groups, we can run regressions<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of the form <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>X</mi><mi>β</mi><mo>+</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">y=X\beta+\epsilon</annotation></semantics></math> to estimate the the mean difference between groups, as follows:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><msub><mi>β</mi><mn>0</mn></msub><mo>;</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">group </mtext><mspace width="0.333em"></mspace></mrow><mi>d</mi><mo>=</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><msub><mi>β</mi><mn>1</mn></msub><mo>;</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">group </mtext><mspace width="0.333em"></mspace></mrow><mi>d</mi><mo>=</mo><mn>1</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\bar{y}_0 &amp; =\bar{X}_0\beta_{0};\;\text{group }d=0\\
+\bar{y}_1 &amp; =\bar{X}_1\beta_{1};\;\text{group }d=1
+\end{align*}</annotation></semantics></math></p>
+<p>Then the mean difference in outcomes is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><msub><mi>β</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>β</mi><mn>1</mn></msub><mo>+</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><msub><mi>β</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><msub><mi>β</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap}
+\bar{y}_1-\bar{y}_0 &amp; =\bar{X}_1\beta_{1}-\bar{X}_0\beta_{0}\\
+ &amp; =\left(\bar{X}_1-\bar{X}_0\right)\beta_{1}+\bar{X}_0\left(\beta_{1}-\beta_{0}\right)\nonumber\\
+ &amp; =\left(\bar{X}_1-\bar{X}_0\right)\beta_{0}+\bar{X}_1\left(\beta_{1}-\beta_{0}\right)\nonumber
+\end{align}</annotation></semantics></math></p>
+<p>Where, using <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\bar{X}_0</annotation></semantics></math> as the baseline, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>β</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">\left( \bar{X}_1-\bar{X}_0\right)\beta_{1}</annotation></semantics></math> is the “explained” component (since it is based on differences in characteristics), and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><msub><mi>β</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\bar{X}_0\left(\beta_{1}-\beta_{0}\right)</annotation></semantics></math>) is the “unexplained” component (based on differences in returns to characteristics). This decomposition is not unique, as you can see from the second and third lines of equation ().</p>
+<p>We define:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><msub><mi>β</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>;</mo><mspace width="0.278em"></mspace><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is the baseline</mtext></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>0</mn></msub><mo>−</mo><msub><mi>β</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>;</mo><mspace width="0.278em"></mspace><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is the baseline</mtext></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>δ</mi><mi>d</mi></msub><mo>;</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">where </mtext><mspace width="0.333em"></mspace></mrow><mi>y</mi><mo>=</mo><msub><mi>δ</mi><mn>0</mn></msub><mo>+</mo><mi>d</mi><msub><mi>δ</mi><mi>d</mi></msub><mo>+</mo><mi>X</mi><msub><mi>δ</mi><mi>x</mi></msub><mo>+</mo><mi>ϵ</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{Gap}^{0} &amp; =\bar{X}_0\left(\beta_{1}-\beta_{0}\right);\;\bar{X}_0\text{ is the baseline}\\
+\text{Gap}^{1} &amp; =\bar{X}_1\left(\beta_{0}-\beta_{1}\right);\;\bar{X}_1\text{ is the baseline}\\
+\text{Gap}^{\text{OLS}} &amp; =\delta_{d};\;\text{where }y=\delta_{0}+d\delta_{d}+X\delta_{x}+\epsilon
+\end{align*}</annotation></semantics></math></p>
+<p>where, for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup><annotation encoding="application/x-tex">\text{Gap}^{\text{OLS}}</annotation></semantics></math>, given the strong assumptions that (i) the model is properly specified and that (ii) coefficients are equal across groups, a sensible definition of the population unexplained gap is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>d</mi></msub><annotation encoding="application/x-tex">\delta_d</annotation></semantics></math>.</p>
+<p>Using the fact (equation ) that</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>=</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+\frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+</annotation></semantics></math> then equation () can be written as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">¯</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">¯</mo></mover><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><msub><mi>β</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)} &amp; =\overline{X}_{0}\left(\beta_{1}-\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right)\\
+\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)} &amp; =\overline{X}_{1}\left(\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}-\beta_{0}\right)
+\end{align*}</annotation></semantics></math></p>
+<p>We an define another measure, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><annotation encoding="application/x-tex">\text{Gap}^{p}</annotation></semantics></math>, as</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo>+</mo><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><mo>−</mo><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\bar{y}_1-\bar{y}_0 &amp; =\left(\bar{X}_1-\bar{X}_0\right)\hat{\beta}_{p}+\text{Gap}^p\\
+\text{Gap}^p &amp; =\bar{X}_1\left(\hat{\beta}_1-\hat{\beta}_p\right)+\bar{X}_0\left(\hat{\beta}_p-\hat{\beta}_{0}\right)
+\end{align*}</annotation></semantics></math></p>
+<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>p</mi></msub><annotation encoding="application/x-tex">\hat{\beta}_p</annotation></semantics></math> is the coefficient from the pooled regression of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math> (i.e.&nbsp;<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>X</mi><msub><mi>β</mi><mi>p</mi></msub><mo>+</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">y=X\beta_p+\epsilon</annotation></semantics></math>). We consider separately the cases where the coefficients are equal across groups and where the coefficients are unequal across groups.</p>
+<section id="the-case-in-which-coefficients-are-equal-across-groups" class="level3">
+<h3 class="anchored" data-anchor-id="the-case-in-which-coefficients-are-equal-across-groups">The Case in Which Coefficients Are Equal across Groups</h3>
+<p>Here we assume that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.</p>
+<p>By definition, an O-B unexplained gap can always be written as the difference in overall mean outcomes minus the difference in predicted mean outcomes, and both of these differences can be denoted by linear projections.</p>
+<p>A general expression for an O-B unexplained gap is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">Gap</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">[</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:general-gap}
+\text{Gap} &amp; =\left[\bar{y}_{1}-\bar{y}_{0}\right]-\left[\hat{\beta}\left(\bar{x}_{1}-\bar{x}_{0}\right)\right]\nonumber\\
+ &amp; =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)
+\end{align}</annotation></semantics></math></p>
+<p>where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>β</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta}</annotation></semantics></math> is some coefficient computed from sample data and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">|</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{b}(z\vert w)</annotation></semantics></math> is the slope from a regression of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math> and an intercept. The choice of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>β</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta}</annotation></semantics></math> is what identifies the different O-B decompositions.</p>
+<p>So equation () resolves to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><annotation encoding="application/x-tex">\text{Gap}^{1}</annotation></semantics></math> when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>β</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta}</annotation></semantics></math> is the slope coefficient of a regression of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> using the data from group 1, and equation () gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup><annotation encoding="application/x-tex">\text{Gap}^{0}</annotation></semantics></math> when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>β</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta}</annotation></semantics></math> is the slope coefficient using data from group 0<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">Gap</mtext></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mi>d</mi></msub><mi>d</mi><mo>+</mo><msub><mi>β</mi><mi>x</mi></msub><mi>x</mi><mo>+</mo><mi>ϵ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>β</mi><mi>d</mi></msub><mo>+</mo><msub><mi>β</mi><mi>x</mi></msub><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>→</mo><msub><mi>β</mi><mi>d</mi></msub><mo>,</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">when </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>β</mi><mi>x</mi></msub><mo>=</mo><mover><mi>β</mi><mo accent="true">̂</mo></mover></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+\text{Gap} &amp; =\text{b}(y\vert d)-\text{b}(\hat{\beta}x\vert d)\nonumber\\
+ &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\label{eq:gen-gap-a}\\
+ &amp; =\frac{\text{cov}\left(d,\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\nonumber\\
+ &amp; =\beta_{d}+\beta_{x}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}-\hat{\beta}\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\label{eq:gen-gap-b}\\
+ &amp; \rightarrow\beta_{d},\;\text{when }\beta_{x}=\hat{\beta}\nonumber
+\end{align}</annotation></semantics></math></p>
+<p>Given our assumption that the mean outcomes between groups 0 and 1 differ only by a constant and that the outcome is influenced by only the observable characteristic(s) <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> (and so <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>β</mi><mo accent="true">̂</mo></mover><mo>=</mo><msub><mi>β</mi><mi>x</mi></msub></mrow><annotation encoding="application/x-tex">\hat{\beta}=\beta_x</annotation></semantics></math> in both group-specific regressions), then all the gap expressions are equivalent, except for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><annotation encoding="application/x-tex">\text{Gap}^{p}</annotation></semantics></math>.</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><annotation encoding="application/x-tex">\text{Gap}^{p}</annotation></semantics></math> is different because in the pooled regression used to compute <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><annotation encoding="application/x-tex">\text{Gap}^p</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math> is a omitted variable. In particular:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>×</mo><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap_p_eqn}
+\text{Gap}^{p} &amp; =\text{b}(y\vert d)-\text{b}(x\times\text{b}(y\vert x)\vert d)\nonumber\\
+ &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\times\left[\text{cov}\left(x,y\right)/\text{var}\left(x\right)\right]\right)}{\text{var}(d)}\nonumber\\
+ &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(d,x\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\right)}{\text{var}(x)}\nonumber\\
+ &amp; =\frac{1}{\text{var}(d)}\left(\text{cov}\left(d,y\right)-\frac{\text{cov}\left(d,x\right)\text{cov}\left(x,y\right)}{\text{var}(x)}\right)
+\end{align}</annotation></semantics></math></p>
+<p>Compare this to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup><annotation encoding="application/x-tex">\text{Gap}^{\text{OLS}}</annotation></semantics></math>, defining <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>z</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\tilde{z}(w)</annotation></semantics></math> as the component of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math> that is orthogonal to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math> in the population (so that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>z</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>z</mi><mo>−</mo><mi>w</mi><mtext mathvariant="normal">b</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">|</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\tilde{z}(w)=z-w\text{b}(z\vert w)</annotation></semantics></math>, alternatively <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>z</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>z</mi><mo>−</mo><mi>w</mi><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>w</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\tilde{z}(w)=z-w\frac{\text{cov}(z,w)}{\text{var}(w)}</annotation></semantics></math>)<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>δ</mi><mi>d</mi></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>;</mo><mspace width="0.278em"></mspace><mtext mathvariant="normal">per FWL</mtext></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>;</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">per definition of </mtext><mspace width="0.333em"></mspace></mrow><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>;</mo><mspace width="0.278em"></mspace><mrow><mtext mathvariant="normal">per definition of </mtext><mspace width="0.333em"></mspace></mrow><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="0.167em"></mspace><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap_OLS_eqn}
+\text{Gap}^{\text{OLS}} &amp; =\delta_{d}\nonumber\\
+ &amp; =\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per FWL}\nonumber\\
+ &amp; =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}-\frac{\text{cov}(x,\tilde{y}(x))}{\text{var}(\tilde{d}(x))}\times\frac{\text{cov}(d,x)}{\text{var}(x)};\;\text{per definition of }\tilde{d}(x)\nonumber\\
+ &amp; =\frac{\text{cov}(d,\tilde{y}(x))}{\text{var}(\tilde{d}(x))};\;\text{per definition of }\tilde{y}(x),\,\text{cov}(x,\tilde{y}(x))=0\nonumber\\
+ &amp; =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align}</annotation></semantics></math></p>
+<p>and so <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mrow><annotation encoding="application/x-tex">\text{Gap}^{p}=\frac{\text{var}(\tilde{d}(x))}{\text{var}(d)}\text{Gap}^{\text{OLS}}</annotation></semantics></math></p>
+</section>
+<section id="the-case-in-which-coefficients-vary-across-groups" class="level3">
+<h3 class="anchored" data-anchor-id="the-case-in-which-coefficients-vary-across-groups">The Case in Which Coefficients Vary across Groups</h3>
+<p>The relationship between <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mi>p</mi></msup><annotation encoding="application/x-tex">\text{Gap}^p</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup><annotation encoding="application/x-tex">\text{Gap}^{\text{OLS}}</annotation></semantics></math> is exact and general.</p>
+<p>Here we assume that the coefficient on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> varies between the two groups, and that x is a scalar variable (i.e.&nbsp;a single observable characteristic, not a vector of observable characteristics):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msub><mi>δ</mi><mn>0</mn></msub><mo>+</mo><mi>d</mi><msub><mi>δ</mi><mi>d</mi></msub><mo>+</mo><msub><mi>δ</mi><mi>x</mi></msub><mi>x</mi><mo>+</mo><msub><mi>δ</mi><mrow><mi>d</mi><mi>x</mi></mrow></msub><mi>d</mi><mi>x</mi><mo>+</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">
+y=\delta_{0}+d\delta_{d}+\delta_{x}x+\delta_{dx}dx+\epsilon 
+</annotation></semantics></math></p>
+<p>Based on equation () we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap_1}
+\text{Gap}^1 &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}
+\end{align}</annotation></semantics></math></p>
+<p>and</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap_0}
+\text{Gap}^0 &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align}</annotation></semantics></math></p>
+<p>and finally,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}\label{eq:gap_OLS}
+\text{Gap}^{\text{OLS}} &amp; =w_1\text{Gap}^1+w_0\text{Gap}^0
+\end{align}</annotation></semantics></math></p>
+<p>where the weights are:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>w</mi><mn>1</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>w</mi><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+w_{1} &amp; =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w1}\\
+w_{0} &amp; =\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\label{eq:gap_w0}
+\end{align}</annotation></semantics></math></p>
+<p>Now writing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mrow><annotation encoding="application/x-tex">\text{Gap}^{\text{OLS}}=w_1\text{Gap}^1 + w_0\text{Gap}^0</annotation></semantics></math> with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">w_1+w_0=1</annotation></semantics></math> (equation ()):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>w</mi><mn>1</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>+</mi><msub><mi>w</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">[</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>×</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mi>Π</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} &amp; =w_{1}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\right]\\
+ &amp; +w_{0}\left[\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\times\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\right]\\
+ &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi
+\end{align*}</annotation></semantics></math></p>
+<p>where</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>Π</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>+</mi><mfrac><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\Pi &amp; =\frac{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+ &amp; +\frac{\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}{\mathbb{P}\left(d=1\right)\text{var}\left(x\vert d=1\right)+\mathbb{P}\left(d=0\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}
+\end{align*}</annotation></semantics></math></p>
+<p>simplifying <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Π</mi><annotation encoding="application/x-tex">\Pi</annotation></semantics></math>:</p>
+<p><span class="math display">$$\begin{align*}
+\Pi &amp; =\frac{\pi\text{var}\left(x\vert d=1\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=1\right)}{\text{var}(x\vert d=1)}\\
+&amp; +\frac{\left(1-\text{\ensuremath{\pi}}\right)\text{var}\left(x\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\frac{\text{cov}\left(x,y\vert d=0\right)}{\text{var}(x\vert d=0)}\\
+&amp; =\frac{\pi\text{cov}\left(x,y\vert d=1\right)+\left(1-\text{\ensuremath{\pi}}\right)\text{cov}\left(x,y\vert d=0\right)}{\pi\text{var}\left(x\vert d=1\right)+\left(1-\pi\right)\text{var}\left(x\vert d=0\right)}\\
+&amp; =\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}
+\end{align*}$$</span></p>
+<p>and so</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>w</mi><mn>1</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mi>Π</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0} &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\Pi\\
+ &amp; =\frac{\text{cov}\left(d,y\right)}{\text{var}(d)}-\frac{\text{cov}\left(x,d\right)}{\text{var}(d)}\left(\frac{\text{cov}(x,y)-\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}}{\text{var}(x)-\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}}\right)\\
+ &amp; =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}
+\end{align*}</annotation></semantics></math></p>
+<p>Now we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{Gap}^{\text{OLS}} &amp; =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)
+\end{align*}</annotation></semantics></math></p>
+<p>and since <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\tilde{d}(x)</annotation></semantics></math> represents the residuals from a population regression of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math> on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>−</mo><mi>x</mi><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{var}\left(\tilde{d}(x)\right) &amp; =\text{var}\left(d-x\frac{\text{cov}\left(d,x\right)}{\text{var}\left(x\right)}\right)\\
+ &amp; =\text{var}\left(d\right)-\frac{\text{cov}\left(d,x\right)^{2}}{\text{var}\left(x\right)}
+\end{align*}</annotation></semantics></math></p>
+<p>and so</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msup><mtext mathvariant="normal">Gap</mtext><mtext mathvariant="normal">OLS</mtext></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>1</mn></msup><mo>+</mo><msub><mi>w</mi><mn>0</mn></msub><msup><mtext mathvariant="normal">Gap</mtext><mn>0</mn></msup></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{Gap}^{\text{OLS}} &amp; =\frac{1}{\text{var}(\tilde{d}(x))}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ &amp; =\frac{\text{var}(x)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\left(\text{cov}(d,y)-\text{cov}(d,x)\frac{\text{cov}(x,y)}{\text{var}(x)}\right)\\
+ &amp; =\frac{\text{cov}\left(d,y\right)\text{var}(x)-\text{cov}\left(d,x\right)\text{cov}(x,y)}{\text{var}(x)\text{var}(d)-\text{cov}(d,x)^{2}}\\
+ &amp; =w_{1}\text{Gap}^{1}+w_{0}\text{Gap}^{0}
+\end{align*}</annotation></semantics></math></p>
+</section>
+<section id="appendix" class="level3">
+<h3 class="anchored" data-anchor-id="appendix">Appendix</h3>
+<section id="regression-on-binary-variable-coefficient" class="level4">
+<h4 class="anchored" data-anchor-id="regression-on-binary-variable-coefficient">Regression on binary variable: coefficient</h4>
+<p>Recall that for a continuous variable <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> and a binary variable <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math> (with the proportion of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d=1</annotation></semantics></math> in the data <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">=p</annotation></semantics></math>):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>−</mi><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><msup><mi>p</mi><mn>2</mn></msup></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">covar</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝔼</mi><mrow><mi>y</mi><mo>,</mo><mi>d</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>−</mo><mover><mi>d</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝔼</mi><mi>d</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>−</mo><mover><mi>d</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>×</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mspace width="0.278em"></mspace><mo>−</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>p</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\mathbb{E}\left[d\right] &amp; =p\\
+\text{var}\left(d\right) &amp; =p\left(1-\mathbb{E}\left[d\right]\right)^{2}+\left(1-p\right)\left(-\mathbb{E}\left[d\right]\right)^{2}\\
+ &amp; =p\left(1-p\right)^{2}+\left(1-p\right)p^{2}\\
+ &amp; =p\left(1-p\right)\\
+\text{covar}\left(d,y\right) &amp; =\mathbb{E}_{y,d}\left[\left(y-\overline{y}\right)\left(d-\overline{d}\right)\right]\\
+ &amp; =\mathbb{E}_{d}\left[\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d\right],\left(d-\overline{d}\right)\right]\\
+ &amp; =\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=1\right]\times p\left(1-p\right)\\
+ &amp; \;-\mathbb{E}_{y}\left[\left(y-\overline{y}\right)\vert d=0\right]\times\left(1-p\right)p
+\end{align*}</annotation></semantics></math></p>
+<p>Then the coefficient <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mi>d</mi></msub><annotation encoding="application/x-tex">\beta_d</annotation></semantics></math> from the regression <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>∼</mo><msub><mi>β</mi><mi>d</mi></msub><mi>d</mi></mrow><annotation encoding="application/x-tex">y\sim\beta_d d</annotation></semantics></math> is</p>
+<p><span id="eq-binary-reg"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mi>d</mi></msub><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>=</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><msub><mi>𝔼</mi><mi>y</mi></msub><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mspace width="2.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\beta_d = \frac{\text{cov}\left(d,y\right)}{\text{var}\left(d\right)} = \mathbb{E}_{y}\left[\left(y\right)\vert d=1\right] - \mathbb{E}_{y}\left[\left(y\right)\vert d=0\right]
+ \qquad(1)</annotation></semantics></math></span></p>
+</section>
+<section id="misc" class="level4">
+<h4 class="anchored" data-anchor-id="misc">Misc</h4>
+<p>The law of total variance, or variance decomposition formula is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="false" form="postfix">|</mo><mi>Y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>X</mi><mo stretchy="false" form="postfix">|</mo><mi>Y</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\text{var}(X)=\mathbb{E}[\text{var}(X\vert Y)]+\text{var}(\mathbb{E}[X\vert Y])
+</annotation></semantics></math> where the first term is the between-group variance and the second term is the within-group variance.</p>
+<p>In our problem, the corresponding variance decomposition is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>+</mi><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{var}(x) &amp; =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=0\right]-\mathbb{E}\left[x\right]\right)^{2}\right)\\
+ &amp; +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\right]\right)^{2}\right)
+\end{align*}</annotation></semantics></math> but we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>y</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>π</mi><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+\mathbb{E}\left[x\right]=\mathbb{E}\left[\mathbb{E}\left[x\vert y\right]\right]=\pi\mathbb{E}\left[x\vert d=1\right] + (1-\pi)\mathbb{E}\left[x\vert d=0\right]
+</annotation></semantics></math> substituting the RHS for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbb{E}\left[x\right]</annotation></semantics></math> we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msup><mi>π</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>+</mi><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{var}(x) &amp; =\left(1-\pi\right)\left(\text{var}(x\vert d=0)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}\pi^{2}\right)\\
+ &amp; +\pi\left(\text{var}(x\vert d=1)+\left(\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]\right)^{2}(1-\pi)^{2}\right)
+\end{align*}</annotation></semantics></math></p>
+<p>but we have <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbb{E}\left[x\vert d=1\right]-\mathbb{E}\left[x\vert d=0\right]=\text{cov}(x,d)/\text{var}(d)</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{var}(d)=\pi(1-\pi)</annotation></semantics></math>, so</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>π</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mtext mathvariant="normal">var</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac><mo>×</mo><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><msup><mi>π</mi><mn>2</mn></msup><mo>+</mo><mi>π</mi><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>π</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mtext mathvariant="normal">var</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></mfrac><mo>×</mo><mrow><mo stretchy="true" form="prefix">[</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>π</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>π</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\text{var}(x) &amp; =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\pi^{2}+\pi(1-\pi)^{2}\right]\\
+ &amp; =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)^{2}}\times\left[(1-\pi)\text{var}(d)+\pi\text{var}(d)\right]\\
+ &amp; =\left(1-\pi\right)\text{var}(x\vert d=0)+\pi\text{var}(x\vert d=1)+\frac{\text{cov}(d,x)^{2}}{\text{var}(d)}
+\end{align*}</annotation></semantics></math></p>
+<p>by the same logic</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>π</mi><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\text{cov}(x,y)=\left(1-\pi\right)\text{cov}(x,y\vert d=0)+\pi\text{cov}(x,y\vert d=1)+\frac{\text{cov}(d,x)\text{cov}(d,y)}{\text{var}(d)}
+</annotation></semantics></math></p>
+</section>
+<section id="ols-weights" class="level4">
+<h4 class="anchored" data-anchor-id="ols-weights">OLS Weights</h4>
+<p>With <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>≡</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>d</mi><mo stretchy="false" form="postfix">|</mo><mi>X</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\rho\equiv\mathbb{E}[d]=\mathbb{E}\left[\mathbb{E}[d\vert X]\right]</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><mi>p</mi></msub><mo>+</mo><mi>X</mi><msub><mi>β</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">\text{P}(X)=\alpha_p+X\beta_p</annotation></semantics></math> is the propensity score (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mi>p</mi></msub><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\beta_p=\frac{\text{cov}(d,X)}{\text{var}(X)}</annotation></semantics></math>). We derive the expression for the derivatives of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>0</mn></msub><annotation encoding="application/x-tex">w_0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mn>1</mn></msub><annotation encoding="application/x-tex">w_1</annotation></semantics></math> wrt the intercept of the propensity model <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>p</mi></msub><annotation encoding="application/x-tex">\alpha_p</annotation></semantics></math>, where a shift in the intercept changes <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> by a small amount.</p>
+<p>Define <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>0</mn></msub><mo>=</mo><mi>π</mi><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">a_0 = \pi\text{var}\left(\text{P}(x)\vert d=1\right)</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>1</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>π</mi><mo stretchy="true" form="postfix">)</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">|</mo><mi>d</mi><mo>=</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">a_1 = (1-\pi)\text{var}\left(\text{P}(x)\vert d=0\right)</annotation></semantics></math>, such that <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>0</mn></msub><mo>=</mo><mfrac><msub><mi>a</mi><mn>0</mn></msub><mrow><msub><mi>a</mi><mn>0</mn></msub><mo>+</mo><msub><mi>a</mi><mn>1</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">w_0=\frac{a_0}{a_0+a_1}</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mfrac><msub><mi>a</mi><mn>1</mn></msub><mrow><msub><mi>a</mi><mn>0</mn></msub><mo>+</mo><msub><mi>a</mi><mn>1</mn></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">w_1=\frac{a_1}{a_0+a_1}</annotation></semantics></math> (NOTE: this is different from the previous definition)</p>
+<p>Referencing the weights, per equations ( and )</p>
+<p><span class="math display">$$
+\begin{array}{rll}
+a_{0} &amp; =\pi\text{var}\left(\text{P}(x)\vert d=1\right) &amp; \text{\small by definition}\\
+&amp; =\mathbb{E}\left[d\right]\mathbb{E}\left[\left(\text{P}(x)-\mathbb{E}\left[\text{P}(x)\vert d=1\right]\right)^{2}\vert d=1\right] &amp; \text{\small by definition of var}\\
+&amp; =\mathbb{E}\left[d\right]\left(\frac{\mathbb{E}\left[\text{P}(x)^{2}d\right]}{\mathbb{E}\left[d\right]}-\left(\frac{\mathbb{E}\left[\text{P}(x)d\right]}{\mathbb{E}\left[d\right]}\right)^{2}\right) &amp; \small{ \text{since}\,\mathbb{P}\left(A.B\right)=\mathbb{P}\left(A\vert B\right)\mathbb{P}\left(B\right)}\\
+&amp; =\mathbb{E}\left[\text{P}(x)^{2}d\right]-\frac{\mathbb{E}\left[\text{P}(x)d\right]^{2}}{\mathbb{E}\left[d\right]}\\
+&amp; =\mathbb{E}\left[\text{P}(x)^{2}\mathbb{E}\left[d\vert X\right]\right]-\frac{\mathbb{E}\left[\text{P}(x)\mathbb{E}\left[d\vert X\right]\right]^{2}}{\mathbb{E}\left[\mathbb{E}\left[d|X\right]\right]} &amp; \text{\small by definition of P}(x)\\
+&amp; =\mathbb{E}\left[\text{P}(x)^{3}\right]-\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]}
+\end{array}
+$$</span> using the definition of the linear propensity (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><mi>p</mi></msub><mo>+</mo><mi>X</mi><msub><mi>β</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">\text{P}(X)=\alpha_p+X\beta_p</annotation></semantics></math>), then</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mrow><mi>d</mi><msub><mi>a</mi><mn>0</mn></msub></mrow><mrow><mi>d</mi><msub><mi>α</mi><mi>p</mi></msub></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mn>3</mn><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mn>4</mn><mfrac><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow></mrow></mfrac><mo>+</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>−</mi><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>−</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow><mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">]</mo></mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>𝔼</mi><msup><mrow><mo stretchy="true" form="prefix">[</mo><mtext mathvariant="normal">P</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow></mfrac><mo>&gt;</mo><mn>0</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+\frac{da_{0}}{d\alpha_{p}} &amp; =3\mathbb{E}\left[\text{P}(x)^{2}\right]-4\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]}{\mathbb{E}\left[\text{P}(x)\right]}+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ &amp; =-\mathbb{E}\left[\text{P}(x)^{2}\right]+\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ &amp; =\frac{\left(\mathbb{E}\left[\text{P}(x)^{2}\right]\right)^{2}-\mathbb{E}\left[\text{P}(x)^{2}\right]\mathbb{E}\left[\text{P}(x)\right]^{2}}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ &amp; =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\left(\mathbb{E}\left[\text{P}(x)^{2}\right]-\mathbb{E}\left[\text{P}(x)\right]^{2}\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}\\
+ &amp; =\frac{\mathbb{E}\left[\text{P}(x)^{2}\right]\text{var}\left(\text{P}(x)\right)}{\mathbb{E}\left[\text{P}(x)\right]^{2}}&gt;0
+\end{align*}</annotation></semantics></math></p>
+</section>
+</section>
+<section id="gap-weights" class="level3">
+<h3 class="anchored" data-anchor-id="gap-weights">Gap weights</h3>
+<p>Example</p>
+<p>data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-overflow-wrap code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://cran.r-project.org/web/packages/oaxaca/vignettes/oaxaca.pdf</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://www.worldbank.org/content/dam/Worldbank/document/HDN/Health/HealthEquityCh12.pdf</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># https://pmc.ncbi.nlm.nih.gov/articles/PMC8343972/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># https://www.sciencedirect.com/science/article/abs/pii/S0169721811004072</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2528391</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># https://link.springer.com/article/10.1186/s12982-021-00100-9</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># https://giacomovagni.com/blog/2023/oaxaca/</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># https://journals.sagepub.com/doi/pdf/10.1177/1536867X0800800401</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># https://ocw.mit.edu/courses/14-662-labor-economics-ii-spring-2015/resources/mit14_662s15_lecnotes1/</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Load HMDA data</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">'CPS1985'</span>, <span class="at">package =</span> <span class="st">"AER"</span>) <span class="co"># data('PSID1982', package = "AER")</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>hmda <span class="ot">&lt;-</span> CPS1985 <span class="sc">|&gt;</span> tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># data("nswcps", package = "hettreatreg")</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for analysis</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Looking at income differences between racial groups</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>lending_data <span class="ot">&lt;-</span> hmda <span class="sc">|&gt;</span> </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">minority =</span> <span class="fu">factor</span>(ethnicity <span class="sc">!=</span> <span class="st">"cauc"</span>), <span class="co"># minority = factor(race != "white"),</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_income =</span> <span class="fu">log</span>(wage) <span class="co">#log(income)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(wage, log_income, minority, education, experience, union)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># dplyr::select(log_income, minority, education, hrat, ccred, mcred, pubrec)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-overflow-wrap code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit separate regressions</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model_a <span class="ot">&lt;-</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(wage <span class="sc">~</span> education <span class="sc">+</span> experience, <span class="at">data =</span> lending_data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(union<span class="sc">==</span><span class="st">'yes'</span>))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>model_b <span class="ot">&lt;-</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(wage <span class="sc">~</span> education <span class="sc">+</span> experience, <span class="at">data =</span> lending_data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(union<span class="sc">==</span><span class="st">'no'</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Get mean characteristics (including intercept)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>X_mean_a <span class="ot">&lt;-</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colMeans</span>( </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    lending_data <span class="sc">|&gt;</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(union<span class="sc">==</span><span class="st">'yes'</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">select</span>(education, experience)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    ) </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>X_mean_b <span class="ot">&lt;-</span> </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>, </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colMeans</span>( </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      lending_data <span class="sc">|&gt;</span> </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(union<span class="sc">==</span><span class="st">'no'</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">select</span>(education, experience) </span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    ) </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Get coefficients</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>beta_a <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_a)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>beta_b <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_b)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate decomposition</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">explained =</span> <span class="fu">sum</span>((X_mean_a <span class="sc">-</span> X_mean_b) <span class="sc">*</span> beta_a)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  , <span class="at">unexplained =</span> <span class="fu">sum</span>(X_mean_b <span class="sc">*</span> (beta_a <span class="sc">-</span> beta_b))</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  , total_gap <span class="ot">&lt;-</span> explained <span class="sc">+</span> unexplained</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Oaxaca-Blinder decomposition</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>decomp <span class="ot">&lt;-</span> </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  oaxaca<span class="sc">::</span><span class="fu">oaxaca</span>(</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    wage <span class="sc">~</span> education <span class="sc">+</span> experience <span class="sc">|</span> union</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    , <span class="at">data =</span> </span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      lending_data <span class="sc">|&gt;</span> </span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">union =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(union<span class="sc">==</span><span class="st">'yes'</span><span class="sc">~</span><span class="dv">0</span>, <span class="cn">TRUE</span> <span class="sc">~</span><span class="dv">1</span>))</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>To keep the notation simple, regression coefficients <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math> will contain an intercept, i.e.&nbsp;<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math> is always a vector whose first element is the intercept, and the data <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>is a design matrix, whose first column is all ones.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>under the data generation process described by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mi>d</mi></msub><mi>d</mi><mo>+</mo><msub><mi>β</mi><mi>x</mi></msub><mi>x</mi><mo>+</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">y=\beta_{0}+\beta_{d}d+\beta_{x}x+\epsilon</annotation></semantics></math><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Note: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>d</mi><mo>−</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>d</mi><mo>−</mo><mi>x</mi><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\tilde{d}(x)=d-P(x)=d-x\frac{\text{cov}(x,d)}{\text{var}(x)}</annotation></semantics></math>, the linear propensity, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>y</mi><mo>−</mo><mi>x</mi><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\tilde{y}(x)=y-x\frac{\text{cov}(y,x)}{\text{var}(x)}</annotation></semantics></math>, so the coefficient <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>d</mi></msub><annotation encoding="application/x-tex">\delta_d</annotation></semantics></math> is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mrow><mtext mathvariant="normal">cov</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mover><mi>y</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mtext mathvariant="normal">var</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>d</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><annotation encoding="application/x-tex">\frac{\text{cov}(\tilde{d}(x),\tilde{y}(x))}{\text{var}(\tilde{d}(x))}</annotation></semantics></math>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/bsmm-8740-fall-2025\.github\.io\/osb\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2022, Mine Çetinkaya-Rundel used under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bsmm-8740-fall-2025/osb/edit/main/supplemental/decompositions-hd.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/bsmm-8740-fall-2025/osb/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This design is modified from <a href="https://sta210-s22.github.io/website/">a course at Duke</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
