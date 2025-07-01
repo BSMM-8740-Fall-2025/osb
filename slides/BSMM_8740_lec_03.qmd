@@ -1,8 +1,8 @@
 ---
 title: "Regression methods"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 3]"
+subtitle: "BSMM8740-2-R-2025F [WEEK - 3]"
 author: "L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2025.github.io/osb](https://bsmm-8740-fall-2025.github.io/osb/)"
 logo: "images/logo.png"
 # title-slide-attributes:
 #   data-background-image: images/my-DRAFT.png
@@ -847,7 +847,7 @@ $$
 
 ### Common Types of GLMs
 
-::: panel-tabset
+::::::: panel-tabset
 ## Linear
 
 ::: {style="font-size: xx-large"}
@@ -891,13 +891,13 @@ Gamma Regression (Gamma Distribution)
 -   **Example**: Predicting the time until failure of a machine based on temperature, pressure, etc.
 -   **Formula**: $(\frac{1}{\mu} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where ($\mu$) is the mean of the response variable.
 :::
-:::
+:::::::
 
 ## Generalized Linear Models
 
 ### Examples of GLMs
 
-::: panel-tabset
+:::::: panel-tabset
 ## Logistic
 
 ::: {style="font-size: xx-large"}
@@ -930,7 +930,7 @@ Gamma Regression (Gamma Distribution)
 -   **Model**: $(\frac{1}{\mu} = \beta_0 + \beta_1 \text{Temperature} + \beta_2 \text{Pressure} + \beta_3 \text{Frequency})$
 -   **Interpretation**: The coefficients $(\beta_1, \beta_2, \beta_3)$ indicate how each predictor affects the inverse of the expected lifetime.
 :::
-:::
+::::::
 
 # Non-parametric regression
 
@@ -984,7 +984,7 @@ $$
 
 ## Regression with trees
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 32px"}
 Strengths
 
@@ -1001,7 +1001,7 @@ Weaknesses
 -   Single regression trees have high variance, resulting in unstable predictions (an alternative subsample of training data can significantly change the terminal nodes).
 -   Due to the high variance single regression trees have poor predictive accuracy.
 :::
-:::
+:::::
 
 ## Regression with trees (Bagging)
 
@@ -1048,7 +1048,7 @@ When $m=p$, the randomization amounts to using only step 1 and is the same as *b
 
 ## Regression with a random forest
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: 32px"}
 Strengths
 
@@ -1066,7 +1066,7 @@ Weaknesses
 -   Although accurate, often cannot compete with advanced boosting algorithms
 -   Less interpretable
 :::
-:::
+:::::
 
 ## Regression with gradient boosting
 

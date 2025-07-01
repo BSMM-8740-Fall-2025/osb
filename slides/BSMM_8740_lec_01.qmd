@@ -1,8 +1,8 @@
 ---
 title: "Tidyverse, EDA & git"
-subtitle: "BSMM8740-2-R-2024F [WEEK - 1]"
+subtitle: "BSMM8740-2-R-2025F [WEEK - 1]"
 author: "Dr. L.L. Odette"
-footer:  "[bsmm-8740-fall-2024.github.io/osb](https://bsmm-8740-fall-2024.github.io/osb/)"
+footer:  "[bsmm-8740-fall-2025.github.io/osb](https://bsmm-8740-fall-2025.github.io/osb/)"
 logo: "images/logo.png"
 format: 
   revealjs: 
@@ -60,10 +60,10 @@ knitr::opts_chunk$set(
 ## Announcements
 
 ::: {style="font-size: smaller"}
--   Please go to the [course website](https://bsmm-8740-fall-2024.github.io/osb/) to review the weekly slides, access the labs, read the syllabus, etc.
+-   Please go to the [course website](https://bsmm-8740-fall-2025.github.io/osb/) to review the weekly slides, access the labs, read the syllabus, etc.
 -   My intent is to have assigned lab exercises each week, which will be started during class.
     -   Lab assignments will be due at 5:00pm sharp on the Sunday following the lecture.
--   Lab 1 is due Sunday September 15 at 5pm.
+-   Lab 1 is due Sunday September 14 at 5pm.
 -   My regular office hour will be on Wednesday from 2:30pm - 3:30pm or via MS Teams as requested. Please email ahead of time.
 :::
 
@@ -89,6 +89,36 @@ tibble::tibble(
 
 </div>
 
+## Expected Course Topics
+
+```{r}
+#| echo: false
+#| message: false
+tibble::tibble(
+  analytics = c('descriptive','predictive','prescriptive')
+  , 'short description' = c('what has happened', 'what will happen', 'changing what will happen')
+  , 'long description' = c(
+    'Calculates trends, averages, medians, standard deviations, etc. Often found in dashboards. Value in providing key statistics.'
+    , 'Finds relationships inside of the data, leading to underlying, generalizable patterns. From patterns, make predictions on unseen data. Value in providing insight on unseen data.'
+    , 'Uses models created via predictive analytics to recommend optimal actions. Value in finding strategy with the most desirable outcome.')
+) |> gt::gt() |> 
+  gtExtras::gt_theme_espn() |> 
+  gt::tab_options( table.font.size = gt::px(28) ) |> 
+  gt::tab_style(
+    gt::cell_borders(
+      sides = c('left','right')
+      , color = "#000000"
+      , style = "solid"
+      , weight = gt::px(1)
+    ),
+    locations = 
+      gt::cells_body(
+        columns = 'short description'
+      )
+  ) |> 
+  gt::as_raw_html()
+```
+
 ## Today's Outline
 
 -   Introduction to Tidy data & Tidyverse syntax in R.
@@ -104,7 +134,7 @@ A dataset is a collection of **values**, usually either numbers (if quantitative
 
 Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
 
-A variable contains all values that measure the same underlying attribute (like height, temperature, duration) across units. An observation contains all values measured on the same unit (like a person, or a day, or a race) across attributes.
+A **variable** contains all values that measure the same underlying attribute (like height, temperature, duration) across units. An **observation** contains all values measured on the same unit (like a person, or a day, or a business) across attributes.
 :::
 
 ## Tidy Data
@@ -137,11 +167,20 @@ tidyr::table1
 ```
 :::
 
+## Tidy Data
+
+-   We don't always get data in tidy format
+-   The collection of measurements in an observation is often unique to an organization, and variable names may be non-standard, and
+    -   data may not contain the measurements you need for **your** business problem
+
 ## Tidyverse principles
 
 1.  Design for humans
+    -   consistency across packages
+    -   control flow is linear (no loops or jumps)
 2.  Reuse existing data structures
-3.  Design for the pipe and functional programming
+    -   (almost) everything, in and out, is a data frame
+3.  Design for functional programming (i.e. the **pipe**)
 
 ## Tidyverse packages
 
@@ -177,7 +216,7 @@ The two simplest of the five verbs are `filter()` and `select()`, which return 
 
 ![The select() function. At left, a data frame, from which we retrieve only a few of the columns. At right, the resulting data frame after selecting those columns.](/images/select-1.png)
 
-## Example
+## Example: data
 
 ```{r}
 #| echo: true
@@ -212,7 +251,7 @@ Combining the `filter()` and `select()` commands enables one to drill down t
 ```{r}
 #| echo: true
 #| message: false
-#| code-line-numbers: "2|3"
+#| code-line-numbers: "2|3|4"
 dplyr::select(
   dplyr::filter(
     presidential
@@ -224,9 +263,9 @@ dplyr::select(
 
 ## Example: pipe
 
-As written the `filter()` operation is nested inside the `select()` operation.
+As written, the `filter()` operation is nested inside the `select()` operation.
 
-With the pipe (`%>%`), we can write the same expression as above in a more readable syntax.
+With the pipe (`%>%`), we can write the same expression in a more readable syntax.
 
 ```{r}
 #| echo: true
@@ -391,7 +430,7 @@ my_presidents %>%
   )
 ```
 
-## Example
+## Example: read_csv & dplyr
 
 ```{r}
 #| echo: true
@@ -770,12 +809,12 @@ DBI::dbDisconnect(con)
 
 ## Pivoting
 
-::: panel-tabset
+::::::::: panel-tabset
 ## longer
 
 When some of the column names are not names of variables, but *values* of a variable.
 
-::: columns
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 tidyr::table4a
@@ -794,13 +833,13 @@ tidyr::table4a %>%
     , names_to = "year", values_to = "cases")
 ```
 :::
-:::
+:::::
 
 ## wider
 
 When an observation is scattered across multiple rows.
 
-::: columns
+::::: columns
 ::: {.column width="50%" style="font-size: smaller"}
 ```{r}
 tidyr::table2
@@ -819,8 +858,8 @@ tidyr::table2 %>%
       , values_from = count)
 ```
 :::
-:::
-:::
+:::::
+:::::::::
 
 ## Relational data[^1]
 
@@ -928,8 +967,8 @@ Exploratory data analysis is the process of understanding a new dataset by looki
 
 We will perform two broad categories of EDA:
 
--   Descriptive Statistics, which includes mean, median, mode, inter-quartile range, and so on.
--   Graphical Methods, which includes histogram, density estimation, box plots, and so on.
+-   *Descriptive Statistics*, which includes mean, median, mode, inter-quartile range, and so on.
+-   *Graphical Methods*, which includes histogram, density estimation, box plots, and so on.
 
 ## EDA: view all data
 
@@ -1000,7 +1039,7 @@ dat %>% summary()
 
 -   The function `skimr::skim()` gives an enhanced version of base R's `summary()` .
 
--   Other packages, such as `DataExplorer::` rely more on graphing.
+-   Other packages, such as `DataExplorer::` rely more on graphical presentation.
 
 ## `skimr::skim()`
 
@@ -1009,11 +1048,14 @@ dat %>% summary()
 skim_dat <- dat |> skimr::skim() |> skimr::partition()
 ```
 
-::: panel-tabset
+::::: panel-tabset
 ## numeric variables
 
 ::: {style="font-size: medium"}
 ```{r}
+#| echo: true
+#| warning: false
+#| message: false
 skim_dat[["numeric"]]
 ```
 :::
@@ -1022,10 +1064,13 @@ skim_dat[["numeric"]]
 
 ::: {style="font-size: medium"}
 ```{r}
+#| echo: true
+#| warning: false
+#| message: false
 skim_dat[["factor"]]
 ```
 :::
-:::
+:::::
 
 ## EDA: factor variable counts
 
@@ -1089,7 +1134,9 @@ dat_bin |> xtabs(~ partyid + is_protestant, data = _)
 
 ## EDA: classifying missing data
 
-There are three main categories of missing data
+There are three main categories of missing data[^2]
+
+[^2]: see <https://journals.sagepub.com/doi/epub/10.1177/0962280216683570>
 
 1.  Missing Completely At Random (MCAR);
     -   missing and independent of other measurements
@@ -1097,6 +1144,24 @@ There are three main categories of missing data
     -   missing in a way related to other measurements
 3.  Missing Not At Random (MNAR).
     -   missing as a property of the variable or some other unmeasured variable
+
+## EDA: classifying missing data
+
+::: {style="font-size: x-large"}
+There are three main categories of missing data[^3]
+
+1.  Missing Completely At Random (MCAR);
+    -   missing and independent of other measurements
+    -   the probability of being missing is the same for all cases
+2.  Missing at Random (MAR);
+    -   missing in a way related to other measurements
+    -   the probability of being missing is the same only within groups defined by the *observed* data
+3.  Missing Not At Random (MNAR).
+    -   missing as a property of the variable or some other unmeasured variable
+    -   the probability of being missing varies for reasons that are unknown to us.
+:::
+
+[^3]: see <https://journals.sagepub.com/doi/epub/10.1177/0962280216683570>
 
 ## EDA: handling missing data
 
@@ -1248,9 +1313,10 @@ Why normalize or standardize?
 -   make results more explainable
 :::
 
-## Feature engineering: 
+## Feature engineering:
 
 #### transformation
+
 ::: {style="font-size: x-large"}
 for continuous variables (usually the target variables):
 
@@ -1265,6 +1331,7 @@ for continuous variables (usually the target variables):
 ## Feature engineering:
 
 #### transformation
+
 ::: {style="font-size: x-large"}
 for categorical variables (either target or explanatory variables):
 
@@ -1286,7 +1353,7 @@ Why transform?
 
 -   it can make your model perform better
 
-    -   e.g. $\log$ transform makes exponential data linear, and log-Normal data Gaussian
+    -   e.g. $\log$ transform makes exponential data linear, and log-Normal data Normal/Gaussian
     -   $\log$ transforms also make multiplicative models additive
     -   e.g. polynomials, basis functions and splines help model non-linearities in data
 :::
@@ -1306,6 +1373,7 @@ Why transform?
 ## Feature engineering:
 
 #### creation
+
 ::: {style="font-size: x-large"}
 -   binning / bucketing
     -   represent numerical as categorical and vice versa
@@ -1325,9 +1393,11 @@ Why transform?
 ## Recap
 
 ::: incremental
--   Today we have introduced tidy data, tidyverse verbs and the pipe operator.
+-   Today we have introduced tidy data, tidyverse verbs and the pipe operator, along with several examples of their use.
 
--   We briefly discussed EDA
+-   We briefly discussed EDA using dplyr verbs and `skimr` , along with types of missing data.
+
+-   We briefly discussed feature engineering.
 
 -   In the lab we will introduce Git and the data backup workflows.
 :::

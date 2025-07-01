@@ -5,7 +5,7 @@ editor: visual
 ---
 
 ::: callout-important
--   Due date: Lab 1  - Sunday, Sept 15, 5pm ET
+-   Due date: Lab 1 - Sunday, Sept 14, 5pm ET
 :::
 
 ## Prepare
@@ -33,6 +33,66 @@ editor: visual
 ## Perform
 
 ⌨️ [Lab 1 - Git & the tidyverse](/labs/BSMM_8740_lab_1.html)
+
+## Study
+
+### Short Answer Questions
+
+**Instructions:** Answer each question in 2-3 sentences.
+
+1.  **What are the three core principles of "Tidy Data"?**
+
+2.  **Explain the purpose of the mutate() verb in dplyr. How does it differ from rename()?**
+
+3.  **Describe the functionality of the pipe operator (%\>% or \|\>) in the Tidyverse. Why is it considered beneficial?**
+
+4.  **What is Exploratory Data Analysis (EDA)? Name two broad categories of EDA methods.**
+
+5.  **Distinguish between "Missing Completely At Random (MCAR)" and "Missing at Random (MAR)" concerning missing data.**
+
+6.  **Provide an example of when you would use the filter() function and explain its effect on a data frame.**
+
+7.  **What is feature engineering? Briefly explain why normalization and standardization are common transformations in this process.**
+
+8.  **How do pivot_longer() and pivot_wider() functions address issues with "untidy" data?**
+
+9.  **Explain the difference between dplyr::select() and dplyr::filter() in terms of data manipulation.**
+
+10. **What are "relational data" in the context of Tidyverse, and what is one common operation performed on them?**
+
+**Answer Key**
+
+1.  **What are the three core principles of "Tidy Data"?** Tidy data adheres to three principles: every column is a variable, every row is an observation, and every cell contains a single value. This structured format facilitates easier data manipulation and analysis, making datasets more consistent and organized.
+
+2.  **Explain the purpose of the mutate() verb in dplyr. How does it differ from rename()?** The mutate() verb is used to add new columns to a data frame or modify existing ones based on calculations involving other columns. In contrast, rename() is specifically used to change the names of existing columns without altering their content or creating new variables.
+
+3.  **Describe the functionality of the pipe operator (%\>% or \|\>) in the Tidyverse. Why is it considered beneficial?** The pipe operator allows for chaining multiple operations on a data frame in a sequential and readable manner, passing the output of one function as the first argument to the next. This improves code readability and flow by reducing nested function calls and temporary variables, making data wrangling more intuitive.
+
+4.  **What is Exploratory Data Analysis (EDA)? Name two broad categories of EDA methods.** Exploratory Data Analysis (EDA) is the process of understanding a new dataset through data inspection, graphing, and model building to uncover patterns, anomalies, and relationships. Two broad categories of EDA methods are Descriptive Statistics (e.g., mean, median, IQR) and Graphical Methods (e.g., histograms, box plots).
+
+5.  **Distinguish between "Missing Completely At Random (MCAR)" and "Missing at Random (MAR)" concerning missing data.** Missing Completely At Random (MCAR) implies that the probability of data being missing is the same for all cases, unrelated to any other observed or unobserved data. Missing at Random (MAR) means the probability of data being missing is related to some other observed data, but not to the value of the missing data itself.
+
+6.  **Provide an example of when you would use the filter() function and explain its effect on a data frame.** You would use filter() when you want to subset rows based on specific conditions, such as selecting all presidents whose party is "Republican". This function returns a new data frame containing only the rows that satisfy the specified logical condition, effectively narrowing down the observations.
+
+7.  **What is feature engineering? Briefly explain why normalization and standardization are common transformations in this process.** Feature engineering is the process of transforming raw data into features that better represent the underlying problem to predictive models. Normalization and standardization are common because they scale feature values to a consistent range, which can prevent features with larger ranges from disproportionately influencing model performance, especially in distance-based algorithms, and can reduce the impact of outliers.
+
+8.  **How do pivot_longer() and pivot_wider() functions address issues with "untidy" data?** pivot_longer() is used when column names are values of a variable, collapsing multiple columns into two: one for the former column names (now a new variable) and one for their values. pivot_wider() does the opposite, spreading an observation across multiple rows into a single row, creating new columns from the values of an existing variable, both aiming to convert data to or from a tidy format.
+
+9.  **Explain the difference between dplyr::select() and dplyr::filter() in terms of data manipulation.** dplyr::select() operates on columns, allowing you to choose a subset of variables from a data frame. In contrast, dplyr::filter() operates on rows, enabling you to subset observations based on logical conditions applied to the values within columns.
+
+10. **What are "relational data" in the context of Tidyverse, and what is one common operation performed on them?** Relational data refer to multiple data frames that are related to each other through common variables or keys. A common operation performed on relational data in the Tidyverse is joining, which combines rows from two or more tables based on these shared keys, such as inner_join(), left_join(), right_join(), or full_join().
+
+**Essay Format Questions**
+
+1.  Discuss the importance of "tidy data" principles in data analysis and illustrate with examples how untidy data examples (like table1 vs. table3 shown in the source) violate these principles and the benefits of transforming them into a tidy format.
+
+2.  Compare and contrast descriptive, predictive, and prescriptive analytics, as defined in the source material. Provide examples of the value each type of analytics offers in a business context.
+
+3.  Elaborate on the "Tidyverse principles" mentioned in the source (Design for humans, Reuse existing data structures, Design for functional programming). How do these principles contribute to the effectiveness and ease of use of the Tidyverse for data analysts?
+
+4.  Analyze the different categories of missing data (MCAR, MAR, MNAR) and their implications for data analysis. Discuss the various strategies mentioned for handling missing data, including their potential advantages and disadvantages.
+
+5.  Explain the concept of feature engineering, detailing why transformations like normalization, standardization, Box-Cox, and logit are applied. How do these transformations address common challenges in data and improve model performance?
 
 <br><br>
 

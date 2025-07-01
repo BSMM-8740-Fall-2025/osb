@@ -149,7 +149,7 @@ You are now ready interact with GitHub via RStudio!
 
 1.  First make sure you are logged into your own Github account on a web browser.
 
-2.  Next, in a new browser tab, go to the course organization site on GitHub at [BSMM-8740-Fall-2024](https://github.com/BSMM-8740-Fall-2025/ "Course GitHub organization") and click on your personal repository for the lab, quiz, or exam. [These will be created just before each assignment starts]{.underline}. The repository contains the starter documents you need to complete the lab.
+2.  Next, in a new browser tab, go to the course organization site on GitHub at [BSMM-8740-Fall-2025](https://github.com/BSMM-8740-Fall-2025/ "Course GitHub organization") and click on your personal repository for the lab, quiz, or exam. [These will be created just before each assignment starts]{.underline}. The repository contains the starter documents you need to complete the lab.
 
 3.  Click on the green **CODE** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS**). Click on the clipboard icon to copy the repo URL.
 

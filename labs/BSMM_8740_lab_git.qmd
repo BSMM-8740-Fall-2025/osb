@@ -159,7 +159,7 @@ You are now ready interact with GitHub via RStudio!
 
 1.  First make sure you are logged into your own Github account on a web browser.
 
-2.  Next, in a new browser tab, go to the course organization site at [BSMM-8740-Fall-2023](https://github.com/BSMM-8740-Fall-2023/ "Course GitHub organization") on GitHub. Click on the repo **BSMM-lab-1**. It contains the starter documents you need to complete the lab.
+2.  Next, in a new browser tab, go to the course organization site at [BSMM-8740-Fall-2025](https://github.com/BSMM-8740-Fall-2025/ "Course GitHub organization") on GitHub. Click on the repo **BSMM-lab-1**. It contains the starter documents you need to complete the lab.
 
 3.  Click on the green **Use this template** button and select *Create a new repository*. This will make a copy of **BSMM-lab-1** in your own github account.
 

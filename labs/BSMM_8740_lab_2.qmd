@@ -1,6 +1,6 @@
 ---
 title: "Lab 2 - The Recipes package"
-subtitle: "BSMM 8740 Fall 2024"
+subtitle: "BSMM 8740 Fall 2025"
 author: "Add your name here"
 format: html
 editor: visual

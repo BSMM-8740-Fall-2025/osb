@@ -1,6 +1,6 @@
 ---
 title: "lab 9 - Monte Carlo Methods"
-subtitle: "BSMM 8740 Fall 2024"
+subtitle: "BSMM 8740 Fall 2025"
 author: "Add your name here"
 format: html
 editor: visual
@@ -13,9 +13,9 @@ In today's lab, you'll practice sampling from distribuions and working with Mark
 
 ## Getting started
 
--   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-9-\[your github username\]** repository .
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2025-lab-9-\[your github username\]** repository .
 
-    Create an R project using your **2024-lab-9-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2024-lab-9.qmd` file in your repository.
+    Create an R project using your **2025-lab-9-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2025-lab-9.qmd` file in your repository.
 
 -   When you are done, be sure to: **save** your document, **stage**, **commit** and [**push**]{.underline} your work.
 

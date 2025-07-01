@@ -1,6 +1,6 @@
 ---
 title: "Lab 3 - Regression"
-subtitle: "BSMM 8740 Fall 2024"
+subtitle: "BSMM 8740 Fall 2025"
 author: "Add your name here"
 format: html
 editor: visual
@@ -20,9 +20,9 @@ By the end of the lab you will...
 
 ## Getting started
 
--   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2024-lab-3-\[your github username\]** repository to complete the lab.
+-   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2025-lab-3-\[your github username\]** repository to complete the lab.
 
-    Create an R project using your **2024-lab-3-\[your github username\]** repository (remember to create a PAT, etc., as in lab-1) and add your answers by editing the `2024-lab-3.qmd` file in your repository.
+    Create an R project using your **2025-lab-3-\[your github username\]** repository (remember to create a PAT, etc., as in lab-1) and add your answers by editing the `2025-lab-3.qmd` file in your repository.
 
 -   When you are done, be sure to save your document, stage, commit and push your work.
 
@@ -66,21 +66,21 @@ The Boston House Values dataset (usually referred to as the Boston dataset) appe
 
 This dataset contains the following information for each cocktail:
 
-| variable | description                                                            |
-|--------------|----------------------------------------------------------|
-| crim     | per capita crime rate by town.                                         |
-| zn       | proportion of residential land zoned for lots over 25,000 sq.ft.       |
-| indus    | proportion of non-retail business acres per town.                      |
-| chas     | Charles River dummy variable (= 1 if tract bounds river; 0 otherwise). |
-| nox      | nitrogen oxides concentration (parts per 10 million).                  |
-| rm       | average number of rooms per dwelling.                                  |
-| age      | proportion of owner-occupied units built prior to 1940.                |
-| dis      | weighted mean of distances to five Boston employment centres.          |
-| rad      | index of accessibility to radial highways.                             |
-| tax      | full-value property-tax rate per \$10,000.                             |
-| ptratio  | pupil-teacher ratio by town.                                           |
-| lstat    | lower status of the population (percent).                              |
-| medv     | median value of owner-occupied homes in \$1000s.                       |
+| variable | description |
+|----|----|
+| crim | per capita crime rate by town. |
+| zn | proportion of residential land zoned for lots over 25,000 sq.ft. |
+| indus | proportion of non-retail business acres per town. |
+| chas | Charles River dummy variable (= 1 if tract bounds river; 0 otherwise). |
+| nox | nitrogen oxides concentration (parts per 10 million). |
+| rm | average number of rooms per dwelling. |
+| age | proportion of owner-occupied units built prior to 1940. |
+| dis | weighted mean of distances to five Boston employment centres. |
+| rad | index of accessibility to radial highways. |
+| tax | full-value property-tax rate per \$10,000. |
+| ptratio | pupil-teacher ratio by town. |
+| lstat | lower status of the population (percent). |
+| medv | median value of owner-occupied homes in \$1000s. |
 
 Use the code below to load the Boston Cocktail Recipes data set.
 
