@@ -5,7 +5,7 @@ editor: visual
 ---
 
 ::: callout-important
--   Due date: Lab 2  - Sunday, Sept 22, 5pm ET
+-   Due date: Lab 2 - Sunday, Sept 22, 5pm ET
 :::
 
 ## Prepare
@@ -27,6 +27,44 @@ editor: visual
 ## Perform
 
 ⌨️ [Lab 2 - The Recipes Package](/labs/BSMM_8740_lab_2.html "Lab instructions")
+
+## Study
+
+### Short Answer Questions
+
+**Questions & Answers**
+
+1.  **What is the primary limitation of the R model formula approach that the recipes package aims to address?** The R model formula approach is limited in its extensibility, especially with nested or sequential operations. It also suffers from inefficiencies when dealing with wide datasets and cannot easily recycle previous computations for subsequent steps in a workflow.
+
+2.  **Explain the concept of "variable roles" in the context of data modeling. Provide at least three examples of roles.** Variable roles define the purpose or function of different variables within a dataset for a specific model or analysis. Beyond simple predictors and outcomes, roles can include stratification, model performance data (e.g., loan amount), conditioning variables, random effects IDs, case weights, offsets, and error terms.
+
+3.  **Describe the separation of "planning" from "doing" facilitated by the recipes package.** The recipes package separates the specification of data pre-processing steps (planning) from their actual execution (doing). A "recipe" is a specification of intent, outlining the sequence of transformations, while the prep and bake functions handle the application of these transformations, allowing for a clear distinction between defining the workflow and applying it to data.
+
+4.  **Differentiate between the prep and bake steps in the recipes workflow.** The prep step calculates and stores the necessary parameters for the recipe's steps using a training dataset (e.g., means for centering, standard deviations for scaling, PCA components). The bake step then applies these calculated parameters and transformations to new data (like test or cross-validation datasets), ensuring consistency in processing across different data splits.
+
+5.  **How does recipes handle variable selection when predictor names are not known beforehand? Give an example of such a scenario.** The recipes package allows for dplyr-like syntax for selecting variables, including dynamic selection based on characteristics rather than explicit names. Examples include selecting dummy variable columns, PCA feature extraction where components are kept based on captured variability, or discretized predictors with dynamic bins.
+
+6.  **What is the purpose of update_role in a recipes workflow? Provide an example from the text.** update_role is used to explicitly define or change the role of variables within a recipe, beyond the initial predictor/outcome assignment from a formula. For instance, aq_recipe \<- aq_recipe %\>% recipes::update_role(Ozone, Solar.R, new_role = 'NA_Variable') updates the role of Ozone and Solar.R to indicate they are variables with missing data.
+
+7.  **List and briefly describe three recommended baseline preprocessing methods discussed in the study guide.** Recommended baseline methods include: dummy (for encoding qualitative predictors numerically), impute (for estimating missing predictor values), and normalize (for centering and scaling predictors). Other methods mentioned are zv (removing single unique value columns), decorrelate (mitigating correlated predictors), and transform (making predictors more symmetric).
+
+8.  **Explain the core purpose of Principal Component Analysis (PCA) in data analysis as described in the source.** PCA is a dimension reduction technique used to simplify large datasets by reducing the number of variables (dimensions) while retaining as much important information (variance) as possible. It achieves this by transforming the original data into a new set of orthogonal principal components, ordered by the amount of variance they capture.
+
+9.  **Describe the three main steps involved in applying PCA to a dataset.** The three main steps of PCA are: 1) Standardize the Data, which adjusts variables to the same scale as PCA is sensitive to scale; 2) Find the Principal Components, which identifies directions of maximum variation in the data; and 3) Transform the Data, which represents the original data points in terms of these new principal components.
+
+10. **How does the recipes package facilitate the extension of a preprocessing workflow without re-executing computationally expensive initial steps?** The recipes package allows for sequential addition of steps. If new preprocessing operations are added to an already prepped recipe, only the new parts need to be estimated (re-prepped). This avoids re-running computationally expensive initial steps, improving efficiency.
+
+**Essay Format Questions**
+
+1.  Compare and contrast the R model formula approach with the recipes package for model specification and data preprocessing. Discuss their respective strengths, limitations, and the scenarios where one might be preferred over the other.
+
+2.  Elaborate on the importance of "variable roles" in modern data modeling workflows, particularly in the context of the recipes package. How do explicit variable roles enhance flexibility and clarity compared to traditional formula-based methods?
+
+3.  Discuss the significance of the prep and bake paradigm in the recipes package for developing robust machine learning pipelines. How does this separation of concerns contribute to the reliability and generalizability of models, especially in cross-validation and deployment scenarios?
+
+4.  Beyond the examples provided, propose a complex feature engineering workflow for a hypothetical dataset (e.g., time-series data or image features) using the recipes package. Describe the sequence of steps, the types of recipes functions you would use, and how PCA or other dimension reduction techniques might fit into this workflow.
+
+5.  Analyze how the recipes package addresses the limitations of the "Current System" of formula-based preprocessing, particularly concerning extensibility, computational efficiency, and handling of multivariate outcomes.
 
 <br><br>
 

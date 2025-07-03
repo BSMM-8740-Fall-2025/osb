@@ -107,6 +107,97 @@ $$
 which decomposes a function of two variables into a sum of simpler functions, e.g. polynomial functions (like 2-D straight lines, parabolas, and more).
 :::
 
+## Taylor Series Example
+
+![](images/taylor_series_convergence.gif){fig-align="center"}
+
+## Taylor Series Example
+
+```{r}
+#| echo: false
+# Define the domain
+x <- seq(-2*pi, 2*pi, length.out = 1000)
+
+# Function to calculate Taylor series for sin(x) around x = 0
+taylor_sin <- function(x, n_terms) {
+  result <- rep(0, length(x))
+  
+  for (n in 0:(n_terms-1)) {
+    term <- ((-1)^n) * (x^(2*n + 1)) / factorial(2*n + 1)
+    result <- result + term
+  }
+  
+  return(result)
+}
+
+# Create data for animation
+max_terms <- 10
+animation_data <- tibble::tibble()
+
+for (n in 1:max_terms) {
+  current_data <- tibble::tibble(
+    x = x,
+    true_sin = sin(x),
+    taylor_approx = taylor_sin(x, n),
+    n_terms = n,
+    term_label = paste("n =", n, "terms")
+  )
+  
+  animation_data <- dplyr::bind_rows(animation_data, current_data)
+}
+
+error_data <- animation_data %>%
+  dplyr::mutate(
+    absolute_error = abs(true_sin - taylor_approx),
+    relative_error = ifelse(true_sin != 0, absolute_error / abs(true_sin), 0)
+  ) %>%
+  dplyr::group_by(n_terms) %>%
+  dplyr::summarise(
+    max_absolute_error = max(absolute_error),
+    mean_absolute_error = mean(absolute_error),
+    .groups = "drop"
+  )
+
+# Plot error convergence
+error_data %>%
+  ggplot(aes(x = n_terms)) +
+  geom_line(aes(y = max_absolute_error, color = "Maximum Error"), 
+            size = 1.2) +
+  geom_line(aes(y = mean_absolute_error, color = "Mean Error"), 
+            size = 1.2) +
+  geom_point(aes(y = max_absolute_error, color = "Maximum Error"), 
+             size = 3) +
+  geom_point(aes(y = mean_absolute_error, color = "Mean Error"), 
+             size = 3) +
+  scale_color_manual(values = c("Maximum Error" = "#F24236", 
+                                "Mean Error" = "#2E86AB")) +
+  scale_y_log10() +
+  labs(
+    title = "Taylor Series Approximation Error",
+    subtitle = "Error decreases as more terms are added",
+    x = "Number of Terms",
+    y = "Absolute Error (log scale)",
+    color = "Error Type"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    legend.position = "bottom"
+  )
+```
+
+## Taylor Series Example
+
+Taylor series for $\sin(x)$ around $x = 0$:
+
+$$
+\begin{align*}
+\sin(x) & =x-\frac{x^{3}}{3!}+\frac{x^{5}}{5!}-\frac{x^{7}}{7!}+\frac{x^{9}}{9!}+\ldots\\
+ & =x-\frac{x^{3}}{6!}+\frac{x^{5}}{120!}-\frac{x^{7}}{5040!}+\frac{x^{9}}{362880!}+\ldots
+\end{align*}
+$$
+
 ## Linear regression models
 
 For one co-variate, if the mean function is smooth (i.e. not changing rapidly with the co-variate) then $\mu^{(n)}$ will be decreasing in $n$, and furthermore $\beta_n$ decreases as $1/n!$, so SLR models in one co-variate typically use only the first two or at most three $\beta$ coefficients.

@@ -34,11 +34,19 @@ I like to use the `gt::` and `gtExtras::` packages to format my tables. The resu
 You'll see examples thoughout the course and I encourage you to examine the examples and use gt:: and `gtExtras::` in your own work.
 :::
 
+::: callout-warning
+## Package installs
+
+If you install packages outside of the ones below, [**remove**]{.underline} your `install.packages(.)` code [**before submitting your solutions**]{.underline}.
+
+Leaving instructions that will install packages may cause your code to fail, but more importantly, it can corrupt the TA/instructor's system.
+:::
+
 ## Data: The Boston Cocktail Recipes
 
 The Boston Cocktail Recipes dataset appeared in a TidyTuesday posting. TidyTuesday is a weekly data project in R.
 
-The dataset is derived from the [Mr. Boston Bartender's Guide](http://swizzle.ru/uploads/article_file/17/mr_boston.pdf), together with a dataset that was web-scraped as part of a hackathon.
+The dataset is derived from the [Mr. Boston Bartender's Guide](https://archive.org/details/mrbostonofficial0000unse), together with a dataset that was web-scraped as part of a hackathon.
 
 This dataset contains the following information for each cocktail:
 
@@ -113,6 +121,8 @@ Two ounces (oz) of gin are in the *Leap Frog Highball.*
 :::
 
 ### Exercise 3
+
+In the next set of questions on the boston_cocktails dataset we'll be exploring the information in the data structures created by prepping a recipe.
 
 Prepare a recipes::recipe object without a target but give name and category as 'id' roles. Add steps to normalize the predictors and perform PCA. Finally `prep` the data and save it in a variable.
 
@@ -237,7 +247,9 @@ Based on the its largest components (in absolute value) PC1 is a syrupy (not sug
 
 As in the last exercise, use the variable with the tidied PCA data and use only PCA components PC1 to PC4. Take/slice the top 8 ingedients by component, ordered by their absolute value using the verb `dplyr::slice_max`. Next, generate a grouped table using gt::gt, colouring the cell backgrounds (i.e. fill) with green for values $\ge0$ and red for values $<0$.
 
-What is the characteristic alcoholic beverage of each of the first 4 principle components.
+What is the characteristic alcoholic beverage[^1] of each of the first 4 principle components?
+
+[^1]: NOTE: the alchoholic beverages are \*\_rum, \*\_vermouth, \*\_whiskey, \*\_brandy, \*\_tequila, \*\_gin, vodka, port, triple_sec, amaretto, grenadine, anisette, bitters, benedictine, dubonnet, where \* is a placeholder for an adjective, e.g. dark_rum or apple_brandy.
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
@@ -320,7 +332,9 @@ ggplot(aes(PC1, PC2, label = name)) +
   labs(color = NULL)
 ```
 
-Can you create an interpretation of the PCA analysis?
+Can you create an interpretation of this PCA analysis?
+
+For example, you have the components of PC1 and PC2. Think about what -PC1 and -PC2 look like, and see if you can describe drinks in the four quadrants: (-PC1, PC2), (PC1, PC2), (PC1, -PC2), (-PC1, -PC2).
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## SOLUTION:
@@ -418,7 +432,7 @@ readRDS("data/baked_uk_house_dat.rds") |>
 
 #### Recall The Business Problem
 
-We're at a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI).
+We're at a fast paced startup. The company is growing fast and the marketing team is looking for ways to increase the sales from existing customers by making them buy more. The main idea is to unlock the potential of the customer base through incentives, in this case a price discount. We of course want to measure the effect of the discount on the customer's behavior. Still, they do not want to waste money giving discounts to users which are not valuable. As always, it is about return on investment (ROI).
 
 Without going into specifics about the nature of the discount, it has been designed to provide a positive return on investment if the customer buys more than $\$ 1$ as a result of the discount. How can we measure the effect of the discount and make sure our experiment has a positive ROI? The marketing team came up with the following strategy:
 
@@ -447,7 +461,7 @@ data |> dplyr::mutate(discount = factor(discount)) |>
   theme_minimal()
 ```
 
-It looks customers with a discount have higher sales. Data scientist A is optimistic with this initial result. To quantify this, they computed the difference in means:
+It looks like customers with a discount have higher sales. Data scientist A is optimistic with this initial result. To quantify this, they computed the difference in means:
 
 ::: callout-note
 ## SOLUTION:
@@ -521,6 +535,21 @@ However, how to interpret this value in terms of dollars? To be continued ...
 
 Total points available: 30 points.
 
-| Component | Points |
-|-----------|--------|
-| Ex 1 - 10 | 30     |
+```{r}
+#| echo: false
+
+data.frame(exercise = "1 - 10", points = "3 points each") |> 
+gt::gt() |> 
+gt::tab_footnote(
+  gt::md("code (if any) does not run to completion: **-1 point**"),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::tab_footnote(
+  gt::md("explicit question (if any) not answered, even if code runs to completion: **-1 point**."),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::cols_align(align = "left") |> 
+gt::cols_width(exercise ~ gt::px(250), points ~ gt::px(150)) |> 
+gtExtras::gt_theme_espn() |> 
+gt::as_raw_html()
+```

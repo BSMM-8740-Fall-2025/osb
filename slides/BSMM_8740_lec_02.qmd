@@ -46,7 +46,7 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 ## Recap of last lecture
 
 -   Last week we introduced the tidyverse verbs used to manipulate (tidy) data
--   We also used the tidyverse verbs for exploratory data analysis and to engineer features into our datasets.
+-   We also used the tidyverse verbs and `skimr` for exploratory data analysis and to engineer features into our datasets.
 
 ## Today's Outline
 
@@ -82,7 +82,7 @@ The purpose of this code chunk:
 3.  log transform the outcome variables
 4.  fit a linear regression model
 
-The first two steps create the *design-* or *model- matrix*.
+The first two steps create the *design-matrix* aka *model- matrix*.
 :::
 
 ## Example
@@ -103,7 +103,7 @@ skimr::skim(Sacramento) %>%
   gt::as_raw_html()
 ```
 
-## Example design matrix
+## Example model matrix
 
 ```{r}
 #| echo: true
@@ -238,7 +238,7 @@ A general list of possible variable roles could be:
 
 ## Recipes
 
-We can approach the design matrix and preprocessing steps by first specifying a **sequence of steps**.
+In our housing price analysis we can approach the design matrix and pre-processing steps by first specifying a **sequence of steps**.
 
 1.  `price` is an outcome
 2.  `type` and `sqft` are predictors
@@ -281,15 +281,15 @@ design_mat  <- recipes::bake(rec_trained, new_data = Sacramento)
 Once created, a *recipe* can be `prep`ped on training data then `bake`d with any other data.
 
 ::: {style="font-size: smaller"}
--   the `prep` step calculates and stores variables related to the steps (e.g. (min,max) for scaling), using the training data
+-   the `prep` step calculates and stores variables required by the steps (e.g. (min,max) for scaling), using the training data
 -   the `bake` step applies the steps to new data
 :::
 
 ## Selecting Variables
 
-In the last slide, we used `dplyr`-like syntax for selecting variables such as `step_dummy(type)`.
+In our recipe, we can use `dplyr`-like syntax for selecting variables, e.g. `step_dummy(type)`.
 
-In some cases, the names of the predictors may not be known at the time when you construct a recipe (or model formula). For example:
+But in some cases, the names of the predictors may not be known at the time when you construct a recipe (or model formula). For example:
 
 -   dummy variable columns
 -   PCA feature extraction when you keep components that capture $\mathrm{X}\%$ of the variability.
@@ -313,7 +313,9 @@ dat %>% skimr::skim() %>%
   gt::as_raw_html()
 ```
 
-## Example: create basic recipe
+## Example: create basic recipe[^2]
+
+[^2]: Note that the data structure of a unprocessed recipe is a tibble
 
 ```{r}
 #| echo: false
@@ -346,7 +348,9 @@ aq_recipe <- aq_recipe %>%
 summary(aq_recipe)
 ```
 
-## Example: add recipe steps
+## Example: add recipe steps[^3]
+
+[^3]: Note the use of dplyr-like variable selectors in the recipe
 
 ```{r}
 #| echo: true
@@ -376,7 +380,9 @@ aq_prep_train <- aq_recipe %>% prep(aq_df_train)
 aq_bake <- aq_prep_train %>% bake(aq_df_test)
 ```
 
-## Example: recipe prep values
+## Example: recipe prep values[^4]
+
+[^4]: Note the data structure of a prepped recipe: a tibble, but with different data than the unprocessed recipe
 
 The prepped recipe is a data structure that contains any computed values.
 
@@ -499,7 +505,7 @@ lin_reg.recipe <- function(rec, data, ...) {
 [Kuhn and Johnson](http://appliedpredictivemodeling.com) (2013) analyze a data set where thousands of cells are determined to be well-segmented (WS) or poorly segmented (PS) based on 58 image features. We would like to make predictions of the segmentation quality based on these features.
 
 ::: {.callout-note style="font-size: smaller"}
-The dataset `segmentationData` is in the package `caret` and represents the results of automated microscopy to collect images of cultured cells. The images are subjected to segmentation algorithms to identify cellular structures and quantitate their morphology, for hundreds to millions of individual cells.
+The dataset `segmentationData` is in the package `caret` and represents the results of automated microscopy to collect images of cultured cells. The images are subjected to segmentation algorithms to identify cellular structures and quantitate their morphology, for hundreds to millions of individual cells. A column named ***Case*** identifies *Train* and *Test* observations.
 :::
 
 ## An Example
@@ -584,7 +590,7 @@ basic |> recipes::tidy(3) |> dplyr::slice_head(n=8)
 
 Principal Component Analysis (PCA) is a technique used in data analysis to simplify a large dataset (many measurements/columns) by reducing its number of dimensions (columns) while still retaining as much important information as possible.
 
-A pretty good description of PCA can be found [here](https://towardsdatascience.com/singular-value-decomposition-and-its-applications-in-principal-component-analysis-5b7a5f08d0bd).
+A pretty good description of PCA can be found [here](https://towardsdatascience.com/feature-transformations-a-tutorial-on-pca-and-lda-1ac160088092/).
 
 ## More sophisticated steps: PCA
 

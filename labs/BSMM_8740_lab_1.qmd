@@ -23,9 +23,7 @@ By the end of the lab, you will...
 
 ## Getting started
 
-
 -   To complete the lab, log on to **your** github account and then go to the class [GitHub organization](https://github.com/bsmm-8740-fall-2024) and find the **2025-lab-1-\[your github username\]** repository .
-
 
     Create an R project using your **2025-lab-1-\[your github username\]** repository (remember to create a PAT, etc.) and add your answers by editing the `2025-lab-1.qmd` file in your repository.
 
@@ -49,6 +47,14 @@ Remember to (create a PAT and set your git credentials)
 
 ::: callout-note
 The code below will install (if necessary) and load the packages needed in today's exercises
+:::
+
+::: callout-warning
+## Package installs
+
+If you install packages outside of the ones below, [**remove**]{.underline} your `install.packages(.)` code [**before submitting your solutions**]{.underline}.
+
+Leaving instructions that will install packages may cause your code to fail, but more importantly, it can corrupt the TA/instructor's system.
 :::
 
 ```{r}
@@ -516,9 +522,25 @@ I will pull (copy) everyone's repository submissions at 5:00pm on the Sunday fol
 
 Total points available: 30 points.
 
-| Component | Points |
-|-----------|--------|
-| Ex 1 - 10 | 30     |
+```{r}
+#| echo: false
+
+data.frame(exercise = "1 - 10", points = "3 points each") |> 
+gt::gt() |> 
+gt::tab_footnote(
+  gt::md("code (if any) does not run to completion: **-1 point**"),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::tab_footnote(
+  gt::md("explicit question (if any) not answered, even if code runs to completion: **-1 point**."),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::cols_align(align = "left") |> 
+gt::cols_width(exercise ~ gt::px(250), points ~ gt::px(150)) |> 
+# gtExtras::gt_theme_538(quiet = TRUE) |> 
+gtExtras::gt_theme_espn() |> 
+gt::as_raw_html()
+```
 
 ## Resources for additional practice (optional)
 
