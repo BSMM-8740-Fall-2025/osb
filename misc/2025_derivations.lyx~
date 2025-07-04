@@ -2883,6 +2883,17 @@ Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
++ & \left(a_{1}b_{1}+a_{2}b_{2}+\cdots+a_{T-2}b_{T-2}+a_{T-1}b_{T-1}\right)\\
++ & \left(a_{1}b_{1}+a_{2}b_{2}+\cdots+a_{T-3}b_{T-3}+a_{T-2}b_{T-2}\right)\\
+ & \qquad\qquad\qquad\vdots\\
++ & \left(a_{1}b_{1}+a_{2}b_{2}\right)\\
++ & \left(a_{1}b_{1}\right)
+\end{align*}
+
+\end_inset
+
 
 \end_layout
 

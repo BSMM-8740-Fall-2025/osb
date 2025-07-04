@@ -59,13 +59,13 @@ $$
 
 In the SLR model, $\mathscr{N}\left(\left.y\right|\mu(\mathbf{x};\beta),\sigma^{2}\right)$ is a Normal probability density with mean $\mu(\mathbf{x};\beta)$ and variance $\sigma^2$, where $\sigma^2$ is a constant and the mean is a function of the predictors $\mathbf{x}$ and a vector of parameters $\beta$.
 
-The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e. a small change in the predictors implies a small change in the outcome. In addition, it is often convenient to decompose the mean function into a sum of simpler functions, e.g. polynomial functions (like straight lines, parabolas, and more).
+The mean function $\mu(\mathbf{x};\beta)$ is often assumed to be continuous, i.e. a small change in the predictors implies a small change in the outcome. And in this case it is possible to decompose the mean function into a sum of simpler functions, e.g. polynomial functions (like straight lines, parabolas, and more).
 
 ## Taylor Series
 
-The decomposition of a function $f$ of a single variable $x$ into a sum of simpler polynomial functions is called a Taylor series and is defined as follows:
+The decomposition of a continuous function $f$ of a single variable $x$ into a sum of simpler polynomial functions is called a **Taylor series** and is defined as follows:
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 $$
 f(x;x_0)=\sum_{n=0}\beta_n(x-x_0)^n=\beta_0+\beta_1(x-x_0)+\beta_2(x-x_0)^2+\beta_3(x-x_0)^3+\ldots
 $$
@@ -93,9 +93,9 @@ We can use the following constructive proof to find the coefficients in the seri
 
 ## Linear regression models
 
-Similarly, when the number of variables is $D=2$ the Taylor series is (writing $f_{x}\equiv\frac{\partial f}{\partial x}$, $f_{y}\equiv\frac{\partial f}{\partial y}$, $f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial x}$ and so on):
+Similarly, when the number of variables is $D=2$ the Taylor series is (writing $f_{x}\equiv\frac{\partial f}{\partial x}$, $f_{y}\equiv\frac{\partial f}{\partial y}$, $f_{x,y}\equiv\frac{\partial^2 f}{\partial x,\partial y}$ and so on):
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 $$
 \begin{align*}
 f(x,y;x_0,y_0) & =f(x_{0},y_{0})+f_{x}(x_{0},y_{0})(x-x_{0})+f_{y}(x_{0},y_{0})(y-y_{0})\\
@@ -107,7 +107,7 @@ $$
 which decomposes a function of two variables into a sum of simpler functions, e.g. polynomial functions (like 2-D straight lines, parabolas, and more).
 :::
 
-## Taylor Series Example
+## Taylor Series Example (1D)
 
 ![](images/taylor_series_convergence.gif){fig-align="center"}
 
@@ -172,6 +172,7 @@ error_data %>%
   scale_color_manual(values = c("Maximum Error" = "#F24236", 
                                 "Mean Error" = "#2E86AB")) +
   scale_y_log10() +
+  scale_x_continuous(breaks = pretty(error_data$n_terms, n = 10)) +
   labs(
     title = "Taylor Series Approximation Error",
     subtitle = "Error decreases as more terms are added",
@@ -194,7 +195,7 @@ Taylor series for $\sin(x)$ around $x = 0$:
 $$
 \begin{align*}
 \sin(x) & =x-\frac{x^{3}}{3!}+\frac{x^{5}}{5!}-\frac{x^{7}}{7!}+\frac{x^{9}}{9!}+\ldots\\
- & =x-\frac{x^{3}}{6!}+\frac{x^{5}}{120!}-\frac{x^{7}}{5040!}+\frac{x^{9}}{362880!}+\ldots
+ & =x-\frac{x^{3}}{6}+\frac{x^{5}}{120}-\frac{x^{7}}{5040}+\frac{x^{9}}{362880}+\ldots
 \end{align*}
 $$
 
@@ -202,9 +203,9 @@ $$
 
 For one co-variate, if the mean function is smooth (i.e. not changing rapidly with the co-variate) then $\mu^{(n)}$ will be decreasing in $n$, and furthermore $\beta_n$ decreases as $1/n!$, so SLR models in one co-variate typically use only the first two or at most three $\beta$ coefficients.
 
-Thus the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
+In this case the likelihood of observing $Y=y$ is conditional on the predictor values $x$ and parameters $\theta=\{\beta_0,\beta_1,\sigma^2\}$:
 
-$\theta=\{\beta_{0},\mathbf{\beta},\sigma^{2}\}$ are the *parameters* of the model, where $\beta_0$ is a constant and $\beta_1$ is the co-variate *weight* or *regression* coefficient.
+$\theta=\{\beta_{0},\mathbf{\beta_1},\sigma^{2}\}$ are the *parameters* of the model, where $\beta_0$ is a constant and $\beta_1$ is the co-variate *weight* or *regression* coefficient.
 
 ## Linear regression models
 
@@ -213,39 +214,39 @@ For multiple co-variates, If the mean function is smooth (i.e. not changing rapi
 ## Linear regression models
 
 ::: callout-note
-It is common to add the unit constant to the covariate vector $x=(1,x_1,x_2,\ldots)$ so that the coefficient vector is $\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)$, and the model can be expressed[^2] as a vector equation: $y=\mathbf{\beta}\cdot \mathbf{x}$.
+When $D>1$ it is common to append the unit vector to the covariate matrix $X=(1,x_1,x_2,\ldots)$ so that the coefficient vector is $\mathbf{\beta}=(\beta_0,\beta_{x_1},\beta_{x_2},\ldots)$, and the model can be expressed[^2] as a vector equation: $y=\mathbf{x}\cdot \mathbf{\beta}$.
 :::
 
-[^2]: sometime written as $\beta'\mathbf{x}$
+[^2]: In the 1D case, the constant is often explicit and the RHS of the regression equation is written as $1+\beta\mathbf{x}$, which estimates two coefficients $\beta_0, \beta_1$.
 
 ## Linear regression models
 
-Recall that the one dimensional Normal/Gaussian probability density (aka likelihood) is:
+Recall that the one dimensional Normal/Gaussian probability density (aka likelihood) for outcome $y_n$ and mean $\beta x_n$ is:
 
 $$
-\mathscr{N}\left(x;\mu,\sigma^2\right)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{1}{2}\frac{x-\mu}{\sigma^2}}
+\pi\left(y_n;\mu=\beta x_n,\sigma^2\right)=\mathscr{N}\left(y_n;\mu=\beta x_n,\sigma^2\right)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{1}{2}\frac{y_n-\beta x_n}{\sigma^2}}
 $$
 
-The likelihood of multiple observations is the product of the likelihoods for each observation.
+And the likelihood of multiple observations is the product of the likelihoods for each observation.
 
 ## Linear regression models
 
-To fit the 1D linear regression model given $N$ data samples, we minimize the negative log-likelihood (NLL) on the training set.
+To fit the 1D linear regression model given $N$ data samples, we [**minimize**]{.underline} the negative log-likelihood (NLL) on the training set.
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 $$
 \begin{align*}
-\text{NLL}\left(\beta,\sigma^{2}\right) & =-\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta'x_{n}\right)^{2}\right)\right]\\
+\text{NLL}\left(\beta,\sigma^{2}\right) & =-\sum_{n=1}^{N}\log\left[\left(\frac{1}{2\pi\sigma^{2}}\right)^{\frac{1}{2}}\exp\left(-\frac{1}{2\sigma^{2}}\left(y_{n}-\beta x_{n}\right)^{2}\right)\right]\\
  & =\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}-\frac{N}{2}\log\left(2\pi\sigma^{2}\right)
 \end{align*}
 $$
 :::
 
-where the predicted response is $\hat{y}\equiv\beta'x_{n}$. This is also the maximum likelihood estimation (MLE) method.
+where the predicted response is $\hat{y}\equiv\beta x_{n}$. This is also the maximum likelihood estimation (MLE) method.
 
 ## Linear regression models
 
-Minimizing the NLL by minimizing the residual sum of squares (RSS) is the same as minimizing
+Minimizing the NLL by minimizing the residual sum of squares ($\text{RSS}=\sum_{n=1}^{N}\left(y_{n}-\hat{y}_{n}\right)^{2}$) is the same as minimizing
 
 -   the **mean squared error** $\text{MSE}\left(\beta\right) = \frac{1}{N}\text{RSS}\left(\beta\right)$
 -   the **root mean squared error** $\text{RMSE}\left(\beta\right) = \sqrt{\text{MSE}\left(\beta\right)}$
@@ -258,9 +259,9 @@ $$
 \mathscr{L}\left(\theta\right)=\frac{1}{N}\sum_{n=1}^{N}\ell\left(y_{n},\theta;x_{n}\right)
 $$
 
-This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution.
+This is known as the empirical risk minimization (ERM) - the expected loss taken with respect to the empirical distribution. We'll see other loss functions later when discussing [**ridge**]{.underline}, [**lasso**]{.underline}, and [**elastic net**]{.underline} regression.
 
-## Linear regression models
+## Linear regression models [DELETE]{.underline}?
 
 Focusing on just the coefficients $\beta$, the minimum NLL is (up to a constant) the minimum of the residual sum of squares (RSS)[^3] with coefficient estimates $\hat\beta$ :
 
@@ -283,15 +284,15 @@ $$
 y_i=\beta_0+\beta_1 x_i + u_i
 $$
 
-where error term $u_i$ is a sample from $\mathscr{N}\left(0,\sigma^{2}\right)$ which in turn implies $\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0$
+where the error term $u_i$ is a sample from $\mathscr{N}\left(0,\sigma^{2}\right)$ which in turn implies $\mathbb{E}\left[u\right]=0;\;\mathbb{E}\left[\left.u\right|x\right]=0$
 
-The independence of the covariates and the errors/residuals is a testable assumption.
+The independence of the covariates and the errors/residuals is a [**testable assumption**]{.underline}.
 
 ## Linear regression models
 
 #### Ordinary least squares (OLS)
 
-It follows independence of the covariates and the errors that
+It follows from the zero mean of the errors ($\mathbb{E}\left[u\right]=0$) independence of the covariates and the errors ($\mathbb{E}\left[\left.u\right|x\right]=0$) that
 
 $$
 \begin{align*}
@@ -317,7 +318,7 @@ $$
 
 #### Ordinary least squares (OLS)
 
-From the first equation
+From the first equation we get a new equation that relates the means of outcome and predictors:
 
 $$
 \begin{align*}
@@ -330,21 +331,28 @@ $$
 
 #### Ordinary least squares (OLS)
 
-Substituting the expression for $\hat{\beta}_{0}$ in the independence equation
+Substituting for $\hat{\beta}_{0}$ in the independence equation[^4]
 
-::: {style="font-size: xx-large"}
+[^4]:
+    ::: {style="font-size: x-small"}
+    The last equation comes from subtracting zero to both sides of the second equation, e.g. $\frac{1}{N}\sum_{i-1}^{N}\bar{x}\left(y_{i}-\bar{y}\right)=0=\frac{1}{N}\sum_{i-1}^{N}\bar{x}\left(x_{i}-\bar{x}\right)$
+    :::
+
+::: {style="font-size: x-large"}
 $$
 \begin{align*}
 \frac{1}{N}\sum_{i-1}^{N}x_{i}\left(y_{i}-\left(\bar{y}-\hat{\beta}_{1}\bar{x}\right)-\hat{\beta}_{1}x_{i}\right) & =0\\
-\frac{1}{N}\sum_{i-1}^{N}x_{i}\left(y_{i}-\bar{y}\right) & =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}x_{i}\left(\bar{x}-x_{i}\right)\\
-\frac{1}{N}\sum_{i-1}^{N}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) & =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2
+\frac{1}{N}\sum_{i-1}^{N}x_{i}\left(y_{i}-\bar{y}\right) & =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}x_{i}\left(x_{i}-\bar{x}\right)\\
+\frac{1}{N}\sum_{i-1}^{N}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right) & =\hat{\beta}_{1}\frac{1}{N}\sum_{i-1}^{N}\left(x_{i}-\bar{x}\right)^2
 \end{align*}
 $$
 :::
 
 ## Linear regression models
 
-#### Ordinary least squares (OLS)
+#### Ordinary least squares (OLS)[^5]
+
+[^5]: extremely useful equation, since it relates the statistics of our variables to the coefficient estimate.
 
 So as long as $\sum_{i-1}^{N}\left(\bar{x}-x_{i}\right)^2\ne 0$
 
@@ -357,13 +365,13 @@ $$
 
 ## Linear regression models
 
-Similarly, in the vector equation, the minimum of the RSS is solved by (assuming $N>D$):
+Similarly, in the matrix (multivariate regression) equation, the minimum of the RSS is solved by (assuming $N>D$):
 
 $$
 \hat{\mathbf{\beta}}_{OLS}=\left(X'X\right)^{-1}\left(X'Y\right) = \frac{\text{cov}(X,Y)}{\text{var}(X)}
 $$
 
-There are algorithmic issues with computing $\left(X'X\right)^{-1}$ though, so we could instead start with $X\beta=y$ and write $\hat{\mathbf{\beta}}_{OLS}=X^{-1}y$ .
+There are algorithmic issues with computing $\left(X'X\right)^{-1}$ though, so we could instead write $X\beta=y$ and so that $\hat{\mathbf{\beta}}_{OLS}=X^{-1}y$ .
 
 ## Linear regression algorithms
 
@@ -462,15 +470,15 @@ backsolve(R, b)
 
 ## Collinearity
 
--   One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the regressors.
+-   One of the important assumptions of the classical linear regression models is that there is no exact collinearity among the covariates.
 
--   While high correlation between regressors is a necessary indicator of the collinearity problem, a direct linear relationship beween regressors is sufficient.
+-   While high correlation between covariates is a necessary indicator of the collinearity problem, a direct linear relationship beween covariates is sufficient.
 
 ## Collinearity
 
 -   Data collection methods, constraints on the fitted regression model, model specification error, an overdefined model, may be some potential sources of multicollinearity.
 
--   In other cases it is an artifact caused by creating new predictors from other predictors.
+-   In other cases it is an artifact caused by creating new covariates/predictors from other predictors.
 
 ## Collinearity
 
@@ -493,7 +501,7 @@ Mitigating Collinearity:
 
 We introduced truncated Taylor series approximations to motivate using simplified models of the mean function when using regression.
 
-But bias is the error introduced by approximating a real-world problem, which may be complex, by a simplified model.
+But bias is the error introduced by approximating a potentially complex real-world problem by a simplified model.
 
 So to reduce bias, why not include more Taylor series terms, or more covariates in a first-order model?
 
@@ -559,7 +567,9 @@ So adding more terms or more covariates may reduce bias by improving the mean es
 
 ## Bias vs Variance
 
-The following regression models techniques with the higher variance that follows from a large number of covariates by adding a bit of bias. The variance is reduced by penalizing covariate coefficients, shrinking then towards zero.
+The following regression modelling techniques address the higher variance that follows from a large number of covariates by adding a bit of bias.
+
+The variance is reduced by penalizing large covariate coefficients, shrinking them towards zero.
 
 The resulting simpler models may not fully capture the patterns in the data, thus underfitting the data.
 
@@ -890,7 +900,16 @@ dat %>%
 
 A **generalized linear model** (**GLM**) is a flexible generalization of ordinary linear regression.
 
-Ordinary linear regression predicts the expected value of the outcome variable, a random variable, as a linear combination of a set of observed values (*predictors*). In a generalized linear model (GLM), each outcome $Y$ is assumed to be generated from a particular distribution in an exponential family, The mean, $\mu$, of the distribution depends on the independent variables, $X$, through:
+Ordinary linear regression predicts the expected value (mean) of the outcome random variable as a linear combination of a set of observed values (*predictors*).
+
+## Generalized Linear Models
+
+In a generalized linear model (GLM), each outcome $Y$ is assumed to be generated according to a probability distribution in an exponential family[^6], The mean, $\mu$, of the distribution depends on the independent variables, $X$, through:
+
+[^6]:
+    ::: {style="font-size: x-small"}
+    The exponential families include many of the most common distributions: e.g. Normal, Exponential, Gamma, Chi-squared, beta, Dirichlet, Bernoulli, Categorical, Poisson, Wishart, inverse Wishart, and Geometric, among others.
+    :::
 
 $$
 \mathbb{E}\left[\left.Y\right|X\right]=\mu=\text{g}^{-1}\left(X\beta\right)
@@ -901,10 +920,10 @@ $$ where $g$ is called the **link function**.
 For example, if $Y$ is Poisson distributed, then
 
 $$
-\mathbb{P}\left[\left.Y=y\right|X,\lambda\right]=\frac{\lambda^{y}}{y!}e^{-\lambda}=e^{y\log\lambda-\lambda-\log y!}
+\mathbb{P}\left[\left.Y=y\right|\lambda\right]=\frac{\lambda^{y}}{y!}e^{-\lambda}=e^{y\log\lambda-\lambda-\log y!}
 $$
 
-Where $\lambda$ is both the mean and the variance. In the glm the link function is $\log$ and
+Where $\lambda$ is both the mean and the variance. In the Poisson glm the link function is $\log$ and
 
 $$
 \log\mathbb{E}\left[\left.Y\right|X\right] = \beta X=\log\lambda
@@ -919,7 +938,7 @@ $$
 
 **Random Component**:
 
--   Specifies the probability distribution of the data generation process of the response variable ($Y$). Examples include Normal, Binomial, Poisson, etc.
+-   Specifies the probability distribution of the data generation process of the response variable ($Y$). Examples include Normal, Exponential, Gamma, Chi-squared, beta, Dirichlet, Bernoulli, Categorical, Poisson, Wishart, inverse Wishart, and Geometric, etc.
 
 ## Systemic
 
@@ -941,13 +960,13 @@ $$
 ::::::: panel-tabset
 ## Linear
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Linear Regression (Binomial Distribution)
 
 -   **Response Variable**: Continuous
--   **Link Function**: Identity ($(g(\mu) = \mu$))
+-   **Link Function**: Identity ($g(\mu) = \mu$)
 -   **Example**: Predicting house prices based on square footage, number of bedrooms, etc.
--   **Formula**: $(Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \epsilon)$, where $(Y$) is normally distributed.
+-   **Formula**: $(Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \epsilon)$, where $Y$ is normally distributed.
 :::
 
 ## Logistic
@@ -956,31 +975,31 @@ Linear Regression (Binomial Distribution)
 Logistic Regression (binomial Distribution)
 
 -   **Response Variable**: Binary (0 or 1)
--   **Link Function**: Logit ($(g(\mu) = \log(\frac{\mu}{1-\mu})$))
+-   **Link Function**: Logit ($g(\mu) = \log(\frac{\mu}{1-\mu})$)
 -   **Example**: Predicting whether a customer will buy a product (yes/no) based on age, income, etc.
--   **Formula**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots$), where ($p$) is the probability of the event occurring.
+-   **Formula**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where $p$ is the probability of the event occurring.
 :::
 
 ## Poisson
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Poisson Regression (Poisson Distribution)
 
 -   **Response Variable**: Count data (non-negative integers)
--   **Link Function**: Log ($(g(\mu) = \log(\mu)$))
+-   **Link Function**: Log ($g(\mu) = \log(\mu)$)
 -   **Example**: Predicting the number of insurance claims in a year based on driver age, vehicle type, etc.
--   **Formula**: $(\log(\lambda) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where $(\lambda)$ is the expected count.
+-   **Formula**: $(\log(\lambda) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where $\lambda$ is the expected count.
 :::
 
 ## Gamma
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 Gamma Regression (Gamma Distribution)
 
 -   **Response Variable**: Continuous and positive
--   **Link Function**: Inverse ($(g(\mu) = \frac{1}{\mu}$))
+-   **Link Function**: Inverse ($g(\mu) = \frac{1}{\mu}$)
 -   **Example**: Predicting the time until failure of a machine based on temperature, pressure, etc.
--   **Formula**: $(\frac{1}{\mu} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where ($\mu$) is the mean of the response variable.
+-   **Formula**: $(\frac{1}{\mu} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots)$, where $\mu$ is the mean of the response variable.
 :::
 :::::::
 
@@ -991,18 +1010,18 @@ Gamma Regression (Gamma Distribution)
 :::::: panel-tabset
 ## Logistic
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Logistic Regression Example**:
 
 -   **Scenario**: A marketing team wants to predict whether a customer will buy a product.
 -   **Variables**: Customer age, income, and previous purchase history.
--   **Model**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{Income} + \beta_3 \text{History}$)
--   **Interpretation**: The coefficients (\beta\_1, \beta\_2, \beta\_3) indicate how each predictor affects the log odds of making a purchase.
+-   **Model**: $(\log(\frac{p}{1-p}) = \beta_0 + \beta_1 \text{Age} + \beta_2 \text{Income} + \beta_3 \text{History})$
+-   **Interpretation**: The coefficients $(\beta_1, \beta_2, \beta_3)$ indicate how each predictor affects the log odds of making a purchase.
 :::
 
 ## Poisson
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Poisson Regression Example**:
 
 -   **Scenario**: An insurance company wants to predict the number of claims a policyholder will file.
@@ -1013,7 +1032,7 @@ Gamma Regression (Gamma Distribution)
 
 ## Gamma
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 **Gamma Regression Example**:
 
 -   **Scenario**: A manufacturing company wants to predict the lifetime of a machine part.
@@ -1037,7 +1056,7 @@ dat <- MASS::Boston
 
 There are many methodologies for constructing regression trees but one of the oldest is known as the **c**lassification **a**nd **r**egression **t**ree (CART) approach.
 
-Basic regression trees *partition* a data set into smaller subgroups and then fit a simple *constant* for each observation in the subgroup. The partitioning is achieved by successive binary partitions (aka *recursive partitioning*) based on the different predictors.
+Basic regression trees *partition* a data set into smaller subgroups and then fit *constant* for each observation in the subgroup. The partitioning is achieved by successive binary partitions (aka *recursive partitioning*) based on the different predictors.
 
 ## Regression with trees
 
@@ -1048,6 +1067,213 @@ $$
 $$
 
 Tree algorithms differ in how they grow the regression tree, i.e. partition the space of the covariates.
+
+## Regression with trees
+
+```{r}
+#| echo: false
+library(viridis)
+library(patchwork)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Define the support and partitions for x1 and x2
+x1_range <- c(0, 10)
+x2_range <- c(0, 8)
+
+# Create a fine grid for visualization
+grid_resolution <- 200
+x1_grid <- seq(x1_range[1], x1_range[2], length.out = grid_resolution)
+x2_grid <- seq(x2_range[1], x2_range[2], length.out = grid_resolution)
+
+# Create all combinations
+grid_data <- tidyr::expand_grid(x1 = x1_grid, x2 = x2_grid)
+
+# Define tree partitions (three regions)
+# Region 1: x1 < 4
+# Region 2: x1 >= 4 AND x2 < 5
+# Region 3: x1 >= 4 AND x2 >= 5
+
+partition_function <- function(x1, x2) {
+  dplyr::case_when(
+    x1 < 4 ~ "Region 1",
+    x1 >= 4 & x2 < 5 ~ "Region 2",
+    x1 >= 4 & x2 >= 5 ~ "Region 3",
+    TRUE ~ "Other"
+  )
+}
+
+# Apply partitioning to grid
+grid_data <- grid_data %>%
+  dplyr::mutate(
+    region = partition_function(x1, x2),
+    region_numeric = dplyr::case_when(
+      region == "Region 1" ~ 1,
+      region == "Region 2" ~ 2,
+      region == "Region 3" ~ 3,
+      TRUE ~ NA_real_
+    )
+  )
+
+# Define constant y values for each region (estimated by the tree)
+region_means <- c(
+  "Region 1" = 15.2,
+  "Region 2" = 8.7,
+  "Region 3" = 22.3
+)
+
+# Add predicted y values to grid
+grid_data <- grid_data %>%
+  dplyr::mutate(y_predicted = region_means[region])
+
+# Generate sample training data points
+n_points <- 150
+
+# Sample points from each region
+sample_data <- tibble::tibble()
+
+# Region 1: x1 < 4
+n1 <- 50
+region1_data <- tibble::tibble(
+  x1 = runif(n1, x1_range[1], 4),
+  x2 = runif(n1, x2_range[1], x2_range[2])
+) %>%
+  dplyr::mutate(
+    region = "Region 1",
+    y_true = 15 + 2*x1 - 0.5*x2 + rnorm(n1, 0, 1.5),
+    y_predicted = region_means["Region 1"]
+  )
+
+# Region 2: x1 >= 4 AND x2 < 5
+n2 <- 50
+region2_data <- tibble::tibble(
+  x1 = runif(n2, 4, x1_range[2]),
+  x2 = runif(n2, x2_range[1], 5)
+) %>%
+  dplyr::mutate(
+    region = "Region 2",
+    y_true = 8 + 0.8*x1 + 0.3*x2 + rnorm(n2, 0, 1.2),
+    y_predicted = region_means["Region 2"]
+  )
+
+# Region 3: x1 >= 4 AND x2 >= 5
+n3 <- 50
+region3_data <- tibble::tibble(
+  x1 = runif(n3, 4, x1_range[2]),
+  x2 = runif(n3, 5, x2_range[2])
+) %>%
+  dplyr::mutate(
+    region = "Region 3",
+    y_true = 20 + 1.2*x1 + 0.8*x2 + rnorm(n3, 0, 1.8),
+    y_predicted = region_means["Region 3"]
+  )
+
+# Combine all sample data
+sample_data <- dplyr::bind_rows(region1_data, region2_data, region3_data)
+
+# Create the main partition plot
+p1 <- ggplot() +
+  # Background regions with predicted values
+  geom_raster(data = grid_data, aes(x = x1, y = x2, fill = y_predicted), alpha = 0.8) +
+
+  # Add decision boundaries
+  geom_vline(xintercept = 4, color = "black", size = 1.2, linetype = "solid") +
+  geom_segment(aes(x = 4, y = 5, xend = x1_range[2], yend = 5),
+               color = "black", size = 1.2, linetype = "solid") +
+
+  # Sample data points
+  geom_point(data = sample_data, aes(x = x1, y = x2, color = region),
+             size = 2, alpha = 0.7, stroke = 0.5) +
+
+  # Region labels
+  annotate("text", x = 2, y = 6.5, label = "Region 1\nŷ = 15.2",
+           size = 5, fontface = "bold", color = "white",
+           bbox = list(boxcolor = "black", fill = "black", alpha = 0.7)) +
+  annotate("text", x = 7, y = 2.5, label = "Region 2\nŷ = 8.7",
+           size = 5, fontface = "bold", color = "white",
+           bbox = list(boxcolor = "black", fill = "black", alpha = 0.7)) +
+  annotate("text", x = 7, y = 6.5, label = "Region 3\nŷ = 22.3",
+           size = 5, fontface = "bold", color = "white",
+           bbox = list(boxcolor = "black", fill = "black", alpha = 0.7)) +
+
+  scale_fill_viridis_c(name = "Predicted y", option = "plasma") +
+  scale_color_manual(name = "Region",
+                     values = c("Region 1" = "#440154",
+                                "Region 2" = "#31688e",
+                                "Region 3" = "#fde725")) +
+
+  labs(
+    title = "Partition View",
+    subtitle = "Two covariates (x1, x2) partitioned into three regions",
+    x = "x1",
+    y = "x2",
+    caption = "Black lines show decision boundaries\nPoints show training data\nBackground shows predicted values"
+  ) +
+
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),
+    plot.subtitle = element_text(size = 12),
+    legend.position = "right",
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.minor = element_blank()
+  ) +
+
+  coord_fixed(ratio = 1) +
+  xlim(x1_range) + ylim(x2_range)
+
+# Create decision tree diagram
+tree_structure <- tibble::tibble(
+  x = c(0.5, 0.25, 0.75, 0.625, 0.875),
+  y = c(0.8, 0.6, 0.6, 0.4, 0.4),
+  label = c("x1 < 4?", "Region 1\nŷ = 15.2", "x2 < 5?", "Region 2\nŷ = 8.7", "Region 3\nŷ = 22.3"),
+  node_type = c("decision", "leaf", "decision", "leaf", "leaf")
+)
+
+p2 <- ggplot(tree_structure, aes(x = x, y = y)) +
+  geom_point(aes(color = node_type), size = 8) +
+  #geom_text(aes(label = label), size = 3.5, fontface = "bold", nudge_x = 0.11) +
+  geom_text(
+    data = tree_structure |> dplyr::filter(! stringr::str_starts(label,"Reg"))
+    , aes(label = label), size = 3.5, fontface = "bold", nudge_x = 0.11
+  ) +
+  geom_text(
+    data = tree_structure |> dplyr::filter(stringr::str_starts(label,"Reg"))
+    , aes(label = label), size = 3.5, fontface = "bold", nudge_y = -0.06
+  ) +
+
+  # Add tree connections
+  geom_segment(aes(x = 0.5, y = 0.8, xend = 0.25, yend = 0.6), size = 1) +  # Root to Region 1
+  geom_segment(aes(x = 0.5, y = 0.8, xend = 0.75, yend = 0.6), size = 1) +   # Root to second decision
+  geom_segment(aes(x = 0.75, y = 0.6, xend = 0.625, yend = 0.4), size = 1) + # Second decision to Region 2
+  geom_segment(aes(x = 0.75, y = 0.6, xend = 0.875, yend = 0.4), size = 1) + # Second decision to Region 3
+
+  # Add decision labels
+  annotate("text", x = 0.35, y = 0.72, label = "Yes", size = 3, color = "blue", fontface = "bold") +
+  annotate("text", x = 0.64, y = 0.72, label = "No", size = 3, color = "red", fontface = "bold") +
+  annotate("text", x = 0.65, y = 0.52, label = "Yes", size = 3, color = "blue", fontface = "bold") +
+  annotate("text", x = 0.84, y = 0.52, label = "No", size = 3, color = "red", fontface = "bold") +
+
+  scale_color_manual(values = c("decision" = "#2E86AB", "leaf" = "#F24236")) +
+
+  labs(
+    title = "Decision Tree Structure",
+    subtitle = "Binary splits creating three terminal regions"
+  ) +
+
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5),
+    legend.position = "none"
+  ) +
+
+  xlim(0, 1) + ylim(0.3, 0.9)
+
+p1 + p2
+```
 
 ## Regression with trees
 
@@ -1220,7 +1446,7 @@ Unlike linear regression, Kernel Regression does not assume a specific form for 
 
 ## Kernel Regression
 
-::: {style="font-size: x-large"}
+::: {style="font-size: large"}
 1.  **Select a Kernel Function**:
     -   Choose a kernel function that will determine how weights are assigned to nearby data points. The Gaussian kernel is a common choice, where weights decrease with distance according to a normal distribution.
 2.  **Choose a Bandwidth**:
@@ -1296,7 +1522,7 @@ plt_fit(bandwidth = 15)
 
 ## Kernel Regression:
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 ### Advantages of Kernel Regression
 
 -   **Flexibility**: Can capture complex, non-linear relationships between variables.
@@ -1344,6 +1570,11 @@ Regression with neural nets involves using artificial neural networks (ANNs) to 
     -   Input data is passed through the network, layer by layer, with each neuron applying its weights, bias, and activation function, until the output layer produces the prediction.
 2.  **Loss Calculation**:
     -   The loss function calculates the error between the predicted output and the actual target value.
+:::
+
+## Regression with ANNs: Algorithm
+
+::: {style="font-size: x-large"}
 3.  **Backward Propagation**:
     -   The network uses the error to adjust the weights and biases. This involves calculating the gradient of the loss function with respect to each weight and bias (using the chain rule), and then updating the weights and biases to reduce the error.
 4.  **Iterative Training**:
@@ -1453,10 +1684,22 @@ tibble::tibble(test = data_test$medv, predicted = pr.nn$net.result) %>%
 ```
 :::
 
+## Regression with neural nets
+
+:::::: columns
+::: {.column width="50%"}
+![](images/neural_net_learning.gif){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![](images/neural_net_architecture.gif){fig-align="center"}
+:::
+
+
+::::::
+
 ## Recap
 
 -   Today we worked though a parametric and non-parametric regression methods that are useful for predicting a value given a set of covariates.
 
 -   Next week we will look in detail at the `tidymodels` package which will give a way to develop a workflow for fitting and comparing our models across different feature sets.
-
-## 

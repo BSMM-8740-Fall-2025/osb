@@ -20,6 +20,10 @@ editor: visual
 
 📖 Check out *Regression and Other Stories - Examples*: [Regression and Other Stories Examples](https://avehtari.github.io/ROS-Examples/examples.html)
 
+📖 Read *Different ways of calculating OLS regression coefficients (in R)*: [Different ways of calculating OLS regression coefficients (in R)](https://thomvolker.github.io/blog/2506_regression/)
+
+📖 Read *How does glmnet perform ridge regression?*: [How does glmnet perform ridge regression?](https://thomvolker.github.io/blog/2505_glmnet_ridge/)
+
 ## Participate
 
 🖥️ [Lecture 3 - Regression Methods](/slides/BSMM_8740_lec_03.html)
@@ -83,6 +87,66 @@ models[['Aggregated & W']] |> broom::tidy(conf.int = TRUE)
 ```
 
 Note the differences in the coefficient estimate for $x$ and the corresponding standard errors.
+
+## Study
+
+### Short Answer Questions
+
+Answer each question in 2-3 sentences.
+
+1.  Explain the primary difference between a simple linear regression model and a generalized linear model (GLM) in terms of their assumptions about the outcome variable.
+
+2.  What is the main purpose of using a Taylor series approximation in the context of linear regression models, and why are only a few terms typically used?
+
+3.  Describe the concept of collinearity in linear regression and name two potential negative effects it can have on model estimates.
+
+4.  How do Ridge and Lasso regression differ in their approach to regularization, and what unique benefit does Lasso provide?
+
+5.  Explain the bias-variance trade-off in the context of model complexity. Give an example of a model exhibiting high bias and low variance.
+
+6.  What is the core idea behind Ordinary Least Squares (OLS) estimation, and what assumption about the error term is crucial for its derivation?
+
+7.  How does the QR decomposition method address the numerical stability issues encountered when solving for OLS coefficients in matrix form?
+
+8.  Briefly describe the main difference in how Random Forests and Gradient Boosting Machines (GBMs) build their ensembles of trees.
+
+9.  What are the key advantages of Kernel Regression, and what are its primary disadvantages concerning computational efficiency and parameter tuning?
+
+10. In a neural network for regression, what roles do activation functions and loss functions play during the training process?
+
+**Answer Key**
+
+1.  Simple linear regression (SLR) assumes the outcome variable follows a Normal (Gaussian) probability distribution. In contrast, Generalized Linear Models (GLMs) generalize this by allowing the outcome variable to follow any probability distribution from the exponential family (e.g., Poisson, Binomial), connected to the linear predictor via a link function.
+
+2.  A Taylor series approximates a continuous function as a sum of simpler polynomial functions. In linear regression, this allows for the decomposition of the mean function, and typically only the first few terms are used because for smooth functions, higher-order coefficients decrease rapidly, simplifying the model while retaining continuity.
+
+3.  Collinearity refers to a direct linear relationship or high correlation among the predictor variables in a regression model. This problem can lead to implausible coefficient signs, making the interpretation difficult, and it can cause the \$X'X\$ matrix to become near or exactly singular, preventing its inversion for coefficient estimation.
+
+4.  Ridge regression penalizes the \$L_2\$ norm of the weights, shrinking coefficients towards zero but rarely making them exactly zero. Lasso regression penalizes the \$L_1\$ norm, which has the unique benefit of performing automatic feature selection by forcing some coefficients to become exactly zero, effectively removing those predictors from the model.
+
+5.  The bias-variance trade-off illustrates that as model complexity increases, bias generally decreases (better fit to training data), but variance tends to increase (more sensitive to specific training data). A model exhibiting high bias and low variance would be an underfitted model, such as using a simple linear model to predict house prices when the true relationship is highly non-linear and involves many factors.
+
+6.  Ordinary Least Squares (OLS) aims to minimize the residual sum of squares, finding the coefficients that result in the smallest squared differences between observed and predicted values. A crucial assumption for its derivation is that the error term has a zero mean and is independent of the covariates, implying \$E\[u\]=0\$ and \$E\[u\|x\]=0\$.
+
+7.  Directly computing the inverse of the \$X'X\$ matrix can be numerically unstable, especially for ill-conditioned matrices. The QR decomposition method factorizes the design matrix X into an orthogonal matrix Q and an upper triangular matrix R, allowing the regression coefficients to be solved via back-substitution, which is a more stable numerical approach.
+
+8.  Random Forests build an ensemble of deep, independent trees, where trees are decorrelated through bootstrap sampling and split-variable randomization at each node. Gradient Boosting Machines (GBMs), in contrast, build an ensemble of shallow, weak successive trees, with each new tree trained to correct the errors (residuals) made by the combined ensemble of all previous trees.
+
+9.  Advantages of Kernel Regression include its flexibility to capture complex, non-linear relationships without assuming a specific functional form. Its disadvantages are that it can be computationally intensive, especially with large datasets, as it requires calculating weights for all data points for each estimate, and its results are highly sensitive to the choice of kernel function and bandwidth, necessitating careful tuning.
+
+10. In a neural network, activation functions introduce non-linearity to the model, allowing it to learn complex patterns and relationships that linear models cannot capture. The loss function quantifies the difference between the network's predicted output and the actual target values, serving as the objective that the optimization algorithm (e.g., gradient descent) tries to minimize during training.
+
+**Essay Format Questions**
+
+1.  Discuss the relationship between Taylor series approximations and the common assumption of linearity in regression models. Explain how the concept of "smoothness" of the mean function influences the choice of complexity (number of terms/covariates) in a linear regression model, and its implications for the bias-variance trade-off.
+
+2.  Compare and contrast Ordinary Least Squares (OLS) regression with Ridge and Lasso regression. Explain the regularization mechanisms of each penalized method, their effect on model coefficients, and when one might be preferred over the others. Include a discussion of their impact on the bias-variance trade-off.
+
+3.  Explain the concept of a Generalized Linear Model (GLM) by detailing its three key components. Choose two specific types of GLMs (e.g., Logistic, Poisson, Gamma) and describe a scenario where each would be appropriate, including the characteristics of their response variables and their respective link functions.
+
+4.  Analyze the evolution of tree-based regression methods from single regression trees to bagging and then to random forests. Discuss the limitations of a single regression tree and explain how bagging and random forests address these limitations. What additional mechanism does random forests introduce to further improve performance over bagging?
+
+5.  Describe the fundamental differences in approach between Kernel Regression and Artificial Neural Networks (ANNs) for non-parametric regression. Discuss the advantages and disadvantages of each method, considering factors such as flexibility, computational intensity, data requirements, and interpretability.
 
 <br><br>
 

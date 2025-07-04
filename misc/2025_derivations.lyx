@@ -2897,5 +2897,17 @@ Y_{i1}^{1}-Y_{i0}^{1} & =\lambda\left(1-0\right)+\delta\left(1-0\right)
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sin(x) & =x-\frac{x^{3}}{3!}+\frac{x^{5}}{5!}-\frac{x^{7}}{7!}+\frac{x^{9}}{9!}+\ldots\\
+ & =x-\frac{x^{3}}{6!}+\frac{x^{5}}{120!}-\frac{x^{7}}{5040!}+\frac{x^{9}}{362880!}+\ldots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
