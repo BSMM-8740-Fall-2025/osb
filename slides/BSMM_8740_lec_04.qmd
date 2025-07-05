@@ -39,9 +39,9 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ## Recap of last week
 
--   Last week we looked at several regression models that are useful for predictions.
+-   Last week we looked at several regression methods/models that are useful for predictions.
 
--   However, R packages that implement these models have different conventions on how they accept data and specify the model.
+-   However, R packages that implement these methods have different conventions on how they accept data and specify the underlying model.
 
 -   Today we look at the `tidymodels` package which will give us a workflow to describe, fit and compare models, using the same approach across methods.
 
@@ -58,7 +58,7 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 ### Key Components of Tidymodels
 
 -   Model Building: the `parsnip` package provides various modeling engines for different algorithms like lm(), glm(), randomForest(), xgboost(), etc.
--   Preprocessing: Easy and flexible data preprocessing using the `recipes` package, allowing for seamless data transformation and feature engineering.
+-   Preprocessing: Easy and flexible data preprocessing is provided by the `recipes` package, allowing for seamless data transformation and feature engineering.
 
 ## Tidymodels
 
@@ -72,17 +72,17 @@ theme_set(theme_bw(base_size = 18) + theme(legend.position = "top"))
 
 ### Key Components of Tidymodels
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 -   Workflows: functions in the `workflows` package can bundle together your pre-processing, modeling, and post-processing requests. The advantages are:
     -   You don’t have to keep track of separate objects in your workspace.
-    -   The recipe prepping and model fitting can be executed using a single call to [`fit()`](https://generics.r-lib.org/reference/fit.html).
+    -   Both the recipe prepping and model fitting can be executed using a single call to [`fit()`](https://generics.r-lib.org/reference/fit.html).
     -   If you have custom tuning parameter settings, these can be defined using a simpler interface when combined with [tune](https://github.com/tidymodels/tune).
 -   Workflowsets: The `workflowsets` package facilitates multiple workwflows - applying different types of models and preprocessing methods on a given data set.
 :::
 
 ## Tidymodels
 
-In base R, the **predict** function returns results in a format that depends on the models.
+In base R, the **predict** function returns results in a format that depends on the model.
 
 By contrast, **parsnip** and **workflows** conforms to the following rules:
 
@@ -108,9 +108,9 @@ We look at how to fit and predict with parsnip in the next few slides, given dat
 
 ## Fitting with parsnip
 
-For example we call `stats::lm`, specifying the model using a formula. By contrast `glmnet::glmnet` specify the model with separate outcome and co-variate matrices
+For example, we call `stats::lm`, specifying the model using a formula. By contrast, `glmnet::glmnet` specify the model with separate outcome and co-variate matrices
 
-By contrast, the tidymodels permits using both models with a uniform model specification.
+The tidymodels permits using both models with a uniform model specification.
 
 ## Fitting with parsnip
 
@@ -193,7 +193,7 @@ lm_model <- parsnip::linear_reg() %>%
   parsnip::set_engine("lm")
 # fit model
 lm_form_fit <- lm_model %>% 
-  # Recall that Sale_Price has been pre-logged
+  # Recall that Sale_Price has been transformed using log()
    parsnip::fit(Sale_Price ~ Longitude + Latitude, data = ames_train)
 # fit model with data in (x,y) form
 lm_xy_fit <- 
@@ -225,7 +225,7 @@ A list of all parsnip-type models can be found [here](https://www.tidymodels.org
 
 ## Tidymodels: workflows
 
-The model **workflow** collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities.
+The **workflow** data structure collects all the steps of the analysis, including any pre-processing steps, the specification of the model, the model fit itself, as well as potential post-processing activities.
 
 Similar collections of steps are sometimes called pipelines.
 
@@ -413,7 +413,6 @@ A workflow set is a data structure
 
 ```{r}
 #| echo: true
-# view
 location_models
 ```
 
@@ -456,7 +455,6 @@ Once we've settled on a final model there is a convenience function called `las
 #| message: false
 #| eval: true
 #| code-line-numbers: "1-2"
-# pull 
 final_lm_res <- tune::last_fit(lm_wflow, ames_split)
 
 ```
@@ -855,7 +853,7 @@ dplyr::bind_rows(
   gt::gt() %>% 
   gt::fmt_number(decimals=4) %>% 
   gt::tab_header(title = "Performance statistics", subtitle = "metric: rmse") %>% 
-  gtExtras::gt_theme_espn()
+  gtExtras::gt_theme_espn() |> gt::as_raw_html()
 
 ```
 
@@ -989,7 +987,7 @@ The difference between MCCV and regular cross-validation is that, for MCCV, the 
 
 MCCV is performed using `rsample::mv_cv()`.
 
-## Resampling: Boostrapping
+## Resampling: Bootstrapping
 
 **Re-sampling**: bootstrapping:
 
@@ -1004,7 +1002,7 @@ When bootstrapping, the assessment set is often called the *out-of-bag* sample
 rsample::bootstraps(ames_train, times = 5)
 ```
 
-## Resampling: Boostrapping
+## Resampling: Bootstrapping
 
 Each data point has a 63.2% chance of inclusion in the training set at least once.
 
@@ -1087,7 +1085,7 @@ time_slices$splits %>%
 
 **Performance evaluation**:
 
-::: {style="font-size: xx-large"}
+::: {style="font-size: x-large"}
 1.  During resampling, the analysis set is used to preprocess the data, apply the pre-processing to itself, and use these processed data to fit the model.
 2.  The pre-processing statistics produced by the analysis set are applied to the assessment set. The predictions from the assessment set estimate performance on new data.
 

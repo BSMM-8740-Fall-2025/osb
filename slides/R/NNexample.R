@@ -223,8 +223,13 @@ p1 <- animation_data %>%
   ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    plot.subtitle = element_text(size = 18),
+    plot.title = element_text(size = 32, face = "bold"),
+    plot.subtitle = element_text(size = 22),
+    plot.caption = element_text(size = 14),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 20),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
     legend.position = "bottom"
   ) +
   transition_states(epoch, transition_length = 1, state_length = 1) +
@@ -257,7 +262,7 @@ p2 <- ggplot() +
   # Add node labels
   geom_text(data = nodes_anim,
             aes(x = x, y = y, label = node_id),
-            color = "white", fontface = "bold", size = 3) +
+            color = "white", fontface = "bold", size = 4) +
 
   scale_color_gradient2(low = "red", mid = "gray", high = "blue",
                         midpoint = 0, name = "Weight") +
@@ -266,16 +271,21 @@ p2 <- ggplot() +
 
   labs(
     title = "Neural Network Architecture Evolution",
-    subtitle = "Epoch: {closest_state} | Weights and activations changing during training",
+    subtitle = "Epoch: {closest_state} | Weights & activations changing during training",
     x = "",
     y = "",
-    caption = "Node size ∝ activation level | Edge color/thickness ∝ weight magnitude"
+    caption = "Node size ~ activation level | Edge color/thickness ~ weight magnitude"
   ) +
 
   theme_void() +
   theme(
-    plot.title = element_text(size = 16, face = "bold"),
-    plot.subtitle = element_text(size = 14),
+    plot.title = element_text(size = 32, face = "bold"),
+    plot.subtitle = element_text(size = 18),
+    plot.caption = element_text(size = 14),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 20),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
     legend.position = "right",
     panel.background = element_rect(fill = "white", color = NA)
   ) +

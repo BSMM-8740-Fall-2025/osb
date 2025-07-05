@@ -60,6 +60,14 @@ librarian::shelf(
 theme_set(theme_bw(base_size = 12))
 ```
 
+::: callout-warning
+## Package installs
+
+If you install packages outside of the ones here, [**remove**]{.underline} your `install.packages(.)` code [**before submitting your solutions**]{.underline}.
+
+Leaving instructions that will install packages may cause your code to fail, but more importantly, it can corrupt the TA/instructor's system.
+:::
+
 ## Data: Boston House Values
 
 The Boston House Values dataset (usually referred to as the Boston dataset) appears in several R packages in different versions and is based on economic studies published in the late 1970's.
@@ -67,7 +75,7 @@ The Boston House Values dataset (usually referred to as the Boston dataset) appe
 This dataset contains the following information for each cocktail:
 
 | variable | description |
-|----|----|
+|------------------------------------|------------------------------------|
 | crim | per capita crime rate by town. |
 | zn | proportion of residential land zoned for lots over 25,000 sq.ft. |
 | indus | proportion of non-retail business acres per town. |
@@ -123,7 +131,7 @@ Or
 ```{r}
 #| echo: true
 #| eval: false
-tibble(lstat = c(5, 10, 15, 20))
+tibble::tibble(lstat = c(5, 10, 15, 20))
 ```
 
 Finally, use your model to plot some performance checks using the `performance::check_model` function with arguments `check=c("linearity","qq","homogeneity", "outliers")`.
@@ -134,7 +142,7 @@ Are there any overly influential observations in this dataset?
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -146,7 +154,7 @@ Are there any overly influential observations in this dataset?
 
 Fit the variable `medv` (median value of owner-occupied homes) to all predictors in the dataset and use the `performance::check_collinearity` function on the resulting model to check if any predictors are redundant.
 
-The variance inflation factor is a measure of the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
+The variance inflation factor (VIF) is a measure of the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
 
 Which predictors in this dataset might be redundant for predicting `medv`?
 
@@ -154,7 +162,7 @@ Which predictors in this dataset might be redundant for predicting `medv`?
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -221,7 +229,7 @@ Which linear model returns the (approximately) correct dependence of demand on p
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -241,7 +249,7 @@ What can you conclude from these two exercises?
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -285,7 +293,7 @@ How many predictor variables are there in `cars_23` ?
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -330,7 +338,7 @@ After these two steps how many columns are in the data? Why does this differ fro
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -387,7 +395,7 @@ What is the RMSE for the un-tuned model?
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -440,7 +448,7 @@ Is the tuned model better than the un-tuned model? If better, how much has the R
 ## YOUR ANSWER:
 
 ```{r}
-# PLEASESHOW YOUR WORK
+# PLEASE SHOW YOUR WORK
 
 
 
@@ -480,6 +488,21 @@ I will pull (copy) everyone's submissions at 5:00pm on the Sunday following clas
 
 Total points available: 30 points.
 
-| Component | Points |
-|-----------|--------|
-| Ex 1 - 10 | 30     |
+```{r}
+#| echo: false
+
+data.frame(exercise = "1 - 10", points = "3 points each") |> 
+gt::gt() |> 
+gt::tab_footnote(
+  gt::md("code (if any) does not run to completion: **-1 point**"),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::tab_footnote(
+  gt::md("explicit question (if any) not answered, even if code runs to completion: **-1 point**."),
+  locations = gt::cells_column_labels(columns = points),
+) |> 
+gt::cols_align(align = "left") |> 
+gt::cols_width(exercise ~ gt::px(250), points ~ gt::px(150)) |> 
+gtExtras::gt_theme_espn() |> 
+gt::as_raw_html()
+```

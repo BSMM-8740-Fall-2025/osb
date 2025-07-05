@@ -1686,7 +1686,7 @@ tibble::tibble(test = data_test$medv, predicted = pr.nn$net.result) %>%
 
 ## Regression with neural nets
 
-:::::: columns
+::::: columns
 ::: {.column width="50%"}
 ![](images/neural_net_learning.gif){fig-align="center"}
 :::
@@ -1694,9 +1694,7 @@ tibble::tibble(test = data_test$medv, predicted = pr.nn$net.result) %>%
 ::: {.column width="50%"}
 ![](images/neural_net_architecture.gif){fig-align="center"}
 :::
-
-
-::::::
+:::::
 
 ## Recap
 

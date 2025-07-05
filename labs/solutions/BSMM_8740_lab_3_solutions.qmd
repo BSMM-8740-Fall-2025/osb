@@ -99,7 +99,7 @@ Using the result from Exercise 1, and the data below, use the predict function (
 ```{r}
 #| echo: true
 #| eval: false
-tibble(lstat = c(5, 10, 15, 20))
+tibbble::tibble(lstat = c(5, 10, 15, 20))
 ```
 
 Finally, use your model to plot some performance checks using the `performance::check_model` function with arguments `check=c("linearity","qq","homogeneity", "outliers")`.
@@ -175,7 +175,7 @@ Since no points lie outside the dashed lines of the *Influential Observations* c
 
 Fit `medv` to all predictors in the dataset and use the `performance::check_collinearity` function on the resulting model to check if any predictors are redundant.
 
-The variance inflation factor is a measure of the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
+The variance inflation factor (VIF) is a measure of the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
 
 Which predictors in this dataset might be redundant for predicting `medv`?
 
@@ -205,7 +205,7 @@ set.seed(1966)
 
 dat0 <- tibble::tibble(
   price0 = 10+rnorm(500)
-  , demand0 = 30-(price0 + rnorm(500))
+  , demand0 = 30 - (price0 + rnorm(500))
   , unobserved0 = 0.45*price0 + 0.77*demand0 + rnorm(500)
 )
 ```
@@ -219,7 +219,7 @@ set.seed(1966)
 dat1 <- tibble::tibble(
   unobserved1 = rnorm(500)
   , price1 = 10 + unobserved1 + rnorm(500)
-  , demand1 = 23 -(0.5*price1 + unobserved1 + rnorm(500))
+  , demand1 = 23 - (0.5*price1 + unobserved1 + rnorm(500))
 )
 ```
 
@@ -230,11 +230,15 @@ Which linear model returns the (approximately) correct dependence of demand on p
 
 ```{r}
 # DAT0
-# fit the model
+# fit the model for demand0 ~ price0
 fit0 <- lm(demand0 ~ price0, data = dat0)
 # get the estimated coefficients for dataset 0
 est0  <- fit0 %>% broom::tidy()
-# plot the data
+est0
+```
+
+```{r}
+# plot the data and the fit for demand0 ~ price0
 dat0 %>% ggplot(aes(x=price0,y=demand0)) +
   geom_point() + 
   geom_abline(
@@ -243,23 +247,27 @@ dat0 %>% ggplot(aes(x=price0,y=demand0)) +
       tidyr::pivot_wider(names_from = term, values_from =estimate)
     , aes(intercept = `(Intercept)`, slope = price0)
     , colour = "red"
-  )
+  ) + labs(title = "data and the fit for demand0 ~ price0")
 ```
 
 ```{r}
 #DAT1
-# fit the model
+# fit demand1 ~ price1
 fit1 <- lm(demand1 ~ price1, data = dat1)
 # get the estimated coefficients for dataset 0
 est1  <- fit1 %>% broom::tidy()
-# plot the data
+est1
+```
+
+```{r}
+# plot the data and the fit for demand1 ~ price1
 dat1 %>% ggplot(aes(x=price1,y=demand1)) +
   geom_point() + 
   geom_abline(
     data = est1 %>% dplyr::select(1:2) %>% tidyr::pivot_wider(names_from = term, values_from =estimate)
     , aes(intercept = `(Intercept)`, slope = price1)
     , colour = "red"
-  )
+  ) + labs(title = "data and the fit for demand1 ~ price1")
 ```
 
 The linear fit to the two datasets (without the unobserved variables, because they are, well, unobserved) gives very similar intercepts and slopes (dependence on price).
@@ -278,7 +286,7 @@ However, now go back and **look at the way the datasets were generated**.
 
 In `dat0`, the coefficient of price in the equation for demand is -1, **consistent with the linear fit**.
 
-But in `dat1`, the coefficient of price in the equation for demand is -0.5, yet the linear fit estimates the value as close to 1.
+But in `dat1`, the coefficient of price in the equation for demand is -0.5, yet the linear fit estimates the value as close to -1.
 
 So here the model doesn't give the answers that the knowledge of the data generation process would lead us to expect. What if we can observe the unobservables?
 :::

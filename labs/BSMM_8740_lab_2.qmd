@@ -62,7 +62,7 @@ librarian::shelf(
 ::: callout-warning
 ## Package installs
 
-If you install packages outside of the ones below, [**remove**]{.underline} your `install.packages(.)` code [**before submitting your solutions**]{.underline}.
+If you install packages outside of the ones here, [**remove**]{.underline} your `install.packages(.)` code [**before submitting your solutions**]{.underline}.
 
 Leaving instructions that will install packages may cause your code to fail, but more importantly, it can corrupt the TA/instructor's system.
 :::
